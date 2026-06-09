@@ -1,0 +1,12 @@
+{
+  "$metadata": {
+    "tokenSetOrder": [
+      "primitives",
+      "theme/light",
+      "theme/dark",
+      "device/desktop",
+      "device/tablet",
+      "device/mobile"
+    ]
+  }
+}

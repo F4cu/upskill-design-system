@@ -1,0 +1,14 @@
+{
+  "name": "@upskill/tokens",
+  "version": "0.1.0",
+  "description": "UpSkill Design System – design tokens (W3C DTCG format)",
+  "main": "dist/index.js",
+  "files": [
+    "tokens/",
+    "dist/"
+  ],
+  "scripts": {
+    "build": "echo 'Add Style Dictionary build step here'"
+  },
+  "license": "MIT"
+}

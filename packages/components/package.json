@@ -1,0 +1,17 @@
+{
+  "name": "@upskill/components",
+  "version": "0.1.0",
+  "description": "UpSkill Design System – coded component library",
+  "main": "dist/index.js",
+  "files": [
+    "src/",
+    "dist/"
+  ],
+  "scripts": {
+    "build": "echo 'Add component build step here'"
+  },
+  "dependencies": {
+    "@upskill/tokens": "0.1.0"
+  },
+  "license": "MIT"
+}

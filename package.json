@@ -1,0 +1,10 @@
+{
+  "name": "upskill-design-system",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build:tokens": "npm run build --workspace=@upskill/tokens"
+  }
+}
