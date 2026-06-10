@@ -1,8 +1,9 @@
+import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as primitives from '@upskill/tokens/js/primitives'
 
 const meta: Meta = {
-  title: 'Tokens/Showcase',
+  title: 'Tokens',
   parameters: {
     layout: 'fullscreen',
     controls: { disable: true },
@@ -12,45 +13,130 @@ const meta: Meta = {
 export default meta
 type Story = StoryObj
 
-// ─── Colors ───────────────────────────────────────────────────────────────────
-
-const COLOR_HUES = [
-  { name: 'Terracotta', prefix: 'colorTerracotta' },
-  { name: 'Cyan',       prefix: 'colorCyan' },
-  { name: 'Teal',       prefix: 'colorTeal' },
-  { name: 'Gold',       prefix: 'colorGold' },
-  { name: 'Sand',       prefix: 'colorSand' },
-  { name: 'Grey',       prefix: 'colorGrey' },
-  { name: 'Amber',      prefix: 'colorAmber' },
-]
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 type PrimitivesKey = keyof typeof primitives
 
-function SwatchRow({ name, prefix }: { name: string; prefix: string }) {
+const labelStyle: React.CSSProperties = {
+  fontSize: 11,
+  fontFamily: 'monospace',
+  color: '#888',
+  marginBottom: 6,
+  letterSpacing: '0.02em',
+}
+
+function remToPx(rem: string): string {
+  const num = parseFloat(rem)
+  return isNaN(num) ? '' : `${Math.round(num * 16)}px`
+}
+
+function CopyToken({ value, children }: { value: string; children: React.ReactNode }) {
+  const [copied, setCopied] = useState(false)
+  const handleClick = () => {
+    navigator.clipboard.writeText(value).catch(() => {})
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1200)
+  }
+  return (
+    <div
+      onClick={handleClick}
+      title={`${value} — click to copy`}
+      style={{ cursor: 'pointer', position: 'relative', userSelect: 'none' }}
+    >
+      {children}
+      {copied && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(0,0,0,0.55)',
+          borderRadius: 3,
+          color: '#fff', fontSize: 9, fontFamily: 'monospace',
+          pointerEvents: 'none',
+        }}>
+          copied
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section style={{ padding: '1.5rem' }}>
+      <h2 style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#444', marginBottom: '1.25rem' }}>
+        {title}
+      </h2>
+      {children}
+    </section>
+  )
+}
+
+function StoryLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ fontFamily: 'var(--ds-font-family-body, "Open Sans", sans-serif)', maxWidth: 900, margin: '0 auto' }}>
+      {children}
+    </div>
+  )
+}
+
+// ─── Colors ───────────────────────────────────────────────────────────────────
+
+const COLOR_HUES: {
+  name: string
+  prefix: string
+  darkPrefix?: string
+  alphaPrefix?: string
+}[] = [
+  { name: 'Terracotta', prefix: 'colorTerracotta', darkPrefix: 'colorTerracottaDark', alphaPrefix: 'colorTerracottaAlpha' },
+  { name: 'Cyan',       prefix: 'colorCyan' },
+  { name: 'Teal',       prefix: 'colorTeal',       darkPrefix: 'colorTealDark' },
+  { name: 'Gold',       prefix: 'colorGold',       darkPrefix: 'colorGoldDark' },
+  { name: 'Sand',       prefix: 'colorSand',       darkPrefix: 'colorSandDark' },
+  { name: 'Grey',       prefix: 'colorGrey',       darkPrefix: 'colorGreyDark' },
+  { name: 'Amber',      prefix: 'colorAmber',      darkPrefix: 'colorAmberDark' },
+]
+
+function SwatchGrid({ prefix, border, invertText }: { prefix: string; border?: boolean; invertText?: boolean }) {
   const steps = Array.from({ length: 12 }, (_, i) => i + 1)
   return (
-    <div style={{ marginBottom: '1.25rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 2 }}>
+      {steps.map((step) => {
+        const key = `${prefix}${step}` as PrimitivesKey
+        const color = primitives[key] as string
+        return (
+          <CopyToken key={step} value={key}>
+            <div style={{ height: 40, backgroundColor: color, borderRadius: 3, border: border ? '1px solid #e5e5e5' : undefined }} />
+            <div style={{ fontSize: 9, fontFamily: 'monospace', color: invertText ? '#ccc' : '#999', marginTop: 3 }}>{step}</div>
+            <div style={{ fontSize: 9, fontFamily: 'monospace', color: invertText ? '#aaa' : '#bbb', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{color}</div>
+          </CopyToken>
+        )
+      })}
+    </div>
+  )
+}
+
+function HueGroup({ name, prefix, darkPrefix, alphaPrefix }: {
+  name: string
+  prefix: string
+  darkPrefix?: string
+  alphaPrefix?: string
+}) {
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
       <div style={labelStyle}>{name}</div>
-      <div style={{ display: 'flex', gap: 2 }}>
-        {steps.map((step) => {
-          const key = `${prefix}${step}` as PrimitivesKey
-          const color = primitives[key] as string
-          return (
-            <div
-              key={step}
-              title={`${key}: ${color}`}
-              style={{ flex: 1, height: 32, backgroundColor: color, borderRadius: 2 }}
-            />
-          )
-        })}
-      </div>
-      <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
-        {steps.map((step) => (
-          <div key={step} style={{ flex: 1, textAlign: 'center', fontSize: 9, fontFamily: 'monospace', color: '#999' }}>
-            {step}
-          </div>
-        ))}
-      </div>
+      <SwatchGrid prefix={prefix} />
+      {darkPrefix && (
+        <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: '2px solid #e5e5e5' }}>
+          <div style={{ ...labelStyle, color: '#bbb', fontSize: 10, marginBottom: 4 }}>↳ Dark</div>
+          <SwatchGrid prefix={darkPrefix} />
+        </div>
+      )}
+      {alphaPrefix && (
+        <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: '2px solid #e5e5e5' }}>
+          <div style={{ ...labelStyle, color: '#bbb', fontSize: 10, marginBottom: 4 }}>↳ Alpha</div>
+          <SwatchGrid prefix={alphaPrefix} border />
+        </div>
+      )}
     </div>
   )
 }
@@ -59,29 +145,19 @@ function ColorSection() {
   return (
     <Section title="Colors">
       {COLOR_HUES.map((hue) => (
-        <SwatchRow key={hue.prefix} {...hue} />
+        <HueGroup key={hue.prefix} {...hue} />
       ))}
-      <div style={{ marginTop: '0.75rem' }}>
-        <div style={labelStyle}>Black Alpha / White Alpha</div>
-        <div style={{ display: 'flex', gap: 2 }}>
-          {Array.from({ length: 12 }, (_, i) => {
-            const step = i + 1
-            const key = `colorBlackAlpha${step}` as PrimitivesKey
-            return (
-              <div
-                key={step}
-                title={`colorBlackAlpha${step}: ${primitives[key]}`}
-                style={{ flex: 1, height: 32, backgroundColor: primitives[key] as string, borderRadius: 2, border: '1px solid #e5e5e5' }}
-              />
-            )
-          })}
+      <div style={{ marginBottom: '1rem' }}>
+        <div style={labelStyle}>Black / White Alpha</div>
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ ...labelStyle, color: '#bbb', fontSize: 10, marginBottom: 4 }}>Black Alpha</div>
+          <SwatchGrid prefix="colorBlackAlpha" border />
         </div>
-        <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
-          {Array.from({ length: 12 }, (_, i) => (
-            <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 9, fontFamily: 'monospace', color: '#999' }}>
-              {i + 1}
-            </div>
-          ))}
+        <div>
+          <div style={{ ...labelStyle, color: '#bbb', fontSize: 10, marginBottom: 4 }}>White Alpha</div>
+          <div style={{ background: '#1a1a1a', padding: '6px 4px', borderRadius: 4 }}>
+            <SwatchGrid prefix="colorWhiteAlpha" invertText />
+          </div>
         </div>
       </div>
     </Section>
@@ -103,9 +179,11 @@ function SpacingSection() {
         const value = primitives[key] as string
         return (
           <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <div style={{ width: 80, fontSize: 11, fontFamily: 'monospace', color: '#888', textAlign: 'right', flexShrink: 0 }}>
-              {key}
-            </div>
+            <CopyToken value={key}>
+              <div style={{ width: 80, fontSize: 11, fontFamily: 'monospace', color: '#888', textAlign: 'right', padding: '2px 4px', borderRadius: 3 }}>
+                {key}
+              </div>
+            </CopyToken>
             <div
               style={{
                 backgroundColor: 'var(--ds-color-brand-9, #d15d50)',
@@ -115,7 +193,10 @@ function SpacingSection() {
                 borderRadius: 2,
               }}
             />
-            <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#aaa' }}>{value}</div>
+            <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#888' }}>
+              {value}
+              <span style={{ color: '#bbb', marginLeft: 6 }}>({remToPx(value)})</span>
+            </div>
           </div>
         )
       })}
@@ -145,9 +226,13 @@ function TypographySection() {
               borderBottom: '1px solid var(--ds-color-neutral-4, #e9e8e6)',
             }}
           >
-            <div style={{ width: 80, fontSize: 10, fontFamily: 'monospace', color: '#aaa', flexShrink: 0 }}>
-              {key}<br />{size}
-            </div>
+            <CopyToken value={key}>
+              <div style={{ width: 130, fontSize: 10, fontFamily: 'monospace', color: '#aaa', flexShrink: 0, padding: '2px 4px', borderRadius: 3 }}>
+                {key}<br />
+                {size}
+                <span style={{ color: '#ccc', marginLeft: 4 }}>({remToPx(size)})</span>
+              </div>
+            </CopyToken>
             <div style={{ fontSize: size, lineHeight: 1.4 }}>
               The quick brown fox
             </div>
@@ -158,11 +243,13 @@ function TypographySection() {
         <div style={labelStyle}>Font Weights</div>
         <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
           {(['fontWeightRegular', 'fontWeightMedium', 'fontWeightSemibold', 'fontWeightBold'] as PrimitivesKey[]).map((key) => (
-            <div key={key} style={{ fontSize: 16, fontWeight: primitives[key] as number, lineHeight: 2 }}>
-              <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#aaa', fontWeight: 400 }}>{key} · {primitives[key]}</span>
-              <br />
-              The quick brown fox
-            </div>
+            <CopyToken key={key} value={key}>
+              <div style={{ fontSize: 16, fontWeight: primitives[key] as number, lineHeight: 2, padding: '2px 4px', borderRadius: 3 }}>
+                <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#aaa', fontWeight: 400 }}>{key} · {primitives[key]}</span>
+                <br />
+                The quick brown fox
+              </div>
+            </CopyToken>
           ))}
         </div>
       </div>
@@ -187,18 +274,20 @@ function BorderRadiusSection() {
         {BORDER_RADIUS_STEPS.map(({ key, label }) => {
           const value = primitives[key] as string
           return (
-            <div key={key} style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  width: 64, height: 64,
-                  backgroundColor: 'var(--ds-color-brand-9, #d15d50)',
-                  borderRadius: value,
-                  marginBottom: 8,
-                }}
-              />
-              <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#666' }}>{label}</div>
-              <div style={{ fontSize: 10, fontFamily: 'monospace', color: '#aaa' }}>{value}</div>
-            </div>
+            <CopyToken key={key} value={key}>
+              <div style={{ textAlign: 'center', padding: '4px 8px', borderRadius: 3 }}>
+                <div
+                  style={{
+                    width: 64, height: 64,
+                    backgroundColor: 'var(--ds-color-brand-9, #d15d50)',
+                    borderRadius: value,
+                    marginBottom: 8,
+                  }}
+                />
+                <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#666' }}>{label}</div>
+                <div style={{ fontSize: 10, fontFamily: 'monospace', color: '#aaa' }}>{value}</div>
+              </div>
+            </CopyToken>
           )
         })}
       </div>
@@ -206,41 +295,21 @@ function BorderRadiusSection() {
   )
 }
 
-// ─── Layout helpers ───────────────────────────────────────────────────────────
+// ─── Stories ──────────────────────────────────────────────────────────────────
 
-const labelStyle: React.CSSProperties = {
-  fontSize: 11,
-  fontFamily: 'monospace',
-  color: '#888',
-  marginBottom: 6,
-  letterSpacing: '0.02em',
+export const Colors: Story = {
+  render: () => <StoryLayout><ColorSection /></StoryLayout>,
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section style={{ padding: '1.5rem', borderBottom: '1px solid var(--ds-color-neutral-3, #f1f0ef)' }}>
-      <h2 style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#444', marginBottom: '1.25rem' }}>
-        {title}
-      </h2>
-      {children}
-    </section>
-  )
+export const Spacing: Story = {
+  render: () => <StoryLayout><SpacingSection /></StoryLayout>,
 }
 
-// ─── Story ────────────────────────────────────────────────────────────────────
-
-function TokenShowcase() {
-  return (
-    <div style={{ fontFamily: 'var(--ds-font-family-body, "Open Sans", sans-serif)', maxWidth: 900, margin: '0 auto' }}>
-      <ColorSection />
-      <SpacingSection />
-      <TypographySection />
-      <BorderRadiusSection />
-    </div>
-  )
+export const Typography: Story = {
+  render: () => <StoryLayout><TypographySection /></StoryLayout>,
 }
 
-export const Default: Story = {
-  name: 'Token Showcase',
-  render: () => <TokenShowcase />,
+export const BorderRadius: Story = {
+  name: 'Border Radius',
+  render: () => <StoryLayout><BorderRadiusSection /></StoryLayout>,
 }
