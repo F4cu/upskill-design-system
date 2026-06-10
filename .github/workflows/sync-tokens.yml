@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "packages/tokens/src/primitives.json"
+      - "packages/tokens/src/**"
 
 jobs:
   sync:
@@ -15,10 +15,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Push tokens to Airtable
-        run: node scripts/airtable-sync.js push
+      - name: Sync primitive tokens to Airtable
+        run: node scripts/airtable-sync.js push:primitives
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+
+      - name: Sync semantic tokens to Airtable
+        run: node scripts/airtable-sync.js push:semantic
         env:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}

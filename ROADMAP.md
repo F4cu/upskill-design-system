@@ -14,7 +14,7 @@ Progress tracker for the three-phase build-out. Check items off as they land on 
 - [x] React + Vite + TypeScript in `packages/components`
 - [x] Storybook: install + configure `addon-themes` (light/dark toggle via `data-theme`)
 - [x] Token showcase story (color swatches, spacing scale, type ramp)
-- [ ] GitHub Actions: token build check on PR
+- [x] GitHub Actions: token build check on PR
 
 ## Phase 1.5 — Component Foundation
 
