@@ -64,7 +64,6 @@ Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never 
 The `@upskill/tokens` build step will use Style Dictionary to transform DTCG tokens into:
 - CSS custom properties (dimensions converted to `rem`)
 - JS/TS constants
-- Tailwind theme extension
 
 Config will live at `packages/tokens/style-dictionary.config.js`. Until then, `npm run build:tokens` prints a placeholder.
 
@@ -84,7 +83,7 @@ Do not commit `$extensions` to source. If a Figma export lands them in, strip be
 | **Figma** | Source of truth for primitives. Export → clean → commit. |
 | **Airtable** | Token inventory and governance layer. Each token gets a record tracking ownership, status, usage guidelines, and change history. Distinct from Style Dictionary — Airtable is for people (who owns this token, is it deprecated?), not for builds. |
 | **GitHub Actions** | CI for token validation, automated Airtable sync on merge, PR comments with token diffs. |
-| **Style Dictionary** | Build system: DTCG JSON → CSS, JS, Tailwind. |
+| **Style Dictionary** | Build system: DTCG JSON → CSS custom properties, JS/TS constants. |
 | **Storybook** | Component documentation, visual playground, token showcase, and visual regression baseline. |
 
 ## Storybook
@@ -126,6 +125,12 @@ A `packages/components/src/tokens/Tokens.stories.tsx` file should render the ful
 - No trailing commas (strict JSON)
 - Aliases always prefer the deepest available primitive path (`{color.terracotta.9}` not `{color.terracotta}`)
 
+### CSS Modules (components package)
+- One `.module.css` file per component, co-located with the component
+- Only reference SD-output custom properties (`var(--token-name)`) — never raw values
+- Class names use `camelCase` inside the module (e.g. `.primaryButton`)
+- No global styles in component modules — globals (reset, base typography, grid) live in `packages/components/src/styles/`
+
 ### JavaScript / TypeScript (components package, scripts)
 - No comments unless the why is non-obvious
 - No defensive error handling for internal paths — only validate at external boundaries (Figma API responses, Airtable webhooks)
@@ -151,10 +156,10 @@ Edit the appropriate `theme/` or `device/` file. Use `{path.to.primitive}` synta
 4. Rebuild and verify no alias references broke
 
 ### Add a coded component
-Work in `packages/components/src/`. Import tokens from `@upskill/tokens` (once the build is wired). Components should not hard-code any design values — everything comes through tokens.
+Work in `packages/components/src/`. Each component gets a co-located CSS Module (`ComponentName.module.css`) that references SD-output custom properties (e.g. `var(--color-brand)`). Import tokens from `@upskill/tokens` for any JS-side logic. Components should not hard-code any design values — everything comes through tokens.
 
 ### Wire up Style Dictionary
-Install `style-dictionary` in `@upskill/tokens`. Write `style-dictionary.config.js` with a DTCG-compatible parser and three output platforms (CSS, JS, Tailwind). Replace the placeholder `build` script.
+Install `style-dictionary` in `@upskill/tokens`. Write `style-dictionary.config.js` with a DTCG-compatible parser and two output platforms (CSS custom properties, JS/TS constants). Replace the placeholder `build` script.
 
 ### Add a GitHub Action
 Place workflow YAML in `.github/workflows/`. For token validation, run Style Dictionary build as a check. For Airtable sync, trigger on merge to main using the Airtable REST API.

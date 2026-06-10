@@ -2,13 +2,27 @@
   "name": "@upskill/tokens",
   "version": "0.1.0",
   "description": "UpSkill Design System – design tokens (W3C DTCG format)",
-  "main": "dist/index.js",
+  "type": "module",
+  "main": "dist/js/primitives.js",
+  "exports": {
+    "./css/primitives": "./dist/css/primitives.css",
+    "./css/theme.light": "./dist/css/theme.light.css",
+    "./css/theme.dark": "./dist/css/theme.dark.css",
+    "./css/device.desktop": "./dist/css/device.desktop.css",
+    "./css/device.tablet": "./dist/css/device.tablet.css",
+    "./css/device.mobile": "./dist/css/device.mobile.css",
+    "./js/primitives": "./dist/js/primitives.js"
+  },
   "files": [
-    "tokens/",
+    "src/",
     "dist/"
   ],
   "scripts": {
-    "build": "echo 'Add Style Dictionary build step here'"
+    "build": "node build.js",
+    "build:tokens": "node build.js"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "style-dictionary": "^5.4.4"
+  }
 }

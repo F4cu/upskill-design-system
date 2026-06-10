@@ -1,10 +1,13 @@
 {
   "name": "upskill-design-system",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build:tokens": "npm run build --workspace=@upskill/tokens"
+    "build:tokens": "npm run build:tokens -w @upskill/tokens",
+    "sync:tokens:push": "node scripts/airtable-sync.js push:primitives",
+    "sync:semantic:push": "node scripts/airtable-sync.js push:semantic"
   }
 }
