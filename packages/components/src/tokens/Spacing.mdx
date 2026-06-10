@@ -1,0 +1,60 @@
+import { Meta } from '@storybook/addon-docs'
+import * as primitives from '@upskill/tokens/js/primitives'
+import { CopyToken, remToPx } from './tokenComponents'
+
+<Meta title="Tokens/Spacing" />
+
+export const SPACE_STEPS = [
+  'space000', 'space050', 'space100', 'space150',
+  'space200', 'space250', 'space300', 'space400',
+  'space500', 'space600', 'space700', 'space800',
+]
+
+export const SpacingScale = () => (
+  <div style={{ padding: '0.25rem 0', fontFamily: 'monospace' }}>
+    {SPACE_STEPS.map((key) => {
+      const value = primitives[key]
+      return (
+        <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <CopyToken value={key}>
+            <div style={{ width: 80, fontSize: 11, color: '#888', textAlign: 'right', padding: '2px 4px', borderRadius: 3 }}>
+              {key}
+            </div>
+          </CopyToken>
+          <div style={{
+            backgroundColor: 'var(--ds-color-brand-9, #d15d50)',
+            height: 16,
+            width: value,
+            minWidth: value === '0rem' ? 2 : undefined,
+            borderRadius: 2,
+          }} />
+          <div style={{ fontSize: 11, color: '#888' }}>
+            {value}
+            <span style={{ color: '#bbb', marginLeft: 6 }}>({remToPx(value)})</span>
+          </div>
+        </div>
+      )
+    })}
+  </div>
+)
+
+# Spacing
+
+The spacing scale is built on a **4px base unit** (`space050 = 0.25rem`). All steps are multiples of 4, giving consistent vertical rhythm and alignment across layouts. Use tokens rather than raw values — this makes global layout adjustments a one-line change.
+
+Click any token name to copy it.
+
+## Scale
+
+<SpacingScale />
+
+## Usage guidance
+
+| Use case | Token |
+|---|---|
+| Icon padding, tight inline gaps | `space050` – `space100` |
+| Component internal padding | `space150` – `space300` |
+| Section padding, card gaps | `space400` – `space500` |
+| Page-level vertical rhythm | `space600` – `space800` |
+
+Avoid skipping more than two steps between adjacent elements — it creates visual imbalance. When in doubt, use the next step up rather than a custom value.

@@ -1,0 +1,72 @@
+import { ColorPalette, ColorItem, Meta } from '@storybook/addon-docs'
+import { hueColors } from './tokenHelpers'
+
+<Meta title="Tokens/Colors" />
+
+# Colors
+
+Each hue has three sub-scales: a light scale (1–12, backgrounds → text), a dark-mode scale, and an alpha (transparent) variant. Use the light scale in light theme, the dark scale in dark theme. Never mix scales on the same token.
+
+## Terracotta
+
+The brand hue. Use steps 8–10 for interactive elements and CTAs, steps 1–3 for tinted backgrounds.
+
+<ColorPalette>
+  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorTerracotta')} />
+  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorTerracottaDark')} />
+  <ColorItem title="Alpha" subtitle="1–12" colors={hueColors('colorTerracottaAlpha')} />
+</ColorPalette>
+
+## Cyan
+
+<ColorPalette>
+  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorCyan')} />
+</ColorPalette>
+
+## Teal
+
+<ColorPalette>
+  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorTeal')} />
+  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorTealDark')} />
+</ColorPalette>
+
+## Gold
+
+<ColorPalette>
+  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorGold')} />
+  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorGoldDark')} />
+</ColorPalette>
+
+## Sand
+
+<ColorPalette>
+  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorSand')} />
+  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorSandDark')} />
+</ColorPalette>
+
+## Grey
+
+Used for neutral UI surfaces, borders, and text. Prefer semantic aliases from the theme layer over reaching directly for a grey step.
+
+<ColorPalette>
+  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorGrey')} />
+  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorGreyDark')} />
+</ColorPalette>
+
+## Amber
+
+Reserved for warning states.
+
+<ColorPalette>
+  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorAmber')} />
+  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorAmberDark')} />
+</ColorPalette>
+
+## Black / White Alpha
+
+Transparent overlays. Use black alpha for shadows and scrim overlays on light surfaces; white alpha on dark surfaces.
+
+<ColorPalette>
+  <ColorItem title="Black Alpha" subtitle="1–12" colors={hueColors('colorBlackAlpha')} />
+  <ColorItem title="White Alpha" subtitle="1–12" colors={hueColors('colorWhiteAlpha')} />
+</ColorPalette>
