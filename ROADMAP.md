@@ -11,9 +11,9 @@ Progress tracker for the three-phase build-out. Check items off as they land on 
 - [x] GitHub repo
 - [x] Airtable connected
 - [x] Style Dictionary: CSS custom properties output for web
-- [ ] React + Vite + TypeScript in `packages/components`
-- [ ] Storybook: install + configure `addon-themes` (light/dark toggle via `data-theme`)
-- [ ] Token showcase story (color swatches, spacing scale, type ramp)
+- [x] React + Vite + TypeScript in `packages/components`
+- [x] Storybook: install + configure `addon-themes` (light/dark toggle via `data-theme`)
+- [x] Token showcase story (color swatches, spacing scale, type ramp)
 - [ ] GitHub Actions: token build check on PR
 
 ## Phase 1.5 — Component Foundation
