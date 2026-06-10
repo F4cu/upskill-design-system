@@ -1,0 +1,35 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--ds-font-family-body);
+  color: var(--ds-color-text-default);
+  background-color: var(--ds-color-background-container-root);
+  line-height: var(--ds-font-line-height-body-default, 1.5);
+}
+
+img, svg, video {
+  display: block;
+  max-width: 100%;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+a {
+  color: var(--ds-color-text-link);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--ds-color-text-link-hover);
+}

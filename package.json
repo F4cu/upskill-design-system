@@ -6,7 +6,11 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "npm run build:tokens && npm run build -w @upskill/components",
     "build:tokens": "npm run build:tokens -w @upskill/tokens",
+    "typecheck": "npm run typecheck -w @upskill/components",
+    "storybook": "npm run storybook -w @upskill/components",
+    "build:storybook": "npm run build:storybook -w @upskill/components",
     "sync:tokens:push": "node scripts/airtable-sync.js push:primitives",
     "sync:semantic:push": "node scripts/airtable-sync.js push:semantic"
   }

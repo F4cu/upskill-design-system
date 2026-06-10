@@ -1,4 +1,7 @@
 import StyleDictionary from 'style-dictionary'
+import fs from 'fs'
+
+fs.rmSync('dist', { recursive: true, force: true })
 
 // Rename $root keys to root throughout the token tree and update alias references.
 // $root is not a DTCG-reserved key but SD treats $ prefix specially, causing resolution failures.
@@ -97,7 +100,7 @@ StyleDictionary.registerTransformGroup({
 const shared = {
   usesDtcg: true,
   preprocessors: ['upskill/rename-root'],
-  log: { warnings: 'warn', verbosity: 'default' },
+  log: { warnings: 'error', verbosity: 'default' },
 }
 
 // ── Primitives ─────────────────────────────────────────────────

@@ -153,7 +153,7 @@
         "$type": "number",
         "$value": "{font.size.6}"
       },
-      "header-syled": {
+      "header-styled": {
         "$type": "number",
         "$value": "{font.size.8}"
       },

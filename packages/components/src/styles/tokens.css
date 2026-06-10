@@ -1,0 +1,8 @@
+@import '@upskill/tokens/css/primitives';
+@import '@upskill/tokens/css/theme.light';
+
+[data-theme='dark'] {
+  /* dark theme vars are already scoped to [data-theme="dark"] in the import below */
+}
+
+@import '@upskill/tokens/css/theme.dark';

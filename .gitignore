@@ -4,3 +4,6 @@ dist/
 *.log
 .env
 .mcp.json
+
+*storybook.log
+storybook-static

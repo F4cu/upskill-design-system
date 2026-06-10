@@ -1,0 +1,47 @@
+name: Token build check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/tokens/src/**'
+      - 'packages/tokens/build.js'
+      - 'packages/tokens/package.json'
+  pull_request:
+    paths:
+      - 'packages/tokens/src/**'
+      - 'packages/tokens/build.js'
+      - 'packages/tokens/package.json'
+
+jobs:
+  build-tokens:
+    name: Build tokens
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build tokens
+        run: npm run build:tokens
+
+      - name: Verify output files exist
+        run: |
+          for f in \
+            packages/tokens/dist/css/primitives.css \
+            packages/tokens/dist/css/theme.light.css \
+            packages/tokens/dist/css/theme.dark.css \
+            packages/tokens/dist/css/device.desktop.css \
+            packages/tokens/dist/css/device.tablet.css \
+            packages/tokens/dist/css/device.mobile.css \
+            packages/tokens/dist/js/primitives.js; do
+            [ -f "$f" ] || { echo "Missing: $f"; exit 1; }
+          done
+          echo "All expected output files present."

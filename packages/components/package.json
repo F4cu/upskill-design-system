@@ -2,16 +2,46 @@
   "name": "@upskill/components",
   "version": "0.1.0",
   "description": "UpSkill Design System – coded component library",
+  "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
-    "src/",
     "dist/"
   ],
   "scripts": {
-    "build": "echo 'Add component build step here'"
+    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build:storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "dependencies": {
-    "@upskill/tokens": "0.1.0"
+    "@upskill/tokens": "*"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^5",
+    "@storybook/addon-a11y": "^10",
+    "@storybook/addon-docs": "^10",
+    "@storybook/addon-themes": "^8",
+    "@storybook/react-vite": "^10",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "react": "^18",
+    "react-dom": "^18",
+    "storybook": "^10",
+    "typescript": "^5",
+    "vite": "^6",
+    "@vitejs/plugin-react": "^4",
+    "vite-plugin-dts": "^4"
   },
   "license": "MIT"
 }
