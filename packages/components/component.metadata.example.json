@@ -1,0 +1,158 @@
+{
+  "component": {
+    "name": "Button",
+    "category": "atom",
+    "type": "interactive",
+    "description": "Triggers an action or navigation. The primary way a user initiates a response from the system.",
+    "figmaNodeId": ""
+  },
+
+  "status": "draft",
+
+  "usage": {
+    "useCases": [
+      "Submitting a form",
+      "Triggering a modal or dialog",
+      "Primary call-to-action on a page",
+      "Confirming or cancelling a destructive operation"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using the primary variant more than once per view",
+        "reason": "Multiple primary buttons compete for attention and collapse the visual hierarchy",
+        "alternative": "Use one primary and demote the rest to secondary or ghost"
+      },
+      {
+        "scenario": "Replacing an anchor tag with a Button for page navigation",
+        "reason": "Buttons fire actions; links navigate. Misuse breaks keyboard and screen-reader expectations",
+        "alternative": "Use an <a> element or a dedicated Link component styled with the ghost variant"
+      },
+      {
+        "scenario": "Placing a full-size Button inside a data table cell",
+        "reason": "Tables need compact affordances — a full-size Button creates visual noise and breaks row rhythm",
+        "alternative": "Use an IconButton or a contextual action menu"
+      }
+    ]
+  },
+
+  "anatomy": [
+    {
+      "part": "container",
+      "required": true,
+      "description": "Clickable surface. Carries background, border, and border-radius tokens."
+    },
+    {
+      "part": "label",
+      "required": true,
+      "description": "Text describing the action. Uses font.family.body and color.text.* tokens."
+    },
+    {
+      "part": "leadingIcon",
+      "required": false,
+      "description": "Optional icon placed before the label. Uses color.icon.* tokens."
+    },
+    {
+      "part": "trailingIcon",
+      "required": false,
+      "description": "Optional icon placed after the label."
+    }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.button.$root",
+      "color.background.button.hover",
+      "color.background.button.disabled",
+      "color.background.button.ghost",
+      "color.text.inverted",
+      "color.text.disabled",
+      "color.border.brand"
+    ],
+    "spacing": [
+      "space.component.padding-x",
+      "space.component.padding-y"
+    ],
+    "typography": [
+      "font.family.body"
+    ],
+    "borderRadius": [
+      "border-radius.md"
+    ]
+  },
+
+  "variants": {
+    "options": ["primary", "secondary", "ghost", "danger"],
+    "default": "primary",
+    "purpose": {
+      "primary": "The single dominant action on a surface. Use once per view section.",
+      "secondary": "Supporting actions that sit alongside a primary button.",
+      "ghost": "Low-emphasis actions, navigation links styled as buttons, or actions inside dense UI.",
+      "danger": "Destructive or irreversible actions (delete, remove, revoke). Always pair with a confirmation step."
+    }
+  },
+
+  "states": [
+    {
+      "state": "default",
+      "description": "Resting state."
+    },
+    {
+      "state": "hover",
+      "description": "Pointer is over the button.",
+      "tokenOverrides": {
+        "color.background.button.$root": "color.background.button.hover"
+      }
+    },
+    {
+      "state": "focus",
+      "description": "Keyboard focus ring visible. Must meet WCAG 3:1 contrast against the surface."
+    },
+    {
+      "state": "active",
+      "description": "Button is being pressed."
+    },
+    {
+      "state": "disabled",
+      "description": "Action is unavailable. Pointer events suppressed.",
+      "tokenOverrides": {
+        "color.background.button.$root": "color.background.button.disabled",
+        "color.text.inverted": "color.text.disabled"
+      }
+    },
+    {
+      "state": "loading",
+      "description": "Async action in progress. Label is replaced by a spinner. Width must not collapse."
+    }
+  ],
+
+  "accessibility": {
+    "role": "button",
+    "ariaAttributes": ["aria-disabled", "aria-pressed", "aria-label"],
+    "keyboardInteractions": [
+      { "key": "Enter", "action": "Activates the button" },
+      { "key": "Space", "action": "Activates the button" }
+    ]
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "usedIn": ["Form", "Dialog", "Card", "Toolbar"],
+    "neverPairWith": ["IconButton"]
+  },
+
+  "aiHints": {
+    "keywords": ["button", "cta", "submit", "action", "trigger", "click", "confirm", "cancel"],
+    "selectionCriteria": {
+      "form submission": "Use primary variant",
+      "destructive action": "Use danger variant — always preceded by a confirmation dialog",
+      "low-emphasis action or toolbar item": "Use ghost variant",
+      "action alongside an existing primary": "Use secondary variant"
+    },
+    "generativeRules": [
+      "Never render more than one primary Button per view section",
+      "Always provide an aria-label when the Button has no visible text label (icon-only)",
+      "Disabled state must not rely on color alone — also set pointer-events: none and aria-disabled='true'",
+      "Loading state must preserve the button's width to prevent layout shift"
+    ]
+  }
+}

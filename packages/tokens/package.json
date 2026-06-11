@@ -8,6 +8,7 @@
     "./css/primitives": "./dist/css/primitives.css",
     "./css/theme.light": "./dist/css/theme.light.css",
     "./css/theme.dark": "./dist/css/theme.dark.css",
+    "./css/device": "./dist/css/device.css",
     "./css/device.desktop": "./dist/css/device.desktop.css",
     "./css/device.tablet": "./dist/css/device.tablet.css",
     "./css/device.mobile": "./dist/css/device.mobile.css",

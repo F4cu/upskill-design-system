@@ -105,6 +105,28 @@ StyleDictionary.registerFormat({
   },
 })
 
+StyleDictionary.registerFormat({
+  name: 'upskill/css-media-query',
+  format: ({ dictionary, options }) => {
+    const { mediaQuery } = options
+    const vars = dictionary.allTokens
+      .map(token => `    --${token.name}: ${token.$value};`)
+      .join('\n')
+    return [
+      '/**',
+      ' * Do not edit directly, this file was auto-generated.',
+      ' */',
+      '',
+      `${mediaQuery} {`,
+      '  :root {',
+      vars,
+      '  }',
+      '}',
+      '',
+    ].join('\n')
+  },
+})
+
 const shared = {
   usesDtcg: true,
   preprocessors: ['upskill/rename-root'],
@@ -184,8 +206,23 @@ const darkSD = new StyleDictionary({
 })
 
 // ── Device tokens ──────────────────────────────────────────────
-const deviceBuilds = ['desktop', 'tablet', 'mobile'].map(
-  (device) =>
+const deviceConfigs = {
+  desktop: {
+    format: 'css/variables',
+    options: { selector: ':root', outputReferences: false },
+  },
+  tablet: {
+    format: 'upskill/css-media-query',
+    options: { mediaQuery: '@media (max-width: 1439px)', outputReferences: false },
+  },
+  mobile: {
+    format: 'upskill/css-media-query',
+    options: { mediaQuery: '@media (max-width: 767px)', outputReferences: false },
+  },
+}
+
+const deviceBuilds = Object.entries(deviceConfigs).map(
+  ([device, { format, options }]) =>
     new StyleDictionary({
       ...shared,
       parsers: ['upskill/clean-device'],
@@ -197,9 +234,9 @@ const deviceBuilds = ['desktop', 'tablet', 'mobile'].map(
           buildPath: 'dist/css/',
           files: [{
             destination: `device.${device}.css`,
-            format: 'css/variables',
+            format,
             filter: (token) => token.filePath.includes(device),
-            options: { selector: ':root', outputReferences: false },
+            options,
           }],
         },
       },
@@ -212,5 +249,14 @@ await darkSD.buildAllPlatforms()
 for (const build of deviceBuilds) {
   await build.buildAllPlatforms()
 }
+
+// Combine the three device files into a single device.css with media query blocks.
+// desktop tokens go to :root, tablet and mobile are already wrapped in @media by their format.
+const stripHeader = (css) => css.replace(/^\/\*\*[\s\S]*?\*\/\n\n/, '')
+const desktop = fs.readFileSync('dist/css/device.desktop.css', 'utf8')
+const tablet  = fs.readFileSync('dist/css/device.tablet.css', 'utf8')
+const mobile  = fs.readFileSync('dist/css/device.mobile.css', 'utf8')
+const combined = desktop.trimEnd() + '\n\n' + stripHeader(tablet).trimEnd() + '\n\n' + stripHeader(mobile)
+fs.writeFileSync('dist/css/device.css', combined)
 
 console.log('\n✓ Token build complete → dist/css/ and dist/js/')

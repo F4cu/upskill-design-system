@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "upskill-design-system/component.schema.json",
+  "title": "Component Metadata",
+  "type": "object",
+  "required": [
+    "component",
+    "status",
+    "usage",
+    "anatomy",
+    "tokens",
+    "variants",
+    "states",
+    "accessibility",
+    "relationships",
+    "aiHints"
+  ],
+  "properties": {
+    "component": {
+      "type": "object",
+      "required": ["name", "category", "type", "description"],
+      "properties": {
+        "name": { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": ["atom", "molecule", "organism", "layout"]
+        },
+        "type": {
+          "type": "string",
+          "enum": ["interactive", "display", "container", "input"]
+        },
+        "description": { "type": "string" },
+        "figmaNodeId": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["draft", "stable", "deprecated"]
+    },
+
+    "usage": {
+      "type": "object",
+      "required": ["useCases", "antiPatterns"],
+      "properties": {
+        "useCases": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "antiPatterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["scenario", "reason", "alternative"],
+            "properties": {
+              "scenario": { "type": "string" },
+              "reason": { "type": "string" },
+              "alternative": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "anatomy": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["part", "required", "description"],
+        "properties": {
+          "part": { "type": "string" },
+          "required": { "type": "boolean" },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "tokens": {
+      "type": "object",
+      "properties": {
+        "color": { "type": "array", "items": { "type": "string" } },
+        "spacing": { "type": "array", "items": { "type": "string" } },
+        "typography": { "type": "array", "items": { "type": "string" } },
+        "borderRadius": { "type": "array", "items": { "type": "string" } },
+        "other": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+
+    "variants": {
+      "type": "object",
+      "required": ["options", "default", "purpose"],
+      "properties": {
+        "options": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "default": { "type": "string" },
+        "purpose": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "states": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["state", "description"],
+        "properties": {
+          "state": { "type": "string" },
+          "description": { "type": "string" },
+          "tokenOverrides": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "accessibility": {
+      "type": "object",
+      "properties": {
+        "role": { "type": "string" },
+        "ariaAttributes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "keyboardInteractions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "action"],
+            "properties": {
+              "key": { "type": "string" },
+              "action": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "relationships": {
+      "type": "object",
+      "properties": {
+        "composedOf": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "usedIn": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "neverPairWith": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "aiHints": {
+      "type": "object",
+      "properties": {
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "selectionCriteria": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "generativeRules": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
