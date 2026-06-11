@@ -1,11 +1,33 @@
 import { Meta } from '@storybook/addon-docs/blocks'
-import { ColorScaleTable, ColorScaleGroup } from './tokenComponents'
+import { ColorScaleTable, ColorScaleGroup, TintGroupRow, ColorPaletteRow, ColorPaletteGroup } from './tokenComponents'
 
 <Meta title="Foundation/Colors" />
 
 # Colors
 
-Each hue has three sub-scales: a light scale (1–12, backgrounds → text), a dark-mode scale, and an alpha (transparent) variant. Use the light scale in light theme, the dark scale in dark theme. Never mix scales on the same token.
+Each hue has 12 steps. Steps 1–4 are tinted backgrounds, 5–8 are borders and dividers, and 9–12 are solid fills and high-contrast text.
+
+## Tint groups
+
+<TintGroupRow title="Tints Light" prefix="colorTerracotta" />
+
+## Main colors
+
+<ColorPaletteGroup>
+  <ColorPaletteRow label="Surface / Gold" prefix="colorGold" />
+  <ColorPaletteRow label="Brand / Terracotta" prefix="colorTerracotta" />
+  <ColorPaletteRow label="Accent / Teal" prefix="colorTeal" />
+</ColorPaletteGroup>
+
+<ColorPaletteGroup>
+  <ColorPaletteRow label="Neutral / Sand" prefix="colorSand" />
+  <ColorPaletteRow label="Alpha white" prefix="colorWhiteAlpha" />
+  <ColorPaletteRow label="Alpha black" prefix="colorBlackAlpha" />
+</ColorPaletteGroup>
+
+## Full palette
+
+Never mix scales on the same token. Use the light scale in light theme, the dark scale in dark theme.
 
 ## Terracotta
 
@@ -23,28 +45,28 @@ The brand hue. Use steps 8–10 for interactive elements and CTAs, steps 1–3 f
   <ColorScaleTable title="Light (1–12)" prefix="colorCyan" basePath="color.cyan" />
 </ColorScaleGroup>
 
-## Teal
+### Teal
 
 <ColorScaleGroup>
   <ColorScaleTable title="Light (1–12)" prefix="colorTeal" basePath="color.teal" />
   <ColorScaleTable title="Dark (1–12)" prefix="colorTealDark" basePath="color.teal" stepPrefix="dark" />
 </ColorScaleGroup>
 
-## Gold
+### Gold
 
 <ColorScaleGroup>
   <ColorScaleTable title="Light (1–12)" prefix="colorGold" basePath="color.gold" />
   <ColorScaleTable title="Dark (1–12)" prefix="colorGoldDark" basePath="color.gold" stepPrefix="dark" />
 </ColorScaleGroup>
 
-## Sand
+### Sand
 
 <ColorScaleGroup>
   <ColorScaleTable title="Light (1–12)" prefix="colorSand" basePath="color.sand" />
   <ColorScaleTable title="Dark (1–12)" prefix="colorSandDark" basePath="color.sand" stepPrefix="dark" />
 </ColorScaleGroup>
 
-## Grey
+### Grey
 
 Used for neutral UI surfaces, borders, and text. Prefer semantic aliases from the theme layer over reaching directly for a grey step.
 
@@ -53,7 +75,7 @@ Used for neutral UI surfaces, borders, and text. Prefer semantic aliases from th
   <ColorScaleTable title="Dark (1–12)" prefix="colorGreyDark" basePath="color.grey" stepPrefix="dark" />
 </ColorScaleGroup>
 
-## Amber
+### Amber
 
 Reserved for warning states.
 
@@ -62,7 +84,7 @@ Reserved for warning states.
   <ColorScaleTable title="Dark (1–12)" prefix="colorAmberDark" basePath="color.amber" stepPrefix="dark" />
 </ColorScaleGroup>
 
-## Black / White Alpha
+### Black / White Alpha
 
 Transparent overlays. Use black alpha for shadows and scrim overlays on light surfaces; white alpha on dark surfaces.
 

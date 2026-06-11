@@ -292,6 +292,129 @@
   color: #d15d50;
 }
 
+/* ── TintGroupRow ───────────────────────────────────────────────────────────── */
+
+.tintGroupRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 48px;
+}
+
+.tintGroupRowLabel {
+  min-width: 72px;
+  padding-top: 40px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c0544a;
+  font-family: 'Roboto', sans-serif;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tintGroupMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.tintGroupSolidsArea {
+  display: grid;
+  grid-template-columns: 8fr 2fr 2fr;
+  margin-bottom: 3px;
+}
+
+.tintGroupSolidsEmpty {
+  /* spacer */
+}
+
+.tintGroupSolidsLabel {
+  text-align: center;
+  font-size: 10px;
+  font-family: 'Roboto', sans-serif;
+  color: #555;
+  border-top: 1px solid #c0544a;
+  padding-top: 3px;
+}
+
+.tintGroupNumbers {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2px;
+  margin-bottom: 3px;
+}
+
+.tintGroupStepNumber {
+  text-align: center;
+  font-size: 9px;
+  font-family: 'Roboto Mono', monospace;
+  color: #aaa;
+}
+
+.tintGroupSwatchRow {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2px;
+}
+
+.tintGroupSwatch {
+  height: 32px;
+  border-radius: 3px;
+  /* background-color is set inline */
+}
+
+.tintGroupCategories {
+  display: grid;
+  grid-template-columns: 4fr 4fr 4fr;
+  margin-top: 6px;
+}
+
+.tintGroupCategoryBg,
+.tintGroupCategoryBorder,
+.tintGroupCategoryHighContrast {
+  text-align: center;
+  font-size: 11px;
+  font-family: 'Roboto', sans-serif;
+  color: #666;
+  border-top: 1px solid #ddd;
+  padding-top: 5px;
+}
+
+/* ── ColorPaletteGroup & ColorPaletteRow ────────────────────────────────────── */
+
+.colorPaletteGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.colorPaletteRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.colorPaletteRowLabel {
+  min-width: 140px;
+  font-size: 12px;
+  font-family: 'Roboto', sans-serif;
+  color: #888;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.colorPaletteSwatches {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  flex: 1;
+  min-width: 0;
+}
+
+.colorPaletteSwatch {
+  height: 28px;
+  /* background-color is set inline; no gap — tiles flush */
+}
+
 /* ── Semantic Spacing Previews ──────────────────────────────────────────────── */
 
 .semanticPreviewInset,

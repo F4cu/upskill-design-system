@@ -301,6 +301,69 @@ export function ColorScaleGroup({ children }: { children: React.ReactNode }) {
   )
 }
 
+export function TintGroupRow({ title, prefix }: { title: string; prefix: string }) {
+  const colors = hueColors(prefix)
+  const steps = Array.from({ length: 12 }, (_, i) => String(i + 1))
+
+  return (
+    <div className={styles.tintGroupRow}>
+      <div className={styles.tintGroupRowLabel}>{title}</div>
+      <div className={styles.tintGroupMain}>
+        <div className={styles.tintGroupSolidsArea}>
+          <div className={styles.tintGroupSolidsEmpty} />
+          <div className={styles.tintGroupSolidsLabel}>Solids</div>
+          <div className={styles.tintGroupSolidsEmpty} />
+        </div>
+        <div className={styles.tintGroupNumbers}>
+          {steps.map(step => (
+            <div key={step} className={styles.tintGroupStepNumber}>
+              {step.padStart(2, '0')}
+            </div>
+          ))}
+        </div>
+        <div className={styles.tintGroupSwatchRow}>
+          {steps.map(step => (
+            <div
+              key={step}
+              className={styles.tintGroupSwatch}
+              style={{ backgroundColor: colors[step] as string }}
+            />
+          ))}
+        </div>
+        <div className={styles.tintGroupCategories}>
+          <div className={styles.tintGroupCategoryBg}>Backgrounds</div>
+          <div className={styles.tintGroupCategoryBorder}>Borders</div>
+          <div className={styles.tintGroupCategoryHighContrast}>High contrast text</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function ColorPaletteRow({ label, prefix }: { label: string; prefix: string }) {
+  const colors = hueColors(prefix)
+  const steps = Array.from({ length: 12 }, (_, i) => String(i + 1))
+
+  return (
+    <div className={styles.colorPaletteRow}>
+      <div className={styles.colorPaletteRowLabel}>{label}</div>
+      <div className={styles.colorPaletteSwatches}>
+        {steps.map(step => (
+          <div
+            key={step}
+            className={styles.colorPaletteSwatch}
+            style={{ backgroundColor: colors[step] as string }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function ColorPaletteGroup({ children }: { children: React.ReactNode }) {
+  return <div className={styles.colorPaletteGroup}>{children}</div>
+}
+
 // ─── Semantic Spacing ─────────────────────────────────────────────────────────
 
 type SemanticSpacingStep = {
