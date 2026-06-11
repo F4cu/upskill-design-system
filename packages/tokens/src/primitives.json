@@ -868,27 +868,27 @@
     }
   },
   "size": {
-    "xs": {
+    "200": {
       "$type": "number",
       "$value": 16
     },
-    "sm": {
+    "300": {
       "$type": "number",
       "$value": 24
     },
-    "md": {
+    "400": {
       "$type": "number",
       "$value": 32
     },
-    "lg": {
+    "500": {
       "$type": "number",
       "$value": 40
     },
-    "xl": {
+    "600": {
       "$type": "number",
       "$value": 48
     },
-    "xxl": {
+    "800": {
       "$type": "number",
       "$value": 64
     }
