@@ -181,3 +181,77 @@
   font-size: 12px;
   color: #555;
 }
+
+.semanticSame {
+  color: #bbb;
+}
+
+.semanticChanged {
+  color: #d15d50;
+}
+
+/* ── Semantic Spacing Previews ──────────────────────────────────────────────── */
+
+.semanticPreviewInset,
+.semanticPreviewInline,
+.semanticPreviewStack {
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Inset: fixed square. Padding IS the inset value. Accent bg fills the padding
+   area; neutral fill = the content region inside the container. */
+.semanticPreviewInset {
+  flex-direction: row;
+  width: 5.5rem;
+  height: 5.5rem;
+  background-color: var(--ds-color-brand-9, #d15d50);
+}
+
+/* Inline: inline-flex so the element shrinks to fill+paddingRight, not cell width.
+   Block flex expands to fill the td and max-width would clamp all rows identically. */
+.semanticPreviewInline {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 5.5rem;
+  max-width: 5.5rem;
+  border: 1px solid #d1cfc9;
+  background-color: var(--ds-color-brand-9, #d15d50);
+}
+
+/* Stack: auto-height grows by bottom-padding (the spacing value).
+   Bordered to frame. Fill = the element above the gap. */
+.semanticPreviewStack {
+  flex-direction: column;
+  align-items: stretch;
+  width: 5.5rem;
+  max-height: 5.5rem;
+  border: 1px solid #d1cfc9;
+  background-color: var(--ds-color-brand-9, #d15d50);
+}
+
+/* Inset fill: expands to fill whatever space remains after padding */
+.semanticPreviewFill {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  background-color: rgb(246, 249, 252);
+}
+
+/* Inline fill: fixed width, stretches full height of the container */
+.semanticPreviewFillInline {
+  flex-shrink: 0;
+  width: 2.5rem;
+  align-self: stretch;
+  background-color: rgb(246, 249, 252);
+}
+
+/* Stack fill: fixed height, stretches full width of the container */
+.semanticPreviewFillStack {
+  flex-shrink: 0;
+  height: 2.5rem;
+  align-self: stretch;
+  background-color: rgb(246, 249, 252);
+}

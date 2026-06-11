@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/addon-docs/blocks'
-import { SpacingTable } from './tokenComponents'
+import { SpacingTable, SemanticSpacingTable } from './tokenComponents'
 
 <Meta title="Foundation/Spacing" />
 
@@ -10,6 +10,30 @@ The spacing scale is built on a **4px base unit** (`space050 = 0.25rem`). All st
 ## Scale
 
 <SpacingTable />
+
+## Semantic spacing
+
+Semantic tokens assign intent to primitive values. Use these in components and layouts rather than raw scale steps — they carry meaning and respond to breakpoints. Tablet and mobile values highlighted in <span style={{color:'#d15d50'}}>red</span> differ from desktop.
+
+Breakpoints: **desktop** ≥ 1440 px · **tablet** ≥ 768 px · **mobile** < 768 px.
+
+### Inline
+
+Horizontal gap between adjacent inline elements — icon-to-label distance, chip gaps, button-group spacing.
+
+<SemanticSpacingTable category="inline" />
+
+### Stack
+
+Vertical gap between stacked block elements — form fields, list items, card grids, section separators.
+
+<SemanticSpacingTable category="stack" />
+
+### Inset
+
+Padding inside a container — card padding, button padding, panel or dialog inset.
+
+<SemanticSpacingTable category="inset" />
 
 ## Usage guidance
 

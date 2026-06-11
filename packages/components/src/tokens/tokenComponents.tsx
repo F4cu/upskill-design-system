@@ -221,6 +221,100 @@ export function ColorScaleGroup({ children }: { children: React.ReactNode }) {
   )
 }
 
+// ─── Semantic Spacing ─────────────────────────────────────────────────────────
+
+type SemanticSpacingStep = {
+  token: string
+  desktop: string
+  tablet: string
+  mobile: string
+}
+
+const INLINE_STEPS: SemanticSpacingStep[] = [
+  { token: 'space.inline.xs',  desktop: '0.25rem', tablet: '0.25rem', mobile: '0.25rem' },
+  { token: 'space.inline.sm',  desktop: '0.5rem',  tablet: '0.5rem',  mobile: '0.5rem'  },
+  { token: 'space.inline.md',  desktop: '1rem',    tablet: '1rem',    mobile: '1rem'    },
+  { token: 'space.inline.lg',  desktop: '1.5rem',  tablet: '1.5rem',  mobile: '1.5rem'  },
+  { token: 'space.inline.xl',  desktop: '2rem',    tablet: '2rem',    mobile: '2rem'    },
+  { token: 'space.inline.xxl', desktop: '3rem',    tablet: '3rem',    mobile: '3rem'    },
+]
+
+const STACK_STEPS: SemanticSpacingStep[] = [
+  { token: 'space.stack.xs',  desktop: '0.25rem', tablet: '0.25rem', mobile: '0.25rem' },
+  { token: 'space.stack.sm',  desktop: '0.5rem',  tablet: '0.5rem',  mobile: '0.5rem'  },
+  { token: 'space.stack.md',  desktop: '1rem',    tablet: '1rem',    mobile: '0.75rem' },
+  { token: 'space.stack.lg',  desktop: '1.5rem',  tablet: '1.5rem',  mobile: '1.5rem'  },
+  { token: 'space.stack.xl',  desktop: '2rem',    tablet: '1.5rem',  mobile: '1rem'    },
+  { token: 'space.stack.xxl', desktop: '2.5rem',  tablet: '2.5rem',  mobile: '2.5rem'  },
+]
+
+const INSET_STEPS: SemanticSpacingStep[] = [
+  { token: 'space.inset.xxs',  desktop: '0.25rem', tablet: '0.25rem', mobile: '0.25rem' },
+  { token: 'space.inset.xs',   desktop: '0.5rem',  tablet: '0.5rem',  mobile: '0.5rem'  },
+  { token: 'space.inset.sm',   desktop: '0.75rem', tablet: '0.75rem', mobile: '0.75rem' },
+  { token: 'space.inset.md',   desktop: '1rem',    tablet: '1rem',    mobile: '1rem'    },
+  { token: 'space.inset.lg',   desktop: '1.25rem', tablet: '1.25rem', mobile: '1.25rem' },
+  { token: 'space.inset.xl',   desktop: '1.5rem',  tablet: '1.5rem',  mobile: '1rem'    },
+  { token: 'space.inset.xxl',  desktop: '2rem',    tablet: '1.5rem',  mobile: '1rem'    },
+  { token: 'space.inset.xxxl', desktop: '3rem',    tablet: '1.5rem',  mobile: '1rem'    },
+]
+
+const SEMANTIC_STEPS = { inline: INLINE_STEPS, stack: STACK_STEPS, inset: INSET_STEPS }
+
+function SemanticPreview({ category, value }: { category: 'inline' | 'stack' | 'inset'; value: string }) {
+  if (category === 'inset') {
+    return (
+      <div className={styles.semanticPreviewInset} style={{ padding: value }}>
+        <div className={styles.semanticPreviewFill} />
+      </div>
+    )
+  }
+  if (category === 'inline') {
+    return (
+      <div className={styles.semanticPreviewInline} style={{ paddingRight: value }}>
+        <div className={styles.semanticPreviewFillInline} />
+      </div>
+    )
+  }
+  return (
+    <div className={styles.semanticPreviewStack} style={{ paddingBottom: value }}>
+      <div className={styles.semanticPreviewFillStack} />
+    </div>
+  )
+}
+
+export function SemanticSpacingTable({ category }: { category: 'inline' | 'stack' | 'inset' }) {
+  const steps = SEMANTIC_STEPS[category]
+  return (
+    <table className={`${styles.colorScaleTable} sb-unstyled`}>
+      <thead>
+        <tr>
+          <th>Token</th>
+          <th>Preview</th>
+          <th>Desktop</th>
+          <th>Tablet</th>
+          <th>Mobile</th>
+        </tr>
+      </thead>
+      <tbody>
+        {steps.map(({ token, desktop, tablet, mobile }) => (
+          <tr key={token}>
+            <td><code className="css-18ueaqc">{token}</code></td>
+            <td><SemanticPreview category={category} value={desktop} /></td>
+            <td className={styles.spacingMonoCell}>{desktop}</td>
+            <td className={`${styles.spacingMonoCell} ${tablet !== desktop ? styles.semanticChanged : styles.semanticSame}`}>
+              {tablet}
+            </td>
+            <td className={`${styles.spacingMonoCell} ${mobile !== desktop ? styles.semanticChanged : styles.semanticSame}`}>
+              {mobile}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
 // ─── Spacing Table ────────────────────────────────────────────────────────────
 
 const SPACE_STEPS: { key: PrimitivesKey; dotPath: string }[] = [
