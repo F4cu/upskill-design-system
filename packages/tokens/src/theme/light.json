@@ -161,11 +161,11 @@
     "background": {
       "neutral-subtle": {
         "$type": "color",
-        "$value": "{color.black.alpha-3}"
+        "$value": "{color.black.alpha.3}"
       },
       "neutral-subtlest": {
         "$type": "color",
-        "$value": "{color.black.alpha-1}"
+        "$value": "{color.black.alpha.1}"
       },
       "transparent": {
         "$type": "color",
@@ -181,7 +181,7 @@
       },
       "neutral-hover": {
         "$type": "color",
-        "$value": "{color.black.alpha-1}"
+        "$value": "{color.black.alpha.1}"
       },
       "button-hover": {
         "$type": "color",
@@ -202,7 +202,7 @@
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.sand.dark-2}"
+          "$value": "{color.sand.dark.2}"
         },
         "$root": {
           "$type": "color",
@@ -252,7 +252,7 @@
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.sand.dark-2}"
+          "$value": "{color.sand.dark.2}"
         },
         "$root": {
           "$type": "color",
@@ -283,7 +283,7 @@
       },
       "accent-inverted": {
         "$type": "color",
-        "$value": "{color.teal.dark-11}"
+        "$value": "{color.teal.dark.11}"
       },
       "link": {
         "$type": "color",
@@ -331,15 +331,15 @@
     "border": {
       "subtle": {
         "$type": "color",
-        "$value": "{color.black.alpha-3}"
+        "$value": "{color.black.alpha.3}"
       },
       "strong": {
         "$type": "color",
-        "$value": "{color.black.alpha-5}"
+        "$value": "{color.black.alpha.5}"
       },
       "input": {
         "$type": "color",
-        "$value": "{color.black.alpha-5}"
+        "$value": "{color.black.alpha.5}"
       },
       "input-hover": {
         "$type": "color",
@@ -363,7 +363,7 @@
       },
       "inverted": {
         "$type": "color",
-        "$value": "{color.white.alpha-2}"
+        "$value": "{color.white.alpha.2}"
       },
       "$root": {
         "$type": "color",

@@ -11,7 +11,10 @@
     "./css/device.desktop": "./dist/css/device.desktop.css",
     "./css/device.tablet": "./dist/css/device.tablet.css",
     "./css/device.mobile": "./dist/css/device.mobile.css",
-    "./js/primitives": "./dist/js/primitives.js"
+    "./js/primitives": {
+      "types": "./dist/js/primitives.d.ts",
+      "default": "./dist/js/primitives.js"
+    }
   },
   "files": [
     "src/",

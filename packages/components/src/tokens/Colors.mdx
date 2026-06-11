@@ -1,7 +1,7 @@
-import { ColorPalette, ColorItem, Meta } from '@storybook/addon-docs/blocks'
-import { hueColors } from './tokenHelpers'
+import { Meta } from '@storybook/addon-docs/blocks'
+import { ColorScaleTable, ColorScaleGroup } from './tokenComponents'
 
-<Meta title="Tokens/Colors" />
+<Meta title="Foundation/Colors" />
 
 # Colors
 
@@ -11,62 +11,62 @@ Each hue has three sub-scales: a light scale (1–12, backgrounds → text), a d
 
 The brand hue. Use steps 8–10 for interactive elements and CTAs, steps 1–3 for tinted backgrounds.
 
-<ColorPalette>
-  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorTerracotta')} />
-  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorTerracottaDark')} />
-  <ColorItem title="Alpha" subtitle="1–12" colors={hueColors('colorTerracottaAlpha')} />
-</ColorPalette>
+<ColorScaleGroup>
+  <ColorScaleTable title="Light (1–12)" prefix="colorTerracotta" basePath="color.terracotta" />
+  <ColorScaleTable title="Dark (1–12)" prefix="colorTerracottaDark" basePath="color.terracotta" stepPrefix="dark" />
+  <ColorScaleTable title="Alpha (1–12)" prefix="colorTerracottaAlpha" basePath="color.terracotta" stepPrefix="alpha" />
+</ColorScaleGroup>
 
 ## Cyan
 
-<ColorPalette>
-  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorCyan')} />
-</ColorPalette>
+<ColorScaleGroup>
+  <ColorScaleTable title="Light (1–12)" prefix="colorCyan" basePath="color.cyan" />
+</ColorScaleGroup>
 
 ## Teal
 
-<ColorPalette>
-  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorTeal')} />
-  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorTealDark')} />
-</ColorPalette>
+<ColorScaleGroup>
+  <ColorScaleTable title="Light (1–12)" prefix="colorTeal" basePath="color.teal" />
+  <ColorScaleTable title="Dark (1–12)" prefix="colorTealDark" basePath="color.teal" stepPrefix="dark" />
+</ColorScaleGroup>
 
 ## Gold
 
-<ColorPalette>
-  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorGold')} />
-  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorGoldDark')} />
-</ColorPalette>
+<ColorScaleGroup>
+  <ColorScaleTable title="Light (1–12)" prefix="colorGold" basePath="color.gold" />
+  <ColorScaleTable title="Dark (1–12)" prefix="colorGoldDark" basePath="color.gold" stepPrefix="dark" />
+</ColorScaleGroup>
 
 ## Sand
 
-<ColorPalette>
-  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorSand')} />
-  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorSandDark')} />
-</ColorPalette>
+<ColorScaleGroup>
+  <ColorScaleTable title="Light (1–12)" prefix="colorSand" basePath="color.sand" />
+  <ColorScaleTable title="Dark (1–12)" prefix="colorSandDark" basePath="color.sand" stepPrefix="dark" />
+</ColorScaleGroup>
 
 ## Grey
 
 Used for neutral UI surfaces, borders, and text. Prefer semantic aliases from the theme layer over reaching directly for a grey step.
 
-<ColorPalette>
-  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorGrey')} />
-  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorGreyDark')} />
-</ColorPalette>
+<ColorScaleGroup>
+  <ColorScaleTable title="Light (1–12)" prefix="colorGrey" basePath="color.grey" />
+  <ColorScaleTable title="Dark (1–12)" prefix="colorGreyDark" basePath="color.grey" stepPrefix="dark" />
+</ColorScaleGroup>
 
 ## Amber
 
 Reserved for warning states.
 
-<ColorPalette>
-  <ColorItem title="Light" subtitle="1–12" colors={hueColors('colorAmber')} />
-  <ColorItem title="Dark" subtitle="1–12" colors={hueColors('colorAmberDark')} />
-</ColorPalette>
+<ColorScaleGroup>
+  <ColorScaleTable title="Light (1–12)" prefix="colorAmber" basePath="color.amber" />
+  <ColorScaleTable title="Dark (1–12)" prefix="colorAmberDark" basePath="color.amber" stepPrefix="dark" />
+</ColorScaleGroup>
 
 ## Black / White Alpha
 
 Transparent overlays. Use black alpha for shadows and scrim overlays on light surfaces; white alpha on dark surfaces.
 
-<ColorPalette>
-  <ColorItem title="Black Alpha" subtitle="1–12" colors={hueColors('colorBlackAlpha')} />
-  <ColorItem title="White Alpha" subtitle="1–12" colors={hueColors('colorWhiteAlpha')} />
-</ColorPalette>
+<ColorScaleGroup>
+  <ColorScaleTable title="Black Alpha (1–12)" prefix="colorBlackAlpha" basePath="color.black" stepPrefix="alpha" />
+  <ColorScaleTable title="White Alpha (1–12)" prefix="colorWhiteAlpha" basePath="color.white" stepPrefix="alpha" />
+</ColorScaleGroup>

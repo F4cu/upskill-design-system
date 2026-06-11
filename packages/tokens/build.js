@@ -97,6 +97,14 @@ StyleDictionary.registerTransformGroup({
   ],
 })
 
+StyleDictionary.registerFormat({
+  name: 'typescript/es6-declarations',
+  format: ({ dictionary }) => {
+    const lines = dictionary.allTokens.map(t => `export declare const ${t.name}: string;`)
+    return '/**\n * Do not edit directly, this file was auto-generated.\n */\n\n' + lines.join('\n') + '\n'
+  },
+})
+
 const shared = {
   usesDtcg: true,
   preprocessors: ['upskill/rename-root'],
@@ -121,10 +129,16 @@ const primitivesSD = new StyleDictionary({
     js: {
       transformGroup: 'upskill/js',
       buildPath: 'dist/js/',
-      files: [{
-        destination: 'primitives.js',
-        format: 'javascript/es6',
-      }],
+      files: [
+        {
+          destination: 'primitives.js',
+          format: 'javascript/es6',
+        },
+        {
+          destination: 'primitives.d.ts',
+          format: 'typescript/es6-declarations',
+        },
+      ],
     },
   },
 })

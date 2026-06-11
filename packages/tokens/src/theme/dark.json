@@ -3,51 +3,51 @@
     "brand": {
       "1": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-1}"
+        "$value": "{color.terracotta.dark.1}"
       },
       "2": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-2}"
+        "$value": "{color.terracotta.dark.2}"
       },
       "3": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-3}"
+        "$value": "{color.terracotta.dark.3}"
       },
       "4": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-4}"
+        "$value": "{color.terracotta.dark.4}"
       },
       "5": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-5}"
+        "$value": "{color.terracotta.dark.5}"
       },
       "6": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-6}"
+        "$value": "{color.terracotta.dark.6}"
       },
       "7": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-7}"
+        "$value": "{color.terracotta.dark.7}"
       },
       "8": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-8}"
+        "$value": "{color.terracotta.dark.8}"
       },
       "9": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-9}"
+        "$value": "{color.terracotta.dark.9}"
       },
       "10": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-10}"
+        "$value": "{color.terracotta.dark.10}"
       },
       "11": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-11}"
+        "$value": "{color.terracotta.dark.11}"
       },
       "12": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-12}"
+        "$value": "{color.terracotta.dark.12}"
       },
       "$root": {
         "$type": "color",
@@ -57,51 +57,51 @@
     "accent": {
       "1": {
         "$type": "color",
-        "$value": "{color.teal.dark-1}"
+        "$value": "{color.teal.dark.1}"
       },
       "2": {
         "$type": "color",
-        "$value": "{color.teal.dark-2}"
+        "$value": "{color.teal.dark.2}"
       },
       "3": {
         "$type": "color",
-        "$value": "{color.teal.dark-3}"
+        "$value": "{color.teal.dark.3}"
       },
       "4": {
         "$type": "color",
-        "$value": "{color.teal.dark-4}"
+        "$value": "{color.teal.dark.4}"
       },
       "5": {
         "$type": "color",
-        "$value": "{color.teal.dark-5}"
+        "$value": "{color.teal.dark.5}"
       },
       "6": {
         "$type": "color",
-        "$value": "{color.teal.dark-6}"
+        "$value": "{color.teal.dark.6}"
       },
       "7": {
         "$type": "color",
-        "$value": "{color.teal.dark-7}"
+        "$value": "{color.teal.dark.7}"
       },
       "8": {
         "$type": "color",
-        "$value": "{color.teal.dark-8}"
+        "$value": "{color.teal.dark.8}"
       },
       "9": {
         "$type": "color",
-        "$value": "{color.teal.dark-9}"
+        "$value": "{color.teal.dark.9}"
       },
       "10": {
         "$type": "color",
-        "$value": "{color.teal.dark-10}"
+        "$value": "{color.teal.dark.10}"
       },
       "11": {
         "$type": "color",
-        "$value": "{color.teal.dark-11}"
+        "$value": "{color.teal.dark.11}"
       },
       "12": {
         "$type": "color",
-        "$value": "{color.teal.dark-12}"
+        "$value": "{color.teal.dark.12}"
       },
       "$root": {
         "$type": "color",
@@ -111,61 +111,61 @@
     "neutral": {
       "1": {
         "$type": "color",
-        "$value": "{color.sand.dark-1}"
+        "$value": "{color.sand.dark.1}"
       },
       "2": {
         "$type": "color",
-        "$value": "{color.sand.dark-2}"
+        "$value": "{color.sand.dark.2}"
       },
       "3": {
         "$type": "color",
-        "$value": "{color.sand.dark-3}"
+        "$value": "{color.sand.dark.3}"
       },
       "4": {
         "$type": "color",
-        "$value": "{color.sand.dark-4}"
+        "$value": "{color.sand.dark.4}"
       },
       "5": {
         "$type": "color",
-        "$value": "{color.sand.dark-5}"
+        "$value": "{color.sand.dark.5}"
       },
       "6": {
         "$type": "color",
-        "$value": "{color.sand.dark-6}"
+        "$value": "{color.sand.dark.6}"
       },
       "7": {
         "$type": "color",
-        "$value": "{color.sand.dark-7}"
+        "$value": "{color.sand.dark.7}"
       },
       "8": {
         "$type": "color",
-        "$value": "{color.sand.dark-8}"
+        "$value": "{color.sand.dark.8}"
       },
       "9": {
         "$type": "color",
-        "$value": "{color.sand.dark-9}"
+        "$value": "{color.sand.dark.9}"
       },
       "10": {
         "$type": "color",
-        "$value": "{color.sand.dark-10}"
+        "$value": "{color.sand.dark.10}"
       },
       "11": {
         "$type": "color",
-        "$value": "{color.sand.dark-11}"
+        "$value": "{color.sand.dark.11}"
       },
       "12": {
         "$type": "color",
-        "$value": "{color.sand.dark-12}"
+        "$value": "{color.sand.dark.12}"
       }
     },
     "background": {
       "neutral-subtle": {
         "$type": "color",
-        "$value": "{color.white.alpha-4}"
+        "$value": "{color.white.alpha.4}"
       },
       "neutral-subtlest": {
         "$type": "color",
-        "$value": "{color.white.alpha-1}"
+        "$value": "{color.white.alpha.1}"
       },
       "transparent": {
         "$type": "color",
@@ -181,7 +181,7 @@
       },
       "neutral-hover": {
         "$type": "color",
-        "$value": "{color.white.alpha-1}"
+        "$value": "{color.white.alpha.1}"
       },
       "button-hover": {
         "$type": "color",
@@ -194,65 +194,65 @@
       "container": {
         "page": {
           "$type": "color",
-          "$value": "{color.sand.dark-2}"
+          "$value": "{color.sand.dark.2}"
         },
         "elevated": {
           "$type": "color",
-          "$value": "{color.sand.dark-2}"
+          "$value": "{color.sand.dark.2}"
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.sand.dark-1}"
+          "$value": "{color.sand.dark.1}"
         },
         "$root": {
           "$type": "color",
-          "$value": "{color.sand.dark-1}"
+          "$value": "{color.sand.dark.1}"
         }
       },
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.dark-5}"
+          "$value": "{color.terracotta.dark.5}"
         },
         "success": {
           "$type": "color",
-          "$value": "{color.teal.dark-5}"
+          "$value": "{color.teal.dark.5}"
         },
         "warning": {
           "$type": "color",
-          "$value": "{color.amber.dark-5}"
+          "$value": "{color.amber.dark.5}"
         }
       },
       "award": {
         "gold": {
           "$type": "color",
-          "$value": "{color.gold.dark-9}"
+          "$value": "{color.gold.dark.9}"
         },
         "silver": {
           "$type": "color",
-          "$value": "{color.grey.dark-9}"
+          "$value": "{color.grey.dark.9}"
         },
         "copper": {
           "$type": "color",
-          "$value": "{color.terracotta.dark-8}"
+          "$value": "{color.terracotta.dark.8}"
         }
       },
       "button": {
         "outlined-hover": {
           "$type": "color",
-          "$value": "{color.sand.dark-2}"
+          "$value": "{color.sand.dark.2}"
         },
         "default": {
           "$type": "color",
-          "$value": "{color.sand.dark-1}"
+          "$value": "{color.sand.dark.1}"
         },
         "elevated": {
           "$type": "color",
-          "$value": "{color.sand.dark-2}"
+          "$value": "{color.sand.dark.2}"
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.sand.dark-1}"
+          "$value": "{color.sand.dark.1}"
         },
         "$root": {
           "$type": "color",
@@ -283,7 +283,7 @@
       },
       "accent-inverted": {
         "$type": "color",
-        "$value": "{color.teal.dark-11}"
+        "$value": "{color.teal.dark.11}"
       },
       "link": {
         "$type": "color",
@@ -316,30 +316,30 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.dark-11}"
+          "$value": "{color.terracotta.dark.11}"
         },
         "warning": {
           "$type": "color",
-          "$value": "{color.amber.dark-11}"
+          "$value": "{color.amber.dark.11}"
         },
         "success": {
           "$type": "color",
-          "$value": "{color.teal.dark-11}"
+          "$value": "{color.teal.dark.11}"
         }
       }
     },
     "border": {
       "subtle": {
         "$type": "color",
-        "$value": "{color.white.alpha-4}"
+        "$value": "{color.white.alpha.4}"
       },
       "strong": {
         "$type": "color",
-        "$value": "{color.white.alpha-5}"
+        "$value": "{color.white.alpha.5}"
       },
       "input": {
         "$type": "color",
-        "$value": "{color.white.alpha-5}"
+        "$value": "{color.white.alpha.5}"
       },
       "input-hover": {
         "$type": "color",
@@ -363,7 +363,7 @@
       },
       "inverted": {
         "$type": "color",
-        "$value": "{color.white.alpha-2}"
+        "$value": "{color.white.alpha.2}"
       },
       "$root": {
         "$type": "color",
@@ -372,15 +372,15 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.dark-9}"
+          "$value": "{color.terracotta.dark.9}"
         },
         "success": {
           "$type": "color",
-          "$value": "{color.teal.dark-9}"
+          "$value": "{color.teal.dark.9}"
         },
         "warning": {
           "$type": "color",
-          "$value": "{color.amber.dark-6}"
+          "$value": "{color.amber.dark.6}"
         }
       }
     },
@@ -407,7 +407,7 @@
       },
       "brand": {
         "$type": "color",
-        "$value": "{color.terracotta.dark-9}"
+        "$value": "{color.terracotta.dark.9}"
       },
       "$root": {
         "$type": "color",
@@ -416,11 +416,11 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.dark-9}"
+          "$value": "{color.terracotta.dark.9}"
         },
         "success": {
           "$type": "color",
-          "$value": "{color.teal.dark-9}"
+          "$value": "{color.teal.dark.9}"
         },
         "warning": {
           "$type": "color",

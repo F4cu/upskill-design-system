@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react-vite'
 import { withThemeByDataAttribute } from '@storybook/addon-themes'
+import { upskillTheme } from './theme'
 import '../src/styles/tokens.css'
 import '../src/styles/reset.css'
 
@@ -15,6 +16,9 @@ const preview: Preview = {
     }),
   ],
   parameters: {
+    docs: {
+      theme: upskillTheme,
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
