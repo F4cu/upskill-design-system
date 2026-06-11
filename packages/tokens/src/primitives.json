@@ -986,10 +986,6 @@
       }
     },
     "font-family": {
-      "Open Sans": {
-        "$type": "string",
-        "$value": "Open Sans"
-      },
       "Roboto": {
         "$type": "string",
         "$value": "Roboto"

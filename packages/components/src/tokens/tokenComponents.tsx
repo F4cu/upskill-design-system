@@ -31,42 +31,122 @@ export function CopyToken({ value, children }: { value: string; children: React.
   )
 }
 
-// ─── Typography Tables ────────────────────────────────────────────────────────
+// ─── Font Family Grid ─────────────────────────────────────────────────────────
 
-const FONT_SIZE_STEPS: { key: PrimitivesKey; dotPath: string }[] = [
-  { key: 'fontSize1',  dotPath: 'font.size.1'  },
-  { key: 'fontSize2',  dotPath: 'font.size.2'  },
-  { key: 'fontSize3',  dotPath: 'font.size.3'  },
-  { key: 'fontSize4',  dotPath: 'font.size.4'  },
-  { key: 'fontSize5',  dotPath: 'font.size.5'  },
-  { key: 'fontSize6',  dotPath: 'font.size.6'  },
-  { key: 'fontSize7',  dotPath: 'font.size.7'  },
-  { key: 'fontSize8',  dotPath: 'font.size.8'  },
-  { key: 'fontSize9',  dotPath: 'font.size.9'  },
-  { key: 'fontSize10', dotPath: 'font.size.10' },
-  { key: 'fontSize11', dotPath: 'font.size.11' },
+const FONT_FAMILY_STEPS: { key: PrimitivesKey; dotPath: string; role: string }[] = [
+  { key: 'fontFontFamilyPlayfairDisplay', dotPath: 'font.font-family.Playfair Display', role: 'Headline / Display' },
+  { key: 'fontFontFamilyRoboto',          dotPath: 'font.font-family.Roboto',           role: 'Body / UI' },
 ]
 
-export function FontSizeTable() {
+export function FontFamilyGrid() {
+  return (
+    <div className={styles.fontFamilyGrid}>
+      {FONT_FAMILY_STEPS.map(({ key, dotPath, role }) => {
+        const value = primitives[key] as string
+        return (
+          <div key={key} className={styles.fontFamilyCard}>
+            <div className={styles.fontFamilyPreviewLarge} style={{ fontFamily: `'${value}', sans-serif` }}>
+              Aa
+            </div>
+            <div className={styles.fontFamilySample} style={{ fontFamily: `'${value}', sans-serif` }}>
+              The quick brown fox jumps over the lazy dog
+            </div>
+            <div className={styles.fontFamilyMeta}>
+              <span className={styles.fontFamilyName}>{value}</span>
+              <span className={styles.fontFamilyRole}>{role}</span>
+              <code className="css-18ueaqc">{dotPath}</code>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ─── Typescale Table ─────────────────────────────────────────────────────────
+
+const FONT_SIZE_MAP: Record<string, string> = {
+  'font.size.1':  primitives.fontSize1  as string,
+  'font.size.2':  primitives.fontSize2  as string,
+  'font.size.3':  primitives.fontSize3  as string,
+  'font.size.4':  primitives.fontSize4  as string,
+  'font.size.5':  primitives.fontSize5  as string,
+  'font.size.6':  primitives.fontSize6  as string,
+  'font.size.7':  primitives.fontSize7  as string,
+  'font.size.8':  primitives.fontSize8  as string,
+  'font.size.9':  primitives.fontSize9  as string,
+  'font.size.10': primitives.fontSize10 as string,
+  'font.size.11': primitives.fontSize11 as string,
+}
+
+type TypescaleRow = {
+  label: string
+  fontFamily: string
+  fontFamilyLabel: string
+  fontWeight: number
+  fontWeightLabel: string
+  desktop: string
+  tablet: string
+  mobile: string
+}
+
+const TYPESCALE_ROWS: TypescaleRow[] = [
+  { label: 'Body Small',     fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular',  desktop: 'font.size.2',  tablet: 'font.size.2',  mobile: 'font.size.2'  },
+  { label: 'Body Default',   fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular',  desktop: 'font.size.3',  tablet: 'font.size.3',  mobile: 'font.size.3'  },
+  { label: 'Title Small',    fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 500, fontWeightLabel: 'Medium',   desktop: 'font.size.4',  tablet: 'font.size.4',  mobile: 'font.size.4'  },
+  { label: 'Subheader',      fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 600, fontWeightLabel: 'Semibold', desktop: 'font.size.6',  tablet: 'font.size.5',  mobile: 'font.size.5'  },
+  { label: 'Header',         fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 700, fontWeightLabel: 'Bold',     desktop: 'font.size.8',  tablet: 'font.size.6',  mobile: 'font.size.6'  },
+  { label: 'Header Styled',  fontFamily: "'Playfair Display', serif",     fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium',   desktop: 'font.size.9',  tablet: 'font.size.8',  mobile: 'font.size.7'  },
+  { label: 'Display',        fontFamily: "'Playfair Display', serif",     fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium',   desktop: 'font.size.11', tablet: 'font.size.10', mobile: 'font.size.9'  },
+]
+
+function TypescaleSizeCell({ token, state }: { token: string; state: 'normal' | 'dimmed' | 'changed' }) {
+  const value = FONT_SIZE_MAP[token]
+  const cls = state === 'dimmed' ? styles.typescaleSizeDimmed
+            : state === 'changed' ? styles.typescaleSizeChanged
+            : styles.typescaleSize
+  return (
+    <div className={cls}>
+      <code className="css-18ueaqc">{token}</code>
+      <span className={styles.typescaleSizeValue}> / {remToPx(value)}</span>
+    </div>
+  )
+}
+
+export function TypescaleTable() {
   return (
     <table className={`${styles.colorScaleTable} sb-unstyled`}>
       <thead>
         <tr>
-          <th>Token</th>
           <th>Preview</th>
-          <th>Rem</th>
-          <th>Px</th>
+          <th>Font</th>
+          <th>Desktop</th>
+          <th>Tablet</th>
+          <th>Mobile</th>
         </tr>
       </thead>
       <tbody>
-        {FONT_SIZE_STEPS.map(({ key, dotPath }) => {
-          const value = primitives[key] as string
+        {TYPESCALE_ROWS.map(({ label, fontFamily, fontFamilyLabel, fontWeight, fontWeightLabel, desktop, tablet, mobile }) => {
+          const desktopValue = FONT_SIZE_MAP[desktop]
           return (
-            <tr key={key}>
-              <td><code className="css-18ueaqc">{dotPath}</code></td>
-              <td className={styles.typographyPreview} style={{ fontSize: value }}>The quick brown fox</td>
-              <td className={styles.spacingMonoCell}>{value}</td>
-              <td className={styles.spacingMonoCell}>{remToPx(value)}</td>
+            <tr key={label}>
+              <td>
+                <div
+                  className={styles.typescalePreview}
+                  style={{ fontFamily, fontWeight, fontSize: desktopValue, lineHeight: 1.2 }}
+                >
+                  {label}
+                </div>
+              </td>
+              <td>
+                <div className={styles.typescaleFont}>
+                  <span className={styles.typescaleFontName}>{fontFamilyLabel}</span>
+                  <span className={styles.typescaleFontWeight}>{fontWeightLabel}</span>
+                </div>
+              </td>
+              <td><TypescaleSizeCell token={desktop} state="normal" /></td>
+              <td><TypescaleSizeCell token={tablet}  state={tablet === desktop ? 'dimmed' : 'changed'} /></td>
+              <td><TypescaleSizeCell token={mobile}  state={mobile === desktop ? 'dimmed' : 'changed'} /></td>
             </tr>
           )
         })}
