@@ -23,10 +23,10 @@ Progress tracker for the three-phase build-out. Check items off as they land on 
 
 - [x] Define component metadata schema (JSON/YAML per component: purpose, variants, relationships, anti-patterns) — must land before any component is built
 - [ ] Audit semantic token naming — tokens should describe intent (`color.surface-default`) not raw scale positions
-- [ ] Remove Figma-artifact tokens from device layer — `layout.headerLayout`, `layout.min-width.column`, `layout.min-height.slider` have no CSS meaning and were exported by accident
+- [x] Remove Figma-artifact tokens from device layer — `layout.headerLayout` deleted (0 usages). `layout.min-width.column` (32 usages) and `layout.min-height.slider` (8 usages) kept: they are actively bound in Figma and will move to component CSS Modules when those components are built in Phase 1.7
 - [x] ADR: layout tokens = values (spacing, grid config), not CSS properties — clarify the rule so future tokens land in the right place
 - [x] ADR: `space` vs `size` — `space` is for spacing (gap, padding, margin); `size` is for component dimensions (icon, avatar). Overlapping value ranges need a clear rule.
-- [ ] Review `space.inline` duplication across breakpoints — values are identical in all three device files; decide if that is intentional or if inline spacing should only live in the `:root` baseline
+- [x] Review `space.inline` duplication across breakpoints — values are identical in all three device files; decide if that is intentional or if inline spacing should only live in the `:root` baseline
 
 ---
 

@@ -12,6 +12,7 @@
     "storybook": "npm run storybook -w @upskill/components",
     "build:storybook": "npm run build:storybook -w @upskill/components",
     "sync:tokens:push": "node scripts/airtable-sync.js push:primitives",
-    "sync:semantic:push": "node scripts/airtable-sync.js push:semantic"
+    "sync:semantic:push": "node scripts/airtable-sync.js push:semantic",
+    "sync:device:push": "node scripts/airtable-sync.js push:device"
   }
 }

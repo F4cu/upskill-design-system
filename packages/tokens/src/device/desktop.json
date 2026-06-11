@@ -106,10 +106,6 @@
     }
   },
   "layout": {
-    "headerLayout": {
-      "$type": "string",
-      "$value": "Desktop"
-    },
     "min-width": {
       "column": {
         "$type": "number",

@@ -11,11 +11,15 @@ const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID ?? "appBfY2arkReKQNit";
 
 const PRIMITIVES_TABLE = "Primitive tokens";
 const SEMANTIC_TABLE = "Semantic tokens";
+const DEVICE_TABLE = "Device tokens";
 
 const PATHS = {
   primitives: path.resolve(__dirname, "../packages/tokens/src/primitives.json"),
   light: path.resolve(__dirname, "../packages/tokens/src/theme/light.json"),
   dark: path.resolve(__dirname, "../packages/tokens/src/theme/dark.json"),
+  desktop: path.resolve(__dirname, "../packages/tokens/src/device/desktop.json"),
+  tablet: path.resolve(__dirname, "../packages/tokens/src/device/tablet.json"),
+  mobile: path.resolve(__dirname, "../packages/tokens/src/device/mobile.json"),
 };
 
 const PRIMITIVE_FIELDS = {
@@ -138,6 +142,36 @@ async function upsertRecords(tableName, mergeField, records, toFields) {
   }
 }
 
+// --- Device tokens ---
+
+function cleanDevice(tokens) {
+  const cleaned = { ...tokens };
+  if (cleaned.font) {
+    const { weight: _w, ...rest } = cleaned.font;
+    cleaned.font = rest;
+  }
+  return cleaned;
+}
+
+function flattenDevice(node, prefix = "") {
+  const records = [];
+  for (const [key, val] of Object.entries(node)) {
+    const tokenPath = prefix ? `${prefix}.${key}` : key;
+    if (val.$type && val.$value !== undefined) {
+      records.push({ path: tokenPath, alias: String(val.$value) });
+    } else if (typeof val === "object" && val !== null) {
+      records.push(...flattenDevice(val, tokenPath));
+    }
+  }
+  return records;
+}
+
+function buildDeviceMap(tokens) {
+  return Object.fromEntries(
+    flattenDevice(tokens).map((r) => [r.path, r.alias])
+  );
+}
+
 // --- Commands ---
 
 async function pushPrimitives() {
@@ -172,11 +206,48 @@ async function pushSemantic() {
   console.log("Done.");
 }
 
+async function pushDevice() {
+  console.log("Pushing device tokens → Airtable…");
+  const primitives = JSON.parse(fs.readFileSync(PATHS.primitives, "utf8"));
+  const desktop = buildDeviceMap(cleanDevice(JSON.parse(fs.readFileSync(PATHS.desktop, "utf8"))));
+  const tablet  = buildDeviceMap(cleanDevice(JSON.parse(fs.readFileSync(PATHS.tablet, "utf8"))));
+  const mobile  = buildDeviceMap(cleanDevice(JSON.parse(fs.readFileSync(PATHS.mobile, "utf8"))));
+
+  const records = Object.entries(desktop).map(([tokenPath, desktopAlias]) => {
+    const tabletAlias  = tablet[tokenPath]  ?? desktopAlias;
+    const mobileAlias  = mobile[tokenPath]  ?? desktopAlias;
+    return {
+      token: tokenPath,
+      group: tokenPath.split(".")[0],
+      desktopAlias,
+      desktopValue: resolveAlias(desktopAlias, {}, primitives),
+      tabletAlias,
+      tabletValue: resolveAlias(tabletAlias, {}, primitives),
+      mobileAlias,
+      mobileValue: resolveAlias(mobileAlias, {}, primitives),
+    };
+  });
+
+  console.log(`  ${records.length} device tokens found`);
+  await upsertRecords(DEVICE_TABLE, "Token", records, (r) => ({
+    "Token":          r.token,
+    "Group":          r.group,
+    "Desktop alias":  r.desktopAlias,
+    "Desktop value":  r.desktopValue,
+    "Tablet alias":   r.tabletAlias,
+    "Tablet value":   r.tabletValue,
+    "Mobile alias":   r.mobileAlias,
+    "Mobile value":   r.mobileValue,
+  }));
+  console.log("Done.");
+}
+
 // --- Entry point ---
 
 const COMMANDS = {
   "push:primitives": pushPrimitives,
   "push:semantic": pushSemantic,
+  "push:device": pushDevice,
 };
 
 async function main() {

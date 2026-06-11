@@ -1,31 +1,5 @@
 {
   "space": {
-    "inline": {
-      "xs": {
-        "$type": "number",
-        "$value": "{space.050}"
-      },
-      "sm": {
-        "$type": "number",
-        "$value": "{space.100}"
-      },
-      "md": {
-        "$type": "number",
-        "$value": "{space.200}"
-      },
-      "lg": {
-        "$type": "number",
-        "$value": "{space.300}"
-      },
-      "xl": {
-        "$type": "number",
-        "$value": "{space.400}"
-      },
-      "xxl": {
-        "$type": "number",
-        "$value": "{space.600}"
-      }
-    },
     "stack": {
       "xs": {
         "$type": "number",
@@ -106,10 +80,6 @@
     }
   },
   "layout": {
-    "headerLayout": {
-      "$type": "string",
-      "$value": "Tablet"
-    },
     "min-width": {
       "column": {
         "$type": "number",
