@@ -1,8 +1,5 @@
+/* @import must precede all other rules — theme.dark last so its [data-theme="dark"] block wins */
 @import '@upskill/tokens/css/primitives';
+@import '@upskill/tokens/css/device';
 @import '@upskill/tokens/css/theme.light';
-
-[data-theme='dark'] {
-  /* dark theme vars are already scoped to [data-theme="dark"] in the import below */
-}
-
 @import '@upskill/tokens/css/theme.dark';

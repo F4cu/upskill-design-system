@@ -2,22 +2,21 @@
 
 ## Project purpose
 
-A learning-first design system. The goal is hands-on experience with the full token pipeline stack: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components. Secondary goals include integrating GitHub automation, Airtable as a token dictionary / documentation layer, and eventually agentic loops that keep tokens, docs, and components in sync.
+A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to three defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
 
-The roadmap has three phases:
-1. **Infrastructure** — token pipeline, Style Dictionary, monorepo wiring, CI/CD skeleton, Figma/Airtable integrations
-2. **Automation** — GitHub Actions for token sync, Airtable webhooks, PR bots, changelog generation
-3. **Agentic loops** — Claude-driven flows for token drift detection, documentation generation, component scaffolding
+Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and exit conditions.
 
 ## Repository layout
 
-npm workspaces monorepo. Two packages today, more may follow.
+npm workspaces monorepo.
 
 ```
 upskill-design-system/
 ├── packages/
-│   ├── tokens/       @upskill/tokens  — W3C DTCG JSON, Style Dictionary build (planned)
-│   └── components/   @upskill/components  — coded components, depends on tokens
+│   ├── tokens/       @upskill/tokens — W3C DTCG JSON → Style Dictionary → CSS + JS/TS outputs
+│   └── components/   @upskill/components — React + Vite + TS, Storybook, CSS Modules
+├── scripts/          airtable-sync.js and other repo-level automation
+├── .mcp.json         MCP server config (see "MCP tools" before using any of them)
 └── package.json      workspace root, shared scripts
 ```
 
@@ -59,63 +58,77 @@ Current hues: `terracotta` (brand), `cyan`, `gold`, `teal`, `sand`, `grey`, `bla
 
 Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never use fixed px values — the ratio adapts to any font size automatically.
 
-## Style Dictionary build (planned)
+## Style Dictionary build (built)
 
-The `@upskill/tokens` build step will use Style Dictionary to transform DTCG tokens into:
-- CSS custom properties (dimensions converted to `rem`)
+`npm run build:tokens` transforms DTCG source into:
+- CSS custom properties — dimensions converted to `rem`; desktop device tokens land in `:root`, tablet/mobile are wrapped in `@media` blocks in a single CSS file
 - JS/TS constants
 
-Config will live at `packages/tokens/style-dictionary.config.js`. Until then, `npm run build:tokens` prints a placeholder.
+Config: `packages/tokens/style-dictionary.config.js`. Custom transforms in place: px→rem, font-weight string→numeric, `$root` rename, media query combiner. When changing token structure, run the build and check both outputs before committing — components only ever consume the built output, never source JSON.
 
 ## Figma sync
 
-Tokens are exported from Figma variables (Variables REST API or plugin). The cleanup step:
+Primitives are exported from Figma variables. The cleanup step:
 - Strips `$extensions` blocks entirely
 - Converts Figma sRGB component objects → hex strings
 - Preserves alias references in `{path.to.token}` format
 
-Do not commit `$extensions` to source. If a Figma export lands them in, strip before committing.
+Do not commit `$extensions` to source. If a Figma export lands them in, strip before committing. Before replacing `primitives.json`, run the Figma token audit (see "Agentic moments") — never overwrite primitives without diffing against current usage.
 
-## Integrations (planned)
+## Integrations
 
-| Tool | Role |
-|---|---|
-| **Figma** | Source of truth for primitives. Export → clean → commit. |
-| **Airtable** | Token inventory and governance layer. Each token gets a record tracking ownership, status, usage guidelines, and change history. Distinct from Style Dictionary — Airtable is for people (who owns this token, is it deprecated?), not for builds. |
-| **GitHub Actions** | CI for token validation, automated Airtable sync on merge, PR comments with token diffs. |
-| **Style Dictionary** | Build system: DTCG JSON → CSS custom properties, JS/TS constants. |
-| **Storybook** | Component documentation, visual playground, token showcase, and visual regression baseline. |
+| Tool | Role | Status |
+|---|---|---|
+| **Style Dictionary** | Build system: DTCG JSON → CSS custom properties, JS/TS constants. Custom transforms for rem, font-weight, `$root`, media queries. | Built |
+| **Storybook** | Component documentation, token showcase (MDX stories: colors, spacing, typography, radii), light/dark via `addon-themes` + `data-theme`. | Built |
+| **GitHub Actions** | Token build check on PR (`tokens-check.yml`); Airtable sync on merge to main (`sync-tokens.yml`). | Built |
+| **Airtable sync (code → Airtable)** | `scripts/airtable-sync.js` upserts primitives/semantic/device tokens to three tables via REST. One-directional. Runs in CI on merge. | Built |
+| **Airtable governance (Airtable → code)** | `status` / `owner` / `successor` fields per token, pulled to `governance.json` by script. | Planned (Phase 2) |
+| **Figma → code flow** | Variables export + audit before replacing primitives; Code Connect mappings for components. | Planned (Phases 4, 7) |
+| **PR token diff comment, changelog** | Deterministic scripts in Actions. | Planned (Phase 6) |
+| **Component metadata** | JSON schema + example file exist; consumed by agentic moments. | Schema built; consumers planned |
+
+## MCP tools — when to use vs when to avoid
+
+General rule: MCP calls are for **interactive, one-off tasks with the developer present**. Anything recurring, scheduled, or CI-bound uses a script with direct REST calls. Never put an MCP call inside a GitHub Action or a loop over many records.
+
+| MCP | Use it for | Do NOT use it for |
+|---|---|---|
+| **Figma** | (1) Reading variables/design context during the Figma token audit. (2) Code Connect mapping and design context when scaffolding a component. | Recurring token export — that's the Variables REST API via script. Bulk-reading many nodes. |
+| **Airtable** | (1) One-off schema changes (adding governance fields). (2) Ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state in tasks — read the committed `governance.json` instead. Bulk record operations. |
+| **GitHub** | Rarely — cross-repo searches the `gh` CLI handles awkwardly. | Everything else. Prefer `gh` CLI for PRs, issues, API calls; it's already authenticated and scriptable. |
+| **Google Drive** | Fetching a spec or brief the user explicitly links. | Anything recurring; storing or syncing project docs. |
+| **Notion** | Fetching planning notes the user explicitly links. | A documentation target — docs live in Storybook (components) and Airtable (tokens). |
+
+If a task could be done with a committed file, a script, or the `gh` CLI, do it that way even when an MCP tool is available.
+
+## Agentic moments
+
+The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/`. Everything else is a script or a GitHub Action.
+
+1. **Figma token audit** — before replacing `primitives.json` with a fresh Figma export. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (removed/renamed tokens with usages, broken aliases, scale mixing, naming violations), then the cleaned export as a PR.
+2. **Token deprecation pass** — after tokens are marked deprecated in Airtable. Read `governance.json` + token usage report + component metadata (no MCP needed); produce a migration PR replacing usages with the `successor` token.
+3. **Component scaffold** — when starting a new component from the fixed set. Read the metadata schema + an existing component as template + Figma design context (MCP); produce the component folder (index, CSS Module, stories, metadata) and a Code Connect mapping.
+
+If asked to set up a continuous agent loop, scheduled agent run, or always-on watcher: push back — that contradicts the lite-agentic constraint. Propose a script or one of these moments instead.
 
 ## Storybook
 
-Storybook lives in `packages/components` — it is the documentation layer for coded components, not a separate package.
+Storybook lives in `packages/components` — it is the documentation layer for coded components, not a separate package. Installed: React + Vite framework, `@storybook/addon-themes` toggling `data-theme` (activates `theme/light` vs `theme/dark` token sets), MDX token showcase stories (colors by hue, spacing, typography, radii). Pending: `storybook-design-token` wired to SD CSS output, visual regression baseline (Chromatic or equivalent).
 
 ### Purpose in this system
 
 - **Component development environment** — isolated rendering during build
 - **Living documentation** — stories are the canonical usage examples, not a README
-- **Token visualization** — a dedicated story (or addon) shows the full token palette, spacing scale, and typography ramp
-- **Visual regression baseline** — screenshots captured per story for CI diffing (Chromatic or equivalent, planned)
-
-### Recommended addons
-
-| Addon | Why |
-|---|---|
-| `@storybook/addon-docs` | Auto-generates docs pages from JSDoc + controls |
-| `@storybook/addon-a11y` | Accessibility audit per story |
-| `@storybook/addon-themes` | Toggle light/dark theme via toolbar — maps to `theme/light` vs `theme/dark` token sets |
-| `storybook-design-token` | Renders token groups as visual swatches directly in Storybook |
+- **Token visualization** — the MDX showcase stories make tokens visible and reviewable in the browser
+- **Visual regression baseline** — screenshots per story for CI diffing (planned)
 
 ### Story conventions
 
 - One story file per component: `ComponentName.stories.tsx` co-located with the component
 - Always export a `Default` story; add named variants for meaningful states (not every prop permutation)
 - Use `args` + `argTypes` so controls work — no hard-coded prop values in stories
-- Dark mode toggle should switch the CSS class/data attribute that activates `theme/dark.json` tokens, not just Storybook's background
-
-### Token showcase story
-
-A `packages/components/src/tokens/Tokens.stories.tsx` file should render the full token inventory — color swatches grouped by hue and scale, spacing scale, typography ramp, border radii. This story has no component to test; its only job is to make tokens visible and reviewable in the browser.
+- Dark mode must switch the `data-theme` attribute that activates `theme/dark.json` tokens, not just Storybook's background
 
 ## Coding conventions
 
@@ -141,34 +154,34 @@ A `packages/components/src/tokens/Tokens.stories.tsx` file should render the ful
 - Scripts: `kebab-case.js` or `.ts`
 - Components: `PascalCase/index.tsx` with co-located styles
 
+### Component scope
+The component set is fixed: `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`. Do not add components outside this list without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
+
 ## Common tasks
 
 ### Add a new primitive token
-Edit `packages/tokens/src/primitives.json`. Follow the existing structure for the category (`color`, `space`, `font`, etc.). Add `$type` and `$value`. Rebuild tokens if Style Dictionary is wired up.
+Edit `packages/tokens/src/primitives.json`. Follow the existing structure for the category (`color`, `space`, `font`, etc.). Add `$type` and `$value`. Run `npm run build:tokens` and verify the CSS and JS outputs.
 
 ### Add a semantic alias
 Edit the appropriate `theme/` or `device/` file. Use `{path.to.primitive}` syntax. Do not add raw values to these files — they should only alias primitives.
 
 ### Re-export tokens from Figma
-1. Export using the Variables REST API or a plugin
+1. Run the Figma token audit (agentic moment 1) to diff the export against committed tokens and current usage
 2. Run the cleanup script to strip `$extensions` and convert colors
 3. Replace `packages/tokens/src/primitives.json`
 4. Rebuild and verify no alias references broke
 
 ### Add a coded component
-Work in `packages/components/src/`. Each component gets a co-located CSS Module (`ComponentName.module.css`) that references SD-output custom properties (e.g. `var(--color-brand)`). Import tokens from `@upskill/tokens` for any JS-side logic. Components should not hard-code any design values — everything comes through tokens.
-
-### Wire up Style Dictionary
-Install `style-dictionary` in `@upskill/tokens`. Write `style-dictionary.config.js` with a DTCG-compatible parser and two output platforms (CSS custom properties, JS/TS constants). Replace the placeholder `build` script.
-
-### Add a GitHub Action
-Place workflow YAML in `.github/workflows/`. For token validation, run Style Dictionary build as a check. For Airtable sync, trigger on merge to main using the Airtable REST API.
-
-### Set up Storybook
-Install Storybook in `packages/components` with `npx storybook@latest init`. Choose the framework matching the component library (React + Vite is the default choice). Add `@storybook/addon-themes` and configure it to toggle a `data-theme` attribute so stories switch between the light and dark token sets. Add `storybook-design-token` and point it at the Style Dictionary CSS output so token swatches render automatically.
+Only from the fixed set above. Work in `packages/components/src/`. Each component gets: `PascalCase/index.tsx`, co-located `ComponentName.module.css` referencing only SD-output custom properties, a stories file, and a metadata JSON file conforming to the component metadata schema. Import tokens from `@upskill/tokens` for any JS-side logic. No hard-coded design values anywhere — everything comes through tokens. Use an existing component as the structural template.
 
 ### Add a story for a component
-Create `ComponentName.stories.tsx` next to the component file. Export `meta` with `title`, `component`, and `argTypes`. Export at least a `Default` story using `args`. If the component has meaningful visual states (error, disabled, loading), add a named story per state.
+Create `ComponentName.stories.tsx` next to the component file. Export `meta` with `title`, `component`, and `argTypes`. Export at least a `Default` story using `args`. Add a named story per meaningful visual state (error, disabled, loading).
 
-### Add the token showcase story
-Create `packages/components/src/tokens/Tokens.stories.tsx`. Import the CSS token file (once Style Dictionary is wired) and render swatches by iterating over CSS custom properties or the JS constants export. Group by category: colors (grouped by hue), spacing, typography, border radii.
+### Modify the Style Dictionary build
+Edit `packages/tokens/style-dictionary.config.js`. Custom transforms live alongside it (px→rem, font-weight, `$root` rename, media query combiner). After any change, rebuild and diff the CSS output — transform changes can silently rename custom properties that components depend on.
+
+### Sync tokens to Airtable
+Run `scripts/airtable-sync.js` (requires the Airtable API key in env). It upserts to the three token tables via REST. Do not replicate this with Airtable MCP calls.
+
+### Add a GitHub Action
+Place workflow YAML in `.github/workflows/`. Actions call scripts and REST APIs directly — never MCP tools and never Claude. If a proposed Action seems to need judgment rather than a deterministic check, it belongs in "Agentic moments" instead.
