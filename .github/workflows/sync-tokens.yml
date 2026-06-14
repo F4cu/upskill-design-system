@@ -7,6 +7,10 @@ on:
     paths:
       - "packages/tokens/src/**"
 
+concurrency:
+  group: airtable-sync
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest

@@ -2,8 +2,46 @@ import { useState } from 'react'
 import * as primitives from '@upskill/tokens/js/primitives'
 import { hueColors } from './tokenHelpers'
 import styles from './tokenComponents.module.css'
+import desktopRaw from '../../../tokens/src/device/desktop.json'
+import tabletRaw from '../../../tokens/src/device/tablet.json'
+import mobileRaw from '../../../tokens/src/device/mobile.json'
 
 type PrimitivesKey = keyof typeof primitives
+type DeviceJSON = Record<string, unknown>
+
+const desktopTokens = desktopRaw as DeviceJSON
+const tabletTokens = tabletRaw as DeviceJSON
+const mobileTokens = mobileRaw as DeviceJSON
+
+// Navigate a nested object using a dot-path string.
+function navJSON(obj: unknown, dotPath: string): unknown {
+  return dotPath.split('.').reduce(
+    (node: unknown, key: string) => (node as Record<string, unknown>)?.[key],
+    obj
+  )
+}
+
+// Resolve a DTCG alias like '{space.050}' to its built rem value via primitives.
+function resolveDeviceAlias(alias: unknown): string {
+  if (typeof alias === 'number') return `${alias / 16}rem`
+  if (typeof alias !== 'string') return ''
+  if (!alias.startsWith('{')) return alias
+  const jsKey = alias.slice(1, -1).split('.').map((seg, i) =>
+    i === 0 ? seg : seg.charAt(0).toUpperCase() + seg.slice(1)
+  ).join('') as PrimitivesKey
+  return (primitives[jsKey] as string) ?? alias
+}
+
+// Get a device token's resolved rem value, falling back to desktop if the
+// breakpoint-specific file doesn't define it.
+function deviceVal(device: unknown, dotPath: string): string {
+  const node = navJSON(device, dotPath) ?? navJSON(desktopTokens, dotPath)
+  return resolveDeviceAlias((node as { $value?: unknown })?.$value)
+}
+
+function toCSSVar(dotPath: string): string {
+  return `var(--ds-${dotPath.replace(/\./g, '-')})`
+}
 
 // ─── Shared utilities ─────────────────────────────────────────────────────────
 
@@ -54,7 +92,7 @@ export function FontFamilyGrid() {
             <div className={styles.fontFamilyMeta}>
               <span className={styles.fontFamilyName}>{value}</span>
               <span className={styles.fontFamilyRole}>{role}</span>
-              <code className="css-18ueaqc">{dotPath}</code>
+              <code className={styles.tokenCode}>{dotPath}</code>
             </div>
           </div>
         )
@@ -90,15 +128,36 @@ type TypescaleRow = {
   mobile: string
 }
 
-const TYPESCALE_ROWS: TypescaleRow[] = [
-  { label: 'Body Small',     fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular',  desktop: 'font.size.2',  tablet: 'font.size.2',  mobile: 'font.size.2'  },
-  { label: 'Body Default',   fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular',  desktop: 'font.size.3',  tablet: 'font.size.3',  mobile: 'font.size.3'  },
-  { label: 'Title Small',    fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 500, fontWeightLabel: 'Medium',   desktop: 'font.size.4',  tablet: 'font.size.4',  mobile: 'font.size.4'  },
-  { label: 'Subheader',      fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 600, fontWeightLabel: 'Semibold', desktop: 'font.size.6',  tablet: 'font.size.5',  mobile: 'font.size.5'  },
-  { label: 'Header',         fontFamily: "'Roboto', sans-serif",          fontFamilyLabel: 'Roboto',           fontWeight: 700, fontWeightLabel: 'Bold',     desktop: 'font.size.8',  tablet: 'font.size.6',  mobile: 'font.size.6'  },
-  { label: 'Header Styled',  fontFamily: "'Playfair Display', serif",     fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium',   desktop: 'font.size.9',  tablet: 'font.size.8',  mobile: 'font.size.7'  },
-  { label: 'Display',        fontFamily: "'Playfair Display', serif",     fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium',   desktop: 'font.size.11', tablet: 'font.size.10', mobile: 'font.size.9'  },
+// Extract the primitive font-size token name (e.g. 'font.size.8') that a
+// device tier assigns to the given semantic size key (e.g. 'header').
+function deviceFontSizeToken(device: unknown, key: string): string {
+  const node = navJSON(device, `font.size.${key}`) as { $value?: string } | undefined
+  const alias = node?.$value ?? ''
+  return alias.startsWith('{') ? alias.slice(1, -1) : ''
+}
+
+const TYPESCALE_CONFIG: {
+  key: string; label: string; fontFamily: string; fontFamilyLabel: string
+  fontWeight: number; fontWeightLabel: string
+}[] = [
+  { key: 'body-small',    label: 'Body Small',    fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
+  { key: 'body-default',  label: 'Body Default',  fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
+  { key: 'title-small',   label: 'Title Small',   fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 500, fontWeightLabel: 'Medium'   },
+  { key: 'subheader',     label: 'Subheader',     fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 600, fontWeightLabel: 'Semibold' },
+  { key: 'header',        label: 'Header',        fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 700, fontWeightLabel: 'Bold'     },
+  { key: 'header-styled', label: 'Header Styled', fontFamily: "'Playfair Display', serif", fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium'   },
+  { key: 'display',       label: 'Display',       fontFamily: "'Playfair Display', serif", fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium'   },
 ]
+
+const TYPESCALE_ROWS: TypescaleRow[] = TYPESCALE_CONFIG.map(({ key, ...rest }) => {
+  const desktopToken = deviceFontSizeToken(desktopTokens, key)
+  return {
+    ...rest,
+    desktop: desktopToken,
+    tablet:  deviceFontSizeToken(tabletTokens, key) || desktopToken,
+    mobile:  deviceFontSizeToken(mobileTokens, key) || desktopToken,
+  }
+})
 
 function TypescaleSizeCell({ token, state }: { token: string; state: 'normal' | 'dimmed' | 'changed' }) {
   const value = FONT_SIZE_MAP[token]
@@ -107,7 +166,7 @@ function TypescaleSizeCell({ token, state }: { token: string; state: 'normal' | 
             : styles.typescaleSize
   return (
     <div className={cls}>
-      <code className="css-18ueaqc">{token}</code>
+      <code className={styles.tokenCode}>{token}</code>
       <span className={styles.typescaleSizeValue}> / {remToPx(value)}</span>
     </div>
   )
@@ -177,7 +236,7 @@ export function FontWeightTable() {
           const value = primitives[key] as string
           return (
             <tr key={key}>
-              <td><code className="css-18ueaqc">{dotPath}</code></td>
+              <td><code className={styles.tokenCode}>{dotPath}</code></td>
               <td className={styles.typographyPreview} style={{ fontWeight: value }}>The quick brown fox jumps over the lazy dog</td>
               <td className={styles.spacingMonoCell}>{value}</td>
             </tr>
@@ -211,7 +270,7 @@ export function LineHeightTable() {
           const value = primitives[key]
           return (
             <tr key={key}>
-              <td><code className="css-18ueaqc">{dotPath}</code></td>
+              <td><code className={styles.tokenCode}>{dotPath}</code></td>
               <td className={styles.spacingMonoCell}>{String(value)}</td>
               <td>{usage}</td>
             </tr>
@@ -278,7 +337,7 @@ export function ColorScaleTable({
         <tbody>
           {entries.map(([step, hex]) => (
             <tr key={step}>
-              <td><code className="css-18ueaqc">{tokenName(step)}</code></td>
+              <td><code className={styles.tokenCode}>{tokenName(step)}</code></td>
               <td>
                 <div className={styles.colorSwatchWrapper}>
                   <span className={styles.colorSwatch} style={{ backgroundColor: hex as string }} />
@@ -368,59 +427,48 @@ export function ColorPaletteGroup({ children }: { children: React.ReactNode }) {
 
 type SemanticSpacingStep = {
   token: string
+  cssVar: string
   desktop: string
   tablet: string
   mobile: string
 }
 
-const INLINE_STEPS: SemanticSpacingStep[] = [
-  { token: 'space.inline.xs',  desktop: '0.25rem', tablet: '0.25rem', mobile: '0.25rem' },
-  { token: 'space.inline.sm',  desktop: '0.5rem',  tablet: '0.5rem',  mobile: '0.5rem'  },
-  { token: 'space.inline.md',  desktop: '1rem',    tablet: '1rem',    mobile: '1rem'    },
-  { token: 'space.inline.lg',  desktop: '1.5rem',  tablet: '1.5rem',  mobile: '1.5rem'  },
-  { token: 'space.inline.xl',  desktop: '2rem',    tablet: '2rem',    mobile: '2rem'    },
-  { token: 'space.inline.xxl', desktop: '3rem',    tablet: '3rem',    mobile: '3rem'    },
-]
+function makeSpacingSteps(category: string, keys: string[]): SemanticSpacingStep[] {
+  return keys.map(key => {
+    const token = `space.${category}.${key}`
+    return {
+      token,
+      cssVar: toCSSVar(token),
+      desktop: deviceVal(desktopTokens, token),
+      tablet:  deviceVal(tabletTokens,  token),
+      mobile:  deviceVal(mobileTokens,  token),
+    }
+  })
+}
 
-const STACK_STEPS: SemanticSpacingStep[] = [
-  { token: 'space.stack.xs',  desktop: '0.25rem', tablet: '0.25rem', mobile: '0.25rem' },
-  { token: 'space.stack.sm',  desktop: '0.5rem',  tablet: '0.5rem',  mobile: '0.5rem'  },
-  { token: 'space.stack.md',  desktop: '1rem',    tablet: '1rem',    mobile: '0.75rem' },
-  { token: 'space.stack.lg',  desktop: '1.5rem',  tablet: '1.5rem',  mobile: '1.5rem'  },
-  { token: 'space.stack.xl',  desktop: '2rem',    tablet: '1.5rem',  mobile: '1rem'    },
-  { token: 'space.stack.xxl', desktop: '2.5rem',  tablet: '2.5rem',  mobile: '2.5rem'  },
-]
-
-const INSET_STEPS: SemanticSpacingStep[] = [
-  { token: 'space.inset.xxs',  desktop: '0.25rem', tablet: '0.25rem', mobile: '0.25rem' },
-  { token: 'space.inset.xs',   desktop: '0.5rem',  tablet: '0.5rem',  mobile: '0.5rem'  },
-  { token: 'space.inset.sm',   desktop: '0.75rem', tablet: '0.75rem', mobile: '0.75rem' },
-  { token: 'space.inset.md',   desktop: '1rem',    tablet: '1rem',    mobile: '1rem'    },
-  { token: 'space.inset.lg',   desktop: '1.25rem', tablet: '1.25rem', mobile: '1.25rem' },
-  { token: 'space.inset.xl',   desktop: '1.5rem',  tablet: '1.5rem',  mobile: '1rem'    },
-  { token: 'space.inset.xxl',  desktop: '2rem',    tablet: '1.5rem',  mobile: '1rem'    },
-  { token: 'space.inset.xxxl', desktop: '3rem',    tablet: '1.5rem',  mobile: '1rem'    },
-]
+const INLINE_STEPS = makeSpacingSteps('inline', ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'])
+const STACK_STEPS  = makeSpacingSteps('stack',  ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'])
+const INSET_STEPS  = makeSpacingSteps('inset',  ['xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl'])
 
 const SEMANTIC_STEPS = { inline: INLINE_STEPS, stack: STACK_STEPS, inset: INSET_STEPS }
 
-function SemanticPreview({ category, value }: { category: 'inline' | 'stack' | 'inset'; value: string }) {
+function SemanticPreview({ category, cssVar }: { category: 'inline' | 'stack' | 'inset'; cssVar: string }) {
   if (category === 'inset') {
     return (
-      <div className={styles.semanticPreviewInset} style={{ padding: value }}>
+      <div className={styles.semanticPreviewInset} style={{ padding: cssVar }}>
         <div className={styles.semanticPreviewFill} />
       </div>
     )
   }
   if (category === 'inline') {
     return (
-      <div className={styles.semanticPreviewInline} style={{ paddingRight: value }}>
+      <div className={styles.semanticPreviewInline} style={{ paddingRight: cssVar }}>
         <div className={styles.semanticPreviewFillInline} />
       </div>
     )
   }
   return (
-    <div className={styles.semanticPreviewStack} style={{ paddingBottom: value }}>
+    <div className={styles.semanticPreviewStack} style={{ paddingBottom: cssVar }}>
       <div className={styles.semanticPreviewFillStack} />
     </div>
   )
@@ -440,10 +488,10 @@ export function SemanticSpacingTable({ category }: { category: 'inline' | 'stack
         </tr>
       </thead>
       <tbody>
-        {steps.map(({ token, desktop, tablet, mobile }) => (
+        {steps.map(({ token, cssVar, desktop, tablet, mobile }) => (
           <tr key={token}>
-            <td><code className="css-18ueaqc">{token}</code></td>
-            <td><SemanticPreview category={category} value={desktop} /></td>
+            <td><code className={styles.tokenCode}>{token}</code></td>
+            <td><SemanticPreview category={category} cssVar={cssVar} /></td>
             <td className={styles.spacingMonoCell}>{desktop}</td>
             <td className={`${styles.spacingMonoCell} ${tablet !== desktop ? styles.semanticChanged : styles.semanticSame}`}>
               {tablet}
@@ -491,7 +539,7 @@ export function SpacingTable() {
           const value = primitives[key] as string
           return (
             <tr key={key}>
-              <td><code className="css-18ueaqc">{dotPath}</code></td>
+              <td><code className={styles.tokenCode}>{dotPath}</code></td>
               <td><div className={styles.spacingPreviewBar} style={{ width: value }} /></td>
               <td className={styles.spacingMonoCell}>{value}</td>
               <td className={styles.spacingMonoCell}>{remToPx(value)}</td>

@@ -94,26 +94,38 @@ function flattenPrimitives(node, prefix = "") {
 
 function flattenSemantic(lightNode, darkNode, primitives, lightTree, darkTree, prefix = "") {
   const records = [];
-  for (const [key, lightVal] of Object.entries(lightNode)) {
-    const tokenPath = prefix ? `${prefix}.${key}` : key;
-    const darkVal = darkNode?.[key];
+  // Union keys from both trees so dark-only tokens are not missed.
+  // $root is renamed to 'root' to match the CSS output (--ds-color-brand-root etc.).
+  const allKeys = new Set([
+    ...Object.keys(lightNode ?? {}),
+    ...Object.keys(darkNode ?? {}),
+  ]);
 
-    if (key === "$root") continue;
-    if (lightVal.$type && lightVal.$value !== undefined) {
-      const lightAlias = lightVal.$value;
-      const darkAlias = darkVal?.$value ?? "";
-      const stripBraces = (s) => s.replace(/^\{|\}$/g, "");
+  for (const key of allKeys) {
+    const pathKey = key === "$root" ? "root" : key;
+    const tokenPath = prefix ? `${prefix}.${pathKey}` : pathKey;
+    const lightVal = lightNode?.[key];
+    const darkVal  = darkNode?.[key];
+    const either   = lightVal ?? darkVal;
+
+    if (either?.$type && (lightVal?.$value !== undefined || darkVal?.$value !== undefined)) {
+      const lightAlias = lightVal?.$value ?? "";
+      const darkAlias  = darkVal?.$value  ?? "";
+      const stripBraces = (s) => (typeof s === "string" ? s.replace(/^\{|\}$/g, "") : "");
       records.push({
-        tokenName: tokenPath,
+        tokenName:      tokenPath,
         lightValueName: stripBraces(lightAlias),
-        lightValue: resolveAlias(lightAlias, lightTree, primitives),
-        darkValueName: stripBraces(darkAlias),
-        darkValue: darkAlias ? resolveAlias(darkAlias, darkTree, primitives) : "",
-        usage: tokenPath.split(".")[0],
+        lightValue:     lightAlias ? resolveAlias(String(lightAlias), lightTree, primitives) : "",
+        darkValueName:  stripBraces(darkAlias),
+        darkValue:      darkAlias  ? resolveAlias(String(darkAlias),  darkTree,  primitives) : "",
+        usage:     tokenPath.split(".")[0],
         component: tokenPath.split(".")[1] ?? "",
       });
-    } else if (typeof lightVal === "object" && lightVal !== null) {
-      records.push(...flattenSemantic(lightVal, darkVal, primitives, lightTree, darkTree, tokenPath));
+    } else if (typeof either === "object" && either !== null) {
+      records.push(...flattenSemantic(
+        lightVal ?? {}, darkVal ?? {},
+        primitives, lightTree, darkTree, tokenPath
+      ));
     }
   }
   return records;
@@ -172,6 +184,38 @@ function buildDeviceMap(tokens) {
   );
 }
 
+// --- Orphan detection ---
+
+async function listAllKeys(tableName, keyField) {
+  const keys = [];
+  let offset;
+  do {
+    const url = new URL(tableUrl(tableName));
+    url.searchParams.set("fields[]", keyField);
+    if (offset) url.searchParams.set("offset", offset);
+    const res = await fetch(url, { headers: airtableHeaders() });
+    if (!res.ok) return keys;
+    const data = await res.json();
+    for (const r of data.records ?? []) {
+      if (r.fields[keyField]) keys.push(r.fields[keyField]);
+    }
+    offset = data.offset;
+  } while (offset);
+  return keys;
+}
+
+async function logOrphans(tableName, keyField, currentKeys) {
+  const existing = await listAllKeys(tableName, keyField);
+  const currentSet = new Set(currentKeys);
+  const orphans = existing.filter((k) => !currentSet.has(k));
+  if (orphans.length > 0) {
+    console.warn(`  ⚠ ${orphans.length} orphan(s) in "${tableName}" (renamed/removed tokens with stale records):`);
+    for (const k of orphans) console.warn(`    - ${k}`);
+  } else {
+    console.log(`  No orphans in "${tableName}".`);
+  }
+}
+
 // --- Commands ---
 
 async function pushPrimitives() {
@@ -184,6 +228,7 @@ async function pushPrimitives() {
     [PRIMITIVE_FIELDS.value]: r.value,
     [PRIMITIVE_FIELDS.group]: r.group,
   }));
+  await logOrphans(PRIMITIVES_TABLE, PRIMITIVE_FIELDS.path, flat.map((r) => r.path));
   console.log("Done.");
 }
 
@@ -203,6 +248,7 @@ async function pushSemantic() {
     Usage: r.usage,
     Component: r.component,
   }));
+  await logOrphans(SEMANTIC_TABLE, SEMANTIC_FIELDS.tokenName, records.map((r) => r.tokenName));
   console.log("Done.");
 }
 
@@ -213,7 +259,11 @@ async function pushDevice() {
   const tablet  = buildDeviceMap(cleanDevice(JSON.parse(fs.readFileSync(PATHS.tablet, "utf8"))));
   const mobile  = buildDeviceMap(cleanDevice(JSON.parse(fs.readFileSync(PATHS.mobile, "utf8"))));
 
-  const records = Object.entries(desktop).map(([tokenPath, desktopAlias]) => {
+  // Union all three maps so tablet/mobile-only tokens are included.
+  const allPaths = new Set([...Object.keys(desktop), ...Object.keys(tablet), ...Object.keys(mobile)]);
+
+  const records = Array.from(allPaths).map((tokenPath) => {
+    const desktopAlias = desktop[tokenPath] ?? tablet[tokenPath] ?? mobile[tokenPath];
     const tabletAlias  = tablet[tokenPath]  ?? desktopAlias;
     const mobileAlias  = mobile[tokenPath]  ?? desktopAlias;
     return {
@@ -239,6 +289,7 @@ async function pushDevice() {
     "Mobile alias":   r.mobileAlias,
     "Mobile value":   r.mobileValue,
   }));
+  await logOrphans(DEVICE_TABLE, "Token", records.map((r) => r.token));
   console.log("Done.");
 }
 

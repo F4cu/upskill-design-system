@@ -41,7 +41,9 @@ jobs:
             packages/tokens/dist/css/device.desktop.css \
             packages/tokens/dist/css/device.tablet.css \
             packages/tokens/dist/css/device.mobile.css \
-            packages/tokens/dist/js/primitives.js; do
+            packages/tokens/dist/css/device.css \
+            packages/tokens/dist/js/primitives.js \
+            packages/tokens/dist/js/primitives.d.ts; do
             [ -f "$f" ] || { echo "Missing: $f"; exit 1; }
           done
           echo "All expected output files present."

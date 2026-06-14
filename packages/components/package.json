@@ -7,8 +7,8 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [
@@ -31,9 +31,9 @@
     "@chromatic-com/storybook": "^5",
     "@storybook/addon-a11y": "^10",
     "@storybook/addon-docs": "^10",
-    "@storybook/addon-themes": "^8",
+    "@storybook/addon-themes": "^10",
     "@storybook/react-vite": "^10",
-    "@storybook/theming": "^8.6.18",
+    "@storybook/theming": "^10",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4",

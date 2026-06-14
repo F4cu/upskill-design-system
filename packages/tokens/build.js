@@ -60,7 +60,7 @@ StyleDictionary.registerTransform({
     if (p[0] === 'font' && p[1] === 'size') return true
     if (p[0] === 'border-radius') return true
     if (p[0] === 'grid' && (p[1] === 'margin' || p[1] === 'gutter')) return true
-    if (p[0] === 'layout' && p[1] !== 'headerLayout') return true
+    if (p[0] === 'layout') return true
     return false
   },
   transform: (token) => `${token.$value / 16}rem`,
