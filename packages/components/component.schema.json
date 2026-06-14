@@ -5,20 +5,17 @@
   "type": "object",
   "required": [
     "component",
-    "status",
     "usage",
-    "anatomy",
-    "tokens",
     "variants",
     "states",
+    "tokens",
     "accessibility",
-    "relationships",
-    "aiHints"
+    "relationships"
   ],
   "properties": {
     "component": {
       "type": "object",
-      "required": ["name", "category", "type", "description"],
+      "required": ["name", "category", "type", "status", "description"],
       "properties": {
         "name": { "type": "string" },
         "category": {
@@ -29,26 +26,32 @@
           "type": "string",
           "enum": ["interactive", "display", "container", "input"]
         },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "stable", "deprecated"]
+        },
         "description": { "type": "string" },
         "figmaNodeId": { "type": "string" }
       },
       "additionalProperties": false
     },
 
-    "status": {
-      "type": "string",
-      "enum": ["draft", "stable", "deprecated"]
-    },
-
     "usage": {
       "type": "object",
-      "required": ["useCases", "antiPatterns"],
+      "required": ["keywords", "when", "antiPatterns"],
       "properties": {
-        "useCases": {
+        "keywords": {
+          "description": "Terms an agent uses to match intent to this component during layout generation or selection.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "when": {
+          "description": "Scenarios where this component is the right choice.",
           "type": "array",
           "items": { "type": "string" }
         },
         "antiPatterns": {
+          "description": "Explicit misuses. Anti-patterns are load-bearing — they prevent the most common agent errors.",
           "type": "array",
           "items": {
             "type": "object",
@@ -65,14 +68,31 @@
       "additionalProperties": false
     },
 
-    "anatomy": {
+    "variants": {
+      "type": "object",
+      "required": ["options", "default", "purpose"],
+      "properties": {
+        "options": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "default": { "type": "string" },
+        "purpose": {
+          "description": "Per-variant selection guidance — when to choose this variant over others.",
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "states": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["part", "required", "description"],
+        "required": ["state", "description"],
         "properties": {
-          "part": { "type": "string" },
-          "required": { "type": "boolean" },
+          "state": { "type": "string" },
           "description": { "type": "string" }
         },
         "additionalProperties": false
@@ -89,40 +109,6 @@
         "other": { "type": "array", "items": { "type": "string" } }
       },
       "additionalProperties": false
-    },
-
-    "variants": {
-      "type": "object",
-      "required": ["options", "default", "purpose"],
-      "properties": {
-        "options": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "default": { "type": "string" },
-        "purpose": {
-          "type": "object",
-          "additionalProperties": { "type": "string" }
-        }
-      },
-      "additionalProperties": false
-    },
-
-    "states": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["state", "description"],
-        "properties": {
-          "state": { "type": "string" },
-          "description": { "type": "string" },
-          "tokenOverrides": {
-            "type": "object",
-            "additionalProperties": { "type": "string" }
-          }
-        },
-        "additionalProperties": false
-      }
     },
 
     "accessibility": {
@@ -153,35 +139,61 @@
       "type": "object",
       "properties": {
         "composedOf": {
+          "description": "Library components used internally to build this component.",
           "type": "array",
           "items": { "type": "string" }
         },
-        "usedIn": {
+        "accepts": {
+          "description": "Component names valid as direct children in this component's content slot. Empty array means leaf node. [\"*\"] means any library component is valid.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "containedBy": {
+          "description": "Component names that are valid direct parents of this component.",
           "type": "array",
           "items": { "type": "string" }
         },
         "neverPairWith": {
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      },
-      "additionalProperties": false
-    },
-
-    "aiHints": {
-      "type": "object",
-      "properties": {
-        "keywords": {
+          "description": "Components that must not appear as siblings or in the same composition as this one.",
           "type": "array",
           "items": { "type": "string" }
         },
-        "selectionCriteria": {
+        "compositionPatterns": {
+          "description": "Named, tested patterns that use this component. Concrete starting points for layout generation.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description", "tree"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "tree": {
+                "type": "string",
+                "description": "Component tree as a readable expression, e.g. 'Card > Stack > [Heading, Text, Button(primary)]'"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "layoutBehavior": {
+          "description": "How this component behaves inside a layout container. Used by the layout generation moment.",
           "type": "object",
-          "additionalProperties": { "type": "string" }
-        },
-        "generativeRules": {
-          "type": "array",
-          "items": { "type": "string" }
+          "properties": {
+            "widthBehavior": {
+              "type": "string",
+              "enum": ["fill", "hug", "fixed"],
+              "description": "fill = stretches to parent width; hug = sizes to content; fixed = component sets its own width"
+            },
+            "displayType": {
+              "type": "string",
+              "enum": ["block", "inline", "flex-column", "flex-row", "grid"]
+            },
+            "canNest": {
+              "type": "boolean",
+              "description": "Whether this component can be meaningfully nested inside another instance of itself"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false

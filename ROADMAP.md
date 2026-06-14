@@ -52,7 +52,7 @@ Lite in two ways:
 - [ ] Validate the metadata schema with one end-to-end agent prompt — give Claude only a metadata file and ask it to explain when (not) to use the component; fix the schema where the answer is wrong
 - [ ] Write the three agentic-moment definitions as prompt files in `.claude/commands/` (trigger, inputs, output, success signal — see Phase 7)
 
-**Exit condition:** Claude can answer "what is this token's status, who owns it, and where is it used" from files in the repo alone, with zero MCP calls.
+**Exit condition:** Claude can answer "what is this token's status, who owns it, and where is it used" from files in the repo alone, with zero MCP calls. Additionally, given all component metadata files, Claude can produce a valid React tree from a one-paragraph layout brief — selecting the right components, respecting `accepts`/`containedBy` constraints, and drawing from named `compositionPatterns`. If the output requires manual structural correction, the metadata is not rich enough and must be revised before Phase 3 begins.
 
 ## Phase 3 — Component API Foundation
 
@@ -112,5 +112,7 @@ Lite in two ways:
 - [ ] **Figma token audit** — trigger: developer, before replacing `primitives.json` with a fresh Figma export. Inputs: Figma variables (Figma MCP, one-off read) + committed token files + `token-usage.json`. Output: a diff report flagging removed/renamed tokens with usages, broken aliases, scale-mixing and naming violations — then the cleaned export as a PR. Success signal: no Figma drift ever merges silently.
 - [ ] **Token deprecation pass** — trigger: developer, after marking tokens deprecated in Airtable. Inputs: `governance.json` + `token-usage.json` + component metadata. Output: a migration PR replacing deprecated-token usages with their `successor`, plus notes where no successor fits. Success signal: zero component references to deprecated tokens.
 - [ ] **Component scaffold** — trigger: developer, when starting a Phase 4/5 component. Inputs: metadata schema + an existing component as template + Figma design context (MCP, one-off). Output: component folder (index, CSS Module, stories, metadata) + Code Connect mapping. Success signal: build and Storybook pass with no manual restructuring.
+
+- [ ] **Layout generation** — trigger: developer, when starting a new page or section. Inputs: all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief (intent, key content areas, constraints). Output: a React component tree using only library components and tokens; each structural choice annotated with the metadata rule or `compositionPattern` that justified it. Success signal: the tree passes a structural validator (checks `accepts`/`containedBy` constraints), builds, and renders in Storybook with no manual restructuring needed.
 
 **Exit condition:** each moment has been run once on a real task, met its success signal, and its prompt file updated with what was learned. After that, the system is "done" — maintenance only.

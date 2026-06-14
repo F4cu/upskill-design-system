@@ -3,14 +3,14 @@
     "name": "Button",
     "category": "atom",
     "type": "interactive",
+    "status": "draft",
     "description": "Triggers an action or navigation. The primary way a user initiates a response from the system.",
     "figmaNodeId": ""
   },
 
-  "status": "draft",
-
   "usage": {
-    "useCases": [
+    "keywords": ["button", "cta", "submit", "action", "trigger", "click", "confirm", "cancel"],
+    "when": [
       "Submitting a form",
       "Triggering a modal or dialog",
       "Primary call-to-action on a page",
@@ -35,27 +35,24 @@
     ]
   },
 
-  "anatomy": [
-    {
-      "part": "container",
-      "required": true,
-      "description": "Clickable surface. Carries background, border, and border-radius tokens."
-    },
-    {
-      "part": "label",
-      "required": true,
-      "description": "Text describing the action. Uses font.family.body and color.text.* tokens."
-    },
-    {
-      "part": "leadingIcon",
-      "required": false,
-      "description": "Optional icon placed before the label. Uses color.icon.* tokens."
-    },
-    {
-      "part": "trailingIcon",
-      "required": false,
-      "description": "Optional icon placed after the label."
+  "variants": {
+    "options": ["primary", "secondary", "ghost", "danger"],
+    "default": "primary",
+    "purpose": {
+      "primary": "The single dominant action on a surface. Use once per view section.",
+      "secondary": "Supporting actions that sit alongside a primary button.",
+      "ghost": "Low-emphasis actions, navigation links styled as buttons, or actions inside dense UI.",
+      "danger": "Destructive or irreversible actions (delete, remove, revoke). Always pair with a confirmation step."
     }
+  },
+
+  "states": [
+    { "state": "default", "description": "Resting state." },
+    { "state": "hover", "description": "Pointer is over the button." },
+    { "state": "focus", "description": "Keyboard focus ring visible. Must meet WCAG 3:1 contrast against the surface." },
+    { "state": "active", "description": "Button is being pressed." },
+    { "state": "disabled", "description": "Action is unavailable. Pointer events suppressed. Must not rely on color alone — also set aria-disabled='true'." },
+    { "state": "loading", "description": "Async action in progress. Label replaced by a spinner. Width must not collapse to prevent layout shift." }
   ],
 
   "tokens": {
@@ -80,51 +77,6 @@
     ]
   },
 
-  "variants": {
-    "options": ["primary", "secondary", "ghost", "danger"],
-    "default": "primary",
-    "purpose": {
-      "primary": "The single dominant action on a surface. Use once per view section.",
-      "secondary": "Supporting actions that sit alongside a primary button.",
-      "ghost": "Low-emphasis actions, navigation links styled as buttons, or actions inside dense UI.",
-      "danger": "Destructive or irreversible actions (delete, remove, revoke). Always pair with a confirmation step."
-    }
-  },
-
-  "states": [
-    {
-      "state": "default",
-      "description": "Resting state."
-    },
-    {
-      "state": "hover",
-      "description": "Pointer is over the button.",
-      "tokenOverrides": {
-        "color.background.button.$root": "color.background.button.hover"
-      }
-    },
-    {
-      "state": "focus",
-      "description": "Keyboard focus ring visible. Must meet WCAG 3:1 contrast against the surface."
-    },
-    {
-      "state": "active",
-      "description": "Button is being pressed."
-    },
-    {
-      "state": "disabled",
-      "description": "Action is unavailable. Pointer events suppressed.",
-      "tokenOverrides": {
-        "color.background.button.$root": "color.background.button.disabled",
-        "color.text.inverted": "color.text.disabled"
-      }
-    },
-    {
-      "state": "loading",
-      "description": "Async action in progress. Label is replaced by a spinner. Width must not collapse."
-    }
-  ],
-
   "accessibility": {
     "role": "button",
     "ariaAttributes": ["aria-disabled", "aria-pressed", "aria-label"],
@@ -136,23 +88,30 @@
 
   "relationships": {
     "composedOf": [],
-    "usedIn": ["Form", "Dialog", "Card", "Toolbar"],
-    "neverPairWith": ["IconButton"]
-  },
-
-  "aiHints": {
-    "keywords": ["button", "cta", "submit", "action", "trigger", "click", "confirm", "cancel"],
-    "selectionCriteria": {
-      "form submission": "Use primary variant",
-      "destructive action": "Use danger variant — always preceded by a confirmation dialog",
-      "low-emphasis action or toolbar item": "Use ghost variant",
-      "action alongside an existing primary": "Use secondary variant"
-    },
-    "generativeRules": [
-      "Never render more than one primary Button per view section",
-      "Always provide an aria-label when the Button has no visible text label (icon-only)",
-      "Disabled state must not rely on color alone — also set pointer-events: none and aria-disabled='true'",
-      "Loading state must preserve the button's width to prevent layout shift"
-    ]
+    "accepts": ["Icon"],
+    "containedBy": ["Box", "Stack", "Inline", "Card"],
+    "neverPairWith": ["IconButton"],
+    "compositionPatterns": [
+      {
+        "name": "form-actions-row",
+        "description": "Primary + secondary button pair at the bottom of a form. Primary commits, secondary cancels.",
+        "tree": "Inline > [Button(primary), Button(secondary)]"
+      },
+      {
+        "name": "card-cta",
+        "description": "Single call-to-action anchored to the bottom of a Card.",
+        "tree": "Card > Stack > [Heading, Text, Button(primary)]"
+      },
+      {
+        "name": "danger-confirmation",
+        "description": "Destructive action paired with a cancel. Danger variant always on the right.",
+        "tree": "Inline > [Button(secondary), Button(danger)]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "inline",
+      "canNest": false
+    }
   }
 }
