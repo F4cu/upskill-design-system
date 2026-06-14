@@ -103,7 +103,7 @@
         "$type": "number",
         "$value": "{font.size.2}"
       },
-      "metadata-small": {
+      "metadata": {
         "$type": "number",
         "$value": "{font.size.2}"
       },
@@ -119,11 +119,11 @@
         "$type": "number",
         "$value": "{font.size.5}"
       },
-      "header": {
+      "headline": {
         "$type": "number",
         "$value": "{font.size.6}"
       },
-      "header-styled": {
+      "headline-serif": {
         "$type": "number",
         "$value": "{font.size.7}"
       },
@@ -152,7 +152,7 @@
     },
     "line-height": {
       "body": {
-        "none": {
+        "single": {
           "$type": "number",
           "$value": "{font.line-height.none}"
         },
@@ -162,7 +162,7 @@
         }
       },
       "title": {
-        "none": {
+        "single": {
           "$type": "number",
           "$value": "{font.line-height.none}"
         },
@@ -185,12 +185,12 @@
           "$value": "{font.line-height.default}"
         }
       },
-      "header": {
+      "headline": {
         "default": {
           "$type": "number",
           "$value": "{font.line-height.default}"
         },
-        "display": {
+        "serif": {
           "$type": "number",
           "$value": "{font.line-height.tight}"
         }

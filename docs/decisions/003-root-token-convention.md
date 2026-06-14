@@ -1,7 +1,12 @@
 # ADR-003 — `$root` as the Default Token Convention
 
 **Date:** 2026-06-11
-**Status:** `accepted`
+**Superseded:** 2026-06-14
+**Status:** `superseded`
+
+## Supersession note
+
+The semantic token naming audit (2026-06-14) reversed this decision. Research confirmed that the W3C DTCG community and tooling ecosystem (Tokens Studio, Style Dictionary) converge on **`.default`** as the group-default convention — not `$root`. The `$root` → `root` CSS transform required a custom preprocessor to work around Style Dictionary's `$`-prefix handling, produced meaningless `-root` suffixes in CSS output, and was non-standard in Figma. All `$root` keys have been renamed to `default` in source JSON, the custom preprocessor removed from `build.js`, and Figma variables updated in place. The cleanup items documented below were completed as part of that audit.
 
 ## Context
 

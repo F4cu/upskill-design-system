@@ -3,27 +3,6 @@ import fs from 'fs'
 
 fs.rmSync('dist', { recursive: true, force: true })
 
-// Rename $root keys to root throughout the token tree and update alias references.
-// $root is not a DTCG-reserved key but SD treats $ prefix specially, causing resolution failures.
-function renameRoot(obj) {
-  if (typeof obj !== 'object' || obj === null) return obj
-  if (Array.isArray(obj)) return obj.map(renameRoot)
-  return Object.fromEntries(
-    Object.entries(obj).map(([k, v]) => {
-      const newKey = k === '$root' ? 'root' : k
-      if (newKey === '$value' && typeof v === 'string') {
-        return [newKey, v.replace(/\.\$root\b/g, '.root')]
-      }
-      return [newKey, renameRoot(v)]
-    })
-  )
-}
-
-StyleDictionary.registerPreprocessor({
-  name: 'upskill/rename-root',
-  preprocessor: (tokens) => renameRoot(tokens),
-})
-
 // Theme files re-export border-radius tokens at the same path as primitives (Tokens Studio artifact).
 // Stripping them before merge prevents circular self-references.
 StyleDictionary.registerParser({
@@ -129,7 +108,6 @@ StyleDictionary.registerFormat({
 
 const shared = {
   usesDtcg: true,
-  preprocessors: ['upskill/rename-root'],
   log: { warnings: 'error', verbosity: 'default' },
 }
 

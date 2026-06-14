@@ -49,7 +49,7 @@
         "$type": "color",
         "$value": "{color.terracotta.12}"
       },
-      "$root": {
+      "default": {
         "$type": "color",
         "$value": "{color.brand.9}"
       }
@@ -103,7 +103,7 @@
         "$type": "color",
         "$value": "{color.teal.12}"
       },
-      "$root": {
+      "default": {
         "$type": "color",
         "$value": "{color.accent.9}"
       }
@@ -159,13 +159,19 @@
       }
     },
     "background": {
-      "neutral-subtle": {
-        "$type": "color",
-        "$value": "{color.black.alpha.3}"
-      },
-      "neutral-subtlest": {
-        "$type": "color",
-        "$value": "{color.black.alpha.1}"
+      "neutral": {
+        "subtle": {
+          "$type": "color",
+          "$value": "{color.black.alpha.3}"
+        },
+        "subtlest": {
+          "$type": "color",
+          "$value": "{color.black.alpha.1}"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{color.black.alpha.1}"
+        }
       },
       "transparent": {
         "$type": "color",
@@ -178,10 +184,6 @@
       "input": {
         "$type": "color",
         "$value": "{color.neutral.3}"
-      },
-      "neutral-hover": {
-        "$type": "color",
-        "$value": "{color.black.alpha.1}"
       },
       "container": {
         "page": {
@@ -196,7 +198,7 @@
           "$type": "color",
           "$value": "{color.sand.dark.2}"
         },
-        "$root": {
+        "default": {
           "$type": "color",
           "$value": "{color.gold.1}"
         }
@@ -230,9 +232,9 @@
         }
       },
       "button": {
-        "$root": {
+        "default": {
           "$type": "color",
-          "$value": "{color.brand.$root}"
+          "$value": "{color.brand.default}"
         },
         "hover": {
           "$type": "color",
@@ -246,9 +248,11 @@
           "$type": "color",
           "$value": "{color.gold.1}"
         },
-        "outlined-hover": {
-          "$type": "color",
-          "$value": "{color.gold.2}"
+        "outline": {
+          "hover": {
+            "$type": "color",
+            "$value": "{color.gold.2}"
+          }
         },
         "elevated": {
           "$type": "color",
@@ -261,7 +265,7 @@
       }
     },
     "text": {
-      "$root": {
+      "default": {
         "$type": "color",
         "$value": "{color.neutral.12}"
       },
@@ -271,39 +275,45 @@
       },
       "brand": {
         "$type": "color",
-        "$value": "{color.brand.$root}"
+        "$value": "{color.brand.default}"
       },
       "selected": {
         "$type": "color",
-        "$value": "{color.brand.$root}"
+        "$value": "{color.brand.default}"
       },
       "accent": {
-        "$type": "color",
-        "$value": "{color.accent.12}"
-      },
-      "accent-inverted": {
-        "$type": "color",
-        "$value": "{color.teal.dark.11}"
+        "default": {
+          "$type": "color",
+          "$value": "{color.accent.12}"
+        },
+        "inverted": {
+          "$type": "color",
+          "$value": "{color.teal.dark.11}"
+        }
       },
       "link": {
-        "$type": "color",
-        "$value": "{color.brand.$root}"
-      },
-      "link-hover": {
-        "$type": "color",
-        "$value": "{color.brand.11}"
+        "default": {
+          "$type": "color",
+          "$value": "{color.brand.default}"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{color.brand.11}"
+        }
       },
       "inverted": {
-        "$type": "color",
-        "$value": "{color.sand.2}"
-      },
-      "inverted-subtle": {
-        "$type": "color",
-        "$value": "{color.neutral.10}"
-      },
-      "inverted-disabled": {
-        "$type": "color",
-        "$value": "{color.neutral.3}"
+        "default": {
+          "$type": "color",
+          "$value": "{color.sand.2}"
+        },
+        "subtle": {
+          "$type": "color",
+          "$value": "{color.neutral.10}"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{color.neutral.3}"
+        }
       },
       "disabled": {
         "$type": "color",
@@ -334,12 +344,14 @@
         "$value": "{color.black.alpha.5}"
       },
       "input": {
-        "$type": "color",
-        "$value": "{color.black.alpha.5}"
-      },
-      "input-hover": {
-        "$type": "color",
-        "$value": "{color.neutral.10}"
+        "default": {
+          "$type": "color",
+          "$value": "{color.black.alpha.5}"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{color.neutral.10}"
+        }
       },
       "disabled": {
         "$type": "color",
@@ -351,17 +363,17 @@
       },
       "brand": {
         "$type": "color",
-        "$value": "{color.brand.$root}"
+        "$value": "{color.brand.default}"
       },
       "accent": {
         "$type": "color",
-        "$value": "{color.accent.$root}"
+        "$value": "{color.accent.default}"
       },
       "inverted": {
         "$type": "color",
         "$value": "{color.white.alpha.2}"
       },
-      "$root": {
+      "default": {
         "$type": "color",
         "$value": "{color.border.subtle}"
       },
@@ -394,18 +406,20 @@
         "$value": "{color.neutral.12}"
       },
       "inverted": {
-        "$type": "color",
-        "$value": "{color.white.1}"
-      },
-      "inverted-disabled": {
-        "$type": "color",
-        "$value": "{color.neutral.3}"
+        "default": {
+          "$type": "color",
+          "$value": "{color.white.1}"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{color.neutral.3}"
+        }
       },
       "brand": {
         "$type": "color",
         "$value": "{color.terracotta.9}"
       },
-      "$root": {
+      "default": {
         "$type": "color",
         "$value": "{color.neutral.11}"
       },
@@ -425,27 +439,13 @@
       }
     }
   },
-  "border-radius": {
-    "sm": {
-      "$type": "number",
-      "$value": "{border-radius.sm}"
-    },
-    "md": {
-      "$type": "number",
-      "$value": "{border-radius.md}"
-    },
-    "full": {
-      "$type": "number",
-      "$value": "{border-radius.full}"
-    }
-  },
   "font": {
     "family": {
       "headline-default": {
         "$type": "string",
         "$value": "{font.font-family.Roboto}"
       },
-      "headline-styled": {
+      "headline-serif": {
         "$type": "string",
         "$value": "{font.font-family.Playfair Display}"
       },
