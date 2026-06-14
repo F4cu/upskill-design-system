@@ -1,6 +1,7 @@
 # ADR-001 — Component Metadata Schema for Machine-Readable Design System
 
 **Date:** 2026-06-11
+**Amended:** 2026-06-14
 **Status:** `accepted`
 
 ## Context
@@ -24,13 +25,17 @@ The schema structure was synthesised from three sources:
 
 All components in `packages/components/src/` will ship with a co-located `ComponentName.metadata.json` file validated against `packages/components/component.schema.json`.
 
-The schema defines ten top-level sections: `component`, `status`, `usage`, `anatomy`, `tokens`, `variants`, `states`, `accessibility`, `relationships`, and `aiHints`.
+The schema defines seven required top-level properties: `component`, `usage`, `variants`, `states`, `tokens`, `accessibility`, and `relationships`.
 
 Key design choices:
+- `status` (`draft` / `stable` / `deprecated`) lives inside `component.status`, not as a top-level section — status is a property of the component itself, not a parallel concern
+- `anatomy` was removed; structural documentation is human-readable and doesn't reduce agent token cost — the schema focuses on machine-readable guidance only
+- `aiHints` and `generativeRules` were removed; agent guidance is distributed across `usage.keywords`, `usage.when`, `relationships.compositionPatterns`, and `relationships.layoutBehavior` where it carries structural meaning rather than being a catch-all section
+- `usage` splits agent guidance into `keywords` (intent-matching terms) and `when` (scenario guidance), replacing the earlier `useCases` array
 - `usage.antiPatterns` requires all three fields (`scenario`, `reason`, `alternative`) — partial guidance is not useful to an agent
-- `tokens` uses semantic paths (e.g. `color.background.button.$root`) not primitives — aligns with the three-layer token model
-- `figmaNodeId` is included as an optional field to support Figma ↔ component traceability in Phase 3
-- `status` (`draft` / `stable` / `deprecated`) enables Airtable governance and drift detection
+- `relationships` is the richest section for layout generation: `accepts` and `containedBy` enforce parent-child constraints; `neverPairWith` prevents illegal sibling combinations; `compositionPatterns` provides named, tested starting points; `layoutBehavior` describes fill/hug/fixed width and display type
+- `tokens` categorises semantic paths by type (`color`, `spacing`, `typography`, `borderRadius`, `other`) — aligns with the three-layer token model and supports deprecation analysis
+- `figmaNodeId` is an optional field inside `component` to support Figma ↔ component traceability in Phase 3
 - `additionalProperties: false` is enforced throughout — schema drift is caught at validation time
 
 The schema must be defined and reviewed before any component is built so that the first component (Button) establishes the pattern correctly.
@@ -41,4 +46,6 @@ The schema must be defined and reviewed before any component is built so that th
 - The schema becomes a contract: changes to it are breaking for any tooling built on top (MCP server, Airtable sync, Storybook metadata panel)
 - Agents consuming this system get reliable, token-efficient context without needing to parse implementation code
 - The `tokens` section creates a living map of which semantic tokens are actually in use — useful for deprecation analysis
+- The expanded `relationships` section is the primary input for the layout generation agentic moment — `accepts`/`containedBy` are structural rules an agent must not violate
+- Removing `anatomy` reduces authoring overhead without losing machine-readable value; human-readable anatomy can live in Storybook stories instead
 - Schema validation can be added to CI as a lightweight check alongside the token build
