@@ -5,7 +5,7 @@ import { Inline } from '../components/Inline'
 import '../styles/grid.css'
 
 const meta = {
-  title: 'Layout/Grid',
+  title: 'Layout/Examples',
   parameters: {
     layout: 'fullscreen',
   },
@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>
 const PlaceholderCard = ({ title, body }: { title: string; body: string }) => (
   <Box
     padding="lg"
-    style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: '8px', height: '100%' }}
+    style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: 'var(--ds-border-radius-sm)', height: '100%' }}
   >
     <Stack gap="xs">
       <div style={{ fontFamily: 'var(--ds-font-family-headline-default)', fontWeight: 'var(--ds-font-weight-semibold)', fontSize: 'var(--ds-font-size-title-small)' }}>
@@ -31,6 +31,7 @@ const PlaceholderCard = ({ title, body }: { title: string; body: string }) => (
 )
 
 export const PageSection: Story = {
+  name: 'Landing page',
   render: () => (
     <Box style={{ background: 'var(--ds-color-background-container-page)', minHeight: '100vh' }}>
       {/* Page header */}
@@ -63,10 +64,10 @@ export const PageSection: Story = {
               Hands-on courses for product teams. Ship faster, build better.
             </div>
             <Inline gap="sm" justify="center">
-              <div style={{ background: 'var(--ds-color-background-button-default)', color: '#fff', padding: 'var(--ds-space-inset-sm) var(--ds-space-inset-xl)', borderRadius: '6px', fontSize: 'var(--ds-font-size-label)', cursor: 'pointer' }}>
+              <div style={{ background: 'var(--ds-color-background-button-default)', color: '#fff', padding: 'var(--ds-space-inset-sm) var(--ds-space-inset-xl)', borderRadius: 'var(--ds-border-radius-xs)', fontSize: 'var(--ds-font-size-label)', cursor: 'pointer' }}>
                 Start learning
               </div>
-              <div style={{ border: '1px solid var(--ds-color-background-button-default)', color: 'var(--ds-color-text-brand)', padding: 'var(--ds-space-inset-sm) var(--ds-space-inset-xl)', borderRadius: '6px', fontSize: 'var(--ds-font-size-label)', cursor: 'pointer' }}>
+              <div style={{ border: '1px solid var(--ds-color-background-button-default)', color: 'var(--ds-color-text-brand)', padding: 'var(--ds-space-inset-sm) var(--ds-space-inset-xl)', borderRadius: 'var(--ds-border-radius-xs)', fontSize: 'var(--ds-font-size-label)', cursor: 'pointer' }}>
                 Browse courses
               </div>
             </Inline>

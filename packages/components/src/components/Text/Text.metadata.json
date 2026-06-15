@@ -1,0 +1,92 @@
+{
+  "component": {
+    "name": "Text",
+    "category": "primitive",
+    "type": "typography",
+    "status": "stable",
+    "description": "Renders body-level text using semantic size tokens. Covers body copy, small text, metadata, and label sizes. Polymorphic via the as prop. Does not add margin.",
+    "figmaNodeId": ""
+  },
+
+  "usage": {
+    "keywords": ["text", "body", "paragraph", "label", "metadata", "copy", "prose"],
+    "when": [
+      "Rendering body copy, descriptions, or explanatory prose",
+      "Rendering UI labels that are not interactive (use Button for clickable labels)",
+      "Rendering supporting metadata such as timestamps, counts, or secondary context"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Text for page headings or section titles",
+        "reason": "Text is sized for body content. Heading sizes start at title-small.",
+        "alternative": "Use Heading with size title-small, subheader, headline, headline-serif, or display"
+      },
+      {
+        "scenario": "Wrapping Text in another Text",
+        "reason": "Text is a leaf node. Nesting creates redundant markup.",
+        "alternative": "Place both Text elements inside a Stack or Inline"
+      }
+    ]
+  },
+
+  "variants": {
+    "options": ["body-default", "body-small", "metadata", "label"],
+    "default": "body-default",
+    "purpose": {
+      "body-default": "Standard body copy. 1rem, regular weight, 1.5 line-height.",
+      "body-small": "Secondary body text or sidebar content. 0.875rem.",
+      "metadata": "Supporting details such as timestamps, counts, tags. 0.875rem.",
+      "label": "UI labels for form fields and controls. 1rem, medium weight, single line-height."
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static text — no interactive states." }
+  ],
+
+  "tokens": {
+    "typography": [
+      "font.family.body",
+      "font.size.body-default",
+      "font.size.body-small",
+      "font.size.metadata",
+      "font.size.label",
+      "font.weight.regular",
+      "font.weight.medium",
+      "font.line-height.body-default",
+      "font.line-height.body-single"
+    ],
+    "color": [
+      "color.text.default",
+      "color.text.subtle",
+      "color.text.brand",
+      "color.text.disabled"
+    ]
+  },
+
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": [],
+    "notes": "Use the as prop to select a semantically meaningful element when needed (e.g. as=span for inline text, as=p for block paragraphs — p is the default)."
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Inline", "Card", "Heading"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "body-section",
+        "description": "A Heading followed by Text inside a Stack to form a titled content block.",
+        "tree": "Stack(gap=sm) > [Heading(size=headline), Text(size=body-default)]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

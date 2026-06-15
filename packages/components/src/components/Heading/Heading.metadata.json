@@ -1,0 +1,103 @@
+{
+  "component": {
+    "name": "Heading",
+    "category": "primitive",
+    "type": "typography",
+    "status": "stable",
+    "description": "Renders heading-level text using title and display size tokens. The as prop controls semantic HTML level (h1–h6); the size prop controls visual appearance independently. Does not add margin.",
+    "figmaNodeId": ""
+  },
+
+  "usage": {
+    "keywords": ["heading", "title", "headline", "display", "section", "h1", "h2", "h3"],
+    "when": [
+      "Labelling a page, section, or content region with a heading",
+      "Rendering a display-scale hero headline",
+      "Introducing a content block that a Text component will follow"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Choosing size to match visual hierarchy instead of semantic level",
+        "reason": "size and as are independent — use as for document structure and size for visual scale",
+        "alternative": "Set as to the correct heading level (h1 for the page title, h2 for sections, etc.) then choose size independently"
+      },
+      {
+        "scenario": "Using Heading for body copy or labels",
+        "reason": "Heading sizes are designed for titles; body copy and labels have their own tokens",
+        "alternative": "Use Text with size body-default, body-small, metadata, or label"
+      }
+    ]
+  },
+
+  "variants": {
+    "options": ["title-small", "subheader", "headline", "headline-serif", "display"],
+    "default": "headline",
+    "purpose": {
+      "title-small": "Card titles, widget headers. 1.125rem semibold.",
+      "subheader": "Section sub-labels or feature callouts. 1.375rem semibold.",
+      "headline": "Primary section headings. 1.625rem bold.",
+      "headline-serif": "Editorial or feature headings in the serif typeface. 1.75rem medium.",
+      "display": "Hero headlines. 2rem serif, medium weight, tight leading."
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static heading — no interactive states." }
+  ],
+
+  "tokens": {
+    "typography": [
+      "font.family.headline-default",
+      "font.family.headline-serif",
+      "font.size.title-small",
+      "font.size.subheader",
+      "font.size.headline",
+      "font.size.headline-serif",
+      "font.size.display",
+      "font.weight.semibold",
+      "font.weight.bold",
+      "font.weight.medium",
+      "font.line-height.title-default",
+      "font.line-height.subheader-default",
+      "font.line-height.headline-default",
+      "font.line-height.headline-serif",
+      "font.line-height.display-default"
+    ],
+    "color": [
+      "color.text.default",
+      "color.text.subtle",
+      "color.text.brand"
+    ]
+  },
+
+  "accessibility": {
+    "role": "heading",
+    "ariaAttributes": [],
+    "keyboardInteractions": [],
+    "notes": "Always set as to the correct heading level for document outline. Size and as are deliberately decoupled so visual scale never forces a skip in heading levels."
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Inline", "Card"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "titled-section",
+        "description": "A Heading followed by Text inside a Stack to form a titled content block.",
+        "tree": "Stack(gap=sm) > [Heading(size=headline, as=h2), Text(size=body-default)]"
+      },
+      {
+        "name": "hero-block",
+        "description": "A display-scale heading centered in a padded Box with supporting Text and an Inline of actions.",
+        "tree": "Box(paddingY=xxl) > Stack(gap=md, align=center) > [Heading(size=display, as=h1), Text(size=subheader, color=subtle), Inline(gap=sm) > [Button, Button]]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

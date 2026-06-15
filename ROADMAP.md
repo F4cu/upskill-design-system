@@ -73,13 +73,13 @@ Lite in two ways:
 - [x] Storybook: `Layout/Grid` page section story (exit condition), `Stack`/`Inline` gap-variant stories, `Box` padding-scale story
 - [-] Wire `storybook-design-token` to SD CSS output — blocked: npm workspace has storybook@8 at root conflicting with storybook@10 in components; token showcase is already handled by existing MDX stories (Colors, Spacing, Typography, BorderRadius). Revisit when upgrading the npm workspace to a consistent Storybook version.
 
-**Exit condition:** a sample page layout renders in Storybook using only `Box`/`Stack`/`Inline` and the grid utility — no ad-hoc CSS.
+**Exit condition (met):** a sample page layout renders in Storybook using only `Box`/`Stack`/`Inline` and the grid utility — no ad-hoc CSS.
 
 ## Phase 4 — Core Components
 
 > Establish the full pattern — token → CSS Module → component → metadata → story → Code Connect — so every later component has a template.
 
-- [ ] `Text`, `Heading` — consume font device tokens and unitless line-heights
+- [x] `Text`, `Heading` — consume font device tokens and unitless line-heights
 - [ ] `Icon` — single wrapper over a small fixed set of inline SVGs (hand-picked, no icon-library dependency); `currentColor` fill so it inherits text color; `size` prop maps to `size.*` tokens. Add a semantic `size.icon.*` alias if more than one component needs the same icon size
 - [ ] `Button` — semantic color tokens, interaction states, size variants via `space.inset.*`; optional leading `Icon`
 - [ ] Complete metadata file per component

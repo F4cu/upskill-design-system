@@ -1,0 +1,32 @@
+.text {
+  color: var(--_color, var(--ds-color-text-default));
+  margin: 0;
+}
+
+.body-default {
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-body-default);
+  font-weight: var(--ds-font-weight-regular);
+  line-height: var(--ds-font-line-height-body-default);
+}
+
+.body-small {
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-body-small);
+  font-weight: var(--ds-font-weight-regular);
+  line-height: var(--ds-font-line-height-body-default);
+}
+
+.metadata {
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-metadata);
+  font-weight: var(--ds-font-weight-regular);
+  line-height: var(--ds-font-line-height-body-default);
+}
+
+.label {
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-label);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: var(--ds-font-line-height-body-single);
+}

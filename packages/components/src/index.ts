@@ -6,3 +6,9 @@ export type { StackProps } from './components/Stack'
 
 export { Inline } from './components/Inline'
 export type { InlineProps } from './components/Inline'
+
+export { Text } from './components/Text'
+export type { TextProps } from './components/Text'
+
+export { Heading } from './components/Heading'
+export type { HeadingProps } from './components/Heading'
