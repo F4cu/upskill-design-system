@@ -30,10 +30,10 @@ const PRIMITIVE_FIELDS = {
 
 const SEMANTIC_FIELDS = {
   tokenName: "Token name",
-  lightValueName: "Light value name",
-  lightValue: "Light value",
-  darkValueName: "Dark value name",
-  darkValue: "Dark value",
+  lightValueName: "Light theme alias",
+  lightValue: "Light theme value",
+  darkValueName: "Dark theme alias",
+  darkValue: "Dark theme value",
 };
 
 function validateEnv() {
@@ -94,16 +94,13 @@ function flattenPrimitives(node, prefix = "") {
 
 function flattenSemantic(lightNode, darkNode, primitives, lightTree, darkTree, prefix = "") {
   const records = [];
-  // Union keys from both trees so dark-only tokens are not missed.
-  // $root is renamed to 'root' to match the CSS output (--ds-color-brand-root etc.).
   const allKeys = new Set([
     ...Object.keys(lightNode ?? {}),
     ...Object.keys(darkNode ?? {}),
   ]);
 
   for (const key of allKeys) {
-    const pathKey = key === "$root" ? "root" : key;
-    const tokenPath = prefix ? `${prefix}.${pathKey}` : pathKey;
+    const tokenPath = prefix ? `${prefix}.${key}` : key;
     const lightVal = lightNode?.[key];
     const darkVal  = darkNode?.[key];
     const either   = lightVal ?? darkVal;
@@ -111,12 +108,11 @@ function flattenSemantic(lightNode, darkNode, primitives, lightTree, darkTree, p
     if (either?.$type && (lightVal?.$value !== undefined || darkVal?.$value !== undefined)) {
       const lightAlias = lightVal?.$value ?? "";
       const darkAlias  = darkVal?.$value  ?? "";
-      const stripBraces = (s) => (typeof s === "string" ? s.replace(/^\{|\}$/g, "") : "");
       records.push({
         tokenName:      tokenPath,
-        lightValueName: stripBraces(lightAlias),
+        lightValueName: String(lightAlias),
         lightValue:     lightAlias ? resolveAlias(String(lightAlias), lightTree, primitives) : "",
-        darkValueName:  stripBraces(darkAlias),
+        darkValueName:  String(darkAlias),
         darkValue:      darkAlias  ? resolveAlias(String(darkAlias),  darkTree,  primitives) : "",
         usage:     tokenPath.split(".")[0],
         component: tokenPath.split(".")[1] ?? "",
@@ -184,35 +180,44 @@ function buildDeviceMap(tokens) {
   );
 }
 
-// --- Orphan detection ---
+// --- Orphan detection and removal ---
 
-async function listAllKeys(tableName, keyField) {
-  const keys = [];
+async function listAllRecords(tableName, keyField) {
+  const records = [];
   let offset;
   do {
     const url = new URL(tableUrl(tableName));
     url.searchParams.set("fields[]", keyField);
     if (offset) url.searchParams.set("offset", offset);
     const res = await fetch(url, { headers: airtableHeaders() });
-    if (!res.ok) return keys;
+    if (!res.ok) return records;
     const data = await res.json();
     for (const r of data.records ?? []) {
-      if (r.fields[keyField]) keys.push(r.fields[keyField]);
+      records.push({ id: r.id, key: r.fields[keyField] ?? "" });
     }
     offset = data.offset;
   } while (offset);
-  return keys;
+  return records;
 }
 
-async function logOrphans(tableName, keyField, currentKeys) {
-  const existing = await listAllKeys(tableName, keyField);
+async function deleteOrphans(tableName, keyField, currentKeys) {
+  const existing = await listAllRecords(tableName, keyField);
   const currentSet = new Set(currentKeys);
-  const orphans = existing.filter((k) => !currentSet.has(k));
-  if (orphans.length > 0) {
-    console.warn(`  ⚠ ${orphans.length} orphan(s) in "${tableName}" (renamed/removed tokens with stale records):`);
-    for (const k of orphans) console.warn(`    - ${k}`);
-  } else {
+  const orphans = existing.filter((r) => !currentSet.has(r.key));
+  if (orphans.length === 0) {
     console.log(`  No orphans in "${tableName}".`);
+    return;
+  }
+  console.log(`  Deleting ${orphans.length} orphan(s) from "${tableName}":`);
+  for (const r of orphans) console.log(`    - ${r.key}`);
+
+  const BATCH = 10;
+  for (let i = 0; i < orphans.length; i += BATCH) {
+    const ids = orphans.slice(i, i + BATCH).map((r) => r.id);
+    const url = new URL(tableUrl(tableName));
+    for (const id of ids) url.searchParams.append("records[]", id);
+    const res = await fetch(url, { method: "DELETE", headers: airtableHeaders() });
+    if (!res.ok) throw new Error(`Airtable delete failed: ${res.status} ${await res.text()}`);
   }
 }
 
@@ -228,7 +233,7 @@ async function pushPrimitives() {
     [PRIMITIVE_FIELDS.value]: r.value,
     [PRIMITIVE_FIELDS.group]: r.group,
   }));
-  await logOrphans(PRIMITIVES_TABLE, PRIMITIVE_FIELDS.path, flat.map((r) => r.path));
+  await deleteOrphans(PRIMITIVES_TABLE, PRIMITIVE_FIELDS.path, flat.map((r) => r.path));
   console.log("Done.");
 }
 
@@ -248,7 +253,7 @@ async function pushSemantic() {
     Usage: r.usage,
     Component: r.component,
   }));
-  await logOrphans(SEMANTIC_TABLE, SEMANTIC_FIELDS.tokenName, records.map((r) => r.tokenName));
+  await deleteOrphans(SEMANTIC_TABLE, SEMANTIC_FIELDS.tokenName, records.map((r) => r.tokenName));
   console.log("Done.");
 }
 
@@ -289,7 +294,7 @@ async function pushDevice() {
     "Mobile alias":   r.mobileAlias,
     "Mobile value":   r.mobileValue,
   }));
-  await logOrphans(DEVICE_TABLE, "Token", records.map((r) => r.token));
+  await deleteOrphans(DEVICE_TABLE, "Token", records.map((r) => r.token));
   console.log("Done.");
 }
 
