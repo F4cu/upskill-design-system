@@ -43,6 +43,10 @@ function toCSSVar(dotPath: string): string {
   return `var(--ds-${dotPath.replace(/\./g, '-')})`
 }
 
+function toCSSVarName(dotPath: string): string {
+  return `--ds-${dotPath.replace(/\./g, '-')}`
+}
+
 // ─── Shared utilities ─────────────────────────────────────────────────────────
 
 export function remToPx(rem: string): string {
@@ -213,7 +217,7 @@ export function FontWeightTable() {
           const value = primitives[key] as string
           return (
             <tr key={key}>
-              <td><code className={styles.tokenCode}>{dotPath}</code></td>
+              <td><code className={styles.tokenCode}>{toCSSVarName(dotPath)}</code></td>
               <td className={styles.typographyPreview} style={{ fontWeight: value }}>The quick brown fox jumps over the lazy dog</td>
               <td className={styles.spacingMonoCell}>{value}</td>
             </tr>
@@ -247,7 +251,7 @@ export function LineHeightTable() {
           const value = primitives[key]
           return (
             <tr key={key}>
-              <td><code className={styles.tokenCode}>{dotPath}</code></td>
+              <td><code className={styles.tokenCode}>{toCSSVarName(dotPath)}</code></td>
               <td className={styles.spacingMonoCell}>{String(value)}</td>
               <td>{usage}</td>
             </tr>
@@ -260,24 +264,24 @@ export function LineHeightTable() {
 
 // ─── Border Radius ────────────────────────────────────────────────────────────
 
-const BORDER_RADIUS_STEPS: { key: PrimitivesKey; label: string }[] = [
-  { key: 'borderRadiusNull', label: 'null' },
-  { key: 'borderRadiusXs',   label: 'xs' },
-  { key: 'borderRadiusSm',   label: 'sm' },
-  { key: 'borderRadiusMd',   label: 'md' },
-  { key: 'borderRadiusLg',   label: 'lg' },
+const BORDER_RADIUS_STEPS: { key: PrimitivesKey; cssVar: string }[] = [
+  { key: 'borderRadiusNull', cssVar: '--ds-border-radius-null' },
+  { key: 'borderRadiusXs',   cssVar: '--ds-border-radius-xs'  },
+  { key: 'borderRadiusSm',   cssVar: '--ds-border-radius-sm'  },
+  { key: 'borderRadiusMd',   cssVar: '--ds-border-radius-md'  },
+  { key: 'borderRadiusLg',   cssVar: '--ds-border-radius-lg'  },
 ]
 
 export function BorderRadiusGrid() {
   return (
     <div className={styles.borderRadiusGrid}>
-      {BORDER_RADIUS_STEPS.map(({ key, label }) => {
+      {BORDER_RADIUS_STEPS.map(({ key, cssVar }) => {
         const value = primitives[key] as string
         return (
-          <CopyToken key={key} value={key}>
+          <CopyToken key={key} value={cssVar}>
             <div className={styles.borderRadiusItem}>
               <div className={styles.borderRadiusSwatch} style={{ borderRadius: value }} />
-              <div className={styles.borderRadiusLabel}>{label}</div>
+              <div className={styles.borderRadiusLabel}>{cssVar}</div>
               <div className={styles.borderRadiusValue}>{value}</div>
             </div>
           </CopyToken>
@@ -314,7 +318,7 @@ export function ColorScaleTable({
         <tbody>
           {entries.map(([step, hex]) => (
             <tr key={step}>
-              <td><code className={styles.tokenCode}>{tokenName(step)}</code></td>
+              <td><code className={styles.tokenCode}>{toCSSVarName(tokenName(step))}</code></td>
               <td>
                 <div className={styles.colorSwatchWrapper}>
                   <span className={styles.colorSwatch} style={{ backgroundColor: hex as string }} />
@@ -467,7 +471,7 @@ export function SemanticSpacingTable({ category }: { category: 'inline' | 'stack
       <tbody>
         {steps.map(({ token, cssVar, desktop, tablet, mobile }) => (
           <tr key={token}>
-            <td><code className={styles.tokenCode}>{token}</code></td>
+            <td><code className={styles.tokenCode}>{toCSSVarName(token)}</code></td>
             <td><SemanticPreview category={category} cssVar={cssVar} /></td>
             <td className={styles.spacingMonoCell}>{desktop}</td>
             <td className={`${styles.spacingMonoCell} ${tablet !== desktop ? styles.semanticChanged : styles.semanticSame}`}>
@@ -485,19 +489,19 @@ export function SemanticSpacingTable({ category }: { category: 'inline' | 'stack
 
 // ─── Spacing Table ────────────────────────────────────────────────────────────
 
-const SPACE_STEPS: { key: PrimitivesKey; dotPath: string }[] = [
-  { key: 'space000', dotPath: 'space.000' },
-  { key: 'space050', dotPath: 'space.050' },
-  { key: 'space100', dotPath: 'space.100' },
-  { key: 'space150', dotPath: 'space.150' },
-  { key: 'space200', dotPath: 'space.200' },
-  { key: 'space250', dotPath: 'space.250' },
-  { key: 'space300', dotPath: 'space.300' },
-  { key: 'space400', dotPath: 'space.400' },
-  { key: 'space500', dotPath: 'space.500' },
-  { key: 'space600', dotPath: 'space.600' },
-  { key: 'space700', dotPath: 'space.700' },
-  { key: 'space800', dotPath: 'space.800' },
+const SPACE_STEPS: { key: PrimitivesKey; cssVar: string }[] = [
+  { key: 'space000', cssVar: '--ds-space-000' },
+  { key: 'space050', cssVar: '--ds-space-050' },
+  { key: 'space100', cssVar: '--ds-space-100' },
+  { key: 'space150', cssVar: '--ds-space-150' },
+  { key: 'space200', cssVar: '--ds-space-200' },
+  { key: 'space250', cssVar: '--ds-space-250' },
+  { key: 'space300', cssVar: '--ds-space-300' },
+  { key: 'space400', cssVar: '--ds-space-400' },
+  { key: 'space500', cssVar: '--ds-space-500' },
+  { key: 'space600', cssVar: '--ds-space-600' },
+  { key: 'space700', cssVar: '--ds-space-700' },
+  { key: 'space800', cssVar: '--ds-space-800' },
 ]
 
 export function SpacingTable() {
@@ -512,11 +516,11 @@ export function SpacingTable() {
         </tr>
       </thead>
       <tbody>
-        {SPACE_STEPS.map(({ key, dotPath }) => {
+        {SPACE_STEPS.map(({ key, cssVar }) => {
           const value = primitives[key] as string
           return (
             <tr key={key}>
-              <td><code className={styles.tokenCode}>{dotPath}</code></td>
+              <td><code className={styles.tokenCode}>{cssVar}</code></td>
               <td><div className={styles.spacingPreviewBar} style={{ width: value }} /></td>
               <td className={styles.spacingMonoCell}>{value}</td>
               <td className={styles.spacingMonoCell}>{remToPx(value)}</td>
