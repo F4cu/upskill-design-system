@@ -80,8 +80,8 @@ Lite in two ways:
 > Establish the full pattern — token → CSS Module → component → metadata → story → Code Connect — so every later component has a template.
 
 - [x] `Text`, `Heading` — consume font device tokens and unitless line-heights
-- [ ] `Icon` — single wrapper over a small fixed set of inline SVGs (hand-picked, no icon-library dependency); `currentColor` fill so it inherits text color; `size` prop maps to `size.*` tokens. Add a semantic `size.icon.*` alias if more than one component needs the same icon size
-- [ ] `Button` — semantic color tokens, interaction states, size variants via `space.inset.*`; optional leading `Icon`
+- [x] `Icon` — single wrapper over a small fixed set of inline SVGs (hand-picked, no icon-library dependency); `currentColor` fill so it inherits text color; `size` prop maps to `size.*` tokens. Add a semantic `size.icon.*` alias if more than one component needs the same icon size
+- [x] `Button` — semantic color tokens, interaction states, size variants via `space.inset.*`; optional leading `Icon`
 - [ ] Complete metadata file per component
 - [ ] Code Connect: map `Button`, `Text`, `Heading` to their Figma components (one-off via Figma MCP) so design ↔ code navigation works in both directions
 - [ ] Document the component pattern in CLAUDE.md "Add a coded component" so the scaffolding moment has a template to follow

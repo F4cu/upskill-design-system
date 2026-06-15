@@ -15,3 +15,6 @@ export type { HeadingProps } from './components/Heading'
 
 export { Icon } from './components/Icon'
 export type { IconProps, IconName, IconSize } from './components/Icon'
+
+export { Button } from './components/Button'
+export type { ButtonProps, ButtonVariant, ButtonSize } from './components/Button'
