@@ -9,7 +9,7 @@
   },
 
   "usage": {
-    "keywords": ["button", "cta", "submit", "action", "trigger", "click", "confirm", "cancel"],
+    "keywords": ["button", "cta", "submit", "action", "trigger", "click", "confirm", "cancel", "icon-only", "toolbar", "save", "delete", "next", "back"],
     "when": [
       "Submitting a form",
       "Triggering a modal or dialog",
@@ -18,31 +18,36 @@
     ],
     "antiPatterns": [
       {
-        "scenario": "Using the primary variant more than once per view",
-        "reason": "Multiple primary buttons compete for attention and collapse the visual hierarchy",
-        "alternative": "Use one primary and demote the rest to secondary or ghost"
+        "scenario": "Using the default variant more than once per view section",
+        "reason": "Multiple filled buttons compete for attention and collapse the visual hierarchy",
+        "alternative": "Use one default and demote the rest to outlined"
       },
       {
         "scenario": "Replacing an anchor tag with a Button for page navigation",
         "reason": "Buttons fire actions; links navigate. Misuse breaks keyboard and screen-reader expectations",
-        "alternative": "Use an <a> element or a dedicated Link component styled with the ghost variant"
+        "alternative": "Use an <a> element styled directly — there is no ghost variant yet; do not misuse outlined as a link style"
       },
       {
-        "scenario": "Placing a full-size Button inside a data table cell",
-        "reason": "Tables need compact affordances — a full-size Button creates visual noise and breaks row rhythm",
-        "alternative": "Use an IconButton or a contextual action menu"
+        "scenario": "Placing a text Button inside a compact space such as a data table cell",
+        "reason": "Text buttons need padding and create visual noise in tight layouts",
+        "alternative": "Use Button with the square or round variant for icon-only compact actions"
+      },
+      {
+        "scenario": "Using Button for a destructive action without a confirmation step",
+        "reason": "There is no danger variant — the default filled style does not visually signal risk",
+        "alternative": "Pair a default Button with a confirmation dialog or inline warning text before the action fires"
       }
     ]
   },
 
   "variants": {
-    "options": ["primary", "secondary", "ghost", "danger"],
-    "default": "primary",
+    "options": ["default", "outlined", "square", "round"],
+    "default": "default",
     "purpose": {
-      "primary": "The single dominant action on a surface. Use once per view section.",
-      "secondary": "Supporting actions that sit alongside a primary button.",
-      "ghost": "Low-emphasis actions, navigation links styled as buttons, or actions inside dense UI.",
-      "danger": "Destructive or irreversible actions (delete, remove, revoke). Always pair with a confirmation step."
+      "default": "The primary filled action on a surface. Use once per view section — multiple filled buttons collapse visual hierarchy.",
+      "outlined": "Supporting or secondary actions that sit alongside a default button. Lower visual weight, still clearly interactive.",
+      "square": "Icon-only action in a square container. Use for compact affordances where a text label is unnecessary (e.g. toolbar actions).",
+      "round": "Icon-only action in a circular container. Use when the surrounding layout calls for a softer, pill-shaped affordance."
     }
   },
 
@@ -90,7 +95,7 @@
     "composedOf": [],
     "accepts": ["Icon"],
     "containedBy": ["Box", "Stack", "Inline", "Card"],
-    "neverPairWith": ["IconButton"],
+    "neverPairWith": [],
     "compositionPatterns": [
       {
         "name": "form-actions-row",

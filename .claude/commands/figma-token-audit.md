@@ -1,0 +1,50 @@
+# Figma token audit
+
+**Trigger:** Developer, before replacing `packages/tokens/src/primitives.json` with a fresh Figma export.
+
+**When to use:** A new Figma variable export is ready and you want to understand what will break before committing it.
+
+## Inputs (read all before starting)
+
+- Figma variables — read via Figma MCP (`get_variable_defs` or `get_design_context` on the variables page)
+- Current committed primitives — `packages/tokens/src/primitives.json`
+- Current theme aliases — `packages/tokens/src/theme/light.json`, `packages/tokens/src/theme/dark.json`
+- Token usage map — `packages/tokens/token-usage.json` (run `npm run token-usage` first if stale)
+
+## Steps
+
+1. Flatten the Figma export and the committed primitives into two path→value maps.
+2. Diff the maps:
+   - **Removed:** paths in committed but not in Figma export → check alias map for usages
+   - **Renamed:** value unchanged but path changed → check alias map for usages
+   - **Added:** paths in Figma export but not in committed → no action needed
+   - **Changed value:** path exists in both but value differs → note, no breakage
+3. For each removed or renamed token, list every file from `token-usage.json` `aliases` map that references it.
+4. Check the export for:
+   - `$extensions` blocks — must be stripped before committing
+   - Figma sRGB objects instead of hex strings — must be converted
+   - Scale mixing (e.g. a light-mode alias referencing a `dark-*` primitive)
+   - Naming violations (keys must be `kebab-case`; numeric steps must be plain string numbers)
+5. Produce the cleaned export: strip `$extensions`, convert sRGB → hex, preserve alias syntax.
+
+## Output
+
+A report with four sections:
+
+```
+## Removed / renamed tokens with active usages
+[token path] — used in [files] — ACTION REQUIRED before merging
+
+## Broken alias chains
+[semantic token] → {primitive.path} — primitive no longer exists
+
+## Hygiene issues
+[issue type]: [details]
+
+## Cleaned export
+[paste of cleaned primitives.json content, ready to write to disk]
+```
+
+## Success signal
+
+No removed or renamed token with active usages merges silently. If the report is clean, write the cleaned export to `packages/tokens/src/primitives.json`, run `npm run build:tokens`, and confirm the build passes.
