@@ -83,7 +83,7 @@ Do not commit `$extensions` to source. If a Figma export lands them in, strip be
 | **Storybook** | Component documentation, token showcase (MDX stories: colors, spacing, typography, radii), light/dark via `addon-themes` + `data-theme`. | Built |
 | **GitHub Actions** | Token build check on PR (`tokens-check.yml`); Airtable sync on merge to main (`sync-tokens.yml`). | Built |
 | **Airtable sync (code → Airtable)** | `scripts/airtable-sync.js` upserts primitives/semantic/device tokens to three tables via REST. One-directional. Runs in CI on merge. | Built |
-| **Airtable governance (Airtable → code)** | `status` / `owner` / `successor` fields per token, pulled to `governance.json` by script. | Planned (Phase 2) |
+| **Airtable governance (Airtable → code)** | `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes` fields per token, pulled to `governance.json` by script. Run `scripts/airtable-pull.js` manually before deprecation work until Phase 6 automates it. | Planned (Phase 2) |
 | **Figma → code flow** | Variables export + audit before replacing primitives; Code Connect mappings for components. | Planned (Phases 4, 7) |
 | **PR token diff comment, changelog** | Deterministic scripts in Actions. | Planned (Phase 6) |
 | **Component metadata** | JSON schema + example file exist; consumed by agentic moments. | Schema built; consumers planned |
@@ -183,6 +183,9 @@ Edit `packages/tokens/style-dictionary.config.js`. Custom transforms live alongs
 
 ### Sync tokens to Airtable
 Run `scripts/airtable-sync.js` (requires the Airtable API key in env). It upserts to the three token tables via REST. Do not replicate this with Airtable MCP calls.
+
+### Pull governance state from Airtable
+Run `scripts/airtable-pull.js` (requires the Airtable API key in env) to update `packages/tokens/governance.json`. Do this before any deprecation work — the file is the source of truth for token status, owner, and successor that agents and CI read. The `successor` field uses a dot-path to the replacement token (e.g. `color.terracotta.9`); it is nullable when a deprecated token has no direct replacement. Do not read governance state via Airtable MCP — always read the committed file.
 
 ### Add a GitHub Action
 Place workflow YAML in `.github/workflows/`. Actions call scripts and REST APIs directly — never MCP tools and never Claude. If a proposed Action seems to need judgment rather than a deterministic check, it belongs in "Agentic moments" instead.

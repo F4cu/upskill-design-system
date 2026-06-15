@@ -1,0 +1,35 @@
+{
+  "primitives": {
+    "color.terracotta.2": {
+      "status": "active",
+      "owner": null,
+      "successor": null,
+      "notes": null
+    },
+    "color.terracotta.1": {
+      "status": "active",
+      "owner": null,
+      "successor": null,
+      "notes": null
+    },
+    "color.terracotta.3": {
+      "status": "active",
+      "owner": null,
+      "successor": null,
+      "notes": null
+    },
+    "color.terracotta.10": {
+      "status": "active",
+      "owner": null,
+      "successor": null,
+      "notes": null
+    },
+    "color.terracotta.4": {
+      "status": "active",
+      "owner": null,
+      "successor": null,
+      "notes": null
+    }
+  },
+  "semantic": {}
+}

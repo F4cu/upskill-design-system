@@ -1,0 +1,510 @@
+{
+  "css": {
+    "--ds-font-family-body": [
+      "packages/components/src/styles/reset.css",
+      "packages/components/src/tokens/tokenComponents.module.css"
+    ],
+    "--ds-color-text-default": [
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-color-background-container-root": [
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-font-line-height-body-default": [
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-color-text-link": [
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-color-text-link-hover": [
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-color-neutral-4": [
+      "packages/components/src/tokens/tokenComponents.module.css"
+    ],
+    "--ds-color-brand-9": [
+      "packages/components/src/tokens/tokenComponents.module.css"
+    ]
+  },
+  "aliases": {
+    "color.terracotta.dark.1": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.2": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.3": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.4": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.5": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.6": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.7": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.8": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.9": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.10": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.11": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.terracotta.dark.12": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.brand.9": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.dark.1": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.2": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.3": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.4": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.5": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.6": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.7": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.8": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.9": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.10": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.teal.dark.11": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.dark.12": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.accent.9": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.dark.1": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.2": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.dark.3": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.4": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.5": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.6": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.7": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.8": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.9": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.10": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.11": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.sand.dark.12": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.white.alpha.4": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.white.alpha.1": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.black.0": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.neutral.3": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.amber.dark.5": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.gold.dark.9": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.grey.dark.9": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.brand.default": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.brand.10": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.neutral.8": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.neutral.12": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.neutral.11": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.accent.11": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.brand.11": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.2": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.neutral.5": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.amber.dark.11": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.white.alpha.5": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.neutral.10": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.accent.default": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.white.alpha.2": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.border.subtle": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.amber.dark.6": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.neutral.7": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.white.1": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.amber.7": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "font.font-family.Roboto": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.1": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.2": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.3": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.4": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.5": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.6": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.7": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.8": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.9": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.10": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.11": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.terracotta.12": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.1": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.2": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.3": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.4": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.5": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.6": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.7": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.8": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.9": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.10": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.11": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.teal.12": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.1": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.3": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.4": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.5": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.6": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.7": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.8": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.9": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.10": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.11": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.sand.12": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.black.alpha.3": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.black.alpha.1": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.gold.2": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.gold.3": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.gold.1": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.amber.2": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.gold.7": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.grey.6": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.accent.12": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.amber.11": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.black.alpha.5": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.amber.6": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "space.050": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "space.100": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "space.200": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "space.300": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "space.400": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "space.600": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "space.500": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "space.150": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "space.250": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.size.3": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.size.2": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.size.4": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.size.6": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.size.8": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.size.9": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json"
+    ],
+    "font.size.11": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "font.weight.regular": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.weight.medium": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.weight.semibold": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.weight.bold": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.line-height.none": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.line-height.relaxed": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.line-height.tight": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.line-height.default": [
+      "packages/tokens/src/device/desktop.json",
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.size.5": [
+      "packages/tokens/src/device/mobile.json",
+      "packages/tokens/src/device/tablet.json"
+    ],
+    "font.size.7": [
+      "packages/tokens/src/device/mobile.json"
+    ],
+    "font.size.10": [
+      "packages/tokens/src/device/tablet.json"
+    ]
+  }
+}

@@ -38,7 +38,7 @@ Lite in two ways:
 - [x] ADR: layout tokens = values (spacing, grid config), not CSS properties
 - [x] ADR: `space` vs `size` — `space` for spacing (gap, padding, margin); `size` for component dimensions (icon, avatar)
 - [x] Review `space.inline` duplication across breakpoints
-- [-] Audit semantic token naming — tokens should describe intent, not raw scale positions or ambiguous names
+- [x] Audit semantic token naming — tokens should describe intent, not raw scale positions or ambiguous names
 
 **Exit condition:** naming audit complete and any renames merged. Token names are stable enough that components and Airtable records can reference them without churn.
 
@@ -46,11 +46,16 @@ Lite in two ways:
 
 > Make the system's state readable by an agent **before** components exist, so every component is born with structured context around it. No MCP required for any of this — plain scripts and committed JSON.
 
-- [ ] Airtable governance fields on token records: `status` (active / deprecated), `owner`, `successor` (token path), `notes`
-- [ ] `scripts/airtable-pull.js` — dump governance state to `packages/tokens/governance.json` via REST, so Claude and CI read Airtable state from a committed file, not live MCP calls
-- [ ] `scripts/token-usage.js` — scan `packages/components` for `var(--ds-*)` references, output `token → [files]` JSON. Feeds the deprecation moment and the PR diff comment
+**Governance infra — do these first; they unblock the deprecation agentic moment:**
+
+- [x] Airtable governance fields on token records: `status` (`active` | `deprecated`), `owner`, `successor` (dot-path to replacement token, e.g. `color.terracotta.9`; nullable — not every deprecated token has a direct successor), `notes`
+- [x] `scripts/airtable-pull.js` — dump governance state to `packages/tokens/governance.json` via REST, so Claude and CI read Airtable state from a committed file, not live MCP calls. Until Phase 6 automates this, run it manually before any deprecation work.
+- [x] `scripts/token-usage.js` — output `token-usage.json` with two maps: (1) **CSS usages**: scan `packages/components` for `var(--ds-*)` references → `token → [files]`; (2) **alias usages**: scan token source JSON for `{path.to.token}` references → `token → [files]`. Both maps feed the deprecation agentic moment and the PR diff comment.
+
+**Metadata and prompts — begin once the token layer is stable:**
+
 - [ ] Validate the metadata schema with one end-to-end agent prompt — give Claude only a metadata file and ask it to explain when (not) to use the component; fix the schema where the answer is wrong
-- [ ] Write the three agentic-moment definitions as prompt files in `.claude/commands/` (trigger, inputs, output, success signal — see Phase 7)
+- [ ] Write the four agentic-moment definitions as prompt files in `.claude/commands/` (trigger, inputs, output, success signal — see Phase 7)
 
 **Exit condition:** Claude can answer "what is this token's status, who owns it, and where is it used" from files in the repo alone, with zero MCP calls. Additionally, given all component metadata files, Claude can produce a valid React tree from a one-paragraph layout brief — selecting the right components, respecting `accepts`/`containedBy` constraints, and drawing from named `compositionPatterns`. If the output requires manual structural correction, the metadata is not rich enough and must be revised before Phase 3 begins.
 
