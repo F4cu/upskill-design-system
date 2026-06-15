@@ -12,3 +12,6 @@ export type { TextProps } from './components/Text'
 
 export { Heading } from './components/Heading'
 export type { HeadingProps } from './components/Heading'
+
+export { Icon } from './components/Icon'
+export type { IconProps, IconName, IconSize } from './components/Icon'

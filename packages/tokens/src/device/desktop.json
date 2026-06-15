@@ -228,5 +228,17 @@
         }
       }
     }
+  },
+  "size": {
+    "icon": {
+      "sm": {
+        "$type": "number",
+        "$value": "{size.200}"
+      },
+      "md": {
+        "$type": "number",
+        "$value": "{size.300}"
+      }
+    }
   }
 }

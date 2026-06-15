@@ -1,0 +1,82 @@
+{
+  "component": {
+    "name": "Icon",
+    "category": "primitive",
+    "type": "media",
+    "status": "stable",
+    "description": "Renders one of 20 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
+    "figmaNodeId": "96:11108"
+  },
+
+  "usage": {
+    "keywords": ["icon", "svg", "glyph", "symbol", "pictogram"],
+    "when": [
+      "Providing a visual cue alongside a label (Button leading icon, form field prefix)",
+      "Indicating direction or action in a compact space (chevrons, plus, minus)",
+      "Communicating theme state (sun/moon-star for light/dark toggle)"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Icon as the sole accessible label for an interactive control",
+        "reason": "aria-hidden=true by default; a visually icon-only button has no accessible name.",
+        "alternative": "Pass the label prop to set aria-label, or wrap in a Button with a visually-hidden text label."
+      },
+      {
+        "scenario": "Adding icons outside the fixed set",
+        "reason": "The set is intentionally small. Adding arbitrary icons bloats the bundle and fragments the visual language.",
+        "alternative": "Choose the closest existing icon, or propose expanding the fixed set deliberately."
+      },
+      {
+        "scenario": "Setting a raw color value on the Icon element",
+        "reason": "Icon uses currentColor — color must be set on an ancestor element using a semantic token.",
+        "alternative": "Wrap in a span with color: var(--ds-color-text-brand) or similar."
+      }
+    ]
+  },
+
+  "variants": {
+    "options": ["sm", "md"],
+    "default": "md",
+    "purpose": {
+      "sm": "16px — use inside dense UI elements such as tags, badges, or inline metadata.",
+      "md": "24px — default; use alongside body text, in buttons, and as standalone affordances."
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static — no interactive states on the icon itself." }
+  ],
+
+  "tokens": {
+    "size": [
+      "size.icon.sm",
+      "size.icon.md"
+    ]
+  },
+
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": ["aria-hidden (default true)", "aria-label (when label prop provided)", "role=img (when label prop provided)"],
+    "keyboardInteractions": [],
+    "notes": "Icons are decorative by default (aria-hidden=true). When an Icon is the only content conveying meaning, pass the label prop to add aria-label and role=img."
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Inline", "Button", "Card"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "icon-label-pair",
+        "description": "An Icon followed by a Text label inside an Inline, used for navigation items and feature callouts.",
+        "tree": "Inline(gap=xs, align=center) > [Icon(size=md), Text(size=body-default)]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fixed",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}

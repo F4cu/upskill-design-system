@@ -1,0 +1,14 @@
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--_size);
+  height: var(--_size);
+}
+
+.md {
+  --_size: var(--ds-size-icon-md);
+}
+
+.sm {
+  --_size: var(--ds-size-icon-sm);
+}
