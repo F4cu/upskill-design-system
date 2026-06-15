@@ -1,0 +1,12 @@
+.inline {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--_gap, 0);
+  align-items: var(--_align, center);
+  justify-content: var(--_justify, flex-start);
+}
+
+.noWrap {
+  flex-wrap: nowrap;
+}

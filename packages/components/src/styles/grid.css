@@ -1,0 +1,13 @@
+.container {
+  width: 100%;
+  max-width: 90rem; /* 1440px — mirrors --ds-grid-screen-size */
+  margin-inline: auto;
+  padding-inline: var(--ds-grid-margin);
+}
+
+/* Lay children onto the responsive column grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ds-grid-columns), 1fr);
+  column-gap: var(--ds-grid-gutter);
+}

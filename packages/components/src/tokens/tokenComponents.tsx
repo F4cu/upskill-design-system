@@ -103,71 +103,45 @@ export function FontFamilyGrid() {
 
 // ─── Typescale Table ─────────────────────────────────────────────────────────
 
-const FONT_SIZE_MAP: Record<string, string> = {
-  'font.size.1':  primitives.fontSize1  as string,
-  'font.size.2':  primitives.fontSize2  as string,
-  'font.size.3':  primitives.fontSize3  as string,
-  'font.size.4':  primitives.fontSize4  as string,
-  'font.size.5':  primitives.fontSize5  as string,
-  'font.size.6':  primitives.fontSize6  as string,
-  'font.size.7':  primitives.fontSize7  as string,
-  'font.size.8':  primitives.fontSize8  as string,
-  'font.size.9':  primitives.fontSize9  as string,
-  'font.size.10': primitives.fontSize10 as string,
-  'font.size.11': primitives.fontSize11 as string,
-}
-
 type TypescaleRow = {
   label: string
+  cssVar: string
   fontFamily: string
   fontFamilyLabel: string
   fontWeight: number
   fontWeightLabel: string
-  desktop: string
-  tablet: string
-  mobile: string
-}
-
-// Extract the primitive font-size token name (e.g. 'font.size.8') that a
-// device tier assigns to the given semantic size key (e.g. 'header').
-function deviceFontSizeToken(device: unknown, key: string): string {
-  const node = navJSON(device, `font.size.${key}`) as { $value?: string } | undefined
-  const alias = node?.$value ?? ''
-  return alias.startsWith('{') ? alias.slice(1, -1) : ''
+  desktopSize: string
+  tabletSize: string
+  mobileSize: string
 }
 
 const TYPESCALE_CONFIG: {
   key: string; label: string; fontFamily: string; fontFamilyLabel: string
   fontWeight: number; fontWeightLabel: string
 }[] = [
-  { key: 'body-small',    label: 'Body Small',    fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
-  { key: 'body-default',  label: 'Body Default',  fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
-  { key: 'title-small',   label: 'Title Small',   fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 500, fontWeightLabel: 'Medium'   },
-  { key: 'subheader',     label: 'Subheader',     fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 600, fontWeightLabel: 'Semibold' },
-  { key: 'header',        label: 'Header',        fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 700, fontWeightLabel: 'Bold'     },
-  { key: 'header-styled', label: 'Header Styled', fontFamily: "'Playfair Display', serif", fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium'   },
-  { key: 'display',       label: 'Display',       fontFamily: "'Playfair Display', serif", fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium'   },
+  { key: 'body-small',     label: 'Body Small',     fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
+  { key: 'body-default',   label: 'Body Default',   fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
+  { key: 'metadata',       label: 'Metadata',       fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
+  { key: 'label',          label: 'Label',          fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 500, fontWeightLabel: 'Medium'   },
+  { key: 'title-small',    label: 'Title Small',    fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 500, fontWeightLabel: 'Medium'   },
+  { key: 'subheader',      label: 'Subheader',      fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 600, fontWeightLabel: 'Semibold' },
+  { key: 'headline',       label: 'Headline',       fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 700, fontWeightLabel: 'Bold'     },
+  { key: 'headline-serif', label: 'Headline Serif', fontFamily: "'Playfair Display', serif", fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium'   },
+  { key: 'display',        label: 'Display',        fontFamily: "'Playfair Display', serif", fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium'   },
 ]
 
 const TYPESCALE_ROWS: TypescaleRow[] = TYPESCALE_CONFIG.map(({ key, ...rest }) => {
-  const desktopToken = deviceFontSizeToken(desktopTokens, key)
-  return {
-    ...rest,
-    desktop: desktopToken,
-    tablet:  deviceFontSizeToken(tabletTokens, key) || desktopToken,
-    mobile:  deviceFontSizeToken(mobileTokens, key) || desktopToken,
-  }
+  const desktopSize = deviceVal(desktopTokens, `font.size.${key}`)
+  const tabletSize  = deviceVal(tabletTokens,  `font.size.${key}`) || desktopSize
+  const mobileSize  = deviceVal(mobileTokens,  `font.size.${key}`) || desktopSize
+  return { ...rest, cssVar: `--ds-font-size-${key}`, desktopSize, tabletSize, mobileSize }
 })
 
-function TypescaleSizeCell({ token, state }: { token: string; state: 'normal' | 'dimmed' | 'changed' }) {
-  const value = FONT_SIZE_MAP[token]
-  const cls = state === 'dimmed' ? styles.typescaleSizeDimmed
-            : state === 'changed' ? styles.typescaleSizeChanged
-            : styles.typescaleSize
+function SizeCell({ size, changed }: { size: string; changed: boolean }) {
   return (
-    <div className={cls}>
-      <code className={styles.tokenCode}>{token}</code>
-      <span className={styles.typescaleSizeValue}> / {remToPx(value)}</span>
+    <div className={changed ? styles.typescaleSizeChanged : styles.typescaleSizeDimmed}>
+      <span className={styles.typescaleSizeValue}>{size}</span>
+      {changed && <span className={styles.typescaleSizeValue}> / {remToPx(size)}</span>}
     </div>
   )
 }
@@ -178,6 +152,7 @@ export function TypescaleTable() {
       <thead>
         <tr>
           <th>Preview</th>
+          <th>Token</th>
           <th>Font</th>
           <th>Desktop</th>
           <th>Tablet</th>
@@ -185,30 +160,32 @@ export function TypescaleTable() {
         </tr>
       </thead>
       <tbody>
-        {TYPESCALE_ROWS.map(({ label, fontFamily, fontFamilyLabel, fontWeight, fontWeightLabel, desktop, tablet, mobile }) => {
-          const desktopValue = FONT_SIZE_MAP[desktop]
-          return (
-            <tr key={label}>
-              <td>
-                <div
-                  className={styles.typescalePreview}
-                  style={{ fontFamily, fontWeight, fontSize: desktopValue, lineHeight: 1.2 }}
-                >
-                  {label}
-                </div>
-              </td>
-              <td>
-                <div className={styles.typescaleFont}>
-                  <span className={styles.typescaleFontName}>{fontFamilyLabel}</span>
-                  <span className={styles.typescaleFontWeight}>{fontWeightLabel}</span>
-                </div>
-              </td>
-              <td><TypescaleSizeCell token={desktop} state="normal" /></td>
-              <td><TypescaleSizeCell token={tablet}  state={tablet === desktop ? 'dimmed' : 'changed'} /></td>
-              <td><TypescaleSizeCell token={mobile}  state={mobile === desktop ? 'dimmed' : 'changed'} /></td>
-            </tr>
-          )
-        })}
+        {TYPESCALE_ROWS.map(({ label, cssVar, fontFamily, fontFamilyLabel, fontWeight, fontWeightLabel, desktopSize, tabletSize, mobileSize }) => (
+          <tr key={label}>
+            <td>
+              <div
+                className={styles.typescalePreview}
+                style={{ fontFamily, fontWeight, fontSize: desktopSize, lineHeight: 1.2 }}
+              >
+                {label}
+              </div>
+            </td>
+            <td><code className={styles.tokenCode}>{cssVar}</code></td>
+            <td>
+              <div className={styles.typescaleFont}>
+                <span className={styles.typescaleFontName}>{fontFamilyLabel}</span>
+                <span className={styles.typescaleFontWeight}>{fontWeightLabel}</span>
+              </div>
+            </td>
+            <td>
+              <div className={styles.typescaleSize}>
+                <span className={styles.typescaleSizeValue}>{desktopSize} / {remToPx(desktopSize)}</span>
+              </div>
+            </td>
+            <td><SizeCell size={tabletSize} changed={tabletSize !== desktopSize} /></td>
+            <td><SizeCell size={mobileSize} changed={mobileSize !== desktopSize} /></td>
+          </tr>
+        ))}
       </tbody>
     </table>
   )

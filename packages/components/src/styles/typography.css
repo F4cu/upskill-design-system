@@ -1,0 +1,64 @@
+/* Body */
+.text-body-default {
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-body-default);
+  font-weight: var(--ds-font-weight-regular);
+  line-height: var(--ds-font-line-height-body-default);
+}
+
+.text-body-small {
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-body-small);
+  font-weight: var(--ds-font-weight-regular);
+  line-height: var(--ds-font-line-height-body-default);
+}
+
+.text-metadata {
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-metadata);
+  font-weight: var(--ds-font-weight-regular);
+  line-height: var(--ds-font-line-height-body-default);
+}
+
+.text-label {
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-label);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: var(--ds-font-line-height-body-single);
+}
+
+/* Titles and headings */
+.text-title-small {
+  font-family: var(--ds-font-family-headline-default);
+  font-size: var(--ds-font-size-title-small);
+  font-weight: var(--ds-font-weight-semibold);
+  line-height: var(--ds-font-line-height-title-default);
+}
+
+.text-subheader {
+  font-family: var(--ds-font-family-headline-default);
+  font-size: var(--ds-font-size-subheader);
+  font-weight: var(--ds-font-weight-semibold);
+  line-height: var(--ds-font-line-height-subheader-default);
+}
+
+.text-headline {
+  font-family: var(--ds-font-family-headline-default);
+  font-size: var(--ds-font-size-headline);
+  font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-font-line-height-headline-default);
+}
+
+.text-headline-serif {
+  font-family: var(--ds-font-family-headline-serif);
+  font-size: var(--ds-font-size-headline-serif);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: var(--ds-font-line-height-headline-serif);
+}
+
+.text-display {
+  font-family: var(--ds-font-family-headline-serif);
+  font-size: var(--ds-font-size-display);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: var(--ds-font-line-height-display-default);
+}

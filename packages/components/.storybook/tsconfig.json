@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "paths": {
+      "@storybook/react": ["../node_modules/@storybook/react-vite/node_modules/@storybook/react"]
+    }
+  },
+  "include": ["**/*", "../src/**/*"],
+  "exclude": ["../node_modules", "../dist"]
+}

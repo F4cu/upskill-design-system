@@ -64,14 +64,14 @@ Lite in two ways:
 > The structural layer every component depends on. No design decisions — wiring existing tokens to CSS and the primitives everything else composes from.
 
 - [x] CSS reset / base styles
-- [ ] `grid.css` utility — consumes `var(--ds-grid-columns)`, `var(--ds-grid-gutter)`, `var(--ds-grid-margin)` to produce a reusable `.container`. No new tokens
-- [ ] Typography scale styles — map `font.*` device tokens to base element and utility class styles
-- [ ] `Box` — polymorphic `div` with CSS Module; padding via `space.inset.*` tokens
-- [ ] `Stack` — `display: flex; flex-direction: column`; `gap` prop maps to `var(--ds-space-stack-*)`; `align` / `justify` props for alignment
-- [ ] `Inline` — horizontal counterpart to `Stack`; `gap` maps to `var(--ds-space-inline-*)`; `align` / `justify` props; wraps by default (`flex-wrap: wrap`)
-- [ ] Metadata file for each primitive (schema from Phase 1.5)
-- [ ] Storybook: grid layout story, `Stack`/`Inline` gap-variant stories
-- [ ] Wire `storybook-design-token` to SD CSS output for automatic token swatches
+- [x] `grid.css` utility — `.container` (max-width + `--ds-grid-margin` padding) and `.grid` (CSS Grid with `--ds-grid-columns` / `--ds-grid-gutter`); imported globally in Storybook preview
+- [x] Typography scale styles — `typography.css` utility classes (`.text-body-default` through `.text-display`) mapping semantic device tokens (`--ds-font-size-*`, `--ds-font-line-height-*`, `--ds-font-family-*`, `--ds-font-weight-*`); imported globally in preview
+- [x] `Box` — polymorphic via `as` prop; `padding` / `paddingX` / `paddingY` via `--_padding` private CSS properties mapped to `--ds-space-inset-*` tokens
+- [x] `Stack` — `display: flex; flex-direction: column`; `gap` maps to `--ds-space-stack-*`; `align` / `justify` props via `--_align` / `--_justify` private CSS properties
+- [x] `Inline` — horizontal counterpart to `Stack`; `gap` maps to `--ds-space-inline-*`; wraps by default; `wrap={false}` adds `.noWrap`
+- [x] Metadata file for each primitive (`Box.metadata.json`, `Stack.metadata.json`, `Inline.metadata.json`)
+- [x] Storybook: `Layout/Grid` page section story (exit condition), `Stack`/`Inline` gap-variant stories, `Box` padding-scale story
+- [-] Wire `storybook-design-token` to SD CSS output — blocked: npm workspace has storybook@8 at root conflicting with storybook@10 in components; token showcase is already handled by existing MDX stories (Colors, Spacing, Typography, BorderRadius). Revisit when upgrading the npm workspace to a consistent Storybook version.
 
 **Exit condition:** a sample page layout renders in Storybook using only `Box`/`Stack`/`Inline` and the grid utility — no ad-hoc CSS.
 
