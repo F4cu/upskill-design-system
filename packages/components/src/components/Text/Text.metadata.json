@@ -5,7 +5,7 @@
     "type": "typography",
     "status": "stable",
     "description": "Renders body-level text using semantic size tokens. Covers body copy, small text, metadata, and label sizes. Polymorphic via the as prop. Does not add margin.",
-    "figmaNodeId": ""
+    "figmaNodeId": "N/A — Text uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
   },
 
   "usage": {

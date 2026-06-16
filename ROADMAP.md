@@ -82,17 +82,17 @@ Lite in two ways:
 - [x] `Text`, `Heading` — consume font device tokens and unitless line-heights
 - [x] `Icon` — single wrapper over a small fixed set of inline SVGs (hand-picked, no icon-library dependency); `currentColor` fill so it inherits text color; `size` prop maps to `size.*` tokens. Add a semantic `size.icon.*` alias if more than one component needs the same icon size
 - [x] `Button` — semantic color tokens, interaction states, size variants via `space.inset.*`; optional leading `Icon`
-- [ ] Complete metadata file per component
-- [ ] Code Connect: map `Button`, `Text`, `Heading` to their Figma components (one-off via Figma MCP) so design ↔ code navigation works in both directions
-- [ ] Document the component pattern in CLAUDE.md "Add a coded component" so the scaffolding moment has a template to follow
+- [x] Complete metadata file per component
+- [x] Document the component pattern in CLAUDE.md "Add a coded component" so the scaffolding moment has a template to follow
+- [~] Code Connect: blocked — requires Figma Organization or Enterprise plan (current plan: Pro personal). `Text` and `Heading` also have no Figma component sets (they use text styles). No plans to upgrade. Omitted from scope.
 
-**Exit condition:** all three components render in both themes with stories and metadata; clicking the Figma component shows the coded implementation via Code Connect.
+**Exit condition:** all four components render in both themes with stories and metadata. Code Connect omitted — Figma plan gating makes it infeasible without an upgrade.
 
 ## Phase 5 — SaaS Component Set
 
 > The rest of the fixed library. After this phase the library is frozen — growth happens by composition.
 
-- [ ] `TextField` (label, error state)
+- [ ] `InputField` (label, error state)
 - [ ] `Select`
 - [ ] `Checkbox`
 - [ ] `Card`
@@ -116,7 +116,7 @@ Lite in two ways:
 
 - [ ] **Figma token audit** — trigger: developer, before replacing `primitives.json` with a fresh Figma export. Inputs: Figma variables (Figma MCP, one-off read) + committed token files + `token-usage.json`. Output: a diff report flagging removed/renamed tokens with usages, broken aliases, scale-mixing and naming violations — then the cleaned export as a PR. Success signal: no Figma drift ever merges silently.
 - [ ] **Token deprecation pass** — trigger: developer, after marking tokens deprecated in Airtable. Inputs: `governance.json` + `token-usage.json` + component metadata. Output: a migration PR replacing deprecated-token usages with their `successor`, plus notes where no successor fits. Success signal: zero component references to deprecated tokens.
-- [ ] **Component scaffold** — trigger: developer, when starting a Phase 4/5 component. Inputs: metadata schema + an existing component as template + Figma design context (MCP, one-off). Output: component folder (index, CSS Module, stories, metadata) + Code Connect mapping. Success signal: build and Storybook pass with no manual restructuring.
+- [ ] **Component scaffold** — trigger: developer, when starting a Phase 4/5 component. Inputs: metadata schema + an existing component as template + Figma design context (MCP, one-off). Output: component folder (index, CSS Module, stories, metadata). Code Connect omitted — requires Figma Enterprise plan. Success signal: build and Storybook pass with no manual restructuring.
 
 - [ ] **Layout generation** — trigger: developer, when starting a new page or section. Inputs: all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief (intent, key content areas, constraints). Output: a React component tree using only library components and tokens; each structural choice annotated with the metadata rule or `compositionPattern` that justified it. Success signal: the tree passes a structural validator (checks `accepts`/`containedBy` constraints), builds, and renders in Storybook with no manual restructuring needed.
 

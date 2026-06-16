@@ -173,7 +173,14 @@ Edit the appropriate `theme/` or `device/` file. Use `{path.to.primitive}` synta
 4. Rebuild and verify no alias references broke
 
 ### Add a coded component
-Only from the fixed set above. Work in `packages/components/src/`. Each component gets: `PascalCase/index.tsx`, co-located `ComponentName.module.css` referencing only SD-output custom properties, a stories file, and a metadata JSON file conforming to the component metadata schema. Import tokens from `@upskill/tokens` for any JS-side logic. No hard-coded design values anywhere — everything comes through tokens. Use an existing component as the structural template.
+Only from the fixed set above. Work in `packages/components/src/components/ComponentName/`. Use `Button` as the template for interactive components, `Box` for layout primitives, `Text` for typography. Every component requires four files:
+
+1. **`index.tsx`** — typed props matching `variants.options` and `states` in the metadata schema. Use a `cssVars` object to pass prop-driven values as CSS custom properties (`--_name`). Spread `...rest` for native HTML attributes. No hard-coded design values — all values through tokens.
+2. **`ComponentName.module.css`** — one rule per variant + state combination; only `var(--ds-*)` custom properties from the SD output; class names in `camelCase`. Private CSS vars (`--_*`) for prop-driven overrides; token vars (`--ds-*`) for fixed design values.
+3. **`ComponentName.stories.tsx`** — export `meta` with `title`, `component`, `argTypes`. Export a `Default` story using `args`. Add one named story per meaningful visual state (disabled, error, etc.). Dark mode switches via `data-theme` on the story container, not Storybook background.
+4. **`ComponentName.metadata.json`** — fill every field from the schema (`component.schema.json`). `figmaNodeId` is the Figma component set node ID if one exists, or a note if the component uses text styles or Code Connect is unavailable (requires Figma Enterprise). `relationships.accepts`/`containedBy` and `compositionPatterns` are required for the layout-generation agentic moment.
+
+After creating the files: `npm run build` and `npm run storybook` must both pass with no manual changes. Verify the component renders in both light and dark themes.
 
 ### Add a story for a component
 Create `ComponentName.stories.tsx` next to the component file. Export `meta` with `title`, `component`, and `argTypes`. Export at least a `Default` story using `args`. Add a named story per meaningful visual state (error, disabled, loading).

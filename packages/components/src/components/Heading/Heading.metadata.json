@@ -5,7 +5,7 @@
     "type": "typography",
     "status": "stable",
     "description": "Renders heading-level text using title and display size tokens. The as prop controls semantic HTML level (h1–h6); the size prop controls visual appearance independently. Does not add margin.",
-    "figmaNodeId": ""
+    "figmaNodeId": "N/A — Heading uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
   },
 
   "usage": {
