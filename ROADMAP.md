@@ -101,6 +101,47 @@ Lite in two ways:
 
 **Exit condition (met):** the example page uses only library components and tokens; component set declared complete.
 
+## Phase 5b — User Settings Page Components
+
+> Expand the fixed component set to cover the full User Settings page (Figma node 96:6222). The page analysis identified six net-new components; everything else composes from the existing library. This phase extends the "fixed set" declared in Phase 5 — any component added here must appear on the User Settings page and must not be coverable by composition alone.
+
+**Components already covered — no new work needed:**
+`TextField` (form fields + search with round/icon variant, added in Phase 5 extension), `Select` (language), `Checkbox` (email subscriptions), `Button` (Save, Download, See collection), `Card` (Profile Details + Account Settings panels), `Icon`, layout primitives.
+
+**Net-new components:**
+
+- [ ] `Avatar` — circular user photo; `size` prop: `sm` (24px, used in nav) / `lg` (128px, used in profile). Accepts an image `src` + `alt`. No letter-fallback in scope.
+- [ ] `Header` — full-width top nav bar; fixed height (90px per Figma); slots: logo (BrandLogo asset), centre search (`TextField` round + icon), right nav links + user dropdown (Avatar + name + chevron). No routing logic — pass nav items as props.
+- [ ] `Breadcrumb` — ordered list of link items separated by `Icon name="chevron-right" size="sm"`; last item is non-linked (current page). Accept `items: { label: string; href?: string }[]`.
+- [ ] `Divider` — horizontal separator; `<hr>` styled with `color.border.default` token; no props beyond `className`.
+- [ ] `ProgressBar` — 4px tall track with a coloured fill; `value` (0–100) controls fill width as a percentage; uses `color.accent.accent-8` for fill and `color.background.neutral.subtle` for track.
+- [ ] `CardHorizontal` — horizontal card: 80×80px square thumbnail + content column (title, optional ProgressBar, metadata row with duration + certified badge). Used in Started Courses, Saved Courses, and Footer recommendations. Two colour contexts: default (light) and inverted (dark footer) — controlled by a `variant` prop or inherited via `data-theme`.
+- [ ] One composed page story (`Layout/Examples/User Settings`) built entirely from library components.
+
+**Exit condition:** all six components render in both light and dark themes with stories and metadata; the composed User Settings story builds and passes visual review with no ad-hoc CSS outside component modules.
+
+## Phase 5c — Homepage Components
+
+> Expand the component set to cover the Homepage (Figma node 96:6110). The page analysis identified four net-new components after accounting for what Phase 5b introduces. The carousel layout pattern (horizontal scrollable card row + paginator footer) is a page-level composition — not a component — and is demonstrated in the Homepage example story instead.
+
+**Components already covered — no new work needed:**
+`Header`, `Breadcrumb`, `Avatar`, `Divider`, `ProgressBar`, `CardHorizontal` (Phase 5b); `Button`, `TextField`, `Icon`, layout primitives (Phase 4–5).
+
+**Components that look new but aren't:**
+- `HeadlineRow` (section title + optional top border) → composed from `Heading` + `Divider`; not a standalone.
+- Carousel container → `Inline` / `Stack` + `PaginationArrows`; the page story demonstrates the pattern.
+- Footer / Disclaimer → same page-level composition as User Settings.
+
+**Net-new components:**
+
+- [ ] `CardVertical` — vertical course card: image thumbnail (height controlled by `size` prop: `sm` 180px / `lg` 340px) + optional `ProgressBar` below image + serif title (`font-family-headline-serif`) + metadata row (duration dot certified-badge). Used in Saved Courses and Discover carousels. No dark variant needed — appears on light and elevated backgrounds only.
+- [ ] `Chip` — pill-shaped filter tag; `state`: `default` | `active`. Active state: brand border (`color.border.selected`) + brand text (`color.text.selected`). Default: neutral border + subtle text. Not a Button variant — no action semantics, pure selection indicator; no dropdown arrow in scope (the page uses label-only chips).
+- [ ] `VideoFrame` — rounded container (`border-radius-md`) with a fixed aspect ratio thumbnail image and a centred play-button overlay (semi-transparent circle + triangle glyph). Props: `src` (thumbnail URL), `alt`. No playback logic — purely presentational.
+- [ ] `PaginationArrows` — 32px circular prev/next navigation button; `direction`: `left` | `right`; `state`: `active` | `disabled`. Uses `Icon` chevron internally. Used in the carousel paginator row and in the chapter navigator. Disabled state: no background, muted border, pointer-events none.
+- [ ] One composed page story (`Layout/Examples/Homepage`) built entirely from library components, demonstrating the carousel pattern with `CardVertical` + `PaginationArrows`.
+
+**Exit condition:** all four components render in both themes with stories and metadata; the Homepage story builds and passes visual review with no ad-hoc CSS outside component modules.
+
 ## Phase 6 — Automation (scripts and Actions only — no MCP, no agents)
 
 - [x] GH Action: run `airtable-sync.js` on merge to `main` (direct REST, repo secret for the API key) — `sync-tokens.yml` pushes primitives, semantic, and device tokens

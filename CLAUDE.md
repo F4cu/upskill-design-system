@@ -156,7 +156,10 @@ Storybook lives in `packages/components` — it is the documentation layer for c
 - Components: `PascalCase/index.tsx` with co-located styles
 
 ### Component scope
-The component set is fixed: `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`. Do not add components outside this list without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
+Core set (Phases 4–5): `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`.
+Phase 5b additions (User Settings page): `Avatar`, `Header`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`.
+Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `PaginationArrows`.
+Do not add components outside these lists without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
 
 ## Common tasks
 
