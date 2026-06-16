@@ -10,6 +10,12 @@ const meta = {
     error: { control: 'text' },
     placeholder: { control: 'text' },
     disabled: { control: 'boolean' },
+    size: { control: 'select', options: ['default', 'large'] },
+    shape: { control: 'select', options: ['square', 'round'] },
+    icon: {
+      control: 'select',
+      options: [undefined, 'search', 'badge-check', 'award', 'bookmark', 'plus', 'minus', 'heart', 'menu', 'sun', 'moon-star', 'download', 'file-down', 'zap', 'lightbulb', 'pen-tool', 'image'],
+    },
     type: {
       control: 'select',
       options: ['text', 'email', 'password', 'number', 'search', 'tel', 'url'],
@@ -65,6 +71,57 @@ export const HiddenLabel: Story = {
     label: 'Search',
     placeholder: 'Search…',
     type: 'search',
+    hideLabel: true,
+  },
+}
+
+export const Large: Story = {
+  args: {
+    label: 'Email',
+    placeholder: 'you@example.com',
+    type: 'email',
+    size: 'large',
+  },
+}
+
+export const Round: Story = {
+  args: {
+    label: 'Search',
+    placeholder: 'Search…',
+    type: 'search',
+    shape: 'round',
+  },
+}
+
+export const LargeRound: Story = {
+  args: {
+    label: 'Search',
+    placeholder: 'Search…',
+    type: 'search',
+    size: 'large',
+    shape: 'round',
+  },
+}
+
+export const SearchWithIcon: Story = {
+  args: {
+    label: 'Search',
+    placeholder: 'Search…',
+    type: 'search',
+    shape: 'round',
+    icon: 'search',
+    hideLabel: true,
+  },
+}
+
+export const SearchWithIconLarge: Story = {
+  args: {
+    label: 'Search',
+    placeholder: 'Search…',
+    type: 'search',
+    size: 'large',
+    shape: 'round',
+    icon: 'search',
     hideLabel: true,
   },
 }

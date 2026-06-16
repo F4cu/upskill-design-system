@@ -4,6 +4,21 @@
   gap: var(--ds-space-stack-sm);
 }
 
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.iconSlot {
+  position: absolute;
+  left: var(--ds-space-inset-md);
+  color: var(--ds-color-text-subtle);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
 .input {
   display: block;
   width: 100%;
@@ -18,6 +33,18 @@
   outline: none;
   transition: border-color 120ms ease;
   box-sizing: border-box;
+}
+
+.sizeLarge {
+  height: var(--ds-size-600);
+}
+
+.shapeRound {
+  border-radius: var(--ds-border-radius-full);
+}
+
+.hasIcon {
+  padding-inline-start: calc(var(--ds-space-inset-md) + var(--ds-size-icon-sm) + var(--ds-space-inset-xs));
 }
 
 .input::placeholder {

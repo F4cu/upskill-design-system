@@ -35,10 +35,29 @@
   },
 
   "variants": {
-    "options": ["default"],
-    "default": "default",
-    "purpose": {
-      "default": "Standard text input. Error state is controlled via the error prop, not a separate variant."
+    "icon": {
+      "options": ["none", "any IconName"],
+      "default": "none",
+      "purpose": {
+        "none": "No icon. Standard text input.",
+        "any IconName": "Renders a decorative icon on the leading (left) side. Use 'search' for search inputs. Icon is aria-hidden."
+      }
+    },
+    "size": {
+      "options": ["default", "large"],
+      "default": "default",
+      "purpose": {
+        "default": "40px tall. Standard form fields and inline inputs.",
+        "large": "48px tall. Hero search bars, prominent single-field forms."
+      }
+    },
+    "shape": {
+      "options": ["square", "round"],
+      "default": "square",
+      "purpose": {
+        "square": "Rounded-corner rectangle (border-radius-sm). Default for form fields.",
+        "round": "Pill shape (border-radius-full). Use for search inputs or brand-forward contexts."
+      }
     }
   },
 
@@ -76,10 +95,13 @@
       "font.line-height.body-default"
     ],
     "borderRadius": [
-      "border-radius.sm"
+      "border-radius.sm",
+      "border-radius.full"
     ],
     "other": [
-      "size.500"
+      "size.500",
+      "size.600",
+      "size.icon.sm"
     ]
   },
 
