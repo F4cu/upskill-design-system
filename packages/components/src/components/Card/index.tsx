@@ -1,0 +1,35 @@
+import type { CSSProperties, HTMLAttributes } from 'react'
+import styles from './Card.module.css'
+
+export type CardVariant = 'default' | 'elevated'
+export type CardPadding = 'none' | 'sm' | 'md' | 'lg'
+
+export type CardProps = {
+  variant?: CardVariant
+  padding?: CardPadding
+  children?: React.ReactNode
+} & HTMLAttributes<HTMLDivElement>
+
+export function Card({
+  variant = 'default',
+  padding = 'md',
+  className,
+  style,
+  children,
+  ...rest
+}: CardProps) {
+  const cssVars = {
+    '--_card-inset': padding !== 'none' ? `var(--ds-space-inset-${padding})` : '0',
+    ...style,
+  } as CSSProperties
+
+  return (
+    <div
+      className={[styles.card, styles[variant], className].filter(Boolean).join(' ')}
+      style={cssVars}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+}

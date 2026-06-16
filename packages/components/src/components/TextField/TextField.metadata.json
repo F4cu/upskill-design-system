@@ -1,0 +1,121 @@
+{
+  "component": {
+    "name": "TextField",
+    "category": "molecule",
+    "type": "input",
+    "status": "stable",
+    "description": "A labelled text input for collecting single-line user data. Includes a visible label, an optional error message with ARIA association, and interaction states. Use for any freeform text entry: names, emails, passwords, search terms.",
+    "figmaNodeId": "none — no Figma component set exists; uses text styles only"
+  },
+
+  "usage": {
+    "keywords": ["input", "text", "field", "form", "label", "email", "password", "search", "entry"],
+    "when": [
+      "Collecting freeform single-line text from the user (name, email, password, search query)",
+      "A form field needs a visible label and optional error feedback",
+      "The value is typed, not selected — use Select for predefined option sets"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using TextField for multi-line text",
+        "reason": "Renders a single-line <input>; tall freeform content (bio, comments) needs a <textarea>.",
+        "alternative": "Use a native <textarea> styled with design tokens until a TextArea component is added."
+      },
+      {
+        "scenario": "Using TextField for choosing from a fixed list",
+        "reason": "Freeform text provides no validation or keyboard-navigable option list.",
+        "alternative": "Use Select when the options are known and finite."
+      },
+      {
+        "scenario": "Omitting the label prop",
+        "reason": "The label is required for accessibility — screen readers need it to describe the field.",
+        "alternative": "Always pass a visible label. If the design shows no visible label, add an aria-label to the input via ...rest and consult the design system owner."
+      }
+    ]
+  },
+
+  "variants": {
+    "options": ["default"],
+    "default": "default",
+    "purpose": {
+      "default": "Standard text input. Error state is controlled via the error prop, not a separate variant."
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Resting state. Neutral border." },
+    { "state": "hover", "description": "Stronger border to signal interactivity." },
+    { "state": "focus", "description": "Brand-colour border to indicate the active field." },
+    { "state": "error", "description": "Error-colour border and a below-input error message. Set via the error prop." },
+    { "state": "disabled", "description": "Muted text and border; cursor not-allowed; interaction blocked natively." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.input",
+      "color.text.default",
+      "color.text.subtle",
+      "color.text.disabled",
+      "color.text.feedback.error",
+      "color.border.input.default",
+      "color.border.input.hover",
+      "color.border.selected",
+      "color.border.disabled",
+      "color.border.feedback.error"
+    ],
+    "spacing": [
+      "space.stack.xs",
+      "space.inset.md"
+    ],
+    "typography": [
+      "font.family.body",
+      "font.size.label",
+      "font.size.body-default",
+      "font.size.body-small",
+      "font.weight.medium",
+      "font.line-height.body-default"
+    ],
+    "borderRadius": [
+      "border-radius.sm"
+    ],
+    "other": [
+      "size.500"
+    ]
+  },
+
+  "accessibility": {
+    "role": "textbox",
+    "ariaAttributes": [
+      "aria-describedby (points to error message element when error prop is set)",
+      "aria-invalid (set to true when error prop is set)"
+    ],
+    "keyboardInteractions": [
+      { "key": "Tab", "action": "Moves focus to the input" },
+      { "key": "Any character", "action": "Enters text" }
+    ]
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Card"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "inline-name-row",
+        "description": "Two TextFields side by side for first/last name — each wrapped in a Box with flex:1 so they share the available width equally.",
+        "tree": "Inline(gap=md, align=start) > [Box(style={flex:1}) > TextField(label='First name'), Box(style={flex:1}) > TextField(label='Last name')]"
+      },
+      {
+        "name": "form-field-stack",
+        "description": "A vertical series of labelled fields inside a Card, grouped by topic.",
+        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "flex-column",
+      "canNest": false
+    }
+  }
+}

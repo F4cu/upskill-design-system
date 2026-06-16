@@ -1,0 +1,106 @@
+{
+  "component": {
+    "name": "Card",
+    "category": "molecule",
+    "type": "container",
+    "status": "stable",
+    "description": "A surface container that groups related content with consistent padding, border-radius, and optional elevation. Use to visually separate page sections, form groups, or feature highlights. Card accepts any library component as children.",
+    "figmaNodeId": "none — no Figma component set exists"
+  },
+
+  "usage": {
+    "keywords": ["card", "surface", "container", "panel", "section", "group", "box", "elevated"],
+    "when": [
+      "Grouping a set of related form fields or content items into a distinct visual section",
+      "A page section needs a distinct background to separate it from the page canvas",
+      "Displaying a content item (course, article, product) in a list or grid",
+      "A feature or selected state needs visual elevation above sibling content"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Nesting Cards inside Cards",
+        "reason": "Creates visual depth that is hard to scan; nested surfaces lose hierarchy meaning.",
+        "alternative": "Separate the inner content into a Stack or Box, or reconsider the layout hierarchy."
+      },
+      {
+        "scenario": "Using Card as a full-page background",
+        "reason": "Card is a grouping surface, not a page background. A full-page card makes every section a nested container.",
+        "alternative": "Apply page-background colour with the container-page token on the root layout element."
+      },
+      {
+        "scenario": "Using padding='none' and adding raw padding via style",
+        "reason": "Bypasses the token-driven padding system; visual inconsistency results.",
+        "alternative": "Use the padding prop ('sm', 'md', 'lg') for all padding needs."
+      }
+    ]
+  },
+
+  "variants": {
+    "options": ["default", "elevated"],
+    "default": "default",
+    "purpose": {
+      "default": "Flat surface on the page background. Primary container for form sections and content groups.",
+      "elevated": "Raised surface above the page background. Use for featured content, selected card states, or content that must visually float above siblings."
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static container — no interactive states. Elevation is set at render time via the variant prop." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.container.default",
+      "color.background.container.elevated",
+      "color.background.neutral.subtle",
+      "color.border.subtle"
+    ],
+    "spacing": [
+      "space.inset.sm",
+      "space.inset.md",
+      "space.inset.lg"
+    ],
+    "typography": [],
+    "borderRadius": [
+      "border-radius.md"
+    ],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "region",
+    "ariaAttributes": [
+      "aria-label or aria-labelledby (recommended when multiple Cards appear on the same page so each region is distinguishable)"
+    ],
+    "keyboardInteractions": []
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": ["*"],
+    "containedBy": ["Box", "Stack", "Inline"],
+    "neverPairWith": ["Card"],
+    "compositionPatterns": [
+      {
+        "name": "form-section",
+        "description": "A Card wrapping a Stack of form inputs, used to group related fields in a settings or onboarding form.",
+        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+      },
+      {
+        "name": "preferences-section",
+        "description": "A Card wrapping a group of Checkboxes with a section heading.",
+        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
+      },
+      {
+        "name": "content-card",
+        "description": "A Card presenting a single content item (course, article) with title, metadata, body text, and a CTA Button.",
+        "tree": "Card > Stack(gap=md) > [Stack(gap=xs) > [Heading, Text(size=body-small)], Text, Button(size=sm)]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

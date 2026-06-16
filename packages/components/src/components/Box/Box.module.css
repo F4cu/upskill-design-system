@@ -1,4 +1,4 @@
 .box {
-  padding-block: var(--_padding-y, var(--_padding, 0));
-  padding-inline: var(--_padding-x, var(--_padding, 0));
+  padding-block: var(--_box-py);
+  padding-inline: var(--_box-px);
 }

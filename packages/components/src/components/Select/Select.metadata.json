@@ -1,0 +1,120 @@
+{
+  "component": {
+    "name": "Select",
+    "category": "molecule",
+    "type": "input",
+    "status": "stable",
+    "description": "A labelled dropdown selector for choosing one option from a predefined list. Includes a visible label, a custom chevron indicator, optional placeholder, and an optional error message. Wraps a native <select> element for built-in accessibility and mobile keyboard support.",
+    "figmaNodeId": "none — no Figma component set exists; uses text styles only"
+  },
+
+  "usage": {
+    "keywords": ["select", "dropdown", "choose", "option", "list", "picker", "form"],
+    "when": [
+      "The user must pick exactly one value from a known, finite set of options",
+      "The option list is too long for radio buttons (more than 4–5 options)",
+      "Mobile usability is a priority — native selects open the platform picker"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Select for freeform text entry",
+        "reason": "Select only accepts predefined options; typed input is silently ignored.",
+        "alternative": "Use TextField for any freeform input."
+      },
+      {
+        "scenario": "Using Select for boolean or two-option choices",
+        "reason": "Two-option selects are harder to scan than a pair of radio buttons or a Checkbox.",
+        "alternative": "Use Checkbox for a single on/off toggle; use radio inputs for two mutually exclusive choices."
+      },
+      {
+        "scenario": "Omitting the label prop",
+        "reason": "The label is required for accessibility — the native <select> needs a programmatic label.",
+        "alternative": "Always pass a visible label string."
+      }
+    ]
+  },
+
+  "variants": {
+    "options": ["default"],
+    "default": "default",
+    "purpose": {
+      "default": "Standard dropdown with label. Error state is controlled via the error prop."
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Resting state. Neutral border and chevron." },
+    { "state": "hover", "description": "Stronger border to signal interactivity." },
+    { "state": "focus", "description": "Brand-colour border to indicate the active control." },
+    { "state": "error", "description": "Error-colour border and a below-select error message. Set via the error prop." },
+    { "state": "disabled", "description": "Muted text, border, and chevron; cursor not-allowed; interaction blocked natively." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.input",
+      "color.text.default",
+      "color.text.subtle",
+      "color.text.disabled",
+      "color.text.feedback.error",
+      "color.border.input.default",
+      "color.border.input.hover",
+      "color.border.selected",
+      "color.border.disabled",
+      "color.border.feedback.error",
+      "color.icon.default",
+      "color.icon.disabled"
+    ],
+    "spacing": [
+      "space.stack.xs",
+      "space.inset.md"
+    ],
+    "typography": [
+      "font.family.body",
+      "font.size.label",
+      "font.size.body-default",
+      "font.size.body-small",
+      "font.weight.medium",
+      "font.line-height.body-default"
+    ],
+    "borderRadius": [
+      "border-radius.sm"
+    ],
+    "other": [
+      "size.500"
+    ]
+  },
+
+  "accessibility": {
+    "role": "combobox",
+    "ariaAttributes": [
+      "aria-describedby (points to error message element when error prop is set)",
+      "aria-invalid (set to true when error prop is set)"
+    ],
+    "keyboardInteractions": [
+      { "key": "Tab", "action": "Moves focus to the select" },
+      { "key": "Space / Enter", "action": "Opens the option list" },
+      { "key": "Arrow Up / Down", "action": "Navigates options" },
+      { "key": "Escape", "action": "Closes the option list without changing value" }
+    ]
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Card"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "form-field-stack",
+        "description": "A vertical series of labelled inputs inside a Card, with Select used for option sets and TextField for freeform entries.",
+        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "flex-column",
+      "canNest": false
+    }
+  }
+}

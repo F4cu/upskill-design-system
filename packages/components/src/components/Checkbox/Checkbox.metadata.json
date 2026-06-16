@@ -1,0 +1,111 @@
+{
+  "component": {
+    "name": "Checkbox",
+    "category": "molecule",
+    "type": "input",
+    "status": "stable",
+    "description": "A boolean toggle with a visible label. Wraps a native <input type='checkbox'> styled with design tokens. Use for independent on/off options; for exclusive choices use radio inputs. Supports checked, unchecked, disabled, and disabled-checked states.",
+    "figmaNodeId": "none — no Figma component set exists; uses text styles only"
+  },
+
+  "usage": {
+    "keywords": ["checkbox", "toggle", "boolean", "agree", "opt-in", "notification", "preference", "multi-select"],
+    "when": [
+      "The user can independently toggle a single option on or off",
+      "Multiple independent options can be enabled simultaneously (notification preferences, feature flags)",
+      "The user must confirm an agreement or consent"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Checkbox for mutually exclusive choices",
+        "reason": "Multiple checkboxes look like independent options; users expect to be able to select more than one.",
+        "alternative": "Use native radio inputs for single-select-from-set (e.g. gender, payment method)."
+      },
+      {
+        "scenario": "Omitting the label prop",
+        "reason": "The label is required for accessibility — the checkbox is not self-describing without visible text.",
+        "alternative": "Always pass a label. If the design places the label elsewhere, pass it as aria-label via ...rest."
+      },
+      {
+        "scenario": "Using Checkbox as a substitute for Switch/Toggle",
+        "reason": "Checkboxes imply a saved state that requires a submit action; toggles imply immediate effect.",
+        "alternative": "Use native <input type='checkbox'> with an immediate onChange handler and role='switch' until a Switch component is added."
+      }
+    ]
+  },
+
+  "variants": {
+    "options": ["default"],
+    "default": "default",
+    "purpose": {
+      "default": "Single boolean toggle. Checked/disabled states are controlled via standard HTML props."
+    }
+  },
+
+  "states": [
+    { "state": "unchecked", "description": "Resting unchecked state. Neutral border." },
+    { "state": "unchecked-hover", "description": "Stronger border on hover to signal interactivity." },
+    { "state": "checked", "description": "Brand-fill background with white checkmark." },
+    { "state": "disabled-unchecked", "description": "Muted border; cursor not-allowed." },
+    { "state": "disabled-checked", "description": "Muted fill and border; checkmark still visible." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.input",
+      "color.background.brand",
+      "color.background.button.disabled",
+      "color.text.default",
+      "color.text.disabled",
+      "color.text.inverted.default",
+      "color.border.input.default",
+      "color.border.input.hover",
+      "color.border.disabled"
+    ],
+    "spacing": [
+      "space.inline.sm"
+    ],
+    "typography": [
+      "font.family.body",
+      "font.size.body-default",
+      "font.line-height.body-default"
+    ],
+    "borderRadius": [
+      "border-radius.xs"
+    ],
+    "other": [
+      "size.icon.sm"
+    ]
+  },
+
+  "accessibility": {
+    "role": "checkbox",
+    "ariaAttributes": [
+      "aria-checked (managed natively by the browser)",
+      "aria-disabled (managed natively via disabled prop)"
+    ],
+    "keyboardInteractions": [
+      { "key": "Tab", "action": "Moves focus to the checkbox" },
+      { "key": "Space", "action": "Toggles the checked state" }
+    ]
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Card"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "notification-preferences",
+        "description": "A group of independent Checkboxes in a Stack, each representing a toggleable preference.",
+        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}

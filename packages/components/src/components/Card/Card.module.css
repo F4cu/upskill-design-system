@@ -1,0 +1,14 @@
+.card {
+  padding: var(--_card-inset, var(--ds-space-inset-md));
+  border-radius: var(--ds-border-radius-md);
+  border: 1px solid var(--ds-color-border-subtle);
+}
+
+.default {
+  background: var(--ds-color-background-container-default);
+}
+
+.elevated {
+  background: var(--ds-color-background-container-elevated);
+  box-shadow: 0 2px 8px var(--ds-color-background-neutral-subtle);
+}

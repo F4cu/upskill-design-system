@@ -23,10 +23,11 @@ export function Box({
   children,
   ...rest
 }: BoxProps) {
+  const resolvedX = paddingX ?? padding
+  const resolvedY = paddingY ?? padding
   const cssVars: CSSProperties = {
-    '--_padding': padding ? `var(--ds-space-inset-${padding})` : undefined,
-    '--_padding-x': paddingX ? `var(--ds-space-inset-${paddingX})` : undefined,
-    '--_padding-y': paddingY ? `var(--ds-space-inset-${paddingY})` : undefined,
+    '--_box-px': resolvedX ? `var(--ds-space-inset-${resolvedX})` : '0',
+    '--_box-py': resolvedY ? `var(--ds-space-inset-${resolvedY})` : '0',
     ...style,
   }
 

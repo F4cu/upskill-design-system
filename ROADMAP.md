@@ -92,14 +92,14 @@ Lite in two ways:
 
 > The rest of the fixed library. After this phase the library is frozen — growth happens by composition.
 
-- [ ] `InputField` (label, error state)
-- [ ] `Select`
-- [ ] `Checkbox`
-- [ ] `Card`
-- [ ] Metadata + stories for each
-- [ ] One composed example page story (e.g. a settings form) built entirely from library components
+- [x] `TextField` (label, error state)
+- [x] `Select`
+- [x] `Checkbox`
+- [x] `Card`
+- [x] Metadata + stories for each
+- [x] One composed example page story (`Layout/Examples/Settings Form`) built entirely from library components
 
-**Exit condition:** the example page uses only library components and tokens; component set declared complete.
+**Exit condition (met):** the example page uses only library components and tokens; component set declared complete.
 
 ## Phase 6 — Automation (scripts and Actions only — no MCP, no agents)
 
