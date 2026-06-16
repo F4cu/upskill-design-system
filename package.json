@@ -5,6 +5,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "devDependencies": {
+    "storybook": "^10"
+  },
   "scripts": {
     "build": "npm run build:tokens && npm run build -w @upskill/components",
     "build:tokens": "npm run build:tokens -w @upskill/tokens",

@@ -7,6 +7,7 @@ import '../src/styles/grid.css'
 import '../src/styles/typography.css'
 
 const preview: Preview = {
+  tags: ['autodocs'],
   decorators: [
     withThemeByDataAttribute({
       themes: {

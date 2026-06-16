@@ -5,9 +5,21 @@ const meta = {
   title: 'Components/Button',
   component: Button,
   argTypes: {
-    variant: { control: 'radio', options: ['default', 'outlined'] },
-    size: { control: 'radio', options: ['sm', 'md', 'lg'] },
-    shape: { control: 'radio', options: [undefined, 'square', 'round'] },
+    variant: {
+      control: 'radio',
+      options: ['default', 'outlined'],
+      table: { type: { summary: "'default' | 'outlined'" } },
+    },
+    size: {
+      control: 'radio',
+      options: ['sm', 'md', 'lg'],
+      table: { type: { summary: "'sm' | 'md' | 'lg'" } },
+    },
+    shape: {
+      control: 'radio',
+      options: [undefined, 'square', 'round'],
+      table: { type: { summary: "'square' | 'round'" } },
+    },
     icon: {
       control: 'select',
       options: [
@@ -15,8 +27,17 @@ const meta = {
         'search', 'plus', 'download', 'bookmark', 'heart',
         'chevron-right', 'chevron-left', 'zap', 'lightbulb',
       ],
+      table: { type: { summary: 'IconName' } },
     },
-    disabled: { control: 'boolean' },
+    children: {
+      control: 'text',
+      table: { type: { summary: 'React.ReactNode' } },
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Prevents interaction and signals unavailability. Prefer guiding users toward a valid action over disabling when possible.',
+      table: { type: { summary: 'boolean' } },
+    },
   },
 } satisfies Meta<typeof Button>
 
