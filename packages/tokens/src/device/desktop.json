@@ -135,7 +135,7 @@
       },
       "label": {
         "$type": "number",
-        "$value": "{font.size.3}"
+        "$value": "{font.size.2}"
       },
       "title-small": {
         "$type": "number",

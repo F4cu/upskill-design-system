@@ -23,7 +23,7 @@
 .text-label {
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-label);
-  font-weight: var(--ds-font-weight-medium);
+  font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-font-line-height-body-single);
 }
 

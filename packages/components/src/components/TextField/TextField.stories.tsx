@@ -6,6 +6,7 @@ const meta = {
   component: TextField,
   argTypes: {
     label: { control: 'text' },
+    hideLabel: { control: 'boolean' },
     error: { control: 'text' },
     placeholder: { control: 'text' },
     disabled: { control: 'boolean' },
@@ -56,5 +57,14 @@ export const Password: Story = {
     label: 'Password',
     placeholder: '••••••••',
     type: 'password',
+  },
+}
+
+export const HiddenLabel: Story = {
+  args: {
+    label: 'Search',
+    placeholder: 'Search…',
+    type: 'search',
+    hideLabel: true,
   },
 }

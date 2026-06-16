@@ -1,15 +1,7 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-stack-xs);
-}
-
-.label {
-  font-family: var(--ds-font-family-body);
-  font-size: var(--ds-font-size-label);
-  font-weight: var(--ds-font-weight-medium);
-  line-height: var(--ds-font-line-height-body-default);
-  color: var(--ds-color-text-subtle);
+  gap: var(--ds-space-stack-sm);
 }
 
 .input {

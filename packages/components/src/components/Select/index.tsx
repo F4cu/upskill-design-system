@@ -1,11 +1,13 @@
 import { useId } from 'react'
 import type { SelectHTMLAttributes } from 'react'
 import styles from './Select.module.css'
+import utilStyles from '../../styles/utilities.module.css'
 
 export type SelectOption = { value: string; label: string }
 
 export type SelectProps = {
   label: string
+  hideLabel?: boolean
   options: SelectOption[]
   placeholder?: string
   error?: string
@@ -13,6 +15,7 @@ export type SelectProps = {
 
 export function Select({
   label,
+  hideLabel,
   options,
   placeholder,
   error,
@@ -26,7 +29,10 @@ export function Select({
 
   return (
     <div className={[styles.root, className].filter(Boolean).join(' ')}>
-      <label htmlFor={id} className={styles.label}>
+      <label
+        htmlFor={id}
+        className={[utilStyles.label, hideLabel && utilStyles.visuallyHidden].filter(Boolean).join(' ')}
+      >
         {label}
       </label>
       <div className={styles.wrapper}>
