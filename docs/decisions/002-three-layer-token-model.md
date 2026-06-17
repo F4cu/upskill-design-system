@@ -1,6 +1,7 @@
 # ADR-002 — Three-Layer Token Model
 
 **Date:** 2026-06-11
+**Amended:** 2026-06-17
 **Status:** `accepted`
 
 ## Context
@@ -52,3 +53,26 @@ Token format follows W3C DTCG: every token carries `$type` and `$value`. The `$e
 
 - **Adding a new colour mode** (e.g. high-contrast) requires only a new `theme/` file — no changes to primitives or device layers.
 - **Adding a new breakpoint** requires only a new `device/` file and a new media query block in the Style Dictionary config — no changes to primitives or theme layers.
+
+## Amendment (2026-06-17) — Source of truth is the repo, not Figma
+
+The original decision declared primitives "Figma-owned": `primitives.json` was to be replaced wholesale by Figma re-exports, never hand-edited, with all intentional value changes happening in Figma first. That direction is reversed. **The committed DTCG JSON in `packages/tokens/src/` is now the single source of truth; Figma is a downstream mirror and design-exploration surface.**
+
+The three-layer model itself is unchanged — only which side is canonical, and the sync direction, change.
+
+### Why
+
+Automated Figma→code sync is impossible on the available Figma plan, so the original "Figma is upstream" model could never be automated and silently required a manual re-export on every token change — directly at odds with the lite-agentic, one-maintainer, CI-friendly goals.
+
+- **Variables REST API** (`GET /v1/files/:key/variables/local`) — Enterprise org only.
+- **Code Connect** — Organization/Enterprise only.
+- **Token Studio GitHub sync** — available on lower tiers, but the free plan syncs a *single* file. This architecture is deliberately multi-file (primitives + `theme/light`+`dark` + `device/desktop`+`tablet`+`mobile`); collapsing it to fit the tool would invert the dependency the wrong way.
+
+The only automatable sync direction available is code→Figma (push via the Figma plugin/MCP, interactively). Code-first is therefore not merely preferable — it is the only model that supports any automation, and it aligns with the governance layer (Airtable, PR review) which already treats committed files as canonical.
+
+### Consequences of the reversal
+
+- **Primitives are now code-owned and hand-editable.** `primitives.json` is authored and changed via PR, like the theme and device layers. The "never hand-edited / will be overwritten" warning on the Primitives row above no longer applies.
+- **Figma changes are proposals, not the source.** A value invented in Figma is not "real" until it lands in `primitives.json` via PR. For a one-maintainer system this is a governance feature, not a limitation.
+- **The Figma token audit (agentic moment 1) is retargeted from an import gate to a drift/reconciliation check** — "does Figma still match canonical code?" It still reads Figma variables via the Figma MCP (`get_variable_defs`), which works without the Enterprise REST API because it reads Dev Mode, not the REST endpoint.
+- **`$extensions` stripping and sRGB→hex conversion still apply** to any values brought over from Figma during reconciliation — that cleanup guidance is unchanged.

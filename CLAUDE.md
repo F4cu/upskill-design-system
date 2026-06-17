@@ -30,7 +30,7 @@ Tokens resolve in this fixed order — later layers override earlier ones:
 
 | Layer | Files | Purpose |
 |---|---|---|
-| Primitives | `primitives.json` | Raw, context-free values. Single source of truth. Synced from Figma. |
+| Primitives | `primitives.json` | Raw, context-free values. Single source of truth. Authored as code (hand-edited via PR); Figma is a downstream mirror. See ADR-002 amendment. |
 | Theme | `theme/light.json`, `theme/dark.json` | Semantic color aliases. Reference primitives via `{path.to.token}`. |
 | Device | `device/desktop.json`, `device/tablet.json`, `device/mobile.json` | Responsive spacing, grid, typography per breakpoint. |
 
@@ -68,12 +68,16 @@ Config: `packages/tokens/style-dictionary.config.js`. Custom transforms in place
 
 ## Figma sync
 
-Primitives are exported from Figma variables. The cleanup step:
+**The committed DTCG JSON in `packages/tokens/src/` is the source of truth, not Figma** (ADR-002 amendment, 2026-06-17). Code-first is forced by plan limits: the Variables REST API and Code Connect are Enterprise/Org-only, and Token Studio's free GitHub sync is single-file while this architecture is deliberately multi-file. Figma is a downstream mirror and design-exploration surface; the only automatable sync direction available is code→Figma (interactive, via the Figma plugin/MCP).
+
+Tokens are authored and changed in the JSON via PR — `primitives.json` is hand-editable like the theme and device layers. A value invented in Figma is a proposal until it lands in `primitives.json`.
+
+When reconciling values brought over from Figma, the cleanup step still applies:
 - Strips `$extensions` blocks entirely
 - Converts Figma sRGB component objects → hex strings
 - Preserves alias references in `{path.to.token}` format
 
-Do not commit `$extensions` to source. If a Figma export lands them in, strip before committing. Before replacing `primitives.json`, run the Figma token audit (see "Agentic moments") — never overwrite primitives without diffing against current usage.
+Do not commit `$extensions` to source. Before pulling Figma changes into committed tokens, run the Figma token audit (see "Agentic moments") as a drift check — never overwrite primitives without diffing against current usage.
 
 ## Integrations
 
@@ -84,7 +88,7 @@ Do not commit `$extensions` to source. If a Figma export lands them in, strip be
 | **GitHub Actions** | Token build check on PR (`tokens-check.yml`); Airtable sync on merge to main (`sync-tokens.yml`). | Built |
 | **Airtable sync (code → Airtable)** | `scripts/airtable-sync.js` upserts primitives/semantic/device tokens to three tables via REST. One-directional. Runs in CI on merge. | Built |
 | **Airtable governance (Airtable → code)** | `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes` fields per token, pulled to `governance.json` by script. Run `scripts/airtable-pull.js` manually before deprecation work until Phase 6 automates it. | Planned (Phase 2) |
-| **Figma → code flow** | Variables export + audit before replacing primitives; Code Connect mappings for components. | Planned (Phases 4, 7) |
+| **Figma → code flow** | Code is source of truth; Figma is a downstream mirror. Token audit reconciles drift before pulling Figma changes into committed tokens; Code Connect mappings for components. | Planned (Phases 4, 7) |
 | **PR token diff comment, changelog** | Deterministic scripts in Actions. | Planned (Phase 6) |
 | **Component metadata** | JSON schema + example file exist; consumed by agentic moments. | Schema built; consumers planned |
 
@@ -94,7 +98,7 @@ General rule: MCP calls are for **interactive, one-off tasks with the developer 
 
 | MCP | Use it for | Do NOT use it for |
 |---|---|---|
-| **Figma** | (1) Reading variables/design context during the Figma token audit. (2) Code Connect mapping and design context when scaffolding a component. | Recurring token export — that's the Variables REST API via script. Bulk-reading many nodes. |
+| **Figma** | (1) Reading variables/design context during the Figma token audit (drift check). (2) Code Connect mapping and design context when scaffolding a component. | Treating Figma as the token source — tokens are authored as code (ADR-002 amendment). Bulk-reading many nodes. |
 | **Airtable** | (1) One-off schema changes (adding governance fields). (2) Ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state in tasks — read the committed `governance.json` instead. Bulk record operations. |
 | **GitHub** | Rarely — cross-repo searches the `gh` CLI handles awkwardly. | Everything else. Prefer `gh` CLI for PRs, issues, API calls; it's already authenticated and scriptable. |
 | **Google Drive** | Fetching a spec or brief the user explicitly links. | Anything recurring; storing or syncing project docs. |
@@ -106,7 +110,7 @@ If a task could be done with a committed file, a script, or the `gh` CLI, do it 
 
 The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/`. Everything else is a script or a GitHub Action.
 
-1. **Figma token audit** — before replacing `primitives.json` with a fresh Figma export. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (removed/renamed tokens with usages, broken aliases, scale mixing, naming violations), then the cleaned export as a PR.
+1. **Figma token audit (drift check)** — committed JSON is the source of truth, so this reconciles Figma against code rather than importing wholesale. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (tokens that drifted, removed/renamed with usages, broken aliases, scale mixing, naming violations), then a PR applying any intended Figma changes to the committed tokens (cleaned: `$extensions` stripped, colors converted). Never overwrite primitives without diffing against current usage.
 2. **Token deprecation pass** — after tokens are marked deprecated in Airtable. Read `governance.json` + token usage report + component metadata (no MCP needed); produce a migration PR replacing usages with the `successor` token.
 3. **Component scaffold** — when starting a new component from the fixed set. Read the metadata schema + an existing component as template + Figma design context (MCP); produce the component folder (index, CSS Module, stories, metadata) and a Code Connect mapping.
 4. **Layout generation** — when starting a new page or section. Read all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief; produce a React component tree using only library components and tokens, with each structural choice annotated by the metadata rule or compositionPattern that justified it. No MCP needed. Success signal: the tree passes structural validation (accepts/containedBy constraints), builds, and renders in Storybook without manual restructuring.
@@ -186,11 +190,14 @@ Edit `packages/tokens/src/primitives.json`. Follow the existing structure for th
 ### Add a semantic alias
 Edit the appropriate `theme/` or `device/` file. Use `{path.to.primitive}` syntax. Do not add raw values to these files — they should only alias primitives.
 
-### Re-export tokens from Figma
-1. Run the Figma token audit (agentic moment 1) to diff the export against committed tokens and current usage
-2. Run the cleanup script to strip `$extensions` and convert colors
-3. Replace `packages/tokens/src/primitives.json`
-4. Rebuild and verify no alias references broke
+### Change a primitive token
+Tokens are authored as code — edit `packages/tokens/src/primitives.json` directly via PR (see "Add a new primitive token"). Figma is a downstream mirror, not the upstream source.
+
+### Reconcile tokens with Figma (drift check)
+Use when Figma has diverged and you want to pull intended design changes into the canonical code.
+1. Run the Figma token audit (agentic moment 1) to diff Figma variables against committed tokens and current usage
+2. Apply only the intended changes to `packages/tokens/src/primitives.json`, cleaned (strip `$extensions`, convert sRGB → hex, preserve `{alias}` paths)
+3. Rebuild and verify no alias references broke
 
 ### Add a coded component
 Only from the fixed set above. Work in `packages/components/src/components/ComponentName/`. Use `Button` as the template for interactive components, `Box` for layout primitives, `Text` for typography. Every component requires four files:
