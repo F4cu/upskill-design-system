@@ -3,6 +3,7 @@
 // Only records with a Status set are included; absent = treated as active by consumers.
 // Run before any deprecation work until the Phase 6 Action automates this.
 
+import "./load-env.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";

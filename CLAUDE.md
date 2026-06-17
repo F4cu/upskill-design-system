@@ -215,6 +215,8 @@ Edit `packages/tokens/style-dictionary.config.js`. Custom transforms live alongs
 ### Sync tokens to Airtable
 Run `scripts/airtable-sync.js` (requires the Airtable API key in env). It upserts to the three token tables via REST. Do not replicate this with Airtable MCP calls.
 
+For local runs, copy `.env.example` to `.env` and set `AIRTABLE_API_KEY` (the scripts auto-load repo-root `.env`; `.env` is gitignored, an explicit `export` or CI secret overrides it). The PAT needs scopes `data.records:read` + `data.records:write` and the base added to its access list. npm scripts wrap the commands: `sync:tokens:push`, `sync:semantic:push`, `sync:device:push`, or `sync:all:push` for all three in order.
+
 ### Pull governance state from Airtable
 Run `scripts/airtable-pull.js` (requires the Airtable API key in env) to update `packages/tokens/governance.json`. Do this before any deprecation work — the file is the source of truth for token status, owner, and successor that agents and CI read. The `successor` field uses a dot-path to the replacement token (e.g. `color.terracotta.9`); it is nullable when a deprecated token has no direct replacement. Do not read governance state via Airtable MCP — always read the committed file.
 

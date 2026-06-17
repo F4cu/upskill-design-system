@@ -18,6 +18,7 @@
     "sync:tokens:push": "node scripts/airtable-sync.js push:primitives",
     "sync:semantic:push": "node scripts/airtable-sync.js push:semantic",
     "sync:device:push": "node scripts/airtable-sync.js push:device",
+    "sync:all:push": "npm run sync:tokens:push && npm run sync:semantic:push && npm run sync:device:push",
     "governance:setup": "node scripts/airtable-setup-governance.js",
     "governance:pull": "node scripts/airtable-pull.js",
     "token-usage": "node scripts/token-usage.js",

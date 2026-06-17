@@ -2,6 +2,8 @@
 // One-time setup: adds governance fields to Primitive tokens and Semantic tokens tables.
 // Safe to re-run — skips fields that already exist.
 
+import "./load-env.js";
+
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID ?? "appBfY2arkReKQNit";
 
