@@ -161,6 +161,23 @@ Phase 5b additions (User Settings page): `Avatar`, `Header`, `Breadcrumb`, `Divi
 Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `PaginationArrows`.
 Do not add components outside these lists without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
 
+## Architectural decisions (ADRs)
+
+Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-template.md`). These are the load-bearing rationale a future contributor or agent needs to build and reuse components correctly — read the relevant ADR before changing the thing it governs.
+
+**When to record one (do this as part of the change, not later):**
+- A change to a contract other code or tooling depends on — the metadata schema (ADR-001), the token architecture (ADR-002), build transforms, the `space`/`size` split (ADR-005).
+- A new convention agents must follow to generate or reuse correctly (e.g. how variant axes are modelled, how semantic aliases are named).
+- A reversal or material refinement of an earlier decision.
+- A choice between real alternatives where the reasoning won't be obvious from the code later.
+
+**When NOT to:** routine work that follows an existing pattern — adding a component, token, or story; fixing a bug; renaming for clarity. If the decision is already explained by an existing ADR, don't duplicate it. Keep the set small; this is a lite-agentic system.
+
+**How:**
+- *New decision* → copy `000-template.md` to the next number, fill Context / Decision / Consequences, set `Status: accepted`. Link related ADRs by number.
+- *Refining an existing decision* → amend that ADR in place: bump its `Amended:` date and append a dated `## Amendment (YYYY-MM-DD) — <summary>` section rather than rewriting history (see ADR-001 for the pattern). Reserve a new ADR with `superseded by ADR-XXX` for a full reversal.
+- If a decision changes how components are built, reflect the rule in the relevant CLAUDE.md section too — the ADR holds the *why*, CLAUDE.md holds the *what to do*.
+
 ## Common tasks
 
 ### Add a new primitive token
@@ -187,11 +204,13 @@ After creating the files: `npm run validate:metadata`, `npm run typecheck`, and 
 
 `*.metadata.json` is validated against `component.schema.json` by `scripts/validate-metadata.js`. Variants are modelled as **named axes**: `variants` is an object keyed by axis name (`variant`, `size`, `shape`, …), each axis holding `{ options, default, purpose }`. A component with a single visual axis uses one key named `variant`; `default` may be `null` for an axis that is off unless set (e.g. Button `shape`). `tokens` keys are fixed: `color`, `spacing`, `typography`, `borderRadius`, `other`. `component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`.
 
+Following this pattern needs no ADR. But if a component forces a deviation — a new variant-axis convention, a token category the schema doesn't have, a change to the metadata schema itself — record or amend an ADR (see "Architectural decisions") as part of the change, before merging.
+
 ### Add a story for a component
 Create `ComponentName.stories.tsx` next to the component file. Export `meta` with `title`, `component`, and `argTypes`. Export at least a `Default` story using `args`. Add a named story per meaningful visual state (error, disabled, loading).
 
 ### Modify the Style Dictionary build
-Edit `packages/tokens/style-dictionary.config.js`. Custom transforms live alongside it (px→rem, font-weight, `$root` rename, media query combiner). After any change, rebuild and diff the CSS output — transform changes can silently rename custom properties that components depend on.
+Edit `packages/tokens/style-dictionary.config.js`. Custom transforms live alongside it (px→rem, font-weight, `$root` rename, media query combiner). After any change, rebuild and diff the CSS output — transform changes can silently rename custom properties that components depend on. Adding, removing, or changing the behaviour of a transform is an architectural change — record or amend an ADR (see "Architectural decisions").
 
 ### Sync tokens to Airtable
 Run `scripts/airtable-sync.js` (requires the Airtable API key in env). It upserts to the three token tables via REST. Do not replicate this with Airtable MCP calls.
@@ -201,3 +220,6 @@ Run `scripts/airtable-pull.js` (requires the Airtable API key in env) to update 
 
 ### Add a GitHub Action
 Place workflow YAML in `.github/workflows/`. Actions call scripts and REST APIs directly — never MCP tools and never Claude. If a proposed Action seems to need judgment rather than a deterministic check, it belongs in "Agentic moments" instead.
+
+### Record or amend an ADR
+See "Architectural decisions" above for when an ADR is warranted and how to write or amend one.
