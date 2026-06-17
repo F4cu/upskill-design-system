@@ -1,0 +1,72 @@
+.appHeader {
+  width: 100%;
+  height: 5.625rem; /* 90px — Figma spec */
+  background: var(--ds-color-background-container-elevated);
+  border-bottom: 1px solid var(--ds-color-border-subtle);
+  display: flex;
+  align-items: center;
+}
+
+.inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-lg);
+  padding-inline: var(--ds-space-inset-xxl);
+}
+
+.logo {
+  height: 2rem;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.search {
+  flex: 1;
+  max-width: 28rem;
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-lg);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  color: inherit;
+  text-decoration: none;
+  padding-block: var(--ds-space-inset-xs);
+}
+
+.navLink:hover span {
+  color: var(--ds-color-text-brand);
+}
+
+.navLinkActive span {
+  color: var(--ds-color-text-brand);
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.userButton:hover span {
+  color: var(--ds-color-text-brand);
+}

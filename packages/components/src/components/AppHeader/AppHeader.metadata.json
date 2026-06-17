@@ -1,0 +1,90 @@
+{
+  "component": {
+    "name": "AppHeader",
+    "category": "organism",
+    "type": "container",
+    "status": "stable",
+    "description": "Full-width top navigation bar. Fixed height (90px per Figma spec). Contains three slots: left logo, centred search field, and right area (nav links + user dropdown). No routing logic — pass nav items and callbacks as props.",
+    "figmaNodeId": "none — no Figma component set exists"
+  },
+
+  "usage": {
+    "keywords": ["header", "nav", "navbar", "navigation", "top bar", "app header", "site header"],
+    "when": [
+      "Every page that requires global navigation and search"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using AppHeader inside a page section or Card",
+        "reason": "AppHeader is a full-width page-level organism; nesting it breaks its width and positioning semantics.",
+        "alternative": "Place AppHeader at the root layout level, above the page content container."
+      },
+      {
+        "scenario": "Routing logic inside AppHeader",
+        "reason": "The component has no router dependency by design — keeping it pure makes it portable.",
+        "alternative": "Wrap the href links at the consumer level with your router's Link component, or handle navigation in the onUserClick callback."
+      }
+    ]
+  },
+
+  "variants": {
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Elevated background bar with logo, search, nav links, and user dropdown."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static bar — interactive states are limited to nav link hover and user button hover." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.container.elevated",
+      "color.border.subtle",
+      "color.text.brand"
+    ],
+    "spacing": [
+      "space.inline.xs",
+      "space.inline.lg",
+      "space.inset.xs",
+      "space.inset.xxl"
+    ],
+    "typography": [],
+    "borderRadius": [],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "banner",
+    "ariaAttributes": [
+      "aria-label=\"Main navigation\" on the <nav> element",
+      "aria-current=\"page\" on the active nav link"
+    ],
+    "keyboardInteractions": [
+      { "key": "Tab", "action": "Cycle focus through nav links and the user button" }
+    ]
+  },
+
+  "relationships": {
+    "composedOf": ["Avatar", "Icon", "TextField", "Text"],
+    "accepts": [],
+    "containedBy": [],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "full-page-layout",
+        "description": "AppHeader at the top, followed by a page content Stack, composing the full-width application shell.",
+        "tree": "Stack(gap=none) > [AppHeader, main > Stack(gap=xl) > [...pageContent]]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

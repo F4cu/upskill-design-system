@@ -1,0 +1,57 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-md);
+}
+
+.default {
+  color: var(--ds-color-text-default);
+}
+
+.inverted {
+  color: var(--ds-color-text-inverted-default);
+}
+
+.thumbnail {
+  width: var(--ds-size-thumbnail-sm);
+  height: var(--ds-size-thumbnail-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: var(--ds-border-radius-sm);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-stack-xs);
+  min-width: 0;
+}
+
+/* Figma "Title Small Tight": bold weight, tight line-height — overrides Heading defaults */
+.title {
+  font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-font-line-height-title-tight);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-sm);
+  flex-wrap: wrap;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-xs);
+}

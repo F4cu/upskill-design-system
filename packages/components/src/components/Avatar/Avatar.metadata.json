@@ -67,7 +67,7 @@
   "relationships": {
     "composedOf": [],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Inline", "Header"],
+    "containedBy": ["Box", "Stack", "Inline", "AppHeader"],
     "neverPairWith": [],
     "compositionPatterns": [
       {

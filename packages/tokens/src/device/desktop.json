@@ -253,6 +253,20 @@
         "$type": "number",
         "$value": "{size.1600}"
       }
+    },
+    "thumbnail": {
+      "sm": {
+        "$type": "number",
+        "$value": "{size.1000}"
+      },
+      "md": {
+        "$type": "number",
+        "$value": 180
+      },
+      "lg": {
+        "$type": "number",
+        "$value": 340
+      }
     }
   }
 }

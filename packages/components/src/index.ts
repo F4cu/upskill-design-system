@@ -33,3 +33,18 @@ export type { CardProps, CardVariant, CardPadding } from './components/Card'
 
 export { Avatar } from './components/Avatar'
 export type { AvatarProps, AvatarSize } from './components/Avatar'
+
+export { Divider } from './components/Divider'
+export type { DividerProps } from './components/Divider'
+
+export { ProgressBar } from './components/ProgressBar'
+export type { ProgressBarProps } from './components/ProgressBar'
+
+export { Breadcrumb } from './components/Breadcrumb'
+export type { BreadcrumbProps, BreadcrumbItem } from './components/Breadcrumb'
+
+export { AppHeader } from './components/AppHeader'
+export type { AppHeaderProps, NavItem } from './components/AppHeader'
+
+export { CardHorizontal } from './components/CardHorizontal'
+export type { CardHorizontalProps, CardHorizontalVariant } from './components/CardHorizontal'

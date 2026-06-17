@@ -1,0 +1,100 @@
+{
+  "component": {
+    "name": "CardHorizontal",
+    "category": "molecule",
+    "type": "display",
+    "status": "stable",
+    "description": "A horizontal course card with an 80×80px square thumbnail and a content column (title, optional ProgressBar, metadata row with duration and certified badge). Two colour contexts: default (light) and inverted (dark footer) via the variant prop.",
+    "figmaNodeId": "none — no Figma component set exists"
+  },
+
+  "usage": {
+    "keywords": ["card", "course card", "horizontal card", "list card", "started courses", "saved courses"],
+    "when": [
+      "Listing started or saved courses in the User Settings page",
+      "Displaying course recommendations in a footer or sidebar with an inverted dark background"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Nesting CardHorizontal inside Card",
+        "reason": "Creates doubled surface depth that loses hierarchy meaning.",
+        "alternative": "Place CardHorizontal directly in a Stack or Inline layout."
+      },
+      {
+        "scenario": "Using CardHorizontal for non-course content (e.g., user profile, article)",
+        "reason": "The fixed 80×80 thumbnail and metadata row are designed for course items.",
+        "alternative": "Use Card with a custom inner layout for other content types."
+      }
+    ]
+  },
+
+  "variants": {
+    "variant": {
+      "options": ["default", "inverted"],
+      "default": "default",
+      "purpose": {
+        "default": "Light surface — used in main page content areas.",
+        "inverted": "Dark surface — used in dark footer or inverted sections."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static display card — no interactive states." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.container.default",
+      "color.background.container.inverted",
+      "color.border.subtle",
+      "color.border.inverted",
+      "color.text.default",
+      "color.text.inverted.default",
+      "color.text.subtle",
+      "color.text.accent.default"
+    ],
+    "spacing": [
+      "space.inline.xs",
+      "space.inline.sm",
+      "space.inline.md",
+      "space.stack.xs",
+      "space.inset.sm"
+    ],
+    "typography": [],
+    "borderRadius": ["border-radius.md"],
+    "other": ["size.thumbnail.sm"]
+  },
+
+  "accessibility": {
+    "role": "article",
+    "ariaAttributes": [
+      "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)"
+    ],
+    "keyboardInteractions": []
+  },
+
+  "relationships": {
+    "composedOf": ["Heading", "ProgressBar", "Icon", "Text"],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Inline"],
+    "neverPairWith": ["Card"],
+    "compositionPatterns": [
+      {
+        "name": "started-courses-list",
+        "description": "A vertical Stack of CardHorizontal items showing in-progress courses.",
+        "tree": "Stack(gap=sm) > [CardHorizontal(progress=65), CardHorizontal(progress=20), ...]"
+      },
+      {
+        "name": "footer-recommendations",
+        "description": "CardHorizontal items in inverted variant inside a dark footer section.",
+        "tree": "Box(data-theme=dark) > Stack(gap=sm) > [CardHorizontal(variant=inverted), ...]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

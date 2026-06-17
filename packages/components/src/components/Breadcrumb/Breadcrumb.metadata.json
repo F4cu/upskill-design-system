@@ -1,0 +1,85 @@
+{
+  "component": {
+    "name": "Breadcrumb",
+    "category": "molecule",
+    "type": "display",
+    "status": "stable",
+    "description": "An ordered list of navigation links separated by chevron-right icons. The last item is the current page (non-linked, default text colour). Accepts items as an array of { label, href? }.",
+    "figmaNodeId": "none — no Figma component set exists"
+  },
+
+  "usage": {
+    "keywords": ["breadcrumb", "navigation", "wayfinding", "trail", "path", "hierarchy"],
+    "when": [
+      "Showing the user's location within the page hierarchy below the AppHeader",
+      "Any page more than one level deep from the root that benefits from a back-navigation trail"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Breadcrumb on root-level pages",
+        "reason": "A one-item breadcrumb (just the current page) adds no wayfinding value and clutters the layout.",
+        "alternative": "Omit Breadcrumb when the page is at the top of the hierarchy."
+      },
+      {
+        "scenario": "Passing an href to the last item",
+        "reason": "The last item represents the current page; linking it is redundant and confusing for screen readers.",
+        "alternative": "Omit the href on the last item — the component renders it as plain text with aria-current=page."
+      }
+    ]
+  },
+
+  "variants": {
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Ordered trail of linked items with a non-linked current page label."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static trail — no interactive states beyond individual link hover." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.text.default",
+      "color.text.subtle"
+    ],
+    "spacing": ["space.inline.xs"],
+    "typography": [],
+    "borderRadius": [],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "navigation",
+    "ariaAttributes": [
+      "aria-label=\"Breadcrumb\" on the <nav> element",
+      "aria-current=\"page\" on the last item"
+    ],
+    "keyboardInteractions": [
+      { "key": "Tab", "action": "Move focus between linked breadcrumb items" }
+    ]
+  },
+
+  "relationships": {
+    "composedOf": ["Icon", "Text"],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "AppHeader"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "page-header-trail",
+        "description": "Breadcrumb placed below AppHeader and above the page title in a Stack.",
+        "tree": "Stack(gap=sm) > [Breadcrumb, Heading(as=h1)]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}
