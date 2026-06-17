@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import type { SelectHTMLAttributes } from 'react'
+import { Icon } from '../Icon'
 import styles from './Select.module.css'
 import utilStyles from '../../styles/utilities.module.css'
 
@@ -55,15 +56,7 @@ export function Select({
           ))}
         </select>
         <span className={styles.arrow} aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M4 6l4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Icon name="chevron-down" size="sm" />
         </span>
       </div>
       {error && (

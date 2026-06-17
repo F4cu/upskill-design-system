@@ -21,7 +21,7 @@
    - Layout behavior (fixed/hug width, inline vs block, can nest)
 2. Fill the metadata schema fields from what you observe in Figma. Anti-patterns must reference only components in the fixed set. Variant names must match Figma exactly.
 3. Produce the component folder at `packages/components/src/ComponentName/`:
-   - `index.tsx` — typed props matching the schema's `variants.options` and `states`; no hard-coded design values; import CSS module for class names
+   - `index.tsx` — typed props matching the metadata's variant axes (one prop per `variants.<axis>`, typed to that axis's `options`) and `states`; no hard-coded design values; import CSS module for class names
    - `ComponentName.module.css` — one rule per variant + state combination; only `var(--ds-*)` custom properties, never raw values
    - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls
    - `ComponentName.metadata.json` — completed metadata file conforming to the schema

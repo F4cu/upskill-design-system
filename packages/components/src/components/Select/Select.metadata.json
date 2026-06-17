@@ -35,10 +35,12 @@
   },
 
   "variants": {
-    "options": ["default"],
-    "default": "default",
-    "purpose": {
-      "default": "Standard dropdown with label. Error state is controlled via the error prop."
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Standard dropdown with label. Error state is controlled via the error prop."
+      }
     }
   },
 
@@ -100,7 +102,7 @@
   },
 
   "relationships": {
-    "composedOf": [],
+    "composedOf": ["Icon"],
     "accepts": [],
     "containedBy": ["Box", "Stack", "Card"],
     "neverPairWith": [],

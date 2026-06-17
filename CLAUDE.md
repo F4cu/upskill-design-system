@@ -183,7 +183,9 @@ Only from the fixed set above. Work in `packages/components/src/components/Compo
 3. **`ComponentName.stories.tsx`** — export `meta` with `title`, `component`, `argTypes`. Export a `Default` story using `args`. Add one named story per meaningful visual state (disabled, error, etc.). Dark mode switches via `data-theme` on the story container, not Storybook background.
 4. **`ComponentName.metadata.json`** — fill every field from the schema (`component.schema.json`). `figmaNodeId` is the Figma component set node ID if one exists, or a note if the component uses text styles or Code Connect is unavailable (requires Figma Enterprise). `relationships.accepts`/`containedBy` and `compositionPatterns` are required for the layout-generation agentic moment.
 
-After creating the files: `npm run build` and `npm run storybook` must both pass with no manual changes. Verify the component renders in both light and dark themes.
+After creating the files: `npm run validate:metadata`, `npm run typecheck`, and `npm run build` must all pass with no manual changes, and the component must render in both light and dark themes in Storybook. The `components-check.yml` Action runs these on every PR.
+
+`*.metadata.json` is validated against `component.schema.json` by `scripts/validate-metadata.js`. Variants are modelled as **named axes**: `variants` is an object keyed by axis name (`variant`, `size`, `shape`, …), each axis holding `{ options, default, purpose }`. A component with a single visual axis uses one key named `variant`; `default` may be `null` for an axis that is off unless set (e.g. Button `shape`). `tokens` keys are fixed: `color`, `spacing`, `typography`, `borderRadius`, `other`. `component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`.
 
 ### Add a story for a component
 Create `ComponentName.stories.tsx` next to the component file. Export `meta` with `title`, `component`, and `argTypes`. Export at least a `Default` story using `args`. Add a named story per meaningful visual state (error, disabled, loading).

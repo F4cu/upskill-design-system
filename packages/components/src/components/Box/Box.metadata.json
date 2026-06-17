@@ -1,8 +1,8 @@
 {
   "component": {
     "name": "Box",
-    "category": "primitive",
-    "type": "layout",
+    "category": "layout",
+    "type": "container",
     "status": "stable",
     "description": "The foundational layout primitive. A polymorphic container that applies spacing tokens via the padding props. Everything else in the system can be placed inside a Box.",
     "figmaNodeId": ""
@@ -30,10 +30,12 @@
   },
 
   "variants": {
-    "options": ["default"],
-    "default": "default",
-    "purpose": {
-      "default": "A generic padded container. Rendered as div by default; override with the as prop for semantic HTML."
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "A generic padded container. Rendered as div by default; override with the as prop for semantic HTML."
+      }
     }
   },
 

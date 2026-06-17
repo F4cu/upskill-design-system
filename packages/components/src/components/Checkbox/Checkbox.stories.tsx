@@ -43,6 +43,9 @@ export const DisabledChecked: Story = {
 }
 
 export const Group: Story = {
+  args: {
+    label: 'Notification preferences',
+  },
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <Checkbox label="Email me when a course is updated" defaultChecked />

@@ -1,8 +1,8 @@
 {
   "component": {
     "name": "Stack",
-    "category": "primitive",
-    "type": "layout",
+    "category": "layout",
+    "type": "container",
     "status": "stable",
     "description": "Vertical flex container. Stacks children top-to-bottom with consistent spacing from the space.stack token scale. The primary building block for content hierarchy within a page section.",
     "figmaNodeId": ""
@@ -30,10 +30,12 @@
   },
 
   "variants": {
-    "options": ["default"],
-    "default": "default",
-    "purpose": {
-      "default": "Column flex container with configurable gap, alignment, and justification."
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Column flex container with configurable gap, alignment, and justification."
+      }
     }
   },
 
@@ -82,7 +84,7 @@
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",
-      "displayType": "flex",
+      "displayType": "flex-column",
       "canNest": true
     }
   }

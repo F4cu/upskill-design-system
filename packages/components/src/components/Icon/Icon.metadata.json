@@ -1,8 +1,8 @@
 {
   "component": {
     "name": "Icon",
-    "category": "primitive",
-    "type": "media",
+    "category": "atom",
+    "type": "display",
     "status": "stable",
     "description": "Renders one of 20 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
     "figmaNodeId": "96:11108"
@@ -35,11 +35,13 @@
   },
 
   "variants": {
-    "options": ["sm", "md"],
-    "default": "md",
-    "purpose": {
-      "sm": "16px — use inside dense UI elements such as tags, badges, or inline metadata.",
-      "md": "24px — default; use alongside body text, in buttons, and as standalone affordances."
+    "size": {
+      "options": ["sm", "md"],
+      "default": "md",
+      "purpose": {
+        "sm": "16px — use inside dense UI elements such as tags, badges, or inline metadata.",
+        "md": "24px — default; use alongside body text, in buttons, and as standalone affordances."
+      }
     }
   },
 
@@ -48,7 +50,7 @@
   ],
 
   "tokens": {
-    "size": [
+    "other": [
       "size.icon.sm",
       "size.icon.md"
     ]

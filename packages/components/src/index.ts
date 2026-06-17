@@ -17,10 +17,10 @@ export { Icon } from './components/Icon'
 export type { IconProps, IconName, IconSize } from './components/Icon'
 
 export { Button } from './components/Button'
-export type { ButtonProps, ButtonVariant, ButtonSize } from './components/Button'
+export type { ButtonProps, ButtonVariant, ButtonSize, ButtonShape } from './components/Button'
 
 export { TextField } from './components/TextField'
-export type { TextFieldProps } from './components/TextField'
+export type { TextFieldProps, TextFieldSize, TextFieldShape } from './components/TextField'
 
 export { Select } from './components/Select'
 export type { SelectProps, SelectOption } from './components/Select'

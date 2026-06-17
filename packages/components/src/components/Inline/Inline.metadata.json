@@ -1,8 +1,8 @@
 {
   "component": {
     "name": "Inline",
-    "category": "primitive",
-    "type": "layout",
+    "category": "layout",
+    "type": "container",
     "status": "stable",
     "description": "Horizontal flex container. Arranges children side-by-side with consistent spacing from the space.inline token scale. Wraps by default when children exceed the container width.",
     "figmaNodeId": ""
@@ -30,10 +30,12 @@
   },
 
   "variants": {
-    "options": ["default"],
-    "default": "default",
-    "purpose": {
-      "default": "Row flex container with configurable gap, alignment, justification, and optional wrapping."
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Row flex container with configurable gap, alignment, justification, and optional wrapping."
+      }
     }
   },
 
@@ -82,7 +84,7 @@
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",
-      "displayType": "flex",
+      "displayType": "flex-row",
       "canNest": true
     }
   }

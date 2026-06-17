@@ -1,8 +1,8 @@
 {
   "component": {
     "name": "Text",
-    "category": "primitive",
-    "type": "typography",
+    "category": "atom",
+    "type": "display",
     "status": "stable",
     "description": "Renders body-level text using semantic size tokens. Covers body copy, small text, metadata, and label sizes. Polymorphic via the as prop. Does not add margin.",
     "figmaNodeId": "N/A — Text uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
@@ -30,13 +30,25 @@
   },
 
   "variants": {
-    "options": ["body-default", "body-small", "metadata", "label"],
-    "default": "body-default",
-    "purpose": {
-      "body-default": "Standard body copy. 1rem, regular weight, 1.5 line-height.",
-      "body-small": "Secondary body text or sidebar content. 0.875rem.",
-      "metadata": "Supporting details such as timestamps, counts, tags. 0.875rem.",
-      "label": "UI labels for form fields and controls. 1rem, medium weight, single line-height."
+    "size": {
+      "options": ["body-default", "body-small", "metadata", "label"],
+      "default": "body-default",
+      "purpose": {
+        "body-default": "Standard body copy. 1rem, regular weight, 1.5 line-height.",
+        "body-small": "Secondary body text or sidebar content. 0.875rem.",
+        "metadata": "Supporting details such as timestamps, counts, tags. 0.875rem.",
+        "label": "UI labels for form fields and controls. 1rem, medium weight, single line-height."
+      }
+    },
+    "color": {
+      "options": ["default", "subtle", "brand", "disabled"],
+      "default": "default",
+      "purpose": {
+        "default": "Primary reading colour on the page surface.",
+        "subtle": "De-emphasised secondary text and supporting metadata.",
+        "brand": "Brand-coloured emphasis; use sparingly for accent text.",
+        "disabled": "Text in a disabled or inactive context."
+      }
     }
   },
 

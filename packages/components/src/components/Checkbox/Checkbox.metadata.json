@@ -35,10 +35,12 @@
   },
 
   "variants": {
-    "options": ["default"],
-    "default": "default",
-    "purpose": {
-      "default": "Single boolean toggle. Checked/disabled states are controlled via standard HTML props."
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Single boolean toggle. Checked/disabled states are controlled via standard HTML props."
+      }
     }
   },
 

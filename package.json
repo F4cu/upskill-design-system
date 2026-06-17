@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "ajv": "^8.18.0",
     "storybook": "^10"
   },
   "scripts": {
@@ -19,6 +20,7 @@
     "sync:device:push": "node scripts/airtable-sync.js push:device",
     "governance:setup": "node scripts/airtable-setup-governance.js",
     "governance:pull": "node scripts/airtable-pull.js",
-    "token-usage": "node scripts/token-usage.js"
+    "token-usage": "node scripts/token-usage.js",
+    "validate:metadata": "node scripts/validate-metadata.js"
   }
 }

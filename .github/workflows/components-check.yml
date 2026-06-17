@@ -1,0 +1,46 @@
+name: Component check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/components/**'
+      - 'packages/tokens/**'
+      - 'scripts/validate-metadata.js'
+      - 'package.json'
+      - 'package-lock.json'
+  pull_request:
+    paths:
+      - 'packages/components/**'
+      - 'packages/tokens/**'
+      - 'scripts/validate-metadata.js'
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  check-components:
+    name: Typecheck, build, validate metadata
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build tokens
+        run: npm run build:tokens
+
+      - name: Validate component metadata
+        run: npm run validate:metadata
+
+      - name: Typecheck components
+        run: npm run typecheck
+
+      - name: Build components
+        run: npm run build -w @upskill/components

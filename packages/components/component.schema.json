@@ -69,21 +69,29 @@
     },
 
     "variants": {
+      "description": "Named variant axes. Each key is an independent axis (e.g. variant, size, shape). A single-axis component declares one axis named `variant`; a component with no visual variation declares `variant` with a single `default` option.",
       "type": "object",
-      "required": ["options", "default", "purpose"],
-      "properties": {
-        "options": {
-          "type": "array",
-          "items": { "type": "string" }
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["options", "default", "purpose"],
+        "properties": {
+          "options": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "default": {
+            "type": ["string", "null"],
+            "description": "Default option for this axis, or null when the axis is off by default (e.g. an icon-only shape applied only when set)."
+          },
+          "purpose": {
+            "description": "Per-option selection guidance — when to choose each option on this axis over the others.",
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
         },
-        "default": { "type": "string" },
-        "purpose": {
-          "description": "Per-variant selection guidance — when to choose this variant over others.",
-          "type": "object",
-          "additionalProperties": { "type": "string" }
-        }
-      },
-      "additionalProperties": false
+        "additionalProperties": false
+      }
     },
 
     "states": {
@@ -115,6 +123,10 @@
       "type": "object",
       "properties": {
         "role": { "type": "string" },
+        "notes": {
+          "description": "Accessibility guidance specific to this component that the role/aria/keyboard fields don't capture.",
+          "type": "string"
+        },
         "ariaAttributes": {
           "type": "array",
           "items": { "type": "string" }

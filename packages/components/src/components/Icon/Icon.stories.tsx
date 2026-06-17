@@ -52,6 +52,9 @@ export const Default: Story = {
 }
 
 export const AllIcons: Story = {
+  args: {
+    name: 'search',
+  },
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'center' }}>
       {allIcons.map((name) => (
@@ -67,6 +70,9 @@ export const AllIcons: Story = {
 }
 
 export const Sizes: Story = {
+  args: {
+    name: 'search',
+  },
   render: () => (
     <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
       {(['sm', 'md'] as const).map((size) => (
@@ -82,6 +88,9 @@ export const Sizes: Story = {
 }
 
 export const InheritColor: Story = {
+  args: {
+    name: 'heart',
+  },
   render: () => (
     <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
       <span style={{ color: 'var(--ds-color-text-default)' }}><Icon name="heart" size="md" /></span>

@@ -41,13 +41,21 @@
   },
 
   "variants": {
-    "options": ["default", "outlined", "square", "round"],
-    "default": "default",
-    "purpose": {
-      "default": "The primary filled action on a surface. Use once per view section — multiple filled buttons collapse visual hierarchy.",
-      "outlined": "Supporting or secondary actions that sit alongside a default button. Lower visual weight, still clearly interactive.",
-      "square": "Icon-only action in a square container. Use for compact affordances where a text label is unnecessary (e.g. toolbar actions).",
-      "round": "Icon-only action in a circular container. Use when the surrounding layout calls for a softer, pill-shaped affordance."
+    "variant": {
+      "options": ["default", "outlined"],
+      "default": "default",
+      "purpose": {
+        "default": "The primary filled action on a surface. Use once per view section — multiple filled buttons collapse visual hierarchy.",
+        "outlined": "Supporting or secondary actions that sit alongside a default button. Lower visual weight, still clearly interactive."
+      }
+    },
+    "shape": {
+      "options": ["square", "round"],
+      "default": null,
+      "purpose": {
+        "square": "Icon-only action in a square container. Use for compact affordances where a text label is unnecessary (e.g. toolbar actions).",
+        "round": "Icon-only action in a circular container. Use when the surrounding layout calls for a softer, pill-shaped affordance."
+      }
     }
   },
 

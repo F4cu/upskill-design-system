@@ -1,8 +1,8 @@
 {
   "component": {
     "name": "Heading",
-    "category": "primitive",
-    "type": "typography",
+    "category": "atom",
+    "type": "display",
     "status": "stable",
     "description": "Renders heading-level text using title and display size tokens. The as prop controls semantic HTML level (h1–h6); the size prop controls visual appearance independently. Does not add margin.",
     "figmaNodeId": "N/A — Heading uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
@@ -30,14 +30,25 @@
   },
 
   "variants": {
-    "options": ["title-small", "subheader", "headline", "headline-serif", "display"],
-    "default": "headline",
-    "purpose": {
-      "title-small": "Card titles, widget headers. 1.125rem semibold.",
-      "subheader": "Section sub-labels or feature callouts. 1.375rem semibold.",
-      "headline": "Primary section headings. 1.625rem bold.",
-      "headline-serif": "Editorial or feature headings in the serif typeface. 1.75rem medium.",
-      "display": "Hero headlines. 2rem serif, medium weight, tight leading."
+    "size": {
+      "options": ["title-small", "subheader", "headline", "headline-serif", "display"],
+      "default": "headline",
+      "purpose": {
+        "title-small": "Card titles, widget headers. 1.125rem semibold.",
+        "subheader": "Section sub-labels or feature callouts. 1.375rem semibold.",
+        "headline": "Primary section headings. 1.625rem bold.",
+        "headline-serif": "Editorial or feature headings in the serif typeface. 1.75rem medium.",
+        "display": "Hero headlines. 2rem serif, medium weight, tight leading."
+      }
+    },
+    "color": {
+      "options": ["default", "subtle", "brand"],
+      "default": "default",
+      "purpose": {
+        "default": "Primary heading colour on the page surface.",
+        "subtle": "De-emphasised heading, e.g. a secondary section label.",
+        "brand": "Brand-coloured heading for accent or featured sections."
+      }
     }
   },
 
