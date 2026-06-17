@@ -1,8 +1,8 @@
 import type { ElementType, HTMLAttributes, CSSProperties } from 'react'
 import styles from './Text.module.css'
 
-type TextSize = 'body-default' | 'body-small' | 'metadata' | 'label'
-type TextColor = 'default' | 'subtle' | 'brand' | 'disabled'
+export type TextSize = 'body-default' | 'body-small' | 'metadata' | 'label'
+export type TextColor = 'default' | 'subtle' | 'brand' | 'disabled'
 
 export type TextProps = {
   as?: ElementType

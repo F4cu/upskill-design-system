@@ -8,10 +8,10 @@ export { Inline } from './components/Inline'
 export type { InlineProps } from './components/Inline'
 
 export { Text } from './components/Text'
-export type { TextProps } from './components/Text'
+export type { TextProps, TextSize, TextColor } from './components/Text'
 
 export { Heading } from './components/Heading'
-export type { HeadingProps } from './components/Heading'
+export type { HeadingProps, HeadingTag, HeadingSize, HeadingColor } from './components/Heading'
 
 export { Icon } from './components/Icon'
 export type { IconProps, IconName, IconSize } from './components/Icon'
