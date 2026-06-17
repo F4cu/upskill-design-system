@@ -9,9 +9,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "declaration": true,
-    "declarationDir": "dist",
-    "outDir": "dist",
+    "noEmit": true,
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
