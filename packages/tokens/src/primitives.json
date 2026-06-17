@@ -891,6 +891,14 @@
     "800": {
       "$type": "number",
       "$value": 64
+    },
+    "1000": {
+      "$type": "number",
+      "$value": 80
+    },
+    "1600": {
+      "$type": "number",
+      "$value": 128
     }
   },
   "font": {

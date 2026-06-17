@@ -30,3 +30,6 @@ export type { CheckboxProps } from './components/Checkbox'
 
 export { Card } from './components/Card'
 export type { CardProps, CardVariant, CardPadding } from './components/Card'
+
+export { Avatar } from './components/Avatar'
+export type { AvatarProps, AvatarSize } from './components/Avatar'

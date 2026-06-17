@@ -239,6 +239,20 @@
         "$type": "number",
         "$value": "{size.300}"
       }
+    },
+    "avatar": {
+      "sm": {
+        "$type": "number",
+        "$value": "{size.300}"
+      },
+      "md": {
+        "$type": "number",
+        "$value": "{size.1000}"
+      },
+      "lg": {
+        "$type": "number",
+        "$value": "{size.1600}"
+      }
     }
   }
 }
