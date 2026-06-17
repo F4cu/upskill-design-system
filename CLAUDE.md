@@ -98,7 +98,7 @@ General rule: MCP calls are for **interactive, one-off tasks with the developer 
 
 | MCP | Use it for | Do NOT use it for |
 |---|---|---|
-| **Figma** | (1) Reading variables/design context during the Figma token audit (drift check). (2) Code Connect mapping and design context when scaffolding a component. | Treating Figma as the token source — tokens are authored as code (ADR-002 amendment). Bulk-reading many nodes. |
+| **Figma** | (1) Reading variables/design context during the Figma token audit (drift check). (2) Code Connect mapping and design context when scaffolding a component. (3) Writing variables into Figma during a Figma variable sync (`use_figma` Plugin API) when code is ahead of Figma. | Treating Figma as the token source — tokens are authored as code (ADR-002 amendment). Bulk-reading many nodes. |
 | **Airtable** | (1) One-off schema changes (adding governance fields). (2) Ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state in tasks — read the committed `governance.json` instead. Bulk record operations. |
 | **GitHub** | Rarely — cross-repo searches the `gh` CLI handles awkwardly. | Everything else. Prefer `gh` CLI for PRs, issues, API calls; it's already authenticated and scriptable. |
 | **Google Drive** | Fetching a spec or brief the user explicitly links. | Anything recurring; storing or syncing project docs. |
@@ -114,6 +114,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 2. **Token deprecation pass** — after tokens are marked deprecated in Airtable. Read `governance.json` + token usage report + component metadata (no MCP needed); produce a migration PR replacing usages with the `successor` token.
 3. **Component scaffold** — when starting a new component from the fixed set. Read the metadata schema + an existing component as template + Figma design context (MCP); produce the component folder (index, CSS Module, stories, metadata) and a Code Connect mapping.
 4. **Layout generation** — when starting a new page or section. Read all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief; produce a React component tree using only library components and tokens, with each structural choice annotated by the metadata rule or compositionPattern that justified it. No MCP needed. Success signal: the tree passes structural validation (accepts/containedBy constraints), builds, and renders in Storybook without manual restructuring.
+5. **Figma variable sync (code → Figma)** — the inverse of moment 1: when committed tokens have moved ahead of Figma. Read committed token source + Figma variable inventory (MCP); diff into clean-missing / drift / Figma-extras, then write only the clean-missing variables into the Figma collections via `use_figma` (dependency-ordered, aliases preserved, scopes matched to siblings). Never delete or overwrite Figma variables without explicit confirmation — they may be bound to styles. Needs judgment (cross-scheme naming map, safe-add vs decision triage) and the Plugin API, so it can't be a script; the REST Variables API is Enterprise-gated. Success signal: every added variable resolves, counts move by exactly the clean-missing count, nothing deleted silently.
 
 If asked to set up a continuous agent loop, scheduled agent run, or always-on watcher: push back — that contradicts the lite-agentic constraint. Propose a script or one of these moments instead.
 
@@ -198,6 +199,9 @@ Use when Figma has diverged and you want to pull intended design changes into th
 1. Run the Figma token audit (agentic moment 1) to diff Figma variables against committed tokens and current usage
 2. Apply only the intended changes to `packages/tokens/src/primitives.json`, cleaned (strip `$extensions`, convert sRGB → hex, preserve `{alias}` paths)
 3. Rebuild and verify no alias references broke
+
+### Mirror token changes into Figma (code → Figma)
+Use when committed tokens have moved ahead of Figma and you want the Figma variable collections to match. Run the Figma variable sync (agentic moment 5): it diffs the committed source against the Figma inventory and writes only the clean-missing variables via `use_figma`. It never deletes or overwrites Figma variables without confirmation. One-off and developer-present — never scheduled or in CI.
 
 ### Add a coded component
 Only from the fixed set above. Work in `packages/components/src/components/ComponentName/`. Use `Button` as the template for interactive components, `Box` for layout primitives, `Text` for typography. Every component requires four files:
