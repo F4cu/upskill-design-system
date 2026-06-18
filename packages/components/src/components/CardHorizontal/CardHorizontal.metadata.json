@@ -4,7 +4,7 @@
     "category": "molecule",
     "type": "display",
     "status": "stable",
-    "description": "A horizontal course card with an 80×80px square thumbnail and a content column (title, optional ProgressBar, metadata row with duration and certified badge). Two colour contexts: default (light) and inverted (dark footer) via the variant prop.",
+    "description": "A horizontal course card (thumbnail-left layout) with an 80×80px square thumbnail and a content column (title, optional ProgressBar, metadata row with duration and certified badge). Two colour contexts: default (light) and inverted (dark footer) via the variant prop. For vertical image-top course cards use CardVertical; for generic surface containers use Card.",
     "figmaNodeId": "none — no Figma component set exists"
   },
 
@@ -21,6 +21,11 @@
         "alternative": "Place CardHorizontal directly in a Stack or Inline layout."
       },
       {
+        "scenario": "Mixing CardHorizontal and CardVertical in the same list",
+        "reason": "Inconsistent layout direction breaks visual rhythm in a list or grid.",
+        "alternative": "Pick one orientation for a given context: CardVertical for catalog grids, CardHorizontal for compact lists and footers."
+      },
+      {
         "scenario": "Using CardHorizontal for non-course content (e.g., user profile, article)",
         "reason": "The fixed 80×80 thumbnail and metadata row are designed for course items.",
         "alternative": "Use Card with a custom inner layout for other content types."
@@ -33,8 +38,8 @@
       "options": ["default", "inverted"],
       "default": "default",
       "purpose": {
-        "default": "Light surface — used in main page content areas.",
-        "inverted": "Dark surface — used in dark footer or inverted sections."
+        "default": "Standard light-theme context. Text uses default and subtle color tokens.",
+        "inverted": "Inverted-background context within the light theme (e.g. the dark footer section). Switches title to color.text.inverted.default and metadata to color.text.inverted.subtle. The parent container must supply the dark background via color.background.container.inverted — do NOT use data-theme='dark'."
       }
     }
   },
@@ -78,7 +83,7 @@
     "composedOf": ["Heading", "ProgressBar", "Icon", "Text", "Image"],
     "accepts": [],
     "containedBy": ["Box", "Stack", "Inline"],
-    "neverPairWith": ["Card"],
+    "neverPairWith": ["Card", "CardVertical"],
     "compositionPatterns": [
       {
         "name": "started-courses-list",
@@ -87,8 +92,8 @@
       },
       {
         "name": "footer-recommendations",
-        "description": "CardHorizontal items in inverted variant inside a dark footer section.",
-        "tree": "Box(data-theme=dark) > Stack(gap=sm) > [CardHorizontal(variant=inverted), ...]"
+        "description": "CardHorizontal items in inverted variant inside the dark footer section. The Box provides the inverted background color; no theme switch is needed — both parent and cards stay in the light theme.",
+        "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted), ...]"
       }
     ],
     "layoutBehavior": {

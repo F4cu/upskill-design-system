@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from 'react'
+import type { CSSProperties, HTMLAttributes } from 'react'
 import { Heading } from '../Heading'
 import { Icon } from '../Icon'
 import { Image } from '../Image'
@@ -29,14 +29,21 @@ export function CardHorizontal({
   className,
   ...rest
 }: CardHorizontalProps) {
+  const titleStyle: CSSProperties | undefined = variant === 'inverted'
+    ? { color: 'var(--ds-color-text-inverted-default)' }
+    : undefined
+  const metaStyle: CSSProperties | undefined = variant === 'inverted'
+    ? { color: 'var(--ds-color-text-inverted-subtle)' }
+    : undefined
+
   const metaItems = [
     duration && (
-      <Text key="duration" as="span" size="metadata" color="subtle">{duration}</Text>
+      <Text key="duration" as="span" size="metadata" color="subtle" style={metaStyle}>{duration}</Text>
     ),
     certified && (
       <span key="certified" className={styles.badge}>
         <Icon name="badge-check" size="sm" />
-        <Text as="span" size="metadata" color="subtle">Certified</Text>
+        <Text as="span" size="metadata" color="subtle" style={metaStyle}>Certified</Text>
       </span>
     ),
   ].filter(Boolean)
@@ -48,7 +55,7 @@ export function CardHorizontal({
     >
       <Image src={thumbnailSrc} alt={thumbnailAlt} aspectRatio="1/1" className={styles.thumbnail} />
       <div className={styles.content}>
-        <Heading as="h3" size="title-small" className={styles.title}>{title}</Heading>
+        <Heading as="h3" size="title-small" className={styles.title} style={titleStyle}>{title}</Heading>
         {progress !== undefined && <ProgressBar value={progress} />}
         {metaItems.length > 0 && (
           <div className={styles.meta}>

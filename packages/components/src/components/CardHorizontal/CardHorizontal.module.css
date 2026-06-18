@@ -12,6 +12,7 @@
   color: var(--ds-color-text-inverted-default);
 }
 
+
 .thumbnail {
   width: var(--ds-size-thumbnail-sm);
   height: var(--ds-size-thumbnail-sm);

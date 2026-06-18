@@ -42,10 +42,14 @@ export const Inverted: Story = {
     thumbnailSrc: THUMBNAIL,
     title: 'Introduction to UX Design',
     duration: '3h 20m',
-    certified: false,
+    certified: true,
     variant: 'inverted',
   },
-  parameters: { backgrounds: { default: 'dark' } },
+  render: (args) => (
+    <div style={{ background: 'var(--ds-color-background-container-inverted)', padding: '24px', borderRadius: '8px', maxWidth: 480 }}>
+      <CardHorizontal {...args} />
+    </div>
+  ),
 }
 
 export const NoThumbnail: Story = {
