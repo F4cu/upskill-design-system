@@ -1,0 +1,108 @@
+{
+  "component": {
+    "name": "DropdownMenu",
+    "category": "atom",
+    "type": "display",
+    "status": "stable",
+    "description": "A floating panel of selectable items. Shared dropdown primitive used by AppHeader (user menu) and Select (custom listbox). Supports both menu and listbox ARIA roles.",
+    "figmaNodeId": "155:6261"
+  },
+
+  "usage": {
+    "keywords": ["dropdown", "menu", "listbox", "options", "contextual", "popup", "select"],
+    "when": [
+      "Displaying a list of selectable items anchored to a trigger element",
+      "Powering a custom Select listbox (listRole=listbox)",
+      "Showing a contextual user menu in AppHeader (listRole=menu)"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using DropdownMenu for navigation with URLs",
+        "reason": "Items are <div role='menuitem'>, not anchors. Navigation links need <a> elements for correct semantics.",
+        "alternative": "Use a nav element with anchor links for navigation."
+      },
+      {
+        "scenario": "Rendering DropdownMenu outside a position:relative container",
+        "reason": "The panel is absolutely positioned and will be offset incorrectly without a positioned ancestor.",
+        "alternative": "Always wrap the trigger and DropdownMenu in a position:relative container."
+      }
+    ]
+  },
+
+  "variants": {
+    "listRole": {
+      "options": ["menu", "listbox"],
+      "default": "menu",
+      "purpose": {
+        "menu": "Contextual action menu. Items get role=menuitem. Use for AppHeader user menu.",
+        "listbox": "Form select dropdown. Items get role=option with aria-selected. Use for custom Select."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Panel visible; items in resting state." },
+    { "state": "item-hover", "description": "Neutral background on the hovered or focused item." },
+    { "state": "item-selected", "description": "Brand text colour and semibold weight on the currently selected item (listbox role only)." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.container.default",
+      "color.background.neutral.hover",
+      "color.text.default",
+      "color.text.brand"
+    ],
+    "spacing": [
+      "space.inset.xs"
+    ],
+    "typography": [
+      "font.family.body",
+      "font.size.body-default",
+      "font.line-height.body-default"
+    ],
+    "borderRadius": [
+      "border-radius.sm",
+      "border-radius.xs"
+    ],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "menu or listbox (controlled via listRole prop)",
+    "ariaAttributes": [
+      "role (panel: menu | listbox)",
+      "role (items: menuitem | option)",
+      "aria-selected (option items when listRole=listbox)"
+    ],
+    "keyboardInteractions": [
+      { "key": "Escape", "action": "Closes the dropdown and returns focus to the trigger" },
+      { "key": "Enter / Space", "action": "Selects the focused item" },
+      { "key": "Tab", "action": "Moves focus between items (tabIndex=0 on each item)" }
+    ]
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["AppHeader", "Select"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "user-context-menu",
+        "description": "AppHeader renders DropdownMenu anchored below the user button trigger using absolute positioning.",
+        "tree": "AppHeader > div.userWrapper(position:relative) > [button.userButton, DropdownMenu(listRole=menu)]"
+      },
+      {
+        "name": "custom-select",
+        "description": "Select renders DropdownMenu as a custom listbox anchored below its trigger button.",
+        "tree": "Select > div.wrapper(position:relative) > [button.trigger, DropdownMenu(listRole=listbox)]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fixed",
+      "displayType": "flex-column",
+      "canNest": false
+    }
+  }
+}

@@ -19,6 +19,12 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+const USER_MENU_ITEMS = [
+  { value: 'profile', label: 'My Profile' },
+  { value: 'settings', label: 'Settings' },
+  { value: 'logout', label: 'Log out' },
+]
+
 export const Default: Story = {
   args: {
     logoSrc: logoLight,
@@ -27,6 +33,7 @@ export const Default: Story = {
     navItems: NAV_ITEMS,
     userAvatarSrc: AVATAR,
     userName: 'Sarah',
+    userMenuItems: USER_MENU_ITEMS,
   },
 }
 

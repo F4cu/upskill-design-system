@@ -85,6 +85,11 @@
   color: var(--ds-color-text-brand);
 }
 
+.userWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .userButton {
   display: flex;
   align-items: center;
@@ -93,9 +98,23 @@
   border: none;
   cursor: pointer;
   padding: var(--ds-space-inset-xs) 0;
-  flex-shrink: 0;
 }
 
 .userButton:hover .navLabel {
   color: var(--ds-color-text-brand);
+}
+
+.chevron {
+  transition: transform 200ms ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.userMenu {
+  position: absolute;
+  top: calc(100% + var(--ds-space-stack-xs));
+  right: 0;
+  z-index: 100;
 }

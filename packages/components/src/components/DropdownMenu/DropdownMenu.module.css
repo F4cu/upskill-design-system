@@ -1,0 +1,31 @@
+.panel {
+  background: var(--ds-color-background-container-default);
+  border-radius: var(--ds-border-radius-sm);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: var(--ds-space-inset-xs);
+  min-width: 11.875rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  padding: var(--ds-space-inset-xs);
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-body-default);
+  line-height: var(--ds-font-line-height-body-single);
+  color: var(--ds-color-text-default);
+  border-radius: var(--ds-border-radius-xs);
+  cursor: pointer;
+  white-space: nowrap;
+  outline: none;
+}
+
+.item:hover,
+.item:focus {
+  background: var(--ds-color-background-neutral-hover);
+}
+
+.itemSelected {
+  color: var(--ds-color-text-brand);
+  font-weight: 600;
+}

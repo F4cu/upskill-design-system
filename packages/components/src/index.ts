@@ -51,3 +51,6 @@ export type { CardHorizontalProps, CardHorizontalVariant } from './components/Ca
 
 export { Image } from './components/Image'
 export type { ImageProps } from './components/Image'
+
+export { DropdownMenu } from './components/DropdownMenu'
+export type { DropdownMenuProps, DropdownMenuItem } from './components/DropdownMenu'

@@ -1,0 +1,7 @@
+{
+  "cssVariables.lookupFiles": [
+    "packages/tokens/dist/css/primitives.css",
+    "packages/tokens/dist/css/theme.light.css",
+    "packages/tokens/dist/css/device.desktop.css"
+  ]
+}
