@@ -18,6 +18,12 @@ const preview: Preview = {
     }),
   ],
   parameters: {
+    options: {
+      storySort: {
+        method: 'alphabetical',
+        order: ['Components', 'Typography', 'Layout', ['Box', 'Inline', 'Stack', 'Examples']],
+      },
+    },
     docs: {
       theme: upskillTheme,
     },

@@ -1,0 +1,107 @@
+{
+  "component": {
+    "name": "CardVertical",
+    "category": "molecule",
+    "type": "display",
+    "status": "stable",
+    "description": "A vertical course card with an image thumbnail, optional progress bar, serif title, and metadata row (duration and certified badge). Two image proportions via the size prop: lg uses a portrait 4/5 thumbnail (tall), sm uses a landscape 3/2 thumbnail (short). Used in Saved Courses and Discover carousels. No dark variant — appears on light and elevated backgrounds only.",
+    "figmaNodeId": "52:4270"
+  },
+
+  "usage": {
+    "keywords": ["card", "course card", "vertical card", "carousel card", "discover", "saved courses", "thumbnail"],
+    "when": [
+      "Displaying course cards in a horizontal carousel (Discover, Saved Courses sections)",
+      "Use size='lg' (portrait thumbnail) for feature carousels where image impact matters",
+      "Use size='sm' (landscape thumbnail) for compact carousels or narrower layout slots",
+      "Pass progress when the user has started the course — renders a ProgressBar between image and title"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Mixing CardVertical and CardHorizontal in the same list",
+        "reason": "Inconsistent layout direction breaks visual rhythm.",
+        "alternative": "Pick one orientation per context: CardVertical for carousel grids, CardHorizontal for compact lists."
+      },
+      {
+        "scenario": "Nesting CardVertical inside Card",
+        "reason": "Creates doubled surface depth that loses hierarchy meaning.",
+        "alternative": "Place CardVertical directly in an Inline or Box layout container."
+      },
+      {
+        "scenario": "Using CardVertical for non-course content",
+        "reason": "The serif title and course metadata row are designed for course items specifically.",
+        "alternative": "Use Card with a custom inner layout for other content types."
+      }
+    ]
+  },
+
+  "variants": {
+    "size": {
+      "options": ["sm", "lg"],
+      "default": "lg",
+      "purpose": {
+        "lg": "Portrait thumbnail (aspectRatio 4/5) — tall image suited for feature carousels and Discover sections.",
+        "sm": "Landscape thumbnail (aspectRatio 3/2) — shorter image suited for compact carousels or narrower slots."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static display card — full image opacity." },
+    { "state": "hover", "description": "Image thumbnail fades to 0.8 opacity on card hover." },
+    { "state": "with-progress", "description": "ProgressBar renders between image and title when the progress prop is provided." },
+    { "state": "placeholder", "description": "No thumbnailSrc provided — Image component renders a neutral grey placeholder with a centred icon." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.text.default",
+      "color.text.subtle",
+      "color.icon.default"
+    ],
+    "spacing": [
+      "space.stack.sm",
+      "space.inline.sm",
+      "space.inline.xs"
+    ],
+    "typography": [
+      "font.family.headline-serif",
+      "font.weight.medium",
+      "font.line-height.subheader-tight"
+    ],
+    "borderRadius": [],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "article",
+    "ariaAttributes": [
+      "thumbnailAlt — pass a meaningful description of the course image, or empty string if the title already provides sufficient context."
+    ],
+    "keyboardInteractions": []
+  },
+
+  "relationships": {
+    "composedOf": ["Image", "Heading", "Text", "Icon", "ProgressBar"],
+    "accepts": [],
+    "containedBy": ["Box", "Inline", "Stack"],
+    "neverPairWith": ["CardHorizontal"],
+    "compositionPatterns": [
+      {
+        "name": "discover-carousel",
+        "description": "A horizontal row of large CardVertical cards in the Discover section, paginated by PaginationArrows.",
+        "tree": "Box > Inline(gap=md, wrap=false) > [CardVertical(size=lg), CardVertical(size=lg), ...]"
+      },
+      {
+        "name": "saved-courses-carousel",
+        "description": "A horizontal row of compact CardVertical cards showing in-progress saved courses.",
+        "tree": "Box > Inline(gap=md, wrap=false) > [CardVertical(size=sm, progress=65), CardVertical(size=sm, progress=20), ...]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "flex-column",
+      "canNest": false
+    }
+  }
+}

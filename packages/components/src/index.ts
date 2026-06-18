@@ -49,6 +49,9 @@ export type { AppHeaderProps, NavItem } from './components/AppHeader'
 export { CardHorizontal } from './components/CardHorizontal'
 export type { CardHorizontalProps, CardHorizontalVariant } from './components/CardHorizontal'
 
+export { CardVertical } from './components/CardVertical'
+export type { CardVerticalProps, CardVerticalSize } from './components/CardVertical'
+
 export { Image } from './components/Image'
 export type { ImageProps } from './components/Image'
 
