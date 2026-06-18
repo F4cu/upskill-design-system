@@ -23,11 +23,25 @@
   flex-shrink: 0;
 }
 
+.label {
+  font-size: var(--ds-font-size-body-default);
+  font-weight: 600;
+  line-height: var(--ds-font-line-height-body-default);
+  white-space: nowrap;
+}
+
+.labelSubtle {
+  color: var(--ds-color-text-subtle);
+}
+
+.labelCurrent {
+  color: var(--ds-color-text-default);
+}
+
 .link {
-  color: inherit;
   text-decoration: none;
 }
 
-.link:hover span {
-  color: var(--ds-color-text-default);
+.link:hover .label {
+  color: var(--ds-color-text-brand);
 }

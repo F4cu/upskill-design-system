@@ -1,6 +1,5 @@
 import type { HTMLAttributes } from 'react'
 import { Icon } from '../Icon'
-import { Text } from '../Text'
 import styles from './Breadcrumb.module.css'
 
 export type BreadcrumbItem = {
@@ -22,17 +21,15 @@ export function Breadcrumb({ items, className, ...rest }: BreadcrumbProps) {
             <li key={i} className={styles.item}>
               {i > 0 && <Icon name="chevron-right" size="sm" className={styles.separator} aria-hidden />}
               {isLast || !item.href ? (
-                <Text
-                  as="span"
-                  size="body-small"
-                  color={isLast ? 'default' : 'subtle'}
+                <span
+                  className={[styles.label, isLast ? styles.labelCurrent : styles.labelSubtle].join(' ')}
                   aria-current={isLast ? 'page' : undefined}
                 >
                   {item.label}
-                </Text>
+                </span>
               ) : (
                 <a href={item.href} className={styles.link}>
-                  <Text as="span" size="body-small" color="subtle">{item.label}</Text>
+                  <span className={[styles.label, styles.labelSubtle].join(' ')}>{item.label}</span>
                 </a>
               )}
             </li>

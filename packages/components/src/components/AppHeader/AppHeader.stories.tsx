@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { AppHeader } from './index'
+import logoLight from '../../assets/logos/brand-logo-light-theme.svg'
+import logoDark from '../../assets/logos/brand-logo-dark-theme.svg'
 
-const LOGO = 'https://placehold.co/120x32/D15D50/ffffff?text=UpSkill'
 const AVATAR = 'https://placehold.co/24x24/D15D50/ffffff?text=U'
 
 const NAV_ITEMS = [
-  { label: 'Discover', href: '/discover' },
-  { label: 'My Courses', href: '/courses', active: true },
-  { label: 'Saved', href: '/saved' },
+  { label: 'All Courses', href: '/courses' },
+  { label: 'My Courses', href: '/my-courses', active: true },
 ]
 
 const meta = {
@@ -21,17 +21,19 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    logoSrc: LOGO,
+    logoSrc: logoLight,
+    logoSrcDark: logoDark,
     logoAlt: 'UpSkill',
     navItems: NAV_ITEMS,
     userAvatarSrc: AVATAR,
-    userName: 'Jane Smith',
+    userName: 'Sarah',
   },
 }
 
 export const NoUser: Story = {
   args: {
-    logoSrc: LOGO,
+    logoSrc: logoLight,
+    logoSrcDark: logoDark,
     logoAlt: 'UpSkill',
     navItems: NAV_ITEMS,
   },
@@ -39,7 +41,8 @@ export const NoUser: Story = {
 
 export const Minimal: Story = {
   args: {
-    logoSrc: LOGO,
+    logoSrc: logoLight,
+    logoSrcDark: logoDark,
     logoAlt: 'UpSkill',
   },
 }

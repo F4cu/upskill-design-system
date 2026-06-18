@@ -1,57 +1,87 @@
 .appHeader {
   width: 100%;
-  height: 5.625rem; /* 90px — Figma spec */
   background: var(--ds-color-background-container-elevated);
-  border-bottom: 1px solid var(--ds-color-border-subtle);
+  border-bottom: 1px solid var(--ds-color-border-brand);
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
 .inner {
   width: 100%;
+  max-width: 75rem;
+  min-height: 5.625rem;
   display: flex;
   align-items: center;
-  gap: var(--ds-space-inline-lg);
-  padding-inline: var(--ds-space-inset-xxl);
+  justify-content: space-between;
+  padding-inline: var(--ds-grid-margin);
 }
 
-.logo {
-  height: 2rem;
-  width: auto;
+.logoWrapper {
   flex-shrink: 0;
+  height: 2.8125rem;
+  width: 7.5rem;
+}
+
+.logoLight,
+.logoDark {
+  height: 100%;
+  width: 100%;
+}
+
+.logoDark {
+  display: none;
+}
+
+:global([data-theme="dark"]) .logoLight {
+  display: none;
+}
+
+:global([data-theme="dark"]) .logoDark {
+  display: block;
 }
 
 .search {
-  flex: 1;
-  max-width: 28rem;
+  width: 17.5rem;
+  flex-shrink: 0;
 }
 
-.nav {
-  flex: 1;
+.navRight {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: var(--ds-space-inline-md);
+  flex-shrink: 0;
 }
 
 .navList {
   display: flex;
   align-items: center;
-  gap: var(--ds-space-inline-lg);
+  gap: var(--ds-space-inline-md);
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .navLink {
-  color: inherit;
   text-decoration: none;
+  display: flex;
+  align-items: center;
   padding-block: var(--ds-space-inset-xs);
 }
 
-.navLink:hover span {
+.navLabel {
+  font-size: var(--ds-font-size-body-default);
+  font-weight: 600;
+  line-height: var(--ds-font-line-height-body-default);
+  color: var(--ds-color-text-subtle);
+  white-space: nowrap;
+}
+
+.navLink:hover .navLabel {
   color: var(--ds-color-text-brand);
 }
 
-.navLinkActive span {
+.navLinkActive .navLabel {
   color: var(--ds-color-text-brand);
 }
 
@@ -62,11 +92,10 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: inherit;
-  padding: 0;
+  padding: var(--ds-space-inset-xs) 0;
   flex-shrink: 0;
 }
 
-.userButton:hover span {
+.userButton:hover .navLabel {
   color: var(--ds-color-text-brand);
 }
