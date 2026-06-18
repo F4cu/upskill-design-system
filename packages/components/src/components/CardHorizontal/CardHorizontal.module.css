@@ -15,9 +15,7 @@
 .thumbnail {
   width: var(--ds-size-thumbnail-sm);
   height: var(--ds-size-thumbnail-sm);
-  object-fit: cover;
   flex-shrink: 0;
-  border-radius: var(--ds-border-radius-sm);
 }
 
 .content {

@@ -75,7 +75,7 @@
   },
 
   "relationships": {
-    "composedOf": ["Heading", "ProgressBar", "Icon", "Text"],
+    "composedOf": ["Heading", "ProgressBar", "Icon", "Text", "Image"],
     "accepts": [],
     "containedBy": ["Box", "Stack", "Inline"],
     "neverPairWith": ["Card"],

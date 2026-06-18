@@ -48,6 +48,15 @@ export const Inverted: Story = {
   parameters: { backgrounds: { default: 'dark' } },
 }
 
+export const NoThumbnail: Story = {
+  args: {
+    title: 'Introduction to UX Design',
+    duration: '3h 20m',
+    certified: true,
+    variant: 'default',
+  },
+}
+
 export const List: Story = {
   args: { thumbnailSrc: THUMBNAIL, title: 'Course' },
   render: () => (

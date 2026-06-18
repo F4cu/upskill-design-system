@@ -1,6 +1,7 @@
 import type { HTMLAttributes } from 'react'
 import { Heading } from '../Heading'
 import { Icon } from '../Icon'
+import { Image } from '../Image'
 import { ProgressBar } from '../ProgressBar'
 import { Text } from '../Text'
 import styles from './CardHorizontal.module.css'
@@ -8,7 +9,7 @@ import styles from './CardHorizontal.module.css'
 export type CardHorizontalVariant = 'default' | 'inverted'
 
 export type CardHorizontalProps = {
-  thumbnailSrc: string
+  thumbnailSrc?: string
   thumbnailAlt?: string
   title: string
   duration?: string
@@ -45,7 +46,7 @@ export function CardHorizontal({
       className={[styles.card, styles[variant], className].filter(Boolean).join(' ')}
       {...rest}
     >
-      <img src={thumbnailSrc} alt={thumbnailAlt} className={styles.thumbnail} />
+      <Image src={thumbnailSrc} alt={thumbnailAlt} aspectRatio="1/1" className={styles.thumbnail} />
       <div className={styles.content}>
         <Heading as="h3" size="title-small" className={styles.title}>{title}</Heading>
         {progress !== undefined && <ProgressBar value={progress} />}
