@@ -6,14 +6,14 @@
 .title-small {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-title-small);
-  font-weight: var(--ds-font-weight-semibold);
+  font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-font-line-height-title-default);
 }
 
 .subheader {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-subheader);
-  font-weight: var(--ds-font-weight-semibold);
+  font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-font-line-height-subheader-default);
 }
 

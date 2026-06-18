@@ -4,7 +4,6 @@ import { upskillTheme } from './theme'
 import '../src/styles/tokens.css'
 import '../src/styles/reset.css'
 import '../src/styles/grid.css'
-import '../src/styles/typography.css'
 
 const preview: Preview = {
   tags: ['autodocs'],

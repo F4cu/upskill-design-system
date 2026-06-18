@@ -28,9 +28,8 @@
   min-width: 0;
 }
 
-/* Figma "Title Small Tight": bold weight, tight line-height — overrides Heading defaults */
+/* Figma "Title Small Tight": tight line-height — overrides Heading default */
 .title {
-  font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-font-line-height-title-tight);
 }
 

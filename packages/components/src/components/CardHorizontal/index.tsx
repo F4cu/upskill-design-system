@@ -30,12 +30,12 @@ export function CardHorizontal({
 }: CardHorizontalProps) {
   const metaItems = [
     duration && (
-      <Text key="duration" as="span" size="body-default" color="subtle">{duration}</Text>
+      <Text key="duration" as="span" size="metadata" color="subtle">{duration}</Text>
     ),
     certified && (
       <span key="certified" className={styles.badge}>
         <Icon name="badge-check" size="sm" />
-        <Text as="span" size="body-default" color="subtle">Certified</Text>
+        <Text as="span" size="metadata" color="subtle">Certified</Text>
       </span>
     ),
   ].filter(Boolean)
