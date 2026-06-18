@@ -57,3 +57,18 @@ export type { ImageProps } from './components/Image'
 
 export { DropdownMenu } from './components/DropdownMenu'
 export type { DropdownMenuProps, DropdownMenuItem } from './components/DropdownMenu'
+
+export { Chip } from './components/Chip'
+export type { ChipProps } from './components/Chip'
+
+export { VideoFrame } from './components/VideoFrame'
+export type { VideoFrameProps } from './components/VideoFrame'
+
+export { ButtonArrow } from './components/ButtonArrow'
+export type { ButtonArrowProps, ButtonArrowDirection } from './components/ButtonArrow'
+
+export { ScrollArea } from './components/ScrollArea'
+export type { ScrollAreaProps, ScrollAreaOrientation } from './components/ScrollArea'
+
+export { useCarousel } from './hooks/useCarousel'
+export type { UseCarouselReturn } from './hooks/useCarousel'

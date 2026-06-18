@@ -1,0 +1,36 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ds-border-radius-full);
+  padding-inline: var(--ds-space-inset-md);
+  height: var(--ds-size-500);
+  border: 1px solid var(--ds-color-border-default);
+  background: transparent;
+  color: var(--ds-color-text-subtle);
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-body-default);
+  font-weight: var(--ds-font-weight-medium);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms ease;
+}
+
+.chip:hover:not(:disabled) {
+  background: var(--ds-color-background-neutral-subtlest);
+}
+
+.chip:disabled {
+  cursor: not-allowed;
+  color: var(--ds-color-text-disabled);
+  border-color: var(--ds-color-border-disabled);
+}
+
+.selected {
+  border-color: var(--ds-color-border-selected);
+  color: var(--ds-color-text-selected);
+}
+
+.selected:hover:not(:disabled) {
+  background: var(--ds-color-background-neutral-subtlest);
+}

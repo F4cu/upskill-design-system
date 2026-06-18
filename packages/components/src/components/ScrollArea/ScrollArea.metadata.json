@@ -1,0 +1,92 @@
+{
+  "component": {
+    "name": "ScrollArea",
+    "category": "layout",
+    "type": "container",
+    "status": "stable",
+    "description": "Overflow scroll container that hides the native scrollbar cross-browser. orientation=horizontal clips vertical overflow and allows horizontal native scroll; orientation=vertical does the inverse. Pair with Inline(wrap=false) for horizontal card rows and Stack for vertical lists. For JS-animated carousels (translate-based), use a plain div with overflow:hidden instead — ScrollArea is for native scroll only.",
+    "figmaNodeId": ""
+  },
+
+  "usage": {
+    "keywords": ["scroll", "overflow", "scrollable", "horizontal scroll", "vertical scroll", "carousel", "list"],
+    "when": [
+      "A row of cards or items should scroll horizontally without a visible scrollbar (touch and trackpad users can scroll naturally)",
+      "A content region has a fixed height and should scroll vertically with the native scrollbar hidden",
+      "You want a native-scroll carousel alternative to the JS-animated useCarousel + transform pattern"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using ScrollArea as the clip container for a JS transform-based carousel",
+        "reason": "ScrollArea sets overflow: auto — the scroll position will shift as the transform moves the track, producing broken behaviour.",
+        "alternative": "Use a plain div with overflow: hidden as the clip container for transform-based carousels."
+      },
+      {
+        "scenario": "Placing a block-level Inline inside ScrollArea without width: max-content",
+        "reason": "Block-level flex containers are constrained to their parent's width by the browser. Inside overflow-x: auto the browser squeezes items rather than creating scroll, causing cards to shrink and titles to wrap unexpectedly.",
+        "alternative": "Always pass style={{ width: 'max-content' }} to Inline when it is the direct child of a horizontal ScrollArea."
+      },
+      {
+        "scenario": "Nesting ScrollArea inside ScrollArea",
+        "reason": "Produces confusing nested scroll contexts that are difficult for keyboard and screen reader users to navigate.",
+        "alternative": "Flatten the layout so only one scroll axis exists per region."
+      }
+    ]
+  },
+
+  "variants": {
+    "orientation": {
+      "options": ["horizontal", "vertical"],
+      "default": "horizontal",
+      "purpose": {
+        "horizontal": "overflow-x: auto; overflow-y: hidden. Use with Inline(wrap=false) for horizontally scrollable card rows.",
+        "vertical": "overflow-y: auto; overflow-x: hidden. Use with Stack for vertically scrollable content regions."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static scroll container — no interactive states beyond native scroll behaviour." }
+  ],
+
+  "tokens": {
+    "color": [],
+    "spacing": [],
+    "typography": [],
+    "borderRadius": [],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": [
+      { "key": "Arrow keys / Page Up / Page Down", "action": "Scroll the container when it has focus (native browser behaviour)" }
+    ],
+    "notes": "The native scrollbar is hidden visually but scroll behaviour is fully intact. Keyboard users can scroll via arrow keys once the container is focused. If the scroll region contains important content, consider adding tabindex=0 so keyboard users can reach and scroll it."
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": ["Box", "Stack", "Inline", "CardVertical", "CardHorizontal"],
+    "containedBy": ["Box", "Stack"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "native-scroll-carousel",
+        "description": "A horizontally scrollable row of fixed-width cards — no JS state required. Touch and trackpad users scroll naturally; ButtonArrow can call scrollBy() programmatically if arrows are needed.",
+        "tree": "ScrollArea(orientation=horizontal) > Inline(gap=md, wrap=false, align=start, style={width:'max-content'}) > [CardVertical, CardVertical, ...]"
+      },
+      {
+        "name": "scrollable-list",
+        "description": "A fixed-height vertical region with overflow content and no visible scrollbar.",
+        "tree": "ScrollArea(orientation=vertical, style={height:300px}) > Stack(gap=sm) > [Text, Text, ...]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}
