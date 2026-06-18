@@ -1,7 +1,10 @@
 .heading {
-  color: var(--_color, var(--ds-color-text-default));
+  color: var(--ds-color-text-default);
   margin: 0;
 }
+
+.subtle { color: var(--ds-color-text-subtle); }
+.brand  { color: var(--ds-color-text-brand); }
 
 .title-small {
   font-family: var(--ds-font-family-headline-default);

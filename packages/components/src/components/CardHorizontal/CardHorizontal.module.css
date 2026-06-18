@@ -31,6 +31,9 @@
 /* Figma "Title Small Tight": tight line-height — overrides Heading default */
 .title {
   line-height: var(--ds-font-line-height-title-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .meta {
@@ -53,4 +56,8 @@
   display: flex;
   align-items: center;
   gap: var(--ds-space-inline-xs);
+}
+
+.badge svg {
+  color: var(--ds-color-icon-default);
 }

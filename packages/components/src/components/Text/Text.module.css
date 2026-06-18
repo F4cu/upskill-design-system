@@ -1,7 +1,11 @@
 .text {
-  color: var(--_color, var(--ds-color-text-default));
+  color: var(--ds-color-text-default);
   margin: 0;
 }
+
+.subtle { color: var(--ds-color-text-subtle); }
+.brand  { color: var(--ds-color-text-brand); }
+.disabled { color: var(--ds-color-text-disabled); }
 
 .body-default {
   font-family: var(--ds-font-family-body);

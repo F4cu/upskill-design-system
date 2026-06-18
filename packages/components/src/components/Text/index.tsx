@@ -13,13 +13,6 @@ export type TextProps = {
   children?: React.ReactNode
 } & Omit<HTMLAttributes<HTMLElement>, 'style'>
 
-const colorVars: Record<TextColor, string> = {
-  default: 'var(--ds-color-text-default)',
-  subtle: 'var(--ds-color-text-subtle)',
-  brand: 'var(--ds-color-text-brand)',
-  disabled: 'var(--ds-color-text-disabled)',
-}
-
 export function Text({
   as: Tag = 'p',
   size = 'body-default',
@@ -29,15 +22,10 @@ export function Text({
   children,
   ...rest
 }: TextProps) {
-  const cssVars: CSSProperties = {
-    '--_color': color ? colorVars[color] : undefined,
-    ...style,
-  }
-
   return (
     <Tag
-      className={[styles.text, styles[size], className].filter(Boolean).join(' ')}
-      style={cssVars}
+      className={[styles.text, styles[size], color && color !== 'default' && styles[color], className].filter(Boolean).join(' ')}
+      style={style}
       {...rest}
     >
       {children}
