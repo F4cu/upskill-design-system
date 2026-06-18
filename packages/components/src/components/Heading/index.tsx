@@ -25,7 +25,7 @@ export function Heading({
 }: HeadingProps) {
   return (
     <Tag
-      className={[styles.heading, styles[size], color && color !== 'default' && styles[color], className].filter(Boolean).join(' ')}
+      className={[styles.root, styles[size], color && color !== 'default' && styles[color], className].filter(Boolean).join(' ')}
       style={style}
       {...rest}
     >

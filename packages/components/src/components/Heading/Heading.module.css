@@ -1,4 +1,4 @@
-.heading {
+.root {
   color: var(--ds-color-text-default);
   margin: 0;
 }
@@ -27,14 +27,14 @@
   line-height: var(--ds-font-line-height-headline-default);
 }
 
-.headline-serif {
+.root.headline-serif {
   font-family: var(--ds-font-family-headline-serif);
   font-size: var(--ds-font-size-headline-serif);
   font-weight: var(--ds-font-weight-medium);
   line-height: var(--ds-font-line-height-headline-serif);
 }
 
-.display {
+.root.display {
   font-family: var(--ds-font-family-headline-serif);
   font-size: var(--ds-font-size-display);
   font-weight: var(--ds-font-weight-medium);

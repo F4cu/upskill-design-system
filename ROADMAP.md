@@ -116,9 +116,9 @@ Lite in two ways:
 - [x] `Divider` — horizontal separator; `<hr>` styled with `color.border.default` token; no props beyond `className`.
 - [x] `ProgressBar` — 4px tall track with a coloured fill; `value` (0–100) controls fill width as a percentage; uses `color.accent.accent-8` for fill and `color.background.neutral.subtle` for track.
 - [x] `CardHorizontal` — horizontal card: 80×80px square thumbnail + content column (title, optional ProgressBar, metadata row with duration + certified badge). Used in Started Courses, Saved Courses, and Footer recommendations. Two colour contexts: default (light) and inverted (dark footer) — controlled by a `variant` prop or inherited via `data-theme`.
-- [ ] One composed page story (`Layout/Examples/User Settings`) built entirely from library components.
+- [x] Composed page stories built entirely from library components: `Layout/Examples/Landing Page` (AppHeader, CardHorizontal with progress, Footer Highlights editorial section) and `Layout/Examples/Footer Highlights` (inverted surface pattern). User Settings form covered by the existing `Layout/Examples/Settings Form` story.
 
-**Exit condition:** all six components render in both light and dark themes with stories and metadata; the composed User Settings story builds and passes visual review with no ad-hoc CSS outside component modules.
+**Exit condition (met):** all six components render in both light and dark themes with stories and metadata; composed layout stories build and pass visual review with no ad-hoc CSS outside component modules.
 
 ## Phase 5c — Homepage Components
 

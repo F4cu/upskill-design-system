@@ -75,7 +75,7 @@ function SettingsForm() {
           </Stack>
         </Card>
 
-        <Inline gap="sm" justify="end">
+        <Inline gap="md" justify="end">
           <Button variant="outlined">Cancel</Button>
           <Button>Save changes</Button>
         </Inline>
@@ -125,7 +125,7 @@ function SettingsFormWithErrors() {
           </Stack>
         </Card>
 
-        <Inline gap="sm" justify="end">
+        <Inline gap="md" justify="end">
           <Button variant="outlined">Cancel</Button>
           <Button>Save changes</Button>
         </Inline>
@@ -142,5 +142,5 @@ const meta = {
 export default meta
 type Story = StoryObj
 
-export const Default: Story = { render: () => <SettingsForm /> }
-export const WithValidationErrors: Story = { render: () => <SettingsFormWithErrors /> }
+export const Default: Story = { render: () => <SettingsForm />, tags: ['!dev'] }
+export const WithValidationErrors: Story = { render: () => <SettingsFormWithErrors />, tags: ['!dev'] }

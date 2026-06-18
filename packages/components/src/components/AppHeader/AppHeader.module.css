@@ -1,6 +1,6 @@
 .appHeader {
   width: 100%;
-  background: var(--ds-color-background-container-elevated);
+  background: var(--ds-color-background-container-page);
   border-bottom: 1px solid var(--ds-color-border-brand);
   display: flex;
   justify-content: center;
