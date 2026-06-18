@@ -143,6 +143,22 @@ Lite in two ways:
 
 **Exit condition:** all four components render in both themes with stories and metadata; the Carousel example story builds and passes visual review with no ad-hoc CSS outside component modules.
 
+## Phase 5d — Course Overview Page Components
+
+> Expand the component set to cover the Course Overview page (Figma node 96:5854). Two net-new components plus a new variant on `Button`; everything else (`AppHeader`, `Breadcrumb`, `VideoFrame`, `CardVertical`, `ButtonArrow`, `Chip`, `CardHorizontal`, layout primitives) is already in the library.
+
+**Components already covered — no new work needed:**
+`AppHeader`, `Breadcrumb` (Phase 5b); `VideoFrame`, `ButtonArrow`, `Chip`, `CardVertical` (Phase 5c); `CardHorizontal` (Phase 5b); `Button`, `Icon`, layout primitives (Phases 3–5).
+
+**Net-new components and variants:**
+
+- [ ] `Accordion` — collapsible list; each item shows title + subtitle when collapsed, and title + subtitle + body text when expanded. Props: `items: { title: string; subtitle: string; content?: ReactNode }[]`; `maxVisible` controls how many items show before the show-more toggle; `openIndex` for controlled open state. Expanded item background: `color.background.container.elevated`. Footer uses a ghost `Button` with a trailing chevron `Icon`.
+- [ ] `Badge` — static category label pill; `label: string`; `variant?: 'outline' | 'filled'` (outline: border only; filled: adds `color.background.neutral.subtlest`). `border-radius.sm`. Distinct from `Chip` — no selection state, no interaction semantics, purely display.
+- [ ] `Button` — add `ghost` variant: no background, no border, text color `color.text.link.default`. Used for "Show more / Show less" toggles and other inline actions. The trailing `Icon` (chevron-down / chevron-up) is passed via the existing `icon` slot.
+- [ ] `useSlider` hook — content-stepper state: `{ currentIndex, total, goNext, goPrev, isFirst, isLast }`. Used for step-through UIs that show one item at a time with a CSS fade-in transition (e.g., the chapter description navigator on the Course Overview page). No component — the consuming component owns the fade animation and wires `ButtonArrow` to `goNext`/`goPrev`.
+
+**Exit condition:** `Accordion` and `Badge` render in both themes with stories and metadata; `Button` ghost variant is documented in its story; the Course Overview example story builds from library components with no ad-hoc CSS.
+
 ## Phase 6 — Automation (scripts and Actions only — no MCP, no agents)
 
 - [x] GH Action: run `airtable-sync.js` on merge to `main` (direct REST, repo secret for the API key) — `sync-tokens.yml` pushes primitives, semantic, and device tokens
