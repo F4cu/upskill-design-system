@@ -1,0 +1,91 @@
+{
+  "component": {
+    "name": "Image",
+    "category": "atom",
+    "type": "display",
+    "status": "stable",
+    "description": "A self-contained image slot that renders a real image when src is provided, or a neutral grey placeholder with a centred icon when it is not. Fills its container width and maintains the given aspect ratio. Used for course thumbnails, card images, hero banners, and any layout slot that holds visual media.",
+    "figmaNodeId": "92:16895"
+  },
+
+  "usage": {
+    "keywords": ["image", "photo", "thumbnail", "placeholder", "media", "hero", "banner", "fallback"],
+    "when": [
+      "Any layout slot that holds a course image, banner, or visual media",
+      "A card thumbnail — pass src when available, omit for the placeholder state",
+      "Hero or wide banner sections using a landscape aspect ratio"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using a raw <img> tag directly in a card or layout component",
+        "reason": "Bypasses the consistent border-radius, placeholder fallback, and object-fit behaviour.",
+        "alternative": "Use Image and pass src and alt."
+      },
+      {
+        "scenario": "Using Image for avatar or user profile pictures",
+        "reason": "Avatar handles circular crop, initials fallback, and size tokens specific to user imagery.",
+        "alternative": "Use Avatar."
+      }
+    ]
+  },
+
+  "variants": {
+    "aspectRatio": {
+      "options": ["1/1", "16/9", "4/5"],
+      "default": "1/1",
+      "purpose": {
+        "1/1": "Square thumbnail — CardHorizontal and small course slots.",
+        "16/9": "Landscape — video thumbnails, wide course banners, hero images.",
+        "4/5": "Portrait — tall card images in CardVertical."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Renders the provided image with object-fit cover." },
+    { "state": "empty", "description": "No src provided — renders neutral grey surface with centred image icon." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.neutral.2",
+      "color.neutral.4"
+    ],
+    "spacing": [],
+    "typography": [],
+    "borderRadius": ["border-radius.sm"],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "img",
+    "ariaAttributes": [
+      "alt — required when src is provided; pass empty string if the surrounding context (e.g. card title) already describes the image."
+    ],
+    "keyboardInteractions": []
+  },
+
+  "relationships": {
+    "composedOf": ["Icon"],
+    "accepts": [],
+    "containedBy": ["CardHorizontal", "CardVertical", "VideoFrame", "Card", "Box"],
+    "neverPairWith": ["Avatar"],
+    "compositionPatterns": [
+      {
+        "name": "card-thumbnail",
+        "description": "Used as the thumbnail slot in CardHorizontal. Falls back to placeholder when no src.",
+        "tree": "CardHorizontal > Image(aspectRatio=1/1, src?)"
+      },
+      {
+        "name": "hero-banner",
+        "description": "Full-width landscape image at the top of a page section.",
+        "tree": "Box(width=100%) > Image(aspectRatio=16/9, src)"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "component": {
+    "name": "ProgressBar",
+    "category": "atom",
+    "type": "display",
+    "status": "stable",
+    "description": "A 4px-tall track with a coloured fill representing a completion percentage (0–100). Used to show course progress on cards and profile sections.",
+    "figmaNodeId": "none — no Figma component set exists"
+  },
+
+  "usage": {
+    "keywords": ["progress", "progress bar", "completion", "percentage", "course progress"],
+    "when": [
+      "Showing how far a learner has progressed through a course on a CardHorizontal or CardVertical",
+      "Displaying completion percentage on a profile or dashboard summary"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using ProgressBar for loading spinners or indeterminate states",
+        "reason": "ProgressBar requires a known 0–100 value. Indeterminate loading needs a different pattern.",
+        "alternative": "Use a spinner or skeleton component (not in scope for this library)."
+      },
+      {
+        "scenario": "Passing values outside 0–100",
+        "reason": "Values are clamped internally, but the intent is lost; callers should normalise their own data.",
+        "alternative": "Normalise the progress value to a 0–100 percentage before passing it."
+      }
+    ]
+  },
+
+  "variants": {
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Accent-coloured fill on a neutral track."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static fill — no interactive states." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.accent.8",
+      "color.background.neutral.subtle"
+    ],
+    "spacing": [],
+    "typography": [],
+    "borderRadius": ["border-radius.full"],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "progressbar",
+    "ariaAttributes": [
+      "aria-valuenow (set to the clamped value)",
+      "aria-valuemin=0",
+      "aria-valuemax=100"
+    ],
+    "keyboardInteractions": []
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["CardHorizontal", "CardVertical", "Box", "Stack"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "course-progress",
+        "description": "ProgressBar placed beneath a course title inside a CardHorizontal to show completion.",
+        "tree": "CardHorizontal > content > Stack(gap=xs) > [Heading, ProgressBar]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

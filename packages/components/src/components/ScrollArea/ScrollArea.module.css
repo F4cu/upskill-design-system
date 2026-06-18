@@ -1,0 +1,18 @@
+.scrollArea {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollArea::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.vertical {
+  overflow-y: auto;
+  overflow-x: hidden;
+}

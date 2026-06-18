@@ -162,8 +162,9 @@ Storybook lives in `packages/components` — it is the documentation layer for c
 
 ### Component scope
 Core set (Phases 4–5): `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`.
-Phase 5b additions (User Settings page): `Avatar`, `Header`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`.
-Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `PaginationArrows`.
+Phase 5b additions (User Settings page): `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`.
+Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`.
+Phase 5d additions (Course Overview page): `Accordion`, `Badge`; `Button` gains a `ghost` variant (no background, link text color — replaces the standalone ShowMoreLink pattern); `useSlider` hook (content-stepper state for fade-in step-through UIs, no component).
 Do not add components outside these lists without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
 
 ## Architectural decisions (ADRs)

@@ -33,3 +33,42 @@ export type { CardProps, CardVariant, CardPadding } from './components/Card'
 
 export { Avatar } from './components/Avatar'
 export type { AvatarProps, AvatarSize } from './components/Avatar'
+
+export { Divider } from './components/Divider'
+export type { DividerProps } from './components/Divider'
+
+export { ProgressBar } from './components/ProgressBar'
+export type { ProgressBarProps } from './components/ProgressBar'
+
+export { Breadcrumb } from './components/Breadcrumb'
+export type { BreadcrumbProps, BreadcrumbItem } from './components/Breadcrumb'
+
+export { AppHeader } from './components/AppHeader'
+export type { AppHeaderProps, NavItem } from './components/AppHeader'
+
+export { CardHorizontal } from './components/CardHorizontal'
+export type { CardHorizontalProps, CardHorizontalVariant } from './components/CardHorizontal'
+
+export { CardVertical } from './components/CardVertical'
+export type { CardVerticalProps, CardVerticalSize } from './components/CardVertical'
+
+export { Image } from './components/Image'
+export type { ImageProps } from './components/Image'
+
+export { DropdownMenu } from './components/DropdownMenu'
+export type { DropdownMenuProps, DropdownMenuItem } from './components/DropdownMenu'
+
+export { Chip } from './components/Chip'
+export type { ChipProps } from './components/Chip'
+
+export { VideoFrame } from './components/VideoFrame'
+export type { VideoFrameProps } from './components/VideoFrame'
+
+export { ButtonArrow } from './components/ButtonArrow'
+export type { ButtonArrowProps, ButtonArrowDirection } from './components/ButtonArrow'
+
+export { ScrollArea } from './components/ScrollArea'
+export type { ScrollAreaProps, ScrollAreaOrientation } from './components/ScrollArea'
+
+export { useCarousel } from './hooks/useCarousel'
+export type { UseCarouselReturn } from './hooks/useCarousel'

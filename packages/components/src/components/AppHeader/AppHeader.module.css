@@ -1,0 +1,120 @@
+.appHeader {
+  width: 100%;
+  background: var(--ds-color-background-container-page);
+  border-bottom: 1px solid var(--ds-color-border-brand);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inner {
+  width: 100%;
+  max-width: 75rem;
+  min-height: 5.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--ds-grid-margin);
+}
+
+.logoWrapper {
+  flex-shrink: 0;
+  height: 2.8125rem;
+  width: 7.5rem;
+}
+
+.logoLight,
+.logoDark {
+  height: 100%;
+  width: 100%;
+}
+
+.logoDark {
+  display: none;
+}
+
+:global([data-theme="dark"]) .logoLight {
+  display: none;
+}
+
+:global([data-theme="dark"]) .logoDark {
+  display: block;
+}
+
+.search {
+  width: 17.5rem;
+  flex-shrink: 0;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-md);
+  flex-shrink: 0;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding-block: var(--ds-space-inset-xs);
+}
+
+.navLabel {
+  font-size: var(--ds-font-size-body-default);
+  font-weight: 600;
+  line-height: var(--ds-font-line-height-body-default);
+  color: var(--ds-color-text-subtle);
+  white-space: nowrap;
+}
+
+.navLink:hover .navLabel {
+  color: var(--ds-color-text-brand);
+}
+
+.navLinkActive .navLabel {
+  color: var(--ds-color-text-brand);
+}
+
+.userWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--ds-space-inset-xs) 0;
+}
+
+.userButton:hover .navLabel {
+  color: var(--ds-color-text-brand);
+}
+
+.chevron {
+  transition: transform 200ms ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.userMenu {
+  position: absolute;
+  top: calc(100% + var(--ds-space-stack-xs));
+  right: 0;
+  z-index: 100;
+}

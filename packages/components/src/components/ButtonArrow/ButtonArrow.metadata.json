@@ -1,0 +1,93 @@
+{
+  "component": {
+    "name": "ButtonArrow",
+    "category": "atom",
+    "type": "interactive",
+    "status": "stable",
+    "description": "32px circular prev/next navigation button. Uses an Icon chevron internally. direction prop selects left or right. Disabled state: no background, muted icon, pointer-events blocked. Used in carousel paginators and chapter/slider navigators.",
+    "figmaNodeId": "61:1228"
+  },
+
+  "usage": {
+    "keywords": ["arrow", "prev", "next", "previous", "navigation", "carousel", "paginator", "slider", "chapter"],
+    "when": [
+      "Navigating backward or forward through a carousel of cards",
+      "Stepping through chapters or slides in a sequence",
+      "Disabling the left arrow when at the start of a sequence, and the right arrow at the end"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using ButtonArrow as a general-purpose icon button",
+        "reason": "ButtonArrow is sized and styled for directional sequence navigation only. Its small 32px size and circular shape signal a specific role.",
+        "alternative": "Use Button with shape=round for general icon-only actions."
+      },
+      {
+        "scenario": "Omitting aria-label",
+        "reason": "The component sets aria-label automatically ('Previous' / 'Next') from the direction prop. Do not override with an empty string.",
+        "alternative": "Pass a more specific aria-label via rest props if the context requires it (e.g. 'Previous course')."
+      }
+    ]
+  },
+
+  "variants": {
+    "direction": {
+      "options": ["left", "right"],
+      "default": "right",
+      "purpose": {
+        "left": "Chevron-left icon. Navigates to the previous item. Set disabled when at the start of the sequence.",
+        "right": "Chevron-right icon. Navigates to the next item. Set disabled when at the end of the sequence."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Neutral-subtlest background, default border." },
+    { "state": "hover", "description": "Border darkens to border-strong; background unchanged." },
+    { "state": "disabled", "description": "No background, default border, muted icon color; pointer-events none." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.neutral.subtlest",
+      "color.border.default",
+      "color.border.strong",
+      "color.text.default",
+      "color.text.disabled"
+    ],
+    "spacing": [],
+    "typography": [],
+    "borderRadius": ["border-radius.full"],
+    "other": ["size.400"]
+  },
+
+  "accessibility": {
+    "role": "button",
+    "ariaAttributes": [
+      "aria-label — automatically set to 'Previous' or 'Next' from the direction prop; override via rest props for more specific context"
+    ],
+    "keyboardInteractions": [
+      { "key": "Enter / Space", "action": "Triggers the navigation callback" },
+      { "key": "Tab", "action": "Moves focus to the next focusable element" }
+    ],
+    "notes": "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS."
+  },
+
+  "relationships": {
+    "composedOf": ["Icon"],
+    "accepts": [],
+    "containedBy": ["Box", "Inline", "Stack"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "carousel-paginator",
+        "description": "A pair of ButtonArrow components flanking or below a carousel row, with the left disabled at the start and right disabled at the end.",
+        "tree": "Inline(gap=sm, align=center) > [ButtonArrow(direction=left, disabled), ButtonArrow(direction=right)]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fixed",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}

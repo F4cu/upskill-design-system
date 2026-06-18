@@ -1,0 +1,77 @@
+{
+  "component": {
+    "name": "Divider",
+    "category": "atom",
+    "type": "display",
+    "status": "stable",
+    "description": "A horizontal rule that visually separates sections of content. Styled with the default border token. No props beyond className.",
+    "figmaNodeId": "none — no Figma component set exists"
+  },
+
+  "usage": {
+    "keywords": ["divider", "separator", "rule", "hr", "section break", "line"],
+    "when": [
+      "Separating distinct sections within a Card or page layout",
+      "Creating visual breaks between list items or content groups"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Divider as a top or bottom border for a container",
+        "reason": "Card and Box have border tokens already. Adding a Divider duplicates the visual boundary.",
+        "alternative": "Use the container's existing border. Reserve Divider for internal content separation."
+      },
+      {
+        "scenario": "Adding margin to Divider to control spacing",
+        "reason": "Divider has no margin by design — spacing belongs to the parent layout primitive.",
+        "alternative": "Control spacing with the gap prop on the surrounding Stack."
+      }
+    ]
+  },
+
+  "variants": {
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Horizontal rule with the default border token."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Static separator — no interactive states." }
+  ],
+
+  "tokens": {
+    "color": ["color.border.default"],
+    "spacing": [],
+    "typography": [],
+    "borderRadius": [],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "separator",
+    "ariaAttributes": [],
+    "keyboardInteractions": []
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Card", "AppHeader"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "section-break",
+        "description": "Divider placed between two Stacks inside a Card to visually separate form sections.",
+        "tree": "Card > Stack(gap=lg) > [...fields, Divider, ...fields]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

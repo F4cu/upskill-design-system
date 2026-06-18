@@ -1,0 +1,82 @@
+{
+  "component": {
+    "name": "VideoFrame",
+    "category": "atom",
+    "type": "display",
+    "status": "stable",
+    "description": "Rounded thumbnail container with a fixed 16:9 aspect ratio and a centred semi-transparent play-button overlay. Purely presentational — no playback logic. Props: src (thumbnail URL) and alt.",
+    "figmaNodeId": "note: uses text styles only; no Figma component set. Code Connect requires Figma Enterprise."
+  },
+
+  "usage": {
+    "keywords": ["video", "video frame", "thumbnail", "play button", "preview", "media"],
+    "when": [
+      "Displaying a video course preview with a recognisable play affordance",
+      "The content is a non-interactive thumbnail that represents a video — clicking is handled by the parent"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using VideoFrame for non-video image content",
+        "reason": "The play overlay signals video content; using it for static images misleads users.",
+        "alternative": "Use the Image component directly for non-video thumbnails."
+      },
+      {
+        "scenario": "Putting playback logic inside VideoFrame",
+        "reason": "VideoFrame is purely presentational. Adding state and media controls couples it to a specific player implementation.",
+        "alternative": "Wrap VideoFrame in a parent that handles click events and video playback separately."
+      }
+    ]
+  },
+
+  "variants": {
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "16:9 thumbnail with centred play overlay."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Thumbnail image with centred play overlay. If src is not provided, renders a neutral placeholder background." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.neutral.3"
+    ],
+    "spacing": [],
+    "typography": [],
+    "borderRadius": ["border-radius.md"],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "img",
+    "ariaAttributes": [
+      "alt — pass a meaningful description of the video content; the play overlay is aria-hidden"
+    ],
+    "keyboardInteractions": [],
+    "notes": "VideoFrame itself is not interactive. The parent should handle click and keyboard events to initiate playback, using an appropriate role (e.g. button) on the wrapper."
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Stack", "Card"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "video-preview-card",
+        "description": "A VideoFrame above a title and description, used to preview a course video.",
+        "tree": "Stack(gap=md) > [VideoFrame, Heading(size=subheader), Text(size=body-default)]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

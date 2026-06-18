@@ -4,7 +4,7 @@
     "category": "molecule",
     "type": "container",
     "status": "stable",
-    "description": "A surface container that groups related content with consistent padding, border-radius, and optional elevation. Use to visually separate page sections, form groups, or feature highlights. Card accepts any library component as children.",
+    "description": "A generic surface container that groups related content with consistent padding, border-radius, and optional elevation. Use to visually separate page sections or form groups. Card is slot-based (children-only) and carries no content structure of its own — for course display use CardVertical or CardHorizontal instead.",
     "figmaNodeId": "none — no Figma component set exists"
   },
 
@@ -26,6 +26,11 @@
         "scenario": "Using Card as a full-page background",
         "reason": "Card is a grouping surface, not a page background. A full-page card makes every section a nested container.",
         "alternative": "Apply page-background colour with the container-page token on the root layout element."
+      },
+      {
+        "scenario": "Using Card to display a course (with image, title, metadata)",
+        "reason": "Card is children-based and carries no content structure. Course display requires fixed structure (image zone, title, metadata row, optional progress).",
+        "alternative": "Use CardVertical for catalog grids or CardHorizontal for course lists and footers."
       },
       {
         "scenario": "Using padding='none' and adding raw padding via style",
@@ -81,7 +86,7 @@
     "composedOf": [],
     "accepts": ["*"],
     "containedBy": ["Box", "Stack", "Inline"],
-    "neverPairWith": ["Card"],
+    "neverPairWith": ["Card", "CardVertical", "CardHorizontal"],
     "compositionPatterns": [
       {
         "name": "form-section",

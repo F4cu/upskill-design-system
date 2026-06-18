@@ -10,37 +10,42 @@
   align-items: center;
 }
 
-.select {
-  display: block;
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   height: var(--ds-size-500);
   padding-inline: var(--ds-space-inset-md);
-  padding-inline-end: calc(var(--ds-space-inset-md) + 1.5rem);
   background: var(--ds-color-background-input);
   color: var(--ds-color-text-default);
   border: 1px solid var(--ds-color-border-input-default);
   border-radius: var(--ds-border-radius-sm);
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-body-default);
-  outline: none;
-  transition: border-color 120ms ease;
-  box-sizing: border-box;
-  appearance: none;
+  text-align: left;
   cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 120ms ease;
 }
 
-.select:hover:not(:disabled) {
+.trigger:hover:not(:disabled) {
   border-color: var(--ds-color-border-input-hover);
 }
 
-.select:focus {
+.trigger:focus-visible {
+  outline: none;
   border-color: var(--ds-color-border-selected);
 }
 
-.select:disabled {
+.trigger:disabled {
   border-color: var(--ds-color-border-disabled);
   color: var(--ds-color-text-disabled);
   cursor: not-allowed;
+}
+
+.trigger:disabled .arrow {
+  color: var(--ds-color-icon-disabled);
 }
 
 .hasError {
@@ -51,17 +56,40 @@
   border-color: var(--ds-color-border-feedback-error);
 }
 
+.hasPlaceholder {
+  color: var(--ds-color-text-subtle);
+}
+
+.triggerLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .arrow {
-  position: absolute;
-  right: var(--ds-space-inset-md);
-  pointer-events: none;
+  flex-shrink: 0;
+  margin-inline-start: var(--ds-space-inline-xs);
   color: var(--ds-color-icon-default);
   display: flex;
   align-items: center;
+  pointer-events: none;
 }
 
-.select:disabled ~ .arrow {
-  color: var(--ds-color-icon-disabled);
+.chevron {
+  transition: transform 200ms ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + var(--ds-space-stack-xs));
+  left: 0;
+  right: 0;
+  z-index: 100;
 }
 
 .errorMessage {

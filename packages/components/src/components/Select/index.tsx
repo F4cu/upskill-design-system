@@ -1,5 +1,6 @@
-import { useId } from 'react'
-import type { SelectHTMLAttributes } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+import type { HTMLAttributes } from 'react'
+import { DropdownMenu } from '../DropdownMenu'
 import { Icon } from '../Icon'
 import styles from './Select.module.css'
 import utilStyles from '../../styles/utilities.module.css'
@@ -12,7 +13,14 @@ export type SelectProps = {
   options: SelectOption[]
   placeholder?: string
   error?: string
-} & Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'>
+  value?: string
+  defaultValue?: string
+  onValueChange?: (value: string) => void
+  disabled?: boolean
+  id?: string
+  name?: string
+  required?: boolean
+} & Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>
 
 export function Select({
   label,
@@ -20,29 +28,110 @@ export function Select({
   options,
   placeholder,
   error,
+  value: valueProp,
+  defaultValue,
+  onValueChange,
+  disabled,
   id: idProp,
+  name,
+  required,
   className,
   ...rest
 }: SelectProps) {
   const generatedId = useId()
   const id = idProp ?? generatedId
   const errorId = `${id}-error`
+  const listboxId = `${id}-listbox`
+
+  const isControlled = valueProp !== undefined
+  const [internalValue, setInternalValue] = useState<string>(defaultValue ?? '')
+  const selectedValue = isControlled ? valueProp : internalValue
+
+  const [open, setOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handleClick(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [open])
+
+  function handleSelect(val: string) {
+    if (!isControlled) setInternalValue(val)
+    onValueChange?.(val)
+    setOpen(false)
+  }
+
+  const selectedLabel =
+    options.find(o => o.value === selectedValue)?.label ?? placeholder ?? ''
 
   return (
-    <div className={[styles.root, className].filter(Boolean).join(' ')}>
+    <div className={[styles.root, className].filter(Boolean).join(' ')} {...rest}>
       <label
         htmlFor={id}
         className={[utilStyles.label, hideLabel && utilStyles.visuallyHidden].filter(Boolean).join(' ')}
       >
         {label}
       </label>
-      <div className={styles.wrapper}>
-        <select
+
+      <div ref={wrapperRef} className={styles.wrapper}>
+        <button
+          type="button"
           id={id}
-          className={[styles.select, error && styles.hasError].filter(Boolean).join(' ')}
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={listboxId}
           aria-describedby={error ? errorId : undefined}
           aria-invalid={error ? true : undefined}
-          {...rest}
+          aria-required={required}
+          disabled={disabled}
+          className={[
+            styles.trigger,
+            error && styles.hasError,
+            !selectedValue && styles.hasPlaceholder,
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          onClick={() => !disabled && setOpen(prev => !prev)}
+        >
+          <span className={styles.triggerLabel}>{selectedLabel}</span>
+          <span className={styles.arrow} aria-hidden="true">
+            <Icon
+              name="chevron-down"
+              size="sm"
+              className={[styles.chevron, open && styles.chevronOpen].filter(Boolean).join(' ')}
+            />
+          </span>
+        </button>
+
+        {open && (
+          <DropdownMenu
+            id={listboxId}
+            listRole="listbox"
+            items={options}
+            selectedValue={selectedValue}
+            onSelect={handleSelect}
+            onClose={() => setOpen(false)}
+            className={styles.dropdown}
+          />
+        )}
+
+        {/* Hidden native select for form submission */}
+        <select
+          tabIndex={-1}
+          aria-hidden="true"
+          name={name}
+          value={selectedValue}
+          required={required}
+          disabled={disabled}
+          onChange={() => {}}
+          className={utilStyles.visuallyHidden}
         >
           {placeholder && (
             <option value="" disabled>
@@ -55,10 +144,8 @@ export function Select({
             </option>
           ))}
         </select>
-        <span className={styles.arrow} aria-hidden="true">
-          <Icon name="chevron-down" size="sm" />
-        </span>
       </div>
+
       {error && (
         <span id={errorId} className={styles.errorMessage} role="alert">
           {error}

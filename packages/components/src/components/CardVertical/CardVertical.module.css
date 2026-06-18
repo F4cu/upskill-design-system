@@ -1,0 +1,42 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-stack-sm);
+  width: 100%;
+}
+
+.thumbnail {
+  flex-shrink: 0;
+}
+
+.card:hover .thumbnail {
+  opacity: 0.8;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-stack-sm);
+}
+
+/* headline-serif gives the right family/weight/line-height; only size needs overriding */
+.card .title {
+  font-size: var(--ds-font-size-subheader);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-sm);
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-xs);
+}
+
+.badge svg {
+  color: var(--ds-color-icon-default);
+}

@@ -71,6 +71,7 @@ Lite in two ways:
 - [x] `Inline` — horizontal counterpart to `Stack`; `gap` maps to `--ds-space-inline-*`; wraps by default; `wrap={false}` adds `.noWrap`
 - [x] Metadata file for each primitive (`Box.metadata.json`, `Stack.metadata.json`, `Inline.metadata.json`)
 - [x] Storybook: `Layout/Grid` page section story (exit condition), `Stack`/`Inline` gap-variant stories, `Box` padding-scale story
+- [x] `ScrollArea` — overflow scroll container that hides the native scrollbar cross-browser; `orientation`: `horizontal` | `vertical`. Retroactively added in Phase 5c after identifying the need for a standardised scroll primitive to underpin the carousel and other overflow patterns (see ADR-006).
 - [-] Wire `storybook-design-token` to SD CSS output — blocked: npm workspace has storybook@8 at root conflicting with storybook@10 in components; token showcase is already handled by existing MDX stories (Colors, Spacing, Typography, BorderRadius). Revisit when upgrading the npm workspace to a consistent Storybook version.
 
 **Exit condition (met):** a sample page layout renders in Storybook using only `Box`/`Stack`/`Inline` and the grid utility — no ad-hoc CSS.
@@ -110,15 +111,15 @@ Lite in two ways:
 
 **Net-new components:**
 
-- [ ] `Avatar` — circular user photo; `size` prop: `sm` (24px, used in nav) / `lg` (128px, used in profile). Accepts an image `src` + `alt`. No letter-fallback in scope.
-- [ ] `Header` — full-width top nav bar; fixed height (90px per Figma); slots: logo (BrandLogo asset), centre search (`TextField` round + icon), right nav links + user dropdown (Avatar + name + chevron). No routing logic — pass nav items as props.
-- [ ] `Breadcrumb` — ordered list of link items separated by `Icon name="chevron-right" size="sm"`; last item is non-linked (current page). Accept `items: { label: string; href?: string }[]`.
-- [ ] `Divider` — horizontal separator; `<hr>` styled with `color.border.default` token; no props beyond `className`.
-- [ ] `ProgressBar` — 4px tall track with a coloured fill; `value` (0–100) controls fill width as a percentage; uses `color.accent.accent-8` for fill and `color.background.neutral.subtle` for track.
-- [ ] `CardHorizontal` — horizontal card: 80×80px square thumbnail + content column (title, optional ProgressBar, metadata row with duration + certified badge). Used in Started Courses, Saved Courses, and Footer recommendations. Two colour contexts: default (light) and inverted (dark footer) — controlled by a `variant` prop or inherited via `data-theme`.
-- [ ] One composed page story (`Layout/Examples/User Settings`) built entirely from library components.
+- [x] `Avatar` — circular user photo; `size` prop: `sm` (24px, used in nav) / `lg` (128px, used in profile). Accepts an image `src` + `alt`. No letter-fallback in scope.
+- [x] `AppHeader` — full-width top nav bar; fixed height (90px per Figma); slots: logo (BrandLogo asset), centre search (`TextField` round + icon), right nav links + user dropdown (Avatar + name + chevron). No routing logic — pass nav items as props. (renamed from `Header` to avoid ambiguity with `Heading`)
+- [x] `Breadcrumb` — ordered list of link items separated by `Icon name="chevron-right" size="sm"`; last item is non-linked (current page). Accept `items: { label: string; href?: string }[]`.
+- [x] `Divider` — horizontal separator; `<hr>` styled with `color.border.default` token; no props beyond `className`.
+- [x] `ProgressBar` — 4px tall track with a coloured fill; `value` (0–100) controls fill width as a percentage; uses `color.accent.accent-8` for fill and `color.background.neutral.subtle` for track.
+- [x] `CardHorizontal` — horizontal card: 80×80px square thumbnail + content column (title, optional ProgressBar, metadata row with duration + certified badge). Used in Started Courses, Saved Courses, and Footer recommendations. Two colour contexts: default (light) and inverted (dark footer) — controlled by a `variant` prop or inherited via `data-theme`.
+- [x] Composed page stories built entirely from library components: `Layout/Examples/Landing Page` (AppHeader, CardHorizontal with progress, Footer Highlights editorial section) and `Layout/Examples/Footer Highlights` (inverted surface pattern). User Settings form covered by the existing `Layout/Examples/Settings Form` story.
 
-**Exit condition:** all six components render in both light and dark themes with stories and metadata; the composed User Settings story builds and passes visual review with no ad-hoc CSS outside component modules.
+**Exit condition (met):** all six components render in both light and dark themes with stories and metadata; composed layout stories build and pass visual review with no ad-hoc CSS outside component modules.
 
 ## Phase 5c — Homepage Components
 
@@ -134,13 +135,29 @@ Lite in two ways:
 
 **Net-new components:**
 
-- [ ] `CardVertical` — vertical course card: image thumbnail (height controlled by `size` prop: `sm` 180px / `lg` 340px) + optional `ProgressBar` below image + serif title (`font-family-headline-serif`) + metadata row (duration dot certified-badge). Used in Saved Courses and Discover carousels. No dark variant needed — appears on light and elevated backgrounds only.
-- [ ] `Chip` — pill-shaped filter tag; `state`: `default` | `active`. Active state: brand border (`color.border.selected`) + brand text (`color.text.selected`). Default: neutral border + subtle text. Not a Button variant — no action semantics, pure selection indicator; no dropdown arrow in scope (the page uses label-only chips).
-- [ ] `VideoFrame` — rounded container (`border-radius-md`) with a fixed aspect ratio thumbnail image and a centred play-button overlay (semi-transparent circle + triangle glyph). Props: `src` (thumbnail URL), `alt`. No playback logic — purely presentational.
-- [ ] `PaginationArrows` — 32px circular prev/next navigation button; `direction`: `left` | `right`; `state`: `active` | `disabled`. Uses `Icon` chevron internally. Used in the carousel paginator row and in the chapter navigator. Disabled state: no background, muted border, pointer-events none.
-- [ ] One composed page story (`Layout/Examples/Homepage`) built entirely from library components, demonstrating the carousel pattern with `CardVertical` + `PaginationArrows`.
+- [x] `CardVertical` — vertical course card: `Image` thumbnail (`aspectRatio="4/5"`, portrait, fills card width — height derives from ratio); card `size` prop controls card width (`sm` ≈ 144px / `lg` ≈ 272px, yielding ~180px / ~340px image height respectively); optional `ProgressBar` below image; serif title (`font-family-headline-serif`); metadata row (duration dot certified-badge). Used in Saved Courses and Discover carousels. No dark variant needed — appears on light and elevated backgrounds only.
+- [x] `Chip` — pill-shaped filter tag; `selected` boolean prop. Selected state: brand border (`color.border.selected`) + brand text (`color.text.selected`). Default: neutral border + subtle text. Not a Button variant — no action semantics, pure selection indicator; no dropdown arrow in scope (the page uses label-only chips).
+- [x] `VideoFrame` — rounded container (`border-radius-md`) with a fixed 16:9 aspect ratio thumbnail image and a centred play-button overlay (semi-transparent circle + triangle glyph). Props: `src` (thumbnail URL), `alt`. No playback logic — purely presentational.
+- [x] `ButtonArrow` — 32px circular prev/next navigation button; `direction`: `left` | `right`; disabled via native HTML `disabled` prop. Uses `Icon` chevron internally. Used in the carousel paginator row and in the chapter/slider navigator. Disabled state: no background, muted icon, pointer-events none. (Named `ButtonArrow` to match the `CardHorizontal`/`CardVertical` noun-first convention.)
+- [x] One composed layout story (`Layout/Examples/Carousel`) demonstrating the carousel pattern: section title + `Chip` filter bar + horizontal `CardVertical` row + `ButtonArrow` pair.
 
-**Exit condition:** all four components render in both themes with stories and metadata; the Homepage story builds and passes visual review with no ad-hoc CSS outside component modules.
+**Exit condition:** all four components render in both themes with stories and metadata; the Carousel example story builds and passes visual review with no ad-hoc CSS outside component modules.
+
+## Phase 5d — Course Overview Page Components
+
+> Expand the component set to cover the Course Overview page (Figma node 96:5854). Two net-new components plus a new variant on `Button`; everything else (`AppHeader`, `Breadcrumb`, `VideoFrame`, `CardVertical`, `ButtonArrow`, `Chip`, `CardHorizontal`, layout primitives) is already in the library.
+
+**Components already covered — no new work needed:**
+`AppHeader`, `Breadcrumb` (Phase 5b); `VideoFrame`, `ButtonArrow`, `Chip`, `CardVertical` (Phase 5c); `CardHorizontal` (Phase 5b); `Button`, `Icon`, layout primitives (Phases 3–5).
+
+**Net-new components and variants:**
+
+- [ ] `Accordion` — collapsible list; each item shows title + subtitle when collapsed, and title + subtitle + body text when expanded. Props: `items: { title: string; subtitle: string; content?: ReactNode }[]`; `maxVisible` controls how many items show before the show-more toggle; `openIndex` for controlled open state. Expanded item background: `color.background.container.elevated`. Footer uses a ghost `Button` with a trailing chevron `Icon`.
+- [ ] `Badge` — static category label pill; `label: string`; `variant?: 'outline' | 'filled'` (outline: border only; filled: adds `color.background.neutral.subtlest`). `border-radius.sm`. Distinct from `Chip` — no selection state, no interaction semantics, purely display.
+- [ ] `Button` — add `ghost` variant: no background, no border, text color `color.text.link.default`. Used for "Show more / Show less" toggles and other inline actions. The trailing `Icon` (chevron-down / chevron-up) is passed via the existing `icon` slot.
+- [ ] `useSlider` hook — content-stepper state: `{ currentIndex, total, goNext, goPrev, isFirst, isLast }`. Used for step-through UIs that show one item at a time with a CSS fade-in transition (e.g., the chapter description navigator on the Course Overview page). No component — the consuming component owns the fade animation and wires `ButtonArrow` to `goNext`/`goPrev`.
+
+**Exit condition:** `Accordion` and `Badge` render in both themes with stories and metadata; `Button` ghost variant is documented in its story; the Course Overview example story builds from library components with no ad-hoc CSS.
 
 ## Phase 6 — Automation (scripts and Actions only — no MCP, no agents)
 

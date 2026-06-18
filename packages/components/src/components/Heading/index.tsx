@@ -14,12 +14,6 @@ export type HeadingProps = {
   children?: React.ReactNode
 } & Omit<HTMLAttributes<HTMLHeadingElement>, 'style'>
 
-const colorVars: Record<HeadingColor, string> = {
-  default: 'var(--ds-color-text-default)',
-  subtle: 'var(--ds-color-text-subtle)',
-  brand: 'var(--ds-color-text-brand)',
-}
-
 export function Heading({
   as: Tag = 'h2',
   size = 'headline',
@@ -29,15 +23,10 @@ export function Heading({
   children,
   ...rest
 }: HeadingProps) {
-  const cssVars: CSSProperties = {
-    '--_color': color ? colorVars[color] : undefined,
-    ...style,
-  }
-
   return (
     <Tag
-      className={[styles.heading, styles[size], className].filter(Boolean).join(' ')}
-      style={cssVars}
+      className={[styles.root, styles[size], color && color !== 'default' && styles[color], className].filter(Boolean).join(' ')}
+      style={style}
       {...rest}
     >
       {children}

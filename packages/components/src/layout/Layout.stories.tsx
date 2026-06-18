@@ -1,99 +1,120 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { AppHeader } from '../components/AppHeader'
 import { Box } from '../components/Box'
 import { Stack } from '../components/Stack'
 import { Inline } from '../components/Inline'
+import { Heading } from '../components/Heading'
+import { Text } from '../components/Text'
+import { Button } from '../components/Button'
+import { CardHorizontal } from '../components/CardHorizontal'
+import { Divider } from '../components/Divider'
+import logoLight from '../assets/logos/brand-logo-light-theme.svg'
+import logoDark from '../assets/logos/brand-logo-dark-theme.svg'
 import '../styles/grid.css'
 
+const NAV_ITEMS = [
+  { label: 'All Courses', href: '/courses' },
+  { label: 'My Courses', href: '/my-courses', active: true },
+  { label: 'Browse', href: '/browse' },
+]
+
+const USER_MENU_ITEMS = [
+  { value: 'profile', label: 'My Profile' },
+  { value: 'settings', label: 'Settings' },
+  { value: 'logout', label: 'Log out' },
+]
+
 const meta = {
-  title: 'Layout/Examples',
-  parameters: {
-    layout: 'fullscreen',
-  },
+  title: 'Layout/Examples/Landing Page',
+  parameters: { layout: 'fullscreen' },
 } satisfies Meta
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-const PlaceholderCard = ({ title, body }: { title: string; body: string }) => (
-  <Box
-    padding="lg"
-    style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: 'var(--ds-border-radius-sm)', height: '100%' }}
-  >
-    <Stack gap="xs">
-      <div style={{ fontFamily: 'var(--ds-font-family-headline-default)', fontWeight: 'var(--ds-font-weight-semibold)', fontSize: 'var(--ds-font-size-title-small)' }}>
-        {title}
-      </div>
-      <div style={{ fontSize: 'var(--ds-font-size-body-default)', color: 'var(--ds-color-text-subtle)', lineHeight: 'var(--ds-font-line-height-body-default)' }}>
-        {body}
-      </div>
-    </Stack>
-  </Box>
-)
-
-export const PageSection: Story = {
-  name: 'Landing page',
+export const Default: Story = {
+  tags: ['!dev'],
   render: () => (
     <Box style={{ background: 'var(--ds-color-background-container-page)', minHeight: '100vh' }}>
-      {/* Page header */}
-      <Box
-        style={{ background: 'var(--ds-color-background-container-default)', borderBottom: '1px solid var(--ds-color-background-neutral-subtle)' }}
-        paddingY="md"
-      >
-        <div className="container">
-          <Inline justify="space-between" align="center">
-            <span style={{ fontFamily: 'var(--ds-font-family-headline-default)', fontWeight: 'var(--ds-font-weight-bold)', fontSize: 'var(--ds-font-size-subheader)', color: 'var(--ds-color-text-brand)' }}>
-              UpSkill
-            </span>
-            <Inline gap="md">
-              <span style={{ fontSize: 'var(--ds-font-size-body-default)', color: 'var(--ds-color-text-subtle)' }}>Dashboard</span>
-              <span style={{ fontSize: 'var(--ds-font-size-body-default)', color: 'var(--ds-color-text-subtle)' }}>Courses</span>
-              <span style={{ fontSize: 'var(--ds-font-size-body-default)', color: 'var(--ds-color-text-subtle)' }}>Profile</span>
-            </Inline>
-          </Inline>
-        </div>
-      </Box>
+      <AppHeader
+        logoSrc={logoLight}
+        logoSrcDark={logoDark}
+        logoAlt="UpSkill"
+        navItems={NAV_ITEMS}
+        userName="Alex M."
+        userAvatarSrc="https://placehold.co/24x24/D15D50/ffffff?text=A"
+        userMenuItems={USER_MENU_ITEMS}
+      />
 
       {/* Hero */}
       <Box paddingY="xxl">
         <div className="container">
-          <Stack gap="md" align="center" style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: 'var(--ds-font-family-headline-serif)', fontWeight: 'var(--ds-font-weight-bold)', fontSize: 'var(--ds-font-size-display)', lineHeight: 'var(--ds-font-line-height-display-default)' }}>
-              Learn by building real things
-            </div>
-            <div style={{ fontSize: 'var(--ds-font-size-subheader)', color: 'var(--ds-color-text-subtle)', lineHeight: 'var(--ds-font-line-height-subheader-default)', maxWidth: '40ch' }}>
-              Hands-on courses for product teams. Ship faster, build better.
-            </div>
-            <Inline gap="sm" justify="center">
-              <div style={{ background: 'var(--ds-color-background-button-default)', color: '#fff', padding: 'var(--ds-space-inset-sm) var(--ds-space-inset-xl)', borderRadius: 'var(--ds-border-radius-xs)', fontSize: 'var(--ds-font-size-label)', cursor: 'pointer' }}>
-                Start learning
-              </div>
-              <div style={{ border: '1px solid var(--ds-color-background-button-default)', color: 'var(--ds-color-text-brand)', padding: 'var(--ds-space-inset-sm) var(--ds-space-inset-xl)', borderRadius: 'var(--ds-border-radius-xs)', fontSize: 'var(--ds-font-size-label)', cursor: 'pointer' }}>
-                Browse courses
-              </div>
+          <Stack gap="lg" style={{ maxWidth: '600px' }}>
+            <Stack gap="md">
+              <Heading size="display">
+                Learn by building{' '}
+                <span style={{ color: 'var(--ds-color-text-accent-default)' }}>
+                  real things
+                </span>
+              </Heading>
+              <Text color="subtle">
+                Hands-on courses for product teams. Ship faster, build better, and grow with
+                intention.
+              </Text>
+            </Stack>
+            <Inline gap="md">
+              <Button>Start learning</Button>
+              <Button variant="outlined">Browse courses</Button>
             </Inline>
           </Stack>
         </div>
       </Box>
 
-      {/* Feature grid */}
+      {/* Continue learning */}
       <Box paddingY="xl">
         <div className="container">
           <Stack gap="lg">
-            <div style={{ fontFamily: 'var(--ds-font-family-headline-default)', fontWeight: 'var(--ds-font-weight-bold)', fontSize: 'var(--ds-font-size-headline)' }}>
-              What you'll build
-            </div>
-            <div className="grid" style={{ rowGap: 'var(--ds-space-stack-md)' }}>
-              <div style={{ gridColumn: 'span 4' }}>
-                <PlaceholderCard title="Design Systems" body="Token architecture, component APIs, and documentation strategies." />
-              </div>
-              <div style={{ gridColumn: 'span 4' }}>
-                <PlaceholderCard title="Frontend Architecture" body="Monorepos, build pipelines, and scalable CSS patterns." />
-              </div>
-              <div style={{ gridColumn: 'span 4' }}>
-                <PlaceholderCard title="Product Thinking" body="Scope, trade-offs, and shipping with confidence." />
-              </div>
-            </div>
+            <Heading size="headline">Continue learning</Heading>
+            <Inline gap="xl" align="start" wrap={false}>
+              <Stack gap="md" style={{ flex: 1 }}>
+                <CardHorizontal
+                  title="Design Systems in Practice"
+                  duration="Token architecture · 4 hours, 30min"
+                  progress={65}
+                />
+                <CardHorizontal
+                  title="Component-Driven Development"
+                  duration="React + Vite · 3 hours, 15min"
+                  progress={20}
+                />
+              </Stack>
+              <Stack gap="md" style={{ flex: 1 }}>
+                <CardHorizontal
+                  title="Accessibility in Design Systems"
+                  duration="ARIA & focus management · 2 hours, 45min"
+                  progress={80}
+                />
+                <CardHorizontal
+                  title="Typography & Spacing Tokens"
+                  duration="Style Dictionary · 1 hour, 50min"
+                  progress={10}
+                />
+              </Stack>
+            </Inline>
           </Stack>
+        </div>
+      </Box>
+
+      {/* Disclaimer */}
+      <Box paddingY="lg">
+        <div className="container">
+          <Divider />
+          <Box paddingY="md">
+            <Text size="body-small" color="subtle">
+              Course descriptions are curated for learning purposes. Durations are approximate.
+              All content is subject to availability.
+            </Text>
+          </Box>
         </div>
       </Box>
     </Box>

@@ -1,19 +1,22 @@
-.heading {
-  color: var(--_color, var(--ds-color-text-default));
+.root {
+  color: var(--ds-color-text-default);
   margin: 0;
 }
+
+.subtle { color: var(--ds-color-text-subtle); }
+.brand  { color: var(--ds-color-text-brand); }
 
 .title-small {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-title-small);
-  font-weight: var(--ds-font-weight-semibold);
+  font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-font-line-height-title-default);
 }
 
 .subheader {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-subheader);
-  font-weight: var(--ds-font-weight-semibold);
+  font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-font-line-height-subheader-default);
 }
 
@@ -24,14 +27,14 @@
   line-height: var(--ds-font-line-height-headline-default);
 }
 
-.headline-serif {
+.root.headline-serif {
   font-family: var(--ds-font-family-headline-serif);
   font-size: var(--ds-font-size-headline-serif);
   font-weight: var(--ds-font-weight-medium);
   line-height: var(--ds-font-line-height-headline-serif);
 }
 
-.display {
+.root.display {
   font-family: var(--ds-font-family-headline-serif);
   font-size: var(--ds-font-size-display);
   font-weight: var(--ds-font-weight-medium);

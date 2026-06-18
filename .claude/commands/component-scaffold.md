@@ -20,12 +20,13 @@
    - Which semantic tokens map to which visual properties (background, text, border, radius, spacing)
    - Layout behavior (fixed/hug width, inline vs block, can nest)
 2. Fill the metadata schema fields from what you observe in Figma. Anti-patterns must reference only components in the fixed set. Variant names must match Figma exactly.
-3. Produce the component folder at `packages/components/src/ComponentName/`:
+3. Determine the component name before creating any files. **Naming rule: noun first, then variant/modifier** — `Button`, `ButtonArrow`; `Card`, `CardHorizontal`, `CardVertical`. Never reverse this (`ArrowButton`, `HorizontalCard`). This keeps variants grouped together in directory listings and matches the existing library convention.
+4. Produce the component folder at `packages/components/src/ComponentName/`:
    - `index.tsx` — typed props matching the metadata's variant axes (one prop per `variants.<axis>`, typed to that axis's `options`) and `states`; no hard-coded design values; import CSS module for class names
    - `ComponentName.module.css` — one rule per variant + state combination; only `var(--ds-*)` custom properties, never raw values
-   - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls
+   - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls. **Storybook title rule:** layout primitives (`category: layout` in metadata) use `title: 'Layout/ComponentName'`; everything else uses `title: 'Components/ComponentName'`.
    - `ComponentName.metadata.json` — completed metadata file conforming to the schema
-4. Produce a Code Connect mapping: the Figma node ID → the coded component path, with variant prop mappings where Figma variant names differ from code prop values.
+5. Record the Figma node ID in the metadata file's `figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
 
 ## Output
 

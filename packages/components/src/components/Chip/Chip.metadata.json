@@ -1,0 +1,107 @@
+{
+  "component": {
+    "name": "Chip",
+    "category": "atom",
+    "type": "interactive",
+    "status": "stable",
+    "description": "Pill-shaped filter tag for toggling a selection state. Default: neutral border and subtle text. Selected: brand border and brand text. Pure selection indicator — not a navigation element. Label-only; no dropdown arrow.",
+    "figmaNodeId": "29:1257"
+  },
+
+  "usage": {
+    "keywords": ["chip", "filter", "tag", "pill", "selection", "toggle", "filter option"],
+    "when": [
+      "Filtering a list or carousel by category (e.g. All Courses, Design, Development)",
+      "Toggling a discrete selection option among a group of peers",
+      "Showing current filter state visually — selected chip reads as brand-colored"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Chip for navigation that changes the URL",
+        "reason": "Chip renders a <button> — links that produce a URL change should be <a> elements.",
+        "alternative": "Use an anchor tag or a Tab component if routing is needed."
+      },
+      {
+        "scenario": "Using Chip for a primary call-to-action",
+        "reason": "Chips signal filter/selection; they carry no action weight.",
+        "alternative": "Use Button for actions (submit, save, download)."
+      },
+      {
+        "scenario": "Using Chip with a dropdown arrow",
+        "reason": "The dropdown variant is out of scope; the page uses label-only chips.",
+        "alternative": "Compose a Select or a custom popover for dropdown filtering."
+      }
+    ]
+  },
+
+  "variants": {
+    "selected": {
+      "options": ["false", "true"],
+      "default": "false",
+      "purpose": {
+        "false": "Resting state. Transparent background, subtle text, default border.",
+        "true": "Active selection. Brand border and brand text to signal the active filter."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "default", "description": "Transparent background, subtle text, default border." },
+    { "state": "hover", "description": "Adds neutral-subtlest background; border and text unchanged." },
+    { "state": "selected", "description": "Brand border and brand text; toggled via the selected prop." },
+    { "state": "disabled", "description": "Muted text and border; pointer-events blocked natively." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.border.default",
+      "color.border.selected",
+      "color.border.disabled",
+      "color.text.subtle",
+      "color.text.selected",
+      "color.text.disabled",
+      "color.background.neutral.subtlest"
+    ],
+    "spacing": [
+      "space.inset.md"
+    ],
+    "typography": [
+      "font.family.body",
+      "font.size.body-default",
+      "font.weight.medium"
+    ],
+    "borderRadius": ["border-radius.full"],
+    "other": ["size.500"]
+  },
+
+  "accessibility": {
+    "role": "button",
+    "ariaAttributes": [
+      "aria-pressed — reflects the selected state so screen readers announce active/inactive"
+    ],
+    "keyboardInteractions": [
+      { "key": "Enter / Space", "action": "Toggles the chip selection (caller controls state)" },
+      { "key": "Tab", "action": "Moves focus to the next focusable element" }
+    ],
+    "notes": "Uses a native <button> element with aria-pressed. The caller is responsible for managing the selected state and grouping chips in a meaningful container (e.g. role=group with aria-label)."
+  },
+
+  "relationships": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": ["Box", "Inline"],
+    "neverPairWith": ["Button"],
+    "compositionPatterns": [
+      {
+        "name": "filter-bar",
+        "description": "A horizontal row of Chip components for category filtering, where one chip is selected at a time.",
+        "tree": "Inline(gap=sm, wrap=true) > [Chip(selected=true), Chip, Chip, Chip]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}

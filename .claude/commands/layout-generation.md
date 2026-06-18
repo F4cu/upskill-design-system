@@ -29,6 +29,29 @@
 
 ## Output
 
+When producing a Storybook story file (`src/stories/Name.stories.tsx`), follow this structure exactly — no deviations:
+
+```tsx
+const meta = {
+  title: 'Layout/Examples/Name',
+  parameters: {
+    layout: 'fullscreen',
+    docs: { description: { component: 'One-sentence description of what this layout demonstrates.' } },
+  },
+} satisfies Meta
+
+export default meta
+type Story = StoryObj
+
+export const Default: Story = { render: () => <LayoutComponent />, tags: ['!dev'] }
+```
+
+Rules:
+- **One named export only** (`Default`). Multiple exports create expandable sidebar children, which breaks the flat `Layout/Examples` listing. If multiple variants are needed, compose them into a single render function (e.g. two sections separated by a `Divider`).
+- **`tags: ['!dev']`** on every story export — suppresses the Canvas tab, keeps only the Docs view.
+- **`satisfies Meta`** on the meta object (not `as Meta`).
+- Place the file in `packages/components/src/stories/`, not inside a component folder.
+
 A React component tree as JSX, with inline comments citing metadata justification:
 
 ```tsx
