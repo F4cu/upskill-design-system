@@ -1,5 +1,4 @@
 ---
-name: tokens-author
 description: Author or change design tokens locally — add or edit a primitive token, add a semantic theme/device alias, or modify the Style Dictionary build/transforms, then rebuild and verify outputs. Use when editing primitives.json, theme/*.json, device/*.json, or style-dictionary.config.js.
 ---
 

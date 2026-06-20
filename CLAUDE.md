@@ -106,6 +106,13 @@ General rule: MCP calls are for **interactive, one-off tasks with the developer 
 
 If a task could be done with a committed file, a script, or the `gh` CLI, do it that way even when an MCP tool is available.
 
+## Commands and skills
+
+`.claude/commands/` — prompt-only slash commands. Flat markdown files. All agentic moments live here.  
+`.claude/skills/` — slash commands with companion code. One directory per command. Only `run-upskill-design-system` lives here because it ships `driver.mjs`.
+
+Note: Claude Code's naming is the inverse of plain English intuition — "skills" are the ones with code, "commands" are the prompts.
+
 ## Agentic moments
 
 The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/`. Everything else is a script or a GitHub Action.
