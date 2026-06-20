@@ -106,6 +106,10 @@ General rule: MCP calls are for **interactive, one-off tasks with the developer 
 
 If a task could be done with a committed file, a script, or the `gh` CLI, do it that way even when an MCP tool is available.
 
+## Git workflow
+
+Commit directly to the current branch — do not create new branches unless explicitly asked. This is a solo project; branch management is the developer's responsibility.
+
 ## Commands and skills
 
 `.claude/commands/` — prompt-only slash commands. Flat markdown files. All agentic moments live here.  
