@@ -1,3 +1,7 @@
+---
+description: Migrate usages of deprecated tokens to their successors — read governance.json + token usage report + component metadata and produce a migration PR replacing each usage with its successor token. Use after tokens are marked deprecated in Airtable.
+---
+
 # Token deprecation pass
 
 **Trigger:** Developer, after marking one or more tokens as `deprecated` in Airtable and running `npm run governance:pull`.

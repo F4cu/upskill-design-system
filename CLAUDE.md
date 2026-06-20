@@ -2,7 +2,7 @@
 
 ## Project purpose
 
-A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to four defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
+A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to five defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
 
 Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and exit conditions.
 
@@ -186,54 +186,24 @@ Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-te
 
 ## Common tasks
 
-### Add a new primitive token
-Edit `packages/tokens/src/primitives.json`. Follow the existing structure for the category (`color`, `space`, `font`, etc.). Add `$type` and `$value`. Run `npm run build:tokens` and verify the CSS and JS outputs.
+Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The five developer-triggered commands are the "Agentic moments" above.
 
-### Add a semantic alias
-Edit the appropriate `theme/` or `device/` file. Use `{path.to.primitive}` syntax. Do not add raw values to these files — they should only alias primitives.
+| Task | How |
+|---|---|
+| Add/change a primitive token, add a semantic alias, or modify the SD build | `/tokens-author` |
+| Push tokens to Airtable, or pull governance state | `/airtable-sync` |
+| Scaffold a new component from the fixed set | `/component-scaffold` |
+| Generate a page or section layout | `/layout-generation` |
+| Reconcile tokens with Figma (drift check) | `/figma-token-audit` |
+| Mirror token changes into Figma (code → Figma) | `/figma-variable-sync` |
+| Migrate deprecated token usages to their successors | `/token-deprecation-pass` |
+| Build, run, or screenshot Storybook | `/run-upskill-design-system` |
+| Add a story to an existing component | Follow "Storybook → Story conventions" above |
+| Add a GitHub Action | Workflow YAML in `.github/workflows/`. Actions call scripts and REST directly — never MCP, never Claude. Judgment-needing work belongs in an agentic moment instead. |
+| Record or amend an ADR | Follow "Architectural decisions (ADRs)" above |
 
-### Change a primitive token
-Tokens are authored as code — edit `packages/tokens/src/primitives.json` directly via PR (see "Add a new primitive token"). Figma is a downstream mirror, not the upstream source.
+### Component metadata model (reference)
 
-### Reconcile tokens with Figma (drift check)
-Use when Figma has diverged and you want to pull intended design changes into the canonical code.
-1. Run the Figma token audit (agentic moment 1) to diff Figma variables against committed tokens and current usage
-2. Apply only the intended changes to `packages/tokens/src/primitives.json`, cleaned (strip `$extensions`, convert sRGB → hex, preserve `{alias}` paths)
-3. Rebuild and verify no alias references broke
+This convention is shared by `/component-scaffold`, `/layout-generation`, and metadata validation, so it stays here rather than in one skill. `*.metadata.json` is validated against `component.schema.json` by `scripts/validate-metadata.js`. Variants are modelled as **named axes**: `variants` is an object keyed by axis name (`variant`, `size`, `shape`, …), each axis holding `{ options, default, purpose }`. A component with a single visual axis uses one key named `variant`; `default` may be `null` for an axis that is off unless set (e.g. Button `shape`). `tokens` keys are fixed: `color`, `spacing`, `typography`, `borderRadius`, `other`. `component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`. `relationships.accepts`/`containedBy` and `compositionPatterns` are required for layout generation.
 
-### Mirror token changes into Figma (code → Figma)
-Use when committed tokens have moved ahead of Figma and you want the Figma variable collections to match. Run the Figma variable sync (agentic moment 5): it diffs the committed source against the Figma inventory and writes only the clean-missing variables via `use_figma`. It never deletes or overwrites Figma variables without confirmation. One-off and developer-present — never scheduled or in CI.
-
-### Add a coded component
-Only from the fixed set above. Work in `packages/components/src/components/ComponentName/`. Use `Button` as the template for interactive components, `Box` for layout primitives, `Text` for typography. Every component requires four files:
-
-1. **`index.tsx`** — typed props matching `variants.options` and `states` in the metadata schema. Use a `cssVars` object to pass prop-driven values as CSS custom properties (`--_name`). Spread `...rest` for native HTML attributes. No hard-coded design values — all values through tokens.
-2. **`ComponentName.module.css`** — one rule per variant + state combination; only `var(--ds-*)` custom properties from the SD output; class names in `camelCase`. Private CSS vars (`--_*`) for prop-driven overrides; token vars (`--ds-*`) for fixed design values.
-3. **`ComponentName.stories.tsx`** — export `meta` with `title`, `component`, `argTypes`. Export a `Default` story using `args`. Add one named story per meaningful visual state (disabled, error, etc.). Dark mode switches via `data-theme` on the story container, not Storybook background.
-4. **`ComponentName.metadata.json`** — fill every field from the schema (`component.schema.json`). `figmaNodeId` is the Figma component set node ID if one exists, or a note if the component uses text styles or Code Connect is unavailable (requires Figma Enterprise). `relationships.accepts`/`containedBy` and `compositionPatterns` are required for the layout-generation agentic moment.
-
-After creating the files: `npm run validate:metadata`, `npm run typecheck`, and `npm run build` must all pass with no manual changes, and the component must render in both light and dark themes in Storybook. The `components-check.yml` Action runs these on every PR.
-
-`*.metadata.json` is validated against `component.schema.json` by `scripts/validate-metadata.js`. Variants are modelled as **named axes**: `variants` is an object keyed by axis name (`variant`, `size`, `shape`, …), each axis holding `{ options, default, purpose }`. A component with a single visual axis uses one key named `variant`; `default` may be `null` for an axis that is off unless set (e.g. Button `shape`). `tokens` keys are fixed: `color`, `spacing`, `typography`, `borderRadius`, `other`. `component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`.
-
-Following this pattern needs no ADR. But if a component forces a deviation — a new variant-axis convention, a token category the schema doesn't have, a change to the metadata schema itself — record or amend an ADR (see "Architectural decisions") as part of the change, before merging.
-
-### Add a story for a component
-Create `ComponentName.stories.tsx` next to the component file. Export `meta` with `title`, `component`, and `argTypes`. Export at least a `Default` story using `args`. Add a named story per meaningful visual state (error, disabled, loading).
-
-### Modify the Style Dictionary build
-Edit `packages/tokens/style-dictionary.config.js`. Custom transforms live alongside it (px→rem, font-weight, `$root` rename, media query combiner). After any change, rebuild and diff the CSS output — transform changes can silently rename custom properties that components depend on. Adding, removing, or changing the behaviour of a transform is an architectural change — record or amend an ADR (see "Architectural decisions").
-
-### Sync tokens to Airtable
-Run `scripts/airtable-sync.js` (requires the Airtable API key in env). It upserts to the three token tables via REST. Do not replicate this with Airtable MCP calls.
-
-For local runs, copy `.env.example` to `.env` and set `AIRTABLE_API_KEY` (the scripts auto-load repo-root `.env`; `.env` is gitignored, an explicit `export` or CI secret overrides it). The PAT needs scopes `data.records:read` + `data.records:write` and the base added to its access list. npm scripts wrap the commands: `sync:tokens:push`, `sync:semantic:push`, `sync:device:push`, or `sync:all:push` for all three in order.
-
-### Pull governance state from Airtable
-Run `scripts/airtable-pull.js` (requires the Airtable API key in env) to update `packages/tokens/governance.json`. Do this before any deprecation work — the file is the source of truth for token status, owner, and successor that agents and CI read. The `successor` field uses a dot-path to the replacement token (e.g. `color.terracotta.9`); it is nullable when a deprecated token has no direct replacement. Do not read governance state via Airtable MCP — always read the committed file.
-
-### Add a GitHub Action
-Place workflow YAML in `.github/workflows/`. Actions call scripts and REST APIs directly — never MCP tools and never Claude. If a proposed Action seems to need judgment rather than a deterministic check, it belongs in "Agentic moments" instead.
-
-### Record or amend an ADR
-See "Architectural decisions" above for when an ADR is warranted and how to write or amend one.
+After scaffolding or editing a component, `npm run validate:metadata`, `npm run typecheck`, and `npm run build` must all pass with no manual changes, and it must render in both light and dark themes in Storybook (`components-check.yml` runs these on every PR). Following the pattern needs no ADR; a deviation — a new variant-axis convention, a token category the schema lacks, or a change to the schema itself — requires recording or amending an ADR before merging.
