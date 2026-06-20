@@ -1,6 +1,6 @@
 ---
-name: run-upskill-design-system
-description: Build and run the UpSkill Design System and drive its Storybook. Use when asked to start Storybook, build the tokens or components, screenshot a component/story, check a story renders in light/dark, or verify a component change in the running app.
+name: run-storybook
+description: Build and run Storybook and drive it headlessly. Use when asked to start Storybook, build the tokens or components, screenshot a component/story, check a story renders in light/dark, or verify a component change in the running app.
 ---
 
 The runnable app is **Storybook** — the documentation/dev environment for the

@@ -109,7 +109,7 @@ If a task could be done with a committed file, a script, or the `gh` CLI, do it 
 ## Commands and skills
 
 `.claude/commands/` — prompt-only slash commands. Flat markdown files. All agentic moments live here.  
-`.claude/skills/` — slash commands with companion code. One directory per command. Only `run-upskill-design-system` lives here because it ships `driver.mjs`.
+`.claude/skills/` — slash commands with companion code. One directory per command. Only `run-storybook` lives here because it ships `driver.mjs`.
 
 Note: Claude Code's naming is the inverse of plain English intuition — "skills" are the ones with code, "commands" are the prompts.
 
@@ -204,7 +204,7 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Reconcile tokens with Figma (drift check) | `/figma-token-audit` |
 | Mirror token changes into Figma (code → Figma) | `/figma-variable-sync` |
 | Migrate deprecated token usages to their successors | `/token-deprecation-pass` |
-| Build, run, or screenshot Storybook | `/run-upskill-design-system` |
+| Build, run, or screenshot Storybook | `/run-storybook` |
 | Add a story to an existing component | Follow "Storybook → Story conventions" above |
 | Add a GitHub Action | Workflow YAML in `.github/workflows/`. Actions call scripts and REST directly — never MCP, never Claude. Judgment-needing work belongs in an agentic moment instead. |
 | Record or amend an ADR | Follow "Architectural decisions (ADRs)" above |
