@@ -1,3 +1,7 @@
+---
+description: Generate a page or section layout as a React tree using only library components and tokens, with each structural choice justified by component metadata relationships. Use when starting a new page or section from a one-paragraph brief.
+---
+
 # Layout generation
 
 **Trigger:** Developer, when starting a new page or section layout.

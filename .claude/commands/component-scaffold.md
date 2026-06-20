@@ -1,3 +1,7 @@
+---
+description: Scaffold a new component from the fixed set — generate its index.tsx, CSS module, stories, and metadata.json from the schema, an existing component as template, and Figma design context. Use when starting a component that does not yet exist in packages/components/src/.
+---
+
 # Component scaffold
 
 **Trigger:** Developer, when starting a new component from the fixed set.

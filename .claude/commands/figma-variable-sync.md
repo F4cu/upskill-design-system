@@ -1,3 +1,7 @@
+---
+description: Mirror committed tokens into Figma (code → Figma) — diff the committed source against the Figma variable inventory and write only the clean-missing variables via the Figma plugin. Use when code tokens have moved ahead of Figma. Never deletes or overwrites Figma variables without confirmation.
+---
+
 # Figma variable sync (code → Figma)
 
 **Trigger:** Developer, when the committed tokens have moved ahead of the Figma file and Figma needs to mirror them.
