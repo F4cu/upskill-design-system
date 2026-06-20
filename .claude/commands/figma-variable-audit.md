@@ -1,8 +1,8 @@
 ---
-description: Reconcile Figma variables against the committed tokens (drift check) — diff Figma against code and usage, report drift/renames/broken aliases/scale-mixing, then PR intended Figma changes into the cleaned committed tokens. Use before pulling Figma token changes into the repo.
+description: Audit Figma variables against the committed tokens (drift check) — diff Figma variables against code tokens and usage, report drift/renames/broken aliases/scale-mixing, then PR intended Figma changes into the cleaned committed tokens. Use before pulling Figma variable changes into the repo.
 ---
 
-# Figma token audit
+# Figma variable audit
 
 **Trigger:** Developer, before replacing `packages/tokens/src/primitives.json` with a fresh Figma export.
 

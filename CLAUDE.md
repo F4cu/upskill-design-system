@@ -6,22 +6,6 @@ A learning-first, **lite agentic** design system for a small SaaS product. Lite 
 
 Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and exit conditions.
 
-## Repository layout
-
-npm workspaces monorepo.
-
-```
-upskill-design-system/
-├── packages/
-│   ├── tokens/       @upskill/tokens — W3C DTCG JSON → Style Dictionary → CSS + JS/TS outputs
-│   └── components/   @upskill/components — React + Vite + TS, Storybook, CSS Modules
-├── scripts/          airtable-sync.js and other repo-level automation
-├── .mcp.json         MCP server config (see "MCP tools" before using any of them)
-└── package.json      workspace root, shared scripts
-```
-
-Run `npm install` from the root. Scripts are workspace-aware (`npm run build:tokens`).
-
 ## Token architecture
 
 ### Three-layer model
@@ -68,6 +52,8 @@ Config: `packages/tokens/style-dictionary.config.js`. Custom transforms in place
 
 ## Figma sync
 
+**Vocabulary:** A **token** is a committed DTCG JSON value in `packages/tokens/src/` (source of truth, code-side). A **variable** is the downstream representation of a token inside a Figma collection.
+
 **The committed DTCG JSON in `packages/tokens/src/` is the source of truth, not Figma** (ADR-002 amendment, 2026-06-17). Code-first is forced by plan limits: the Variables REST API and Code Connect are Enterprise/Org-only, and Token Studio's free GitHub sync is single-file while this architecture is deliberately multi-file. Figma is a downstream mirror and design-exploration surface; the only automatable sync direction available is code→Figma (interactive, via the Figma plugin/MCP).
 
 Tokens are authored and changed in the JSON via PR — `primitives.json` is hand-editable like the theme and device layers. A value invented in Figma is a proposal until it lands in `primitives.json`.
@@ -77,7 +63,7 @@ When reconciling values brought over from Figma, the cleanup step still applies:
 - Converts Figma sRGB component objects → hex strings
 - Preserves alias references in `{path.to.token}` format
 
-Do not commit `$extensions` to source. Before pulling Figma changes into committed tokens, run the Figma token audit (see "Agentic moments") as a drift check — never overwrite primitives without diffing against current usage.
+Do not commit `$extensions` to source. Before pulling Figma changes into committed tokens, run `/figma-variable-audit` (see "Agentic moments") as a drift check — never overwrite primitives without diffing against current usage.
 
 ## Integrations
 
@@ -98,7 +84,7 @@ General rule: MCP calls are for **interactive, one-off tasks with the developer 
 
 | MCP | Use it for | Do NOT use it for |
 |---|---|---|
-| **Figma** | (1) Reading variables/design context during the Figma token audit (drift check). (2) Code Connect mapping and design context when scaffolding a component. (3) Writing variables into Figma during a Figma variable sync (`use_figma` Plugin API) when code is ahead of Figma. | Treating Figma as the token source — tokens are authored as code (ADR-002 amendment). Bulk-reading many nodes. |
+| **Figma** | (1) Reading variables/design context during `/figma-variable-audit` (drift check). (2) Code Connect mapping and design context when scaffolding a component. (3) Writing variables into Figma during `/figma-variable-push` (`use_figma` Plugin API) when code is ahead of Figma. | Treating Figma as the token source — tokens are authored as code (ADR-002 amendment). Bulk-reading many nodes. |
 | **Airtable** | (1) One-off schema changes (adding governance fields). (2) Ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state in tasks — read the committed `governance.json` instead. Bulk record operations. |
 | **GitHub** | Rarely — cross-repo searches the `gh` CLI handles awkwardly. | Everything else. Prefer `gh` CLI for PRs, issues, API calls; it's already authenticated and scriptable. |
 | **Google Drive** | Fetching a spec or brief the user explicitly links. | Anything recurring; storing or syncing project docs. |
@@ -121,11 +107,11 @@ Note: Claude Code's naming is the inverse of plain English intuition — "skills
 
 The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/`. Everything else is a script or a GitHub Action.
 
-1. **Figma token audit (drift check)** — committed JSON is the source of truth, so this reconciles Figma against code rather than importing wholesale. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (tokens that drifted, removed/renamed with usages, broken aliases, scale mixing, naming violations), then a PR applying any intended Figma changes to the committed tokens (cleaned: `$extensions` stripped, colors converted). Never overwrite primitives without diffing against current usage.
+1. **Figma variable audit (drift check)** — committed JSON is the source of truth, so this reconciles Figma variables against code tokens rather than importing wholesale. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (tokens that drifted, removed/renamed with usages, broken aliases, scale mixing, naming violations), then a PR applying any intended Figma changes to the committed tokens (cleaned: `$extensions` stripped, colors converted). Never overwrite primitives without diffing against current usage.
 2. **Token deprecation pass** — after tokens are marked deprecated in Airtable. Read `governance.json` + token usage report + component metadata (no MCP needed); produce a migration PR replacing usages with the `successor` token.
 3. **Component scaffold** — when starting a new component from the fixed set. Read the metadata schema + an existing component as template + Figma design context (MCP); produce the component folder (index, CSS Module, stories, metadata) and a Code Connect mapping.
 4. **Layout generation** — when starting a new page or section. Read all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief; produce a React component tree using only library components and tokens, with each structural choice annotated by the metadata rule or compositionPattern that justified it. No MCP needed. Success signal: the tree passes structural validation (accepts/containedBy constraints), builds, and renders in Storybook without manual restructuring.
-5. **Figma variable sync (code → Figma)** — the inverse of moment 1: when committed tokens have moved ahead of Figma. Read committed token source + Figma variable inventory (MCP); diff into clean-missing / drift / Figma-extras, then write only the clean-missing variables into the Figma collections via `use_figma` (dependency-ordered, aliases preserved, scopes matched to siblings). Never delete or overwrite Figma variables without explicit confirmation — they may be bound to styles. Needs judgment (cross-scheme naming map, safe-add vs decision triage) and the Plugin API, so it can't be a script; the REST Variables API is Enterprise-gated. Success signal: every added variable resolves, counts move by exactly the clean-missing count, nothing deleted silently.
+5. **Figma variable push (code → Figma)** — the inverse of moment 1: when committed tokens have moved ahead of Figma. Read committed token source + Figma variable inventory (MCP); diff into clean-missing / drift / Figma-extras, then write only the clean-missing variables into the Figma collections via `use_figma` (dependency-ordered, aliases preserved, scopes matched to siblings). Never delete or overwrite Figma variables without explicit confirmation — they may be bound to styles. Needs judgment (cross-scheme naming map, safe-add vs decision triage) and the Plugin API, so it can't be a script; the REST Variables API is Enterprise-gated. Success signal: every added variable resolves, counts move by exactly the clean-missing count, nothing deleted silently.
 
 If asked to set up a continuous agent loop, scheduled agent run, or always-on watcher: push back — that contradicts the lite-agentic constraint. Propose a script or one of these moments instead.
 
@@ -205,8 +191,8 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Push tokens to Airtable, or pull governance state | `/airtable-sync` |
 | Scaffold a new component from the fixed set | `/component-scaffold` |
 | Generate a page or section layout | `/layout-generation` |
-| Reconcile tokens with Figma (drift check) | `/figma-token-audit` |
-| Mirror token changes into Figma (code → Figma) | `/figma-variable-sync` |
+| Audit Figma variables against committed tokens (drift check) | `/figma-variable-audit` |
+| Push committed tokens into Figma as variables (code → Figma) | `/figma-variable-push` |
 | Migrate deprecated token usages to their successors | `/token-deprecation-pass` |
 | Build, run, or screenshot Storybook | `/run-storybook` |
 | Add a story to an existing component | Follow "Storybook → Story conventions" above |

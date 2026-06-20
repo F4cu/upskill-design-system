@@ -32,7 +32,7 @@ alias primitives. Rebuild as above and confirm no alias references broke.
 Edit `packages/tokens/src/primitives.json` directly via PR. Figma is a downstream
 mirror, not the upstream source — a value invented in Figma is a proposal until it
 lands here. If Figma has diverged and you want to pull intended changes in, run
-`/figma-token-audit` first (drift check) rather than overwriting blindly.
+`/figma-variable-audit` first (drift check) rather than overwriting blindly.
 
 ## Modify the Style Dictionary build
 

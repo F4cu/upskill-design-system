@@ -1,12 +1,12 @@
 ---
-description: Mirror committed tokens into Figma (code → Figma) — diff the committed source against the Figma variable inventory and write only the clean-missing variables via the Figma plugin. Use when code tokens have moved ahead of Figma. Never deletes or overwrites Figma variables without confirmation.
+description: Push committed tokens into Figma as variables (code → Figma) — diff the committed source against the Figma variable inventory and write only the clean-missing variables via the Figma plugin. Use when code tokens have moved ahead of Figma. Never deletes or overwrites Figma variables without confirmation.
 ---
 
-# Figma variable sync (code → Figma)
+# Figma variable push (code → Figma)
 
 **Trigger:** Developer, when the committed tokens have moved ahead of the Figma file and Figma needs to mirror them.
 
-**When to use:** Tokens were added or changed in `packages/tokens/src/` and you want the Figma variable collections to match. This is the inverse of the Figma token audit (which pulls Figma → code). Code is the source of truth (ADR-002 amendment); Figma is the downstream mirror, so this only ever writes to Figma, never the reverse.
+**When to use:** Tokens were added or changed in `packages/tokens/src/` and you want the Figma variable collections to match. This is the inverse of the Figma variable audit (which pulls Figma → code). Code is the source of truth (ADR-002 amendment); Figma is the downstream mirror, so this only ever writes to Figma, never the reverse.
 
 This is a one-off, developer-present task — never schedule it, loop it, or put it in CI. The only write path is the Figma Plugin API via `use_figma`; there is no scriptable alternative (the REST Variables API is Enterprise-gated).
 
