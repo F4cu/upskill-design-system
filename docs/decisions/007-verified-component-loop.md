@@ -1,6 +1,7 @@
 # ADR-007 — Verified component loop: sequential, ≤2 agents, frozen-file handoffs
 
 **Date:** 2026-06-22
+**Amended:** 2026-06-22
 **Status:** `proposed`
 
 > Staked out ahead of Phase 9 implementation. Promote to `accepted` when the loop is built and has run once on a real component (the Phase 9 exit condition).
@@ -59,3 +60,21 @@ Option 1 was rejected because its cost model inverts on Pro. Option 3 was reject
 - **Trade-off accepted:** sequential is slower in wall-clock time than a parallel swarm. On Pro that is the correct trade — wall-clock is cheap, usage-window headroom is not.
 - **Trade-off accepted:** Figma drift detection depends on a human remembering to refresh `figma-variables.json` via the MCP. There is no scheduled pull to lean on; this is inherent to the non-Enterprise plan, not a gap to fix later.
 - Revisit if the plan changes (Figma Enterprise would unlock REST sensing) or if a single reviewer subagent proves insufficient for stateful components like `Accordion` — at which point a *second sequential* review pass is preferred over going parallel.
+
+## Amendment (2026-06-22) — Behavioral a11y tier in the gate and the review
+
+ADR-008 adds a Tier-2 behavioral a11y check (Vitest + Testing Library + `vitest-axe`, jsdom), gated to
+interactive components. It folds into this loop at two points:
+
+- **Stage 2 (gate)** gains `npm run a11y:coverage && npm run test:a11y` after the build. `a11y:coverage`
+  fails fast if an interactive component lacks its `<Name>.a11y.test.tsx`; `test:a11y` runs the
+  behavioral assertions. Non-interactive components (e.g. Badge) are a no-op — the gate is
+  complexity-scoped, so the Badge pilot path is unchanged.
+- **Stage 3 (adversarial review)** now judges, for interactive components, whether the a11y test
+  *covers the contract* — every metadata `keyboardInteraction`, the toggling state attribute, focus
+  movement, APG semantics. The deterministic gate proves the test passes; the reviewer judges whether
+  it tests the right things. This makes "lint and a11y debt lands inside the loop" (a consequence
+  above) concrete and gives the second agent a job the script can't do.
+
+The Phase 9 exit condition is unchanged but now has teeth: `Accordion` ships through the loop only when
+its behavioral a11y test asserts the full Accordion/Disclosure contract and passes.

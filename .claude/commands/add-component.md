@@ -35,9 +35,11 @@ Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, 
 ### Stage 2 · Gate (script — fail-fast)
 Run, in order:
 ```
-npm run validate:metadata && npm run typecheck && npm run build
+npm run validate:metadata && npm run typecheck && npm run build && npm run a11y:coverage && npm run test:a11y
 ```
-If any step fails, go back to Stage 1, fix the cause the error names, and re-run the gate. Do not proceed until all three pass.
+If any step fails, go back to Stage 1, fix the cause the error names, and re-run the gate. Do not proceed until all pass.
+
+`a11y:coverage` (ADR-008) enforces the **Tier-2 behavioral a11y** rule: if the component is *interactive* — `component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a non-trivial keyboard contract (anything beyond plain Tab / native browser behaviour) — it **must** ship a co-located `<Name>.a11y.test.tsx` asserting the dynamic contract (state attributes toggling, focus, keyboard) plus an axe scan. Non-interactive components (display/landmark, e.g. Badge) need none — the gate is a no-op for them. Do **not** add a new interactive component to `scripts/a11y-backlog.json`; that ledger only waives pre-existing components pending backfill. Write the test in Stage 1 alongside the component, model it on `Button/Button.a11y.test.tsx`, and disable axe's `color-contrast` rule (jsdom can't judge it).
 
 ### Stage 3 · Adversarial review (exactly one fresh subagent)
 Spawn **one** subagent (`general-purpose`) with fresh context. It must NOT inherit the scaffold's reasoning — give it only:
@@ -47,6 +49,7 @@ Spawn **one** subagent (`general-purpose`) with fresh context. It must NOT inher
   1. `/code-review` on the diff (correctness + reuse/simplification),
   2. `npm run lint -- packages/components/src/components/<Name>` (ESLint, includes jsx-a11y a11y rules),
   3. an a11y read of the component against its metadata `accessibility` block (role, aria, keyboard).
+  4. **For interactive components only** — judge whether `<Name>.a11y.test.tsx` actually *covers* the contract: does it assert every `keyboardInteraction` declared in the metadata, the state attribute(s) that toggle (e.g. `aria-expanded`, `aria-pressed`, `aria-selected`), focus movement, and the WAI-ARIA APG pattern's semantics? The deterministic gate proves the test *passes*; the reviewer judges whether it tests the *right things* — that is the part a script can't do. Thin or contract-incomplete tests are a `changes-required` a11y finding.
 
 The subagent writes its findings to `.claude/handoff/<Name>.review.json` as:
 ```json

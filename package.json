@@ -32,6 +32,7 @@
     "sense:component": "node scripts/sense-component.js",
     "lint": "eslint packages/components/src",
     "validate:metadata": "node scripts/validate-metadata.js",
-    "lint": "eslint"
+    "a11y:coverage": "node scripts/a11y-coverage.js",
+    "test:a11y": "npm run test:a11y -w @upskill/components"
   }
 }

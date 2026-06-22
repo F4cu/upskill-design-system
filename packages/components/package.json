@@ -17,6 +17,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && vite build",
     "typecheck": "tsc --noEmit",
+    "test:a11y": "vitest run",
     "storybook": "storybook dev -p 6006",
     "build:storybook": "storybook build"
   },
@@ -33,15 +34,21 @@
     "@storybook/addon-docs": "^10",
     "@storybook/addon-themes": "^10.4.3",
     "@storybook/react-vite": "^10",
+    "@testing-library/jest-dom": "^6",
+    "@testing-library/react": "^16",
+    "@testing-library/user-event": "^14",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4",
+    "jsdom": "^25",
     "react": "^18",
     "react-dom": "^18",
     "storybook": "^10",
     "typescript": "^5",
     "vite": "^6",
-    "vite-plugin-dts": "^4"
+    "vite-plugin-dts": "^4",
+    "vitest": "^3",
+    "vitest-axe": "^0.1.0"
   },
   "license": "MIT"
 }
