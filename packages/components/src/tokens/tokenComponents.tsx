@@ -62,14 +62,15 @@ export function CopyToken({ value, children }: { value: string; children: React.
     setTimeout(() => setCopied(false), 1200)
   }
   return (
-    <div
+    <button
+      type="button"
       onClick={handleClick}
       title={`${value} — click to copy`}
       className={styles.copyToken}
     >
       {children}
       {copied && <div className={styles.copyOverlay}>copied</div>}
-    </div>
+    </button>
   )
 }
 

@@ -205,14 +205,14 @@ Lite in two ways:
 
 > The ad-hoc loop itself, piloted on already-planned Phase 5d components so it ships real work, not throwaway. One command, staged with frozen-file handoffs, gated by deterministic scripts, reviewed by one adversarial subagent. This is where the lint/a11y debt lands — as checks inside the review stage, run by CLI, not as separate manual chores.
 
-- [ ] `/component-loop <Name>` command in `.claude/commands/`, wiring the stages:
+- [x] `/component-loop <Name>` command in `.claude/commands/`, wiring the stages:
   - **Stage 0 · script** — `npm run sense:component <Name>` writes the frozen snapshot.
   - **Stage 1 · in-session** — scaffold from snapshot + metadata schema + template component (reuses `/component-scaffold`, fed the snapshot).
   - **Stage 2 · script gate** — `npm run validate:metadata && npm run typecheck && npm run build`; fail-fast bounces back to Stage 1 with the error.
-  - **Stage 3 · one subagent** — adversarial review in a fresh context: `/code-review` on the diff + `eslint` + `axe-core`; findings written to `.claude/handoff/<Name>.review.json`.
-  - **Stage 4 · in-session** — apply review fixes, re-run the Stage 2 gate, then open the PR.
-- [ ] Add `eslint` + `axe-core` (or equivalent) as the lint/a11y checks invoked in Stage 3 — via CLI, not manual passes.
-- [ ] Per-run log (the learning goal): usage-window cost, whether Stage-0 context isolation held, and whether the verifier caught anything the script gate missed.
-- [ ] **Pilot order:** `Badge` first (simplest, greenfield), then `Accordion` (stateful — the real stress test). Both are Phase 5d components.
+  - **Stage 3 · one subagent** — adversarial review in a fresh context: `/code-review` on the diff + `npm run lint` (ESLint + `jsx-a11y`) + an a11y read against the metadata `accessibility` block; findings written to `.claude/handoff/<Name>.review.json`.
+  - **Stage 4 · in-session** — apply review fixes, re-run the Stage 2 gate, commit on the current branch (no new branch unless asked) and open the PR with `gh`.
+- [x] Lint/a11y check wired as `npm run lint` (ESLint 9 flat config in `eslint.config.js`, scoped to `packages/components/src`, with `eslint-plugin-jsx-a11y` as the static a11y gate). The config existed from prior Phase 9 groundwork but no `lint` script invoked it; added the script and brought the baseline to green (fixed a pre-existing `CopyToken` div→button a11y bug). **axe-core runtime deferred** — it needs the Storybook test-runner, blocked by the workspace Storybook-version conflict (Phase 3); `jsx-a11y` is the economical "or equivalent" for now.
+- [x] Per-run log defined in the command — `.claude/handoff/<Name>.run.json` (gitignored): gate pass/fail counts, whether Stage-0 context isolation held, and whether the verifier caught anything the gate missed. Exercised during the pilot.
+- [ ] **Pilot order:** `Badge` first (simplest, greenfield), then `Accordion` (stateful — the real stress test). Both are Phase 5d components. Run the loop on each; promote ADR-007 `proposed` → `accepted` once `Badge` ships through cleanly.
 
 **Exit condition:** both pilot components ship *through* the loop, each meeting its Phase 5d success signal with no manual restructuring, the human only ever reviewing clean code. The loop prompt is updated with what was learned. If a stage needed manual rescue every run, the frozen snapshot or the prompt is too thin — fix it before declaring the loop done.
