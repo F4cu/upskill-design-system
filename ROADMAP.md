@@ -195,9 +195,9 @@ Lite in two ways:
 > Make the whole system's status quo readable from committed files, so loop agents read small local snapshots instead of making live API calls. Pure scripts plus one MCP-assisted snapshot — no loops, no agents.
 
 - [ ] `figma-variables.json` — dated, frozen mirror of Figma's variable state, captured **interactively via the Figma MCP** during `/figma-variable-audit`. Mirrors how `governance.json` mirrors Airtable. Document the Enterprise-REST limitation inline so the *why* survives. Tags or omits **representational divergences** — unitless tokens Figma can't store faithfully (line-heights, held in Figma as fixed values) — so the drift check never flags them (ADR-002, 2026-06-22 amendment).
-- [ ] `scripts/sense.js` — pure aggregation (no AI): composes `governance.json` + `token-usage.json` + `figma-variables.json` into `.claude/STATUS_QUO.md`, the single readable baseline. No live Figma call — reads the committed snapshot.
+- [x] `scripts/sense.js` — pure aggregation (no AI): composes `governance.json` + `token-usage.json` + `figma-variables.json` into `.claude/STATUS_QUO.md`, the single readable baseline. No live Figma call — reads the committed snapshot; degrades gracefully when it is absent. Derives the migration backlog (deprecated tokens × live usages) as the actionable signal.
 - [ ] `scripts/sense-component.js <Name>` — narrows the baseline to one component's relevant tokens + metadata + Figma node, written to `.claude/handoff/<Name>.snapshot.json` (the frozen context a loop stage hands to the next).
-- [ ] `npm run sense` / `npm run sense:component <Name>` wired in `package.json`.
+- [-] `npm run sense` / `npm run sense:component <Name>` wired in `package.json`. (`sense` done; `sense:component` pending its script.)
 
 **Exit condition:** an agent can answer "what is the full status quo of tokens, governance, and Figma drift" from committed files alone, with zero live API calls. `npm run sense` regenerates `STATUS_QUO.md` deterministically.
 

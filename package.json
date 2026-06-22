@@ -22,6 +22,7 @@
     "governance:setup": "node scripts/airtable-setup-governance.js",
     "governance:pull": "node scripts/airtable-pull.js",
     "token-usage": "node scripts/token-usage.js",
+    "sense": "node scripts/sense.js",
     "validate:metadata": "node scripts/validate-metadata.js"
   }
 }
