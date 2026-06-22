@@ -24,7 +24,7 @@ description: Audit Figma variables against the committed tokens (drift check) �
    - **Renamed:** value unchanged but path changed → check alias map for usages
    - **Added:** paths in Figma export but not in committed → no action needed
    - **Changed value:** path exists in both but value differs → note, no breakage — but first exclude *representational divergences* (step 2a); never report those as drift
-2a. **Exclude representational divergences.** Figma variables cannot store unitless values, so unitless code tokens — line-height ratios (`1`, `1.25`, `1.4`, `1.5`, `1.75`) and any `$type: number` ratio — are entered in Figma as fixed values and will *always* differ. These are expected, not drift: drop them from the changed-value set. Cross-check `figma-file-variable-drift.md` and treat anything the code holds unitless as out of scope for the audit (and tagged or omitted in `figma-snapshot.json`).
+2a. **Exclude representational divergences.** Figma variables cannot store unitless values, so unitless code tokens — line-height ratios (`1`, `1.25`, `1.4`, `1.5`, `1.75`) and any `$type: number` ratio — are entered in Figma as fixed values and will *always* differ. These are expected, not drift: drop them from the changed-value set. Cross-check `figma-file-variable-drift.md` and treat anything the code holds unitless as out of scope for the audit (and tagged or omitted in `figma-variables.json`).
 3. For each removed or renamed token, list every file from `token-usage.json` `aliases` map that references it.
 4. Check the export for:
    - `$extensions` blocks — must be stripped before committing

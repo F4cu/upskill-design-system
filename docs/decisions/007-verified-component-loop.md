@@ -35,7 +35,7 @@ Options considered for how to run the loop:
 
 `/component-loop <Name>` runs bounded stages:
 
-1. **Sense** (script, no AI) — `npm run sense:component <Name>` writes `.claude/handoff/<Name>.snapshot.json` from the committed frozen-memory files (`governance.json`, `token-usage.json`, `figma-snapshot.json`). No live API call.
+1. **Sense** (script, no AI) — `npm run sense:component <Name>` writes `.claude/handoff/<Name>.snapshot.json` from the committed frozen-memory files (`governance.json`, `token-usage.json`, `figma-variables.json`). No live API call.
 2. **Scaffold** (main session) — reuses the `/component-scaffold` moment, fed only the snapshot + schema + a template component.
 3. **Gate** (script) — `npm run validate:metadata && npm run typecheck && npm run build`; fail-fast bounces back to stage 2 with the error.
 4. **Adversarial review** (one spawned subagent) — fresh, independent context running `/code-review` + lint + a11y; findings written to `.claude/handoff/<Name>.review.json`.
@@ -57,5 +57,5 @@ Option 1 was rejected because its cost model inverts on Pro. Option 3 was reject
 - **Lint and a11y debt lands inside stage 4** as CLI checks, rather than as separate manual passes — the pivot pays down that debt as a side effect.
 - **Lite-agentic charter preserved.** Loop ≠ continuous loop: it runs once on a trigger and stops. The "no always-on watcher" rule (CLAUDE.md, Agentic moments) still holds.
 - **Trade-off accepted:** sequential is slower in wall-clock time than a parallel swarm. On Pro that is the correct trade — wall-clock is cheap, usage-window headroom is not.
-- **Trade-off accepted:** Figma drift detection depends on a human remembering to refresh `figma-snapshot.json` via the MCP. There is no scheduled pull to lean on; this is inherent to the non-Enterprise plan, not a gap to fix later.
+- **Trade-off accepted:** Figma drift detection depends on a human remembering to refresh `figma-variables.json` via the MCP. There is no scheduled pull to lean on; this is inherent to the non-Enterprise plan, not a gap to fix later.
 - Revisit if the plan changes (Figma Enterprise would unlock REST sensing) or if a single reviewer subagent proves insufficient for stateful components like `Accordion` — at which point a *second sequential* review pass is preferred over going parallel.
