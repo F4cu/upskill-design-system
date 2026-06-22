@@ -76,3 +76,11 @@ The only automatable sync direction available is code→Figma (push via the Figm
 - **Figma changes are proposals, not the source.** A value invented in Figma is not "real" until it lands in `primitives.json` via PR. For a one-maintainer system this is a governance feature, not a limitation.
 - **The Figma token audit (agentic moment 1) is retargeted from an import gate to a drift/reconciliation check** — "does Figma still match canonical code?" It still reads Figma variables via the Figma MCP (`get_variable_defs`), which works without the Enterprise REST API because it reads Dev Mode, not the REST endpoint.
 - **`$extensions` stripping and sRGB→hex conversion still apply** to any values brought over from Figma during reconciliation — that cleanup guidance is unchanged.
+
+## Amendment (2026-06-22) — Figma representational constraints exclude unitless tokens from drift
+
+Figma variables cannot represent **unitless values**. Line-heights are authored in code as unitless ratios (`1`, `1.25`, `1.4`, `1.5`, `1.75`) — see the line-height convention — because the ratio adapts to any font size. Figma has no unitless number variable, so the same tokens must be entered there as fixed values (px or %). They therefore differ between code and Figma **by construction**.
+
+These are **representational divergences, not drift.** They are excluded from the drift comparison in both Figma moments (`/figma-variable-audit` and `/figma-variable-push`) and are tagged or omitted in `figma-snapshot.json`, so a faithful "matches Figma" comparison is never the success criterion for them. Code remains authoritative for the unitless value; the Figma fixed value is a display approximation that never flows back into `primitives.json`. The running list of accepted divergences lives in the drift memory note (`figma-file-variable-drift.md`).
+
+This refines, not reverses, the mirror model: it names a class of tokens where a faithful mirror is structurally impossible, and fixes the rule that such tokens are out of scope for drift reconciliation.

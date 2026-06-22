@@ -14,6 +14,7 @@ description: Audit Figma variables against the committed tokens (drift check) �
 - Current committed primitives — `packages/tokens/src/primitives.json`
 - Current theme aliases — `packages/tokens/src/theme/light.json`, `packages/tokens/src/theme/dark.json`
 - Token usage map — `packages/tokens/token-usage.json` (run `npm run token-usage` first if stale)
+- Accepted divergences — the drift memory note (`figma-file-variable-drift.md`), which lists code↔Figma differences that are structural, not drift (notably unitless line-heights, which Figma can only store as fixed values)
 
 ## Steps
 
@@ -22,7 +23,8 @@ description: Audit Figma variables against the committed tokens (drift check) �
    - **Removed:** paths in committed but not in Figma export → check alias map for usages
    - **Renamed:** value unchanged but path changed → check alias map for usages
    - **Added:** paths in Figma export but not in committed → no action needed
-   - **Changed value:** path exists in both but value differs → note, no breakage
+   - **Changed value:** path exists in both but value differs → note, no breakage — but first exclude *representational divergences* (step 2a); never report those as drift
+2a. **Exclude representational divergences.** Figma variables cannot store unitless values, so unitless code tokens — line-height ratios (`1`, `1.25`, `1.4`, `1.5`, `1.75`) and any `$type: number` ratio — are entered in Figma as fixed values and will *always* differ. These are expected, not drift: drop them from the changed-value set. Cross-check `figma-file-variable-drift.md` and treat anything the code holds unitless as out of scope for the audit (and tagged or omitted in `figma-snapshot.json`).
 3. For each removed or renamed token, list every file from `token-usage.json` `aliases` map that references it.
 4. Check the export for:
    - `$extensions` blocks — must be stripped before committing
@@ -44,6 +46,9 @@ A report with four sections:
 
 ## Hygiene issues
 [issue type]: [details]
+
+## Accepted divergences (excluded — not drift)
+[unitless tokens Figma can't store faithfully, e.g. line-heights]
 
 ## Cleaned export
 [paste of cleaned primitives.json content, ready to write to disk]

@@ -40,7 +40,7 @@ Current hues: `terracotta` (brand), `cyan`, `gold`, `teal`, `sand`, `grey`, `bla
 
 ### Line-height convention
 
-Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never use fixed px values — the ratio adapts to any font size automatically.
+Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never use fixed px values — the ratio adapts to any font size automatically. Figma cannot store unitless variables, so these are entered there as fixed values and are an accepted code↔Figma divergence, not drift (see Figma sync → representational constraints).
 
 ## Style Dictionary build (built)
 
@@ -64,6 +64,8 @@ When reconciling values brought over from Figma, the cleanup step still applies:
 - Preserves alias references in `{path.to.token}` format
 
 Do not commit `$extensions` to source. Before pulling Figma changes into committed tokens, run `/figma-variable-audit` (see "Agentic moments") as a drift check — never overwrite primitives without diffing against current usage.
+
+**Figma representational constraints.** Figma variables cannot store **unitless values**. Line-heights are authored in code as unitless ratios (`1.5`); Figma must hold them as fixed values, so these tokens *always* differ between code and Figma. This is an expected **representational divergence, not drift**: the audit and push moments exclude it, and `figma-snapshot.json` tags or omits it so the diff never flags it. Code stays authoritative for the unitless value; Figma's fixed value is a display approximation that never flows back into `primitives.json`. The running list of accepted divergences lives in the drift memory note (`figma-file-variable-drift.md`). See ADR-002 (2026-06-22 amendment).
 
 ## Integrations
 
@@ -89,7 +91,7 @@ Moments and loops read the system's status quo from **committed files, never liv
 | `figma-snapshot.json` | Figma variables | `/figma-variable-audit` via Figma MCP (Plugin API) | Planned (Phase 8) |
 | `.claude/STATUS_QUO.md` | Aggregate of the three above | `scripts/sense.js` (`npm run sense`) | Planned (Phase 8) |
 
-Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/<Name>.snapshot.json` by `npm run sense:component <Name>`.
+Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/<Name>.snapshot.json` by `npm run sense:component <Name>`. `figma-snapshot.json` tags or omits **representational divergences** — unitless tokens Figma can't store faithfully (line-heights) — so the audit diff doesn't flag them every run.
 
 ## MCP tools — when to use vs when to avoid
 
@@ -120,7 +122,7 @@ Note: Claude Code's naming is the inverse of plain English intuition — "skills
 
 The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/`. Everything else is a script or a GitHub Action.
 
-1. **Figma variable audit (drift check)** — committed JSON is the source of truth, so this reconciles Figma variables against code tokens rather than importing wholesale. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (tokens that drifted, removed/renamed with usages, broken aliases, scale mixing, naming violations), then a PR applying any intended Figma changes to the committed tokens (cleaned: `$extensions` stripped, colors converted). Never overwrite primitives without diffing against current usage. Capture the Figma read into the committed `figma-snapshot.json` (frozen mirror) so downstream steps read the file, not a live call.
+1. **Figma variable audit (drift check)** — committed JSON is the source of truth, so this reconciles Figma variables against code tokens rather than importing wholesale. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (tokens that drifted, removed/renamed with usages, broken aliases, scale mixing, naming violations), then a PR applying any intended Figma changes to the committed tokens (cleaned: `$extensions` stripped, colors converted). Never overwrite primitives without diffing against current usage. Capture the Figma read into the committed `figma-snapshot.json` (frozen mirror) so downstream steps read the file, not a live call. Exclude **representational divergences** (unitless tokens Figma can't store, e.g. line-heights) from the drift report — they differ by construction, not error.
 2. **Token deprecation pass** — after tokens are marked deprecated in Airtable. Read `governance.json` + token usage report + component metadata (no MCP needed); produce a migration PR replacing usages with the `successor` token.
 3. **Component scaffold** — when starting a new component from the fixed set. Read the metadata schema + an existing component as template + Figma design context (MCP); produce the component folder (index, CSS Module, stories, metadata) and a Code Connect mapping.
 4. **Layout generation** — when starting a new page or section. Read all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief; produce a React component tree using only library components and tokens, with each structural choice annotated by the metadata rule or compositionPattern that justified it. No MCP needed. Success signal: the tree passes structural validation (accepts/containedBy constraints), builds, and renders in Storybook without manual restructuring.
