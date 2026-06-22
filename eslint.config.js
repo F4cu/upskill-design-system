@@ -36,4 +36,16 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
     },
   },
+  {
+    // Type-augmentation declaration files merge matchers into library
+    // interfaces (e.g. vitest's Assertion), which requires empty interfaces
+    // that extend a single supertype — a legitimate declaration-merging idiom.
+    files: ['packages/components/src/**/*.d.ts'],
+    rules: {
+      '@typescript-eslint/no-empty-object-type': [
+        'error',
+        { allowInterfaces: 'with-single-extends' },
+      ],
+    },
+  },
 )
