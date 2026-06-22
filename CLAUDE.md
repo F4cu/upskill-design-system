@@ -2,7 +2,7 @@
 
 ## Project purpose
 
-A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to five defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
+A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to six defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
 
 Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and exit conditions.
 
@@ -78,6 +78,19 @@ Do not commit `$extensions` to source. Before pulling Figma changes into committ
 | **PR token diff comment, changelog** | Deterministic scripts in Actions. | Planned (Phase 6) |
 | **Component metadata** | JSON schema + example file exist; consumed by agentic moments. | Schema built; consumers planned |
 
+## Frozen-memory snapshots
+
+Moments and loops read the system's status quo from **committed files, never live APIs** — this shields agents from rate limits and keeps each agent's context small. Four read-not-call artifacts:
+
+| File | Source | Captured by | Status |
+|---|---|---|---|
+| `governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) | Built |
+| `token-usage.json` | Repo scan (`var(--ds-*)` CSS refs + `{alias}` refs) | `scripts/token-usage.js` | Built |
+| `figma-snapshot.json` | Figma variables | `/figma-variable-audit` via Figma MCP (Plugin API) | Planned (Phase 8) |
+| `.claude/STATUS_QUO.md` | Aggregate of the three above | `scripts/sense.js` (`npm run sense`) | Planned (Phase 8) |
+
+Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/<Name>.snapshot.json` by `npm run sense:component <Name>`.
+
 ## MCP tools — when to use vs when to avoid
 
 General rule: MCP calls are for **interactive, one-off tasks with the developer present**. Anything recurring, scheduled, or CI-bound uses a script with direct REST calls. Never put an MCP call inside a GitHub Action or a loop over many records.
@@ -107,13 +120,22 @@ Note: Claude Code's naming is the inverse of plain English intuition — "skills
 
 The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/`. Everything else is a script or a GitHub Action.
 
-1. **Figma variable audit (drift check)** — committed JSON is the source of truth, so this reconciles Figma variables against code tokens rather than importing wholesale. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (tokens that drifted, removed/renamed with usages, broken aliases, scale mixing, naming violations), then a PR applying any intended Figma changes to the committed tokens (cleaned: `$extensions` stripped, colors converted). Never overwrite primitives without diffing against current usage.
+1. **Figma variable audit (drift check)** — committed JSON is the source of truth, so this reconciles Figma variables against code tokens rather than importing wholesale. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (tokens that drifted, removed/renamed with usages, broken aliases, scale mixing, naming violations), then a PR applying any intended Figma changes to the committed tokens (cleaned: `$extensions` stripped, colors converted). Never overwrite primitives without diffing against current usage. Capture the Figma read into the committed `figma-snapshot.json` (frozen mirror) so downstream steps read the file, not a live call.
 2. **Token deprecation pass** — after tokens are marked deprecated in Airtable. Read `governance.json` + token usage report + component metadata (no MCP needed); produce a migration PR replacing usages with the `successor` token.
 3. **Component scaffold** — when starting a new component from the fixed set. Read the metadata schema + an existing component as template + Figma design context (MCP); produce the component folder (index, CSS Module, stories, metadata) and a Code Connect mapping.
 4. **Layout generation** — when starting a new page or section. Read all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief; produce a React component tree using only library components and tokens, with each structural choice annotated by the metadata rule or compositionPattern that justified it. No MCP needed. Success signal: the tree passes structural validation (accepts/containedBy constraints), builds, and renders in Storybook without manual restructuring.
 5. **Figma variable push (code → Figma)** — the inverse of moment 1: when committed tokens have moved ahead of Figma. Read committed token source + Figma variable inventory (MCP); diff into clean-missing / drift / Figma-extras, then write only the clean-missing variables into the Figma collections via `use_figma` (dependency-ordered, aliases preserved, scopes matched to siblings). Never delete or overwrite Figma variables without explicit confirmation — they may be bound to styles. Needs judgment (cross-scheme naming map, safe-add vs decision triage) and the Plugin API, so it can't be a script; the REST Variables API is Enterprise-gated. Success signal: every added variable resolves, counts move by exactly the clean-missing count, nothing deleted silently.
 
-If asked to set up a continuous agent loop, scheduled agent run, or always-on watcher: push back — that contradicts the lite-agentic constraint. Propose a script or one of these moments instead.
+6. **Component loop (verified scaffold)** — the ad-hoc agentic loop, piloted on new components. `/component-loop <Name>` stages: **sense** (script writes the frozen per-component snapshot) → **scaffold** in-session (reuses moment 3) → **deterministic gate** (`validate:metadata` + `typecheck` + `build`) → **one adversarial reviewer subagent** (`/code-review` + lint + a11y, fresh context) → **apply fixes** → PR. Sequential, at most two agents (main session + one reviewer). The frozen snapshot is the only context handoff. See ROADMAP Phase 9; record ADR-007 when built.
+
+**Ad-hoc loops vs continuous loops.** A developer-triggered loop that runs a bounded sequence once and stops (moment 6) is allowed — it is a moment with stages, nothing more. A *continuous* loop, scheduled agent run, or always-on watcher is not: if asked for one, push back and propose a script, a GitHub Action, or one of these moments instead.
+
+**On-demand loop guardrails** (apply to moment 6 and any future loop):
+- **Sequential, ≤2 agents.** Orchestrate in the main session; spawn at most one fresh subagent — the adversarial reviewer, where independent context is the whole point. No parallel worker swarm: on Claude Pro the scarce resource is the rolling usage window, and parallel agents drain it N× at once and trip rate limits.
+- **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot (`STATUS_QUO.md`, `.claude/handoff/<Name>.snapshot.json`) — never stream raw data between stages or let a stage make its own live API call.
+- **Deterministic work stays a script.** Sensing, validation, typecheck, build are `npm` scripts, not agent steps. Agents only do what a script can't.
+- **Fail-fast.** If the gate fails, bounce back to the scaffold stage with the error rather than pushing forward.
+- **No agent code reaches `main` unreviewed.** Generated code clears the deterministic gate and the adversarial review before a human PR opens.
 
 ## Storybook
 
@@ -183,13 +205,15 @@ Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-te
 
 ## Common tasks
 
-Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The five developer-triggered commands are the "Agentic moments" above.
+Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The six developer-triggered commands are the "Agentic moments" above.
 
 | Task | How |
 |---|---|
 | Add/change a primitive token, add a semantic alias, or modify the SD build | `/tokens-author` |
 | Push tokens to Airtable, or pull governance state | `/airtable-sync` |
 | Scaffold a new component from the fixed set | `/component-scaffold` |
+| Run the verified component loop (sense → scaffold → adversarial review → PR) | `/component-loop` |
+| Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
 | Generate a page or section layout | `/layout-generation` |
 | Audit Figma variables against committed tokens (drift check) | `/figma-variable-audit` |
 | Push committed tokens into Figma as variables (code → Figma) | `/figma-variable-push` |

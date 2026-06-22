@@ -179,3 +179,40 @@ Lite in two ways:
 - [ ] **Layout generation** — trigger: developer, when starting a new page or section. Inputs: all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief (intent, key content areas, constraints). Output: a React component tree using only library components and tokens; each structural choice annotated with the metadata rule or `compositionPattern` that justified it. Success signal: the tree passes a structural validator (checks `accepts`/`containedBy` constraints), builds, and renders in Storybook with no manual restructuring needed.
 
 **Exit condition:** each moment has been run once on a real task, met its success signal, and its prompt file updated with what was learned. After that, the system is "done" — maintenance only.
+
+---
+
+## Pivot — Ad-hoc agentic loops (Phases 8–9)
+
+> Phases 1–7 stand as built. This pivot upgrades the **component-scaffold** moment from a single-shot prompt into a self-verifying loop, and gives Figma the same frozen-memory treatment Airtable already has. It stays inside the lite-agentic charter: developer-triggered, **sequential, at most two agents**, frozen-file context, code-as-source-of-truth. New components (Phase 5d onward) are the live testing ground.
+>
+> **Runtime constraint (Claude Pro, not API):** the scarce resource is the rolling **usage window**, not per-token dollars. So: orchestrate in the main session, spawn **exactly one** fresh subagent — the adversarial reviewer, where independent context is the point. No parallel worker swarm (it drains the window N× simultaneously and trips rate limits — the opposite of the goal). Everything deterministic stays a plain `npm` script.
+>
+> **Figma feasibility (settled):** the Figma **Variables REST API is Enterprise-org only** — same wall as Code Connect (Phase 4). On Pro the only read path to variables is the Plugin API (Figma MCP `get_variable_defs`), interactive and one-off. So Figma's frozen memory is an MCP-captured snapshot committed to the repo, not a scheduled REST pull. Code stays the source of truth; the snapshot is a drift-detection mirror (ADR-002 amendment).
+
+## Phase 8 — Frozen-Memory Ingestion Layer
+
+> Make the whole system's status quo readable from committed files, so loop agents read small local snapshots instead of making live API calls. Pure scripts plus one MCP-assisted snapshot — no loops, no agents.
+
+- [ ] `figma-snapshot.json` — dated, frozen mirror of Figma's variable state, captured **interactively via the Figma MCP** during `/figma-variable-audit`. Mirrors how `governance.json` mirrors Airtable. Document the Enterprise-REST limitation inline so the *why* survives.
+- [ ] `scripts/sense.js` — pure aggregation (no AI): composes `governance.json` + `token-usage.json` + `figma-snapshot.json` into `.claude/STATUS_QUO.md`, the single readable baseline. No live Figma call — reads the committed snapshot.
+- [ ] `scripts/sense-component.js <Name>` — narrows the baseline to one component's relevant tokens + metadata + Figma node, written to `.claude/handoff/<Name>.snapshot.json` (the frozen context a loop stage hands to the next).
+- [ ] `npm run sense` / `npm run sense:component <Name>` wired in `package.json`.
+
+**Exit condition:** an agent can answer "what is the full status quo of tokens, governance, and Figma drift" from committed files alone, with zero live API calls. `npm run sense` regenerates `STATUS_QUO.md` deterministically.
+
+## Phase 9 — The Verified Component Loop (pilot)
+
+> The ad-hoc loop itself, piloted on already-planned Phase 5d components so it ships real work, not throwaway. One command, staged with frozen-file handoffs, gated by deterministic scripts, reviewed by one adversarial subagent. This is where the lint/a11y debt lands — as checks inside the review stage, run by CLI, not as separate manual chores.
+
+- [ ] `/component-loop <Name>` command in `.claude/commands/`, wiring the stages:
+  - **Stage 0 · script** — `npm run sense:component <Name>` writes the frozen snapshot.
+  - **Stage 1 · in-session** — scaffold from snapshot + metadata schema + template component (reuses `/component-scaffold`, fed the snapshot).
+  - **Stage 2 · script gate** — `npm run validate:metadata && npm run typecheck && npm run build`; fail-fast bounces back to Stage 1 with the error.
+  - **Stage 3 · one subagent** — adversarial review in a fresh context: `/code-review` on the diff + `eslint` + `axe-core`; findings written to `.claude/handoff/<Name>.review.json`.
+  - **Stage 4 · in-session** — apply review fixes, re-run the Stage 2 gate, then open the PR.
+- [ ] Add `eslint` + `axe-core` (or equivalent) as the lint/a11y checks invoked in Stage 3 — via CLI, not manual passes.
+- [ ] Per-run log (the learning goal): usage-window cost, whether Stage-0 context isolation held, and whether the verifier caught anything the script gate missed.
+- [ ] **Pilot order:** `Badge` first (simplest, greenfield), then `Accordion` (stateful — the real stress test). Both are Phase 5d components.
+
+**Exit condition:** both pilot components ship *through* the loop, each meeting its Phase 5d success signal with no manual restructuring, the human only ever reviewing clean code. The loop prompt is updated with what was learned. If a stage needed manual rescue every run, the frozen snapshot or the prompt is too thin — fix it before declaring the loop done.
