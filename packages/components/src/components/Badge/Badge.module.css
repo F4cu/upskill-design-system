@@ -1,0 +1,24 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ds-border-radius-sm);
+  padding-block: var(--ds-space-inset-xs);
+  padding-inline: var(--ds-space-inset-sm);
+  color: var(--ds-color-text-subtle);
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-body-small);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: var(--ds-font-line-height-tight);
+  white-space: nowrap;
+}
+
+.outline {
+  border: 1px solid var(--ds-color-border-default);
+  background: transparent;
+}
+
+.filled {
+  border: 1px solid transparent;
+  background: var(--ds-color-background-neutral-subtlest);
+}

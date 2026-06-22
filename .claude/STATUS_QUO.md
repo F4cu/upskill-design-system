@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-06-22T10:17:48.071Z**
+Generated: **2026-06-22T10:32:00.047Z**
 
 Sources:
 - `packages/tokens/governance.json` (Airtable mirror)
