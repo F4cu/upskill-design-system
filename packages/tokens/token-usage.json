@@ -1,16 +1,416 @@
 {
   "css": {
-    "--ds-font-family-body": [
-      "packages/components/src/styles/reset.css",
-      "packages/components/src/tokens/tokenComponents.module.css"
+    "--ds-color-background-container-page": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/layout/Layout.stories.tsx",
+      "packages/components/src/stories/Carousel.stories.tsx",
+      "packages/components/src/stories/SettingsForm.stories.tsx"
     ],
-    "--ds-color-text-default": [
-      "packages/components/src/styles/reset.css"
+    "--ds-color-border-brand": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css"
     ],
-    "--ds-color-background-container-root": [
-      "packages/components/src/styles/reset.css"
+    "--ds-grid-margin": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/styles/grid.css"
+    ],
+    "--ds-space-inline-md": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
+    ],
+    "--ds-space-inset-xs": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-font-size-body-default": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
     ],
     "--ds-font-line-height-body-default": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-color-text-subtle": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/components/Heading/Heading.stories.tsx",
+      "packages/components/src/components/Icon/Icon.stories.tsx",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/Text/Text.stories.tsx",
+      "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/styles/utilities.module.css"
+    ],
+    "--ds-color-text-brand": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/components/Icon/Icon.stories.tsx",
+      "packages/components/src/components/Text/Text.module.css"
+    ],
+    "--ds-space-inline-xs": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/components/Select/Select.module.css"
+    ],
+    "--ds-space-stack-xs": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/Select/Select.module.css"
+    ],
+    "--ds-size-avatar-lg": [
+      "packages/components/src/components/Avatar/Avatar.module.css"
+    ],
+    "--ds-size-avatar-": [
+      "packages/components/src/components/Avatar/index.tsx"
+    ],
+    "--ds-color-background-container-elevated": [
+      "packages/components/src/components/Box/Box.stories.tsx",
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/Inline/Inline.stories.tsx",
+      "packages/components/src/components/Stack/Stack.stories.tsx"
+    ],
+    "--ds-space-inset-": [
+      "packages/components/src/components/Box/index.tsx",
+      "packages/components/src/components/Card/index.tsx"
+    ],
+    "--ds-color-text-default": [
+      "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
+      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/components/Icon/Icon.stories.tsx",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-space-inline-sm": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css"
+    ],
+    "--ds-font-family-body": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/styles/reset.css",
+      "packages/components/src/styles/utilities.module.css",
+      "packages/components/src/tokens/tokenComponents.module.css"
+    ],
+    "--ds-font-weight-semibold": [
+      "packages/components/src/components/Button/Button.module.css"
+    ],
+    "--ds-border-radius-sm": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/Image/Image.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-size-400": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css"
+    ],
+    "--ds-space-inset-md": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-size-500": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-size-600": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-space-inset-lg": [
+      "packages/components/src/components/Button/Button.module.css"
+    ],
+    "--ds-border-radius-full": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/ProgressBar/ProgressBar.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-background-button-default": [
+      "packages/components/src/components/Button/Button.module.css"
+    ],
+    "--ds-color-text-inverted-default": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardHorizontal/index.tsx",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    ],
+    "--ds-color-background-button-hover": [
+      "packages/components/src/components/Button/Button.module.css"
+    ],
+    "--ds-color-background-button-disabled": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css"
+    ],
+    "--ds-color-text-inverted-disabled": [
+      "packages/components/src/components/Button/Button.module.css"
+    ],
+    "--ds-color-border-default": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Divider/Divider.module.css"
+    ],
+    "--ds-color-background-button-outline-hover": [
+      "packages/components/src/components/Button/Button.module.css"
+    ],
+    "--ds-color-text-disabled": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Icon/Icon.stories.tsx",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-border-disabled": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-background-neutral-subtlest": [
+      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
+      "packages/components/src/components/Chip/Chip.module.css"
+    ],
+    "--ds-color-border-strong": [
+      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css"
+    ],
+    "--ds-border-radius-md": [
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/VideoFrame/VideoFrame.module.css"
+    ],
+    "--ds-color-border-subtle": [
+      "packages/components/src/components/Card/Card.module.css"
+    ],
+    "--ds-color-background-container-default": [
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
+    ],
+    "--ds-color-background-neutral-subtle": [
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/Inline/Inline.stories.tsx",
+      "packages/components/src/components/ProgressBar/ProgressBar.module.css"
+    ],
+    "--ds-size-thumbnail-sm": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
+    ],
+    "--ds-font-line-height-title-tight": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
+    ],
+    "--ds-color-icon-default": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/components/Select/Select.module.css"
+    ],
+    "--ds-color-background-container-inverted": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.stories.tsx",
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    ],
+    "--ds-color-text-inverted-subtle": [
+      "packages/components/src/components/CardHorizontal/index.tsx",
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    ],
+    "--ds-space-stack-sm": [
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-font-size-subheader": [
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-size-icon-sm": [
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Icon/Icon.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-border-input-default": [
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-border-radius-xs": [
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
+    ],
+    "--ds-color-background-input": [
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-border-input-hover": [
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-background-brand": [
+      "packages/components/src/components/Checkbox/Checkbox.module.css"
+    ],
+    "--ds-font-weight-medium": [
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/components/Text/Text.module.css"
+    ],
+    "--ds-color-border-selected": [
+      "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-text-selected": [
+      "packages/components/src/components/Chip/Chip.module.css"
+    ],
+    "--ds-font-line-height-body-single": [
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/styles/utilities.module.css"
+    ],
+    "--ds-color-background-neutral-hover": [
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
+    ],
+    "--ds-font-family-headline-default": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-size-title-small": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-weight-bold": [
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/styles/utilities.module.css"
+    ],
+    "--ds-font-line-height-title-default": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-line-height-subheader-default": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-size-headline": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-line-height-headline-default": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-family-headline-serif": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-size-headline-serif": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-line-height-headline-serif": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-size-display": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-font-line-height-display-default": [
+      "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-size-icon-md": [
+      "packages/components/src/components/Icon/Icon.module.css"
+    ],
+    "--ds-color-neutral-4": [
+      "packages/components/src/components/Image/Image.module.css",
+      "packages/components/src/tokens/tokenComponents.module.css"
+    ],
+    "--ds-color-neutral-2": [
+      "packages/components/src/components/Image/Image.module.css"
+    ],
+    "--ds-space-inline-": [
+      "packages/components/src/components/Inline/index.tsx"
+    ],
+    "--ds-color-accent-8": [
+      "packages/components/src/components/ProgressBar/ProgressBar.module.css"
+    ],
+    "--ds-color-icon-disabled": [
+      "packages/components/src/components/Select/Select.module.css"
+    ],
+    "--ds-color-border-feedback-error": [
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-font-size-body-small": [
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-text-feedback-error": [
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-space-stack-": [
+      "packages/components/src/components/Stack/index.tsx"
+    ],
+    "--ds-font-weight-regular": [
+      "packages/components/src/components/Text/Text.module.css"
+    ],
+    "--ds-font-size-metadata": [
+      "packages/components/src/components/Text/Text.module.css"
+    ],
+    "--ds-font-size-label": [
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/styles/utilities.module.css"
+    ],
+    "--ds-color-neutral-3": [
+      "packages/components/src/components/VideoFrame/VideoFrame.module.css"
+    ],
+    "--ds-color-text-accent-default": [
+      "packages/components/src/layout/Layout.stories.tsx"
+    ],
+    "--ds-grid-gutter": [
+      "packages/components/src/stories/Carousel.stories.tsx",
+      "packages/components/src/styles/grid.css"
+    ],
+    "--ds-color-text-accent-inverted": [
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    ],
+    "--ds-color-border-inverted": [
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    ],
+    "--ds-grid-columns": [
+      "packages/components/src/styles/grid.css"
+    ],
+    "--ds-color-background-container-root": [
       "packages/components/src/styles/reset.css"
     ],
     "--ds-color-text-link": [
@@ -18,9 +418,6 @@
     ],
     "--ds-color-text-link-hover": [
       "packages/components/src/styles/reset.css"
-    ],
-    "--ds-color-neutral-4": [
-      "packages/components/src/tokens/tokenComponents.module.css"
     ],
     "--ds-color-brand-9": [
       "packages/components/src/tokens/tokenComponents.module.css"
@@ -495,6 +892,18 @@
       "packages/tokens/src/device/desktop.json",
       "packages/tokens/src/device/mobile.json",
       "packages/tokens/src/device/tablet.json"
+    ],
+    "size.200": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "size.300": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "size.1000": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "size.1600": [
+      "packages/tokens/src/device/desktop.json"
     ],
     "font.size.5": [
       "packages/tokens/src/device/mobile.json",

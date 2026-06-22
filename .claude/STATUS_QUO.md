@@ -4,12 +4,12 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-06-22T09:54:42.881Z**
+Generated: **2026-06-22T10:17:48.071Z**
 
 Sources:
 - `packages/tokens/governance.json` (Airtable mirror)
 - `packages/tokens/token-usage.json` (repo usage scan)
-- `packages/tokens/figma-variables.json` — not captured
+- `packages/tokens/figma-variables.json` (Figma mirror)
 
 ---
 ## Governance
@@ -23,13 +23,15 @@ None. No deprecated token has a live reference. ✅
 
 ## Token usage
 
-- **8** distinct CSS custom properties referenced in `packages/components/src`
-- **139** distinct dot-path tokens referenced via `{alias}` syntax in theme/device JSON
+- **94** distinct CSS custom properties referenced in `packages/components/src`
+- **143** distinct dot-path tokens referenced via `{alias}` syntax in theme/device JSON
 - Full token→files maps: `packages/tokens/token-usage.json`
 
 ## Figma drift
 
-> ⚠️ No `figma-variables.json` committed yet. The Figma snapshot is captured
-> interactively via the Figma MCP during `/figma-variable-audit` (the Variables
-> REST API is Enterprise-gated — ADR-002 amendment), so it cannot be regenerated
-> by this script. **Figma drift is unknown** until the snapshot is captured.
+- Snapshot captured: **2026-06-22** (interactive Figma MCP — not script-regenerable, ADR-002)
+- Age: **0 day(s)**
+- Variables mirrored: **414** (Primitives 252 · Theme 102 · Device 60)
+- Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
+
+This is a frozen mirror, not a live drift comparison. Run `/figma-variable-audit` to diff it against committed tokens.

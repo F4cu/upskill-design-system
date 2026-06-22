@@ -7,3 +7,7 @@ dist/
 
 *storybook.log
 storybook-static
+
+# Per-run component loop snapshots — regenerated from committed sources by
+# `npm run sense:component`. STATUS_QUO.md (the shared baseline) stays committed.
+.claude/handoff/

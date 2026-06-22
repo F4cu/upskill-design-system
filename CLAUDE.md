@@ -88,7 +88,7 @@ Moments and loops read the system's status quo from **committed files, never liv
 |---|---|---|---|
 | `governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) | Built |
 | `token-usage.json` | Repo scan (`var(--ds-*)` CSS refs + `{alias}` refs) | `scripts/token-usage.js` | Built |
-| `figma-variables.json` | Figma variables | `/figma-variable-audit` via Figma MCP (Plugin API) | Planned (Phase 8) |
+| `figma-variables.json` | Figma variables | `/figma-variable-audit` via Figma MCP (Plugin API) | Built |
 | `.claude/STATUS_QUO.md` | Aggregate of the three above | `scripts/sense.js` (`npm run sense`) | Built |
 
 Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/<Name>.snapshot.json` by `npm run sense:component <Name>`. `figma-variables.json` tags or omits **representational divergences** — unitless tokens Figma can't store faithfully (line-heights) — so the audit diff doesn't flag them every run.

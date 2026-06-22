@@ -119,35 +119,24 @@ function figmaSection(now) {
   }
 
   const figma = readJson(FIGMA_PATH);
-  const variables = figma.variables ?? {};
+  const summary = figma.summary ?? {};
+  const total = Object.values(summary).reduce((a, n) => a + n, 0);
   const capturedAt = figma.capturedAt ?? null;
   const age = capturedAt ? daysBetween(capturedAt, now) : null;
+  const divergences = figma.representationalDivergences?.variables ?? [];
 
-  out.push(`- Snapshot captured: **${capturedAt ?? "unknown"}**`);
+  out.push(`- Snapshot captured: **${capturedAt ?? "unknown"}** (interactive Figma MCP — not script-regenerable, ADR-002)`);
   if (age !== null) {
     const staleNote = age > STALE_AFTER_DAYS ? ` ⚠️ stale (> ${STALE_AFTER_DAYS}d — recapture before relying on drift)` : "";
     out.push(`- Age: **${age} day(s)**${staleNote}`);
   }
-  out.push(`- Variables mirrored: **${Object.keys(variables).length}**`);
-
-  const divergences = figma.representationalDivergences ?? [];
-  if (divergences.length > 0) {
-    out.push(
-      "",
-      `- Excluded as **representational divergences** (Figma can't store unitless values — not drift): ${divergences.map((d) => `\`${d}\``).join(", ")}`,
-    );
-  }
-
-  // The snapshot may carry a pre-computed drift list from the audit moment; surface it verbatim.
-  const drift = figma.drift ?? [];
-  out.push("");
-  if (drift.length === 0) {
-    out.push("No drift recorded in the snapshot. ✅", "");
-  } else {
-    out.push("### Recorded drift (from last audit)", "");
-    for (const d of drift) out.push(`- ${typeof d === "string" ? d : JSON.stringify(d)}`);
-    out.push("");
-  }
+  out.push(
+    `- Variables mirrored: **${total}** (${Object.entries(summary).map(([c, n]) => `${c} ${n}`).join(" · ")})`,
+    `- Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **${divergences.length}**`,
+    "",
+    "This is a frozen mirror, not a live drift comparison. Run `/figma-variable-audit` to diff it against committed tokens.",
+    "",
+  );
 
   return out.join("\n");
 }
