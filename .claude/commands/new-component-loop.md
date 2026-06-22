@@ -1,12 +1,12 @@
 ---
-description: Run the verified component loop (sense → scaffold → deterministic gate → one adversarial reviewer → fix → PR) for a single component. Use to generate a new component from the fixed set with built-in verification, instead of the single-shot /component-scaffold. Sequential, at most two agents (ADR-007).
+description: Run the verified component loop (sense → scaffold → deterministic gate → one adversarial reviewer → fix → PR) for a single new component from the fixed set. Sequential, at most two agents (ADR-007).
 ---
 
-# Component loop
+# New component loop
 
 **Trigger:** Developer, when starting a new component from the fixed set and wanting it verified before it reaches human review.
 
-**Invocation:** `/component-loop <Name>` (e.g. `/component-loop Badge`).
+**Invocation:** `/new-component-loop <Name>` (e.g. `/new-component-loop Badge`).
 
 This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps the `/component-scaffold` moment in a deterministic gate and one adversarial review pass. It is **sequential and uses at most two agents**: the main session orchestrates every stage; exactly one fresh subagent runs the adversarial review (stage 3), because independent context is the whole point of that stage. **Never** spawn parallel workers — on Claude Pro the scarce resource is the rolling usage window, and a fan-out drains it N× and trips rate limits.
 
