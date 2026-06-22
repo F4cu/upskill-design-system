@@ -117,7 +117,7 @@ Lite in two ways:
 - [x] `Divider` — horizontal separator; `<hr>` styled with `color.border.default` token; no props beyond `className`.
 - [x] `ProgressBar` — 4px tall track with a coloured fill; `value` (0–100) controls fill width as a percentage; uses `color.accent.accent-8` for fill and `color.background.neutral.subtle` for track.
 - [x] `CardHorizontal` — horizontal card: 80×80px square thumbnail + content column (title, optional ProgressBar, metadata row with duration + certified badge). Used in Started Courses, Saved Courses, and Footer recommendations. Two colour contexts: default (light) and inverted (dark footer) — controlled by a `variant` prop or inherited via `data-theme`.
-- [x] Composed page stories built entirely from library components: `Layout/Examples/Landing Page` (AppHeader, CardHorizontal with progress, Footer Highlights editorial section) and `Layout/Examples/Footer Highlights` (inverted surface pattern). User Settings form covered by the existing `Layout/Examples/Settings Form` story.
+- [x] Composed page stories built entirely from library components: `Layout/Examples/Footer Highlights` (inverted surface pattern, AppHeader + CardHorizontal with progress) and `Layout/Examples/Settings Form` (existing). A separate Landing Page story was deferred — FooterHighlights covers the same components.
 
 **Exit condition (met):** all six components render in both light and dark themes with stories and metadata; composed layout stories build and pass visual review with no ad-hoc CSS outside component modules.
 
@@ -153,32 +153,35 @@ Lite in two ways:
 **Net-new components and variants:**
 
 - [ ] `Accordion` — collapsible list; each item shows title + subtitle when collapsed, and title + subtitle + body text when expanded. Props: `items: { title: string; subtitle: string; content?: ReactNode }[]`; `maxVisible` controls how many items show before the show-more toggle; `openIndex` for controlled open state. Expanded item background: `color.background.container.elevated`. Footer uses a ghost `Button` with a trailing chevron `Icon`.
-- [ ] `Badge` — static category label pill; `label: string`; `variant?: 'outline' | 'filled'` (outline: border only; filled: adds `color.background.neutral.subtlest`). `border-radius.sm`. Distinct from `Chip` — no selection state, no interaction semantics, purely display.
+- [x] `Badge` — static category label pill; `label: string`; `variant?: 'outline' | 'filled'` (outline: border only; filled: adds `color.background.neutral.subtlest`). `border-radius.sm`. Distinct from `Chip` — no selection state, no interaction semantics, purely display. Shipped through the `/add-component` loop (Phase 9 pilot).
 - [ ] `Button` — add `ghost` variant: no background, no border, text color `color.text.link.default`. Used for "Show more / Show less" toggles and other inline actions. The trailing `Icon` (chevron-down / chevron-up) is passed via the existing `icon` slot.
-- [ ] `useSlider` hook — content-stepper state: `{ currentIndex, total, goNext, goPrev, isFirst, isLast }`. Used for step-through UIs that show one item at a time with a CSS fade-in transition (e.g., the chapter description navigator on the Course Overview page). No component — the consuming component owns the fade animation and wires `ButtonArrow` to `goNext`/`goPrev`.
+- [ ] `useSlider` hook — content-stepper state: `{ currentIndex, total, goNext, goPrev, isFirst, isLast }`. Used for step-through UIs that show one item at a time with a CSS fade-in transition (e.g., the chapter description navigator on the Course Overview page). No component — the consuming component owns the fade animation and wires `ButtonArrow` to `goNext`/`goPrev`. Note: `useCarousel` (horizontal scroll offset model) already exists in `hooks/`; `useSlider` is a distinct single-item step-through model.
 
 **Exit condition:** `Accordion` and `Badge` render in both themes with stories and metadata; `Button` ghost variant is documented in its story; the Course Overview example story builds from library components with no ad-hoc CSS.
 
 ## Phase 6 — Automation (scripts and Actions only — no MCP, no agents)
 
 - [x] GH Action: run `airtable-sync.js` on merge to `main` (direct REST, repo secret for the API key) — `sync-tokens.yml` pushes primitives, semantic, and device tokens
-- [ ] GH Action: PR comment with token diff summary — deterministic script comparing built token output between base and head
-- [ ] GH Action: run `airtable-pull.js` on a schedule or pre-merge so `governance.json` stays current
-- [ ] Changelog generation from token diffs on release
+- [x] `scripts/airtable-pull.js` — pulls governance state from Airtable → `governance.json`; wired as `npm run governance:pull`. Run manually before deprecation work until the Action below is built.
+- [x] `scripts/airtable-setup-governance.js` — one-time setup that added the governance fields (`status`, `owner`, `successor`, `notes`) to the Airtable tables; safe to re-run. Already executed.
+- [ ] GH Action: run `airtable-pull.js` on a schedule or pre-merge so `governance.json` stays current without a manual step (script exists; Action wrapping it is not yet built)
+- [ ] GH Action: PR comment with token diff summary — deterministic script comparing built token output between base and head (script not yet written)
+- [ ] Changelog generation from token diffs on release (script not yet written)
 
 **Exit condition:** merging a token change updates Airtable with no manual step, and token PRs show a diff comment. Everything in this phase runs without Claude.
 
 ## Phase 7 — Agentic Moments
 
-> The three moments, implemented as `.claude/commands/` prompts (written in Phase 2). Developer-triggered, infrequent, each with a success signal. No continuous loops, no schedulers.
+> Six moments, implemented as `.claude/commands/` prompts (written in Phase 2, expanded through Phases 8–9). Developer-triggered, infrequent, each with a success signal. No continuous loops, no schedulers.
 
-- [ ] **Figma token audit** — trigger: developer, before replacing `primitives.json` with a fresh Figma export. Inputs: Figma variables (Figma MCP, one-off read) + committed token files + `token-usage.json`. Output: a diff report flagging removed/renamed tokens with usages, broken aliases, scale-mixing and naming violations — then the cleaned export as a PR. Success signal: no Figma drift ever merges silently.
-- [ ] **Token deprecation pass** — trigger: developer, after marking tokens deprecated in Airtable. Inputs: `governance.json` + `token-usage.json` + component metadata. Output: a migration PR replacing deprecated-token usages with their `successor`, plus notes where no successor fits. Success signal: zero component references to deprecated tokens.
-- [ ] **Component scaffold** — trigger: developer, when starting a Phase 4/5 component. Inputs: metadata schema + an existing component as template + Figma design context (MCP, one-off). Output: component folder (index, CSS Module, stories, metadata). Code Connect omitted — requires Figma Enterprise plan. Success signal: build and Storybook pass with no manual restructuring.
+- [x] **Figma token audit** — run on real task: `figma-variables.json` captured via MCP, representational divergences (unitless line-heights) tagged and excluded from drift checks, ADR-002 amended. Commits: `6517b76`, `77f27b0`, `7c137d6`.
+- [ ] **Token deprecation pass** — command file exists; not yet run on a real deprecated token set.
+- [x] **Component scaffold** — exercised on every component built through the `/add-component` loop (Phase 9). Now lives as Stage 1 of that loop rather than as a standalone call. Command file kept for direct use.
+- [ ] **Layout generation** — command file exists; not yet run on a real page brief to produce a reviewed layout tree.
+- [x] **Figma variable push (code → Figma)** — command file `figma-variable-push.md` exists. Inverse of the audit: diffs committed tokens against Figma variable inventory and writes clean-missing variables via `use_figma`. Not yet run on a real push cycle.
+- [-] **Add component** (`/add-component`) — the verified scaffold loop (sense → scaffold → gate → adversarial review → PR). Badge shipped through it cleanly (Phase 9 pilot). Accordion pending.
 
-- [ ] **Layout generation** — trigger: developer, when starting a new page or section. Inputs: all component metadata files (`relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`) + a one-paragraph layout brief (intent, key content areas, constraints). Output: a React component tree using only library components and tokens; each structural choice annotated with the metadata rule or `compositionPattern` that justified it. Success signal: the tree passes a structural validator (checks `accepts`/`containedBy` constraints), builds, and renders in Storybook with no manual restructuring needed.
-
-**Exit condition:** each moment has been run once on a real task, met its success signal, and its prompt file updated with what was learned. After that, the system is "done" — maintenance only.
+**Exit condition:** each moment has been run once on a real task, met its success signal, and its prompt file updated with what was learned. Remaining: token deprecation pass, layout generation, first full Figma variable push, and Accordion through the loop.
 
 ---
 
@@ -205,7 +208,7 @@ Lite in two ways:
 
 > The ad-hoc loop itself, piloted on already-planned Phase 5d components so it ships real work, not throwaway. One command, staged with frozen-file handoffs, gated by deterministic scripts, reviewed by one adversarial subagent. This is where the lint/a11y debt lands — as checks inside the review stage, run by CLI, not as separate manual chores.
 
-- [x] `/component-loop <Name>` command in `.claude/commands/`, wiring the stages:
+- [x] `/add-component <Name>` command in `.claude/commands/` (renamed from `/component-loop`), wiring the stages:
   - **Stage 0 · script** — `npm run sense:component <Name>` writes the frozen snapshot.
   - **Stage 1 · in-session** — scaffold from snapshot + metadata schema + template component (reuses `/component-scaffold`, fed the snapshot).
   - **Stage 2 · script gate** — `npm run validate:metadata && npm run typecheck && npm run build`; fail-fast bounces back to Stage 1 with the error.
@@ -213,6 +216,6 @@ Lite in two ways:
   - **Stage 4 · in-session** — apply review fixes, re-run the Stage 2 gate, commit on the current branch (no new branch unless asked) and open the PR with `gh`.
 - [x] Lint/a11y check wired as `npm run lint` (ESLint 9 flat config in `eslint.config.js`, scoped to `packages/components/src`, with `eslint-plugin-jsx-a11y` as the static a11y gate). The config existed from prior Phase 9 groundwork but no `lint` script invoked it; added the script and brought the baseline to green (fixed a pre-existing `CopyToken` div→button a11y bug). **axe-core runtime deferred** — it needs the Storybook test-runner, blocked by the workspace Storybook-version conflict (Phase 3); `jsx-a11y` is the economical "or equivalent" for now.
 - [x] Per-run log defined in the command — `.claude/handoff/<Name>.run.json` (gitignored): gate pass/fail counts, whether Stage-0 context isolation held, and whether the verifier caught anything the gate missed. Exercised during the pilot.
-- [ ] **Pilot order:** `Badge` first (simplest, greenfield), then `Accordion` (stateful — the real stress test). Both are Phase 5d components. Run the loop on each; promote ADR-007 `proposed` → `accepted` once `Badge` ships through cleanly.
+- [-] **Pilot:** `Badge` shipped cleanly through the loop ✓ (Phase 5d). `Accordion` pending — stateful component is the real stress test. Promote ADR-007 `proposed` → `accepted` once Accordion ships through.
 
-**Exit condition:** both pilot components ship *through* the loop, each meeting its Phase 5d success signal with no manual restructuring, the human only ever reviewing clean code. The loop prompt is updated with what was learned. If a stage needed manual rescue every run, the frozen snapshot or the prompt is too thin — fix it before declaring the loop done.
+**Exit condition:** both pilot components ship *through* the loop, each meeting its Phase 5d success signal with no manual restructuring, the human only ever reviewing clean code. The loop prompt is updated with what was learned. If a stage needed manual rescue every run, the frozen snapshot or the prompt is too thin — fix it before declaring the loop done. **Status: Badge done; Accordion pending.**

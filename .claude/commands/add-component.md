@@ -4,11 +4,11 @@ description: Add a new component from the fixed set with built-in verification (
 
 # Add component
 
-**Trigger:** Developer, when starting a new component from the fixed set and wanting it verified before it reaches human review.
+**Trigger:** Developer, when building any component from the fixed set that will go to `main`. This is the production path — use it instead of `/component-scaffold` directly. Scaffold alone skips the gate and adversarial review, meaning agent-written code reaches human review unverified.
 
-**Invocation:** `/add-component <Name>` (e.g. `/add-component Badge`).
+**Invocation:** `/add-component <Name>` (e.g. `/add-component Accordion`).
 
-This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps the `/component-scaffold` moment in a deterministic gate and one adversarial review pass. It is **sequential and uses at most two agents**: the main session orchestrates every stage; exactly one fresh subagent runs the adversarial review (stage 3), because independent context is the whole point of that stage. **Never** spawn parallel workers — on Claude Pro the scarce resource is the rolling usage window, and a fan-out drains it N× and trips rate limits.
+This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps `/component-scaffold` (Stage 1) in a deterministic gate and one adversarial review pass, then opens the PR. It is **sequential and uses at most two agents**: the main session orchestrates every stage; exactly one fresh subagent runs the adversarial review (Stage 3), because independent context is the whole point of that stage. **Never** spawn parallel workers — on Claude Pro the scarce resource is the rolling usage window, and a fan-out drains it N× and trips rate limits.
 
 ## Binding rules (from ADR-007 — do not violate)
 
