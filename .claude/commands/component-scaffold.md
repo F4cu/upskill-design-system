@@ -23,6 +23,8 @@ description: Scaffold a new component from the fixed set — generate its index.
    - Interactive states (hover, focus, disabled, loading, etc.)
    - Which semantic tokens map to which visual properties (background, text, border, radius, spacing)
    - Layout behavior (fixed/hug width, inline vs block, can nest)
+
+   **Line-height translation rule:** Figma stores line-heights as px values and names them `font/line-height/<scale>-<ratio>` (e.g. `body-small-none`, `title-medium-tight`). The px value is a representational artifact — Figma can't store unitless ratios (ADR-002, accepted divergence). Always ignore the scale prefix and map the trailing ratio label to the code token: `none` → `--ds-font-line-height-none` · `tight` → `--ds-font-line-height-tight` · `default` → `--ds-font-line-height-default` · `relaxed` → `--ds-font-line-height-relaxed` · `loose` → `--ds-font-line-height-loose`. Never use the raw px value from Figma.
 2. Fill the metadata schema fields from what you observe in Figma. Anti-patterns must reference only components in the fixed set. Variant names must match Figma exactly.
 3. Determine the component name before creating any files. **Naming rule: noun first, then variant/modifier** — `Button`, `ButtonArrow`; `Card`, `CardHorizontal`, `CardVertical`. Never reverse this (`ArrowButton`, `HorizontalCard`). This keeps variants grouped together in directory listings and matches the existing library convention.
 4. Produce the component folder at `packages/components/src/ComponentName/`:
