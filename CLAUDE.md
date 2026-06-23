@@ -111,6 +111,8 @@ If a task could be done with a committed file, a script, or the `gh` CLI, do it 
 
 Commit directly to the current branch — do not create new branches unless explicitly asked. This is a solo project; branch management is the developer's responsibility.
 
+**Exception — `/add-component` loop:** Stage 4 always creates a branch named `component/<kebab-name>` (e.g. `component/accordion`) before committing, then opens a PR against `main` for human review. Agent-generated component code must go through a PR — it should never land on `main` without a review step.
+
 ## Commands and skills
 
 `.claude/commands/` — prompt-only slash commands. Flat markdown files. All agentic moments live here.  

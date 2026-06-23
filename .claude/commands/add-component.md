@@ -66,8 +66,10 @@ The subagent reviews and reports only — it does **not** edit files. Its final 
 
 ### Stage 4 · Fix + PR (main session)
 Read `.claude/handoff/<Name>.review.json`. Apply every `high`/`medium` finding and any `lint` error; for `low` findings, apply or record why not. Re-run the **Stage 2 gate** after fixing. Then:
-- Commit on the current branch (CLAUDE.md git workflow — no new branch unless asked).
-- Open a PR with `gh`, body summarising: what was generated, the gate result, the review verdict, and which findings were applied.
+- Create a branch `component/<kebab-name>` (e.g. `component/accordion`) off the current base and commit all component files to it.
+- Open a PR against `main` with `gh`, body summarising: what was generated, the gate result, the review verdict, and which findings were applied.
+
+Do **not** commit directly to `main`. Agent-generated component code must go through a PR so the developer can review the diff, run Storybook, and merge on their terms.
 
 The human only ever reviews code that has cleared the gate and the adversarial pass.
 
