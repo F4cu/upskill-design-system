@@ -84,3 +84,20 @@
   --_text: var(--ds-color-text-disabled);
   --_border-color: var(--ds-color-border-disabled);
 }
+
+/* Variant: ghost */
+
+.ghost {
+  --_bg: transparent;
+  --_text: var(--ds-color-text-link-default);
+  --_px: 0;
+}
+
+.ghost:hover:not(:disabled) {
+  --_bg: transparent;
+  --_text: var(--ds-color-text-link-hover);
+}
+
+.ghost:disabled {
+  --_text: var(--ds-color-text-disabled);
+}

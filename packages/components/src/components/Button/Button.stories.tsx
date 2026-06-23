@@ -7,8 +7,8 @@ const meta = {
   argTypes: {
     variant: {
       control: 'radio',
-      options: ['default', 'outlined'],
-      table: { type: { summary: "'default' | 'outlined'" } },
+      options: ['default', 'outlined', 'ghost'],
+      table: { type: { summary: "'default' | 'outlined' | 'ghost'" } },
     },
     size: {
       control: 'radio',
@@ -21,6 +21,15 @@ const meta = {
       table: { type: { summary: "'square' | 'round'" } },
     },
     icon: {
+      control: 'select',
+      options: [
+        undefined,
+        'search', 'plus', 'download', 'bookmark', 'heart',
+        'chevron-right', 'chevron-left', 'zap', 'lightbulb',
+      ],
+      table: { type: { summary: 'IconName' } },
+    },
+    trailingIcon: {
       control: 'select',
       options: [
         undefined,
@@ -57,6 +66,7 @@ export const Variants: Story = {
     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
       <Button variant="default">Default</Button>
       <Button variant="outlined">Outlined</Button>
+      <Button variant="ghost">Ghost</Button>
     </div>
   ),
 }
@@ -82,11 +92,21 @@ export const WithIcon: Story = {
   ),
 }
 
+export const GhostToggle: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 'var(--ds-space-inline-xs)', alignItems: 'center' }}>
+      <Button variant="ghost" size="sm" trailingIcon="chevron-down">Show more</Button>
+      <Button variant="ghost" size="sm" trailingIcon="chevron-up">Show less</Button>
+    </div>
+  ),
+}
+
 export const Disabled: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
       <Button disabled>Default disabled</Button>
       <Button variant="outlined" disabled>Outlined disabled</Button>
+      <Button variant="ghost" disabled>Ghost disabled</Button>
     </div>
   ),
 }
@@ -117,7 +137,7 @@ export const IconOnly: Story = {
 export const AllCombinations: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {(['default', 'outlined'] as const).map((variant) => (
+      {(['default', 'outlined', 'ghost'] as const).map((variant) => (
         <div key={variant} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {(['sm', 'md', 'lg'] as const).map((size) => (
             <Button key={size} variant={variant} size={size} icon="search">

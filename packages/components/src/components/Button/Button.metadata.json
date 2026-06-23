@@ -4,7 +4,7 @@
     "category": "atom",
     "type": "interactive",
     "status": "ready",
-    "description": "Triggers an action or navigation. Two visual variants (default brand-fill, outlined), three sizes, optional leading icon. Fully keyboard-accessible via the native button element.",
+    "description": "Triggers an action or navigation. Three visual variants (default brand-fill, outlined, ghost), three sizes, optional leading and/or trailing icon. Fully keyboard-accessible via the native button element.",
     "figmaNodeId": "57:1265"
   },
 
@@ -42,11 +42,12 @@
 
   "variants": {
     "variant": {
-      "options": ["default", "outlined"],
+      "options": ["default", "outlined", "ghost"],
       "default": "default",
       "purpose": {
         "default": "Primary action. Brand-fill background with inverted text. Use once per view section.",
-        "outlined": "Secondary action. Transparent background with border. Use for supporting actions."
+        "outlined": "Secondary action. Transparent background with border. Use for supporting actions.",
+        "ghost": "Inline text-link–style action. No background, no border, link text color. Use for low-emphasis actions inline with content, e.g. 'Show more' in an accordion or card."
       }
     },
     "size": {
@@ -90,6 +91,8 @@
       "color.text.inverted.disabled",
       "color.text.subtle",
       "color.text.disabled",
+      "color.text.link.default",
+      "color.text.link.hover",
       "color.border.default",
       "color.border.disabled"
     ],
