@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Icon } from '../Icon'
+import { Text } from '../Text'
 import styles from './Accordion.module.css'
 
 export type AccordionItemProps = {
@@ -57,9 +58,9 @@ export function AccordionItem({
         >
           <div className={styles.titleGroup}>
             <span className={styles.title}>{title}</span>
-            {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
+            {subtitle && <Text as="span" size="metadata" color="subtle">{subtitle}</Text>}
           </div>
-          <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size="md" aria-hidden />
+          <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size="md" aria-hidden className={styles.chevron} />
         </button>
       </Heading>
       <div

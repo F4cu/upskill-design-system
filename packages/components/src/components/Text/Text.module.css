@@ -25,7 +25,7 @@
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-metadata);
   font-weight: var(--ds-font-weight-regular);
-  line-height: var(--ds-font-line-height-body-default);
+  line-height: var(--ds-font-line-height-none);
 }
 
 .label {
