@@ -1,6 +1,5 @@
 # UpSkill Design System
-
-A monorepo design system with a full token pipeline — from Figma variables through Style Dictionary to coded components and Storybook documentation.
+A **lite-agentic** design system for a SaaS product. Fixed component set, code-first tokens, and a small number of developer-triggered AI moments — no always-on agents, no orchestration layer. One person can maintain the whole system.
 
 ## Packages
 
@@ -11,36 +10,44 @@ A monorepo design system with a full token pipeline — from Figma variables thr
 
 ## Token architecture
 
-Tokens are layered so a single set of primitive values drives every theme and breakpoint:
+Three layers resolve in order; the committed JSON is the source of truth — Figma is a downstream mirror.
 
 | Layer | Files | Purpose |
 |---|---|---|
-| Primitives | `primitives.json` | Raw values, synced from Figma |
+| Primitives | `primitives.json` | Raw, context-free values. Hand-edited via PR. |
 | Theme | `theme/light.json`, `theme/dark.json` | Semantic color aliases |
-| Device | `device/desktop.json`, `device/tablet.json`, `device/mobile.json` | Responsive spacing and typography |
+| Device | `device/desktop.json`, `device/tablet.json`, `device/mobile.json` | Responsive spacing and typography per breakpoint |
 
-Style Dictionary transforms these into CSS custom properties, JS/TS constants, and a Tailwind theme extension.
+`npm run build:tokens` transforms DTCG source into CSS custom properties (desktop in `:root`, tablet/mobile in `@media` blocks) and JS/TS constants.
 
-## Integrations
+## Automation
 
-| Tool | Role |
+| Tool | What it does |
 |---|---|
-| **Figma** | Source of truth for primitive tokens, exported via the Variables API |
-| **Style Dictionary** | Builds DTCG tokens into CSS, JS, and Tailwind outputs |
-| **Storybook** | Component documentation, token showcase, and visual testing |
-| **Airtable** | Token inventory and governance — ownership, status, usage guidelines, and audit trail per token |
-| **GitHub Actions** | Token validation on PR, automated sync to Airtable on merge |
+| **GitHub Actions** | Token build check on every PR; Airtable sync on merge to `main` |
+| **Airtable** | Token governance — `status` / `owner` / `successor` / `notes` per token, pulled to `governance.json` |
+| **`npm run sense`** | Aggregates governance + token usage + Figma drift into `.claude/STATUS_QUO.md` — the frozen baseline agents read |
+
+Everything recurring runs as a plain script or GitHub Action. No MCP in CI.
+
+## Agentic moments
+
+Six developer-triggered commands where Claude reads structured repo context and produces something a script can't:
+
+| Command | What it does |
+|---|---|
+| `/figma-variable-audit` | Drift check: Figma variables vs. committed tokens; produces a cleanup PR |
+| `/figma-variable-push` | Writes clean-missing variables into Figma (code → Figma) |
+| `/token-deprecation-pass` | Migrates deprecated token usages to their successors |
+| `/component-scaffold` | Scaffolds a new component from the fixed set |
+| `/layout-generation` | Generates a React component tree from a one-paragraph brief |
+| `/add-component` | Full verified loop: sense → scaffold → gate → adversarial review → PR |
 
 ## Getting started
 
 ```bash
-# Install dependencies
 npm install
-
-# Build tokens
 npm run build:tokens
-
-# Run Storybook
 npm run storybook --workspace=@upskill/components
 ```
 
@@ -49,18 +56,9 @@ npm run storybook --workspace=@upskill/components
 ```
 upskill-design-system/
 ├── packages/
-│   ├── tokens/              # Design tokens (W3C DTCG JSON)
-│   │   ├── src/
-│   │   │   ├── primitives.json
-│   │   │   ├── theme/
-│   │   │   └── device/
-│   │   └── package.json
-│   │
+│   ├── tokens/              # Design tokens (W3C DTCG JSON + Style Dictionary config)
 │   └── components/          # Coded components + Storybook
-│       ├── src/
-│       ├── .storybook/
-│       └── package.json
-│
-├── package.json             # Workspace root
-└── README.md
+├── scripts/                 # Airtable sync, governance pull, token usage, sense
+├── .claude/commands/        # Agentic moment prompts
+└── docs/decisions/          # ADRs
 ```

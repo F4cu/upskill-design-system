@@ -53,6 +53,28 @@ The different conditions a component can be in that change its appearance or beh
 
 **Wrapper**
 A component (or element) whose only purpose is to surround something else — to add styling, behavior, or structure without contributing visible content of its own. `ScrollArea` is a wrapper: it adds hidden-scrollbar overflow behavior to whatever is inside it. `Box` is a wrapper: it applies spacing and layout rules. Wrappers are often thin — just a `div` with a CSS class or a few props — and they rely on composition to do meaningful work.
+
+---
+
+## Trees
+
+A **tree** is a data structure where each item (called a node) has exactly one parent, except for the root at the top. Browsers, React, Git, and assistive technologies each maintain their own tree representation of a page or project — the same HTML can give rise to four distinct trees simultaneously.
+
+**Accessibility tree**
+A parallel representation of the page that the browser builds alongside the DOM and exposes to screen readers and other assistive technologies. It contains only semantically meaningful nodes — not bare layout divs — and labels each one with a role, a name, a state, and any relevant properties. ARIA attributes modify the accessibility tree without changing the visual DOM. In this repo, every interactive component (`Button`, `TextField`, `Select`, `DropdownMenu`, etc.) must have correct roles and states so that a screen reader gives the user an accurate picture of the UI — verified by the behavioral a11y tests (`*.a11y.test.tsx`).
+
+**Component tree (React)**
+The nested hierarchy of React components in an application. The root component sits at the top; it renders child components, each of which may render further children, forming a tree. Props and data flow downward from parent to child; events bubble upward. In this repo, a layout like `ScrollArea > Inline > CardVertical` is a fragment of a component tree, and the `/layout-generation` command produces a React component tree for a page — each structural choice annotated by the metadata rule that justified it.
+
+**DOM tree**
+The browser's internal representation of an HTML page as a hierarchy of nodes — document at the root, then `<html>`, then `<head>` and `<body>`, then every element nested inside. "Tree" refers to the branching parent-child structure: each element is a node contained inside exactly one parent. JavaScript and React both read and modify the DOM tree to update what is displayed on screen. React does this indirectly, via a virtual DOM it maintains in memory before syncing changes to the real one.
+
+**Render tree**
+The combined result of the DOM tree and the CSS rules, used by the browser to decide what actually appears on screen. Unlike the DOM, the render tree excludes invisible elements (`display: none`) and includes computed styles for every visible node. After building the render tree, the browser runs a **layout** step (calculating each element's size and position) and a **paint** step (drawing pixels). In a design system, the tokens that set sizes, spacing, and colors feed into this pipeline — changing a token propagates through the render tree and repaints every element that used it.
+
+**Working tree (Git)**
+The files on disk in your project folder that you can see and edit — distinct from Git's stored history. When you open a file and make changes, you are working in the working tree. `git status` compares your working tree against the last committed snapshot and reports what has changed. In Claude Code, the term appears when multiple simultaneous copies of a branch are needed: `git worktree` creates an additional working tree at a different folder path so two branches can be checked out at once without cloning the whole repo again.
+
 Two things are coupled when one depends on the other — changing or using one affects the other. For example, if `useSlider` needed to read the scroll position from a `ScrollArea`, they would be coupled. Coupling is not always bad, but it makes things harder to change independently. The opposite of orthogonal.
 
 **Hook (Claude Code)**
@@ -130,6 +152,21 @@ A cap on how many API calls you can make in a given time window. Exceed it and t
 
 **REST API**
 The style of API used by Airtable and GitHub in this repo. "REST" describes a set of conventions: each endpoint is a URL, requests use standard HTTP methods (`GET` to read, `POST` to create, `PATCH` to update, `DELETE` to remove), and responses come back as JSON. You don't need to know the conventions in detail — just that when CLAUDE.md says "direct REST calls," it means a script talking to one of these APIs without going through an intermediary tool.
+
+---
+
+## Tokens
+
+The word "token" means something different in each field that uses it. In this repo alone it appears in three distinct senses: design tokens (named values for colors, spacing, etc.), auth tokens (credentials for calling APIs), and LLM tokens (chunks of text a model processes). The design token meanings are covered in depth in the "Design tokens" sections above; the entries below cover the other two.
+
+**Auth token**
+A dynamically generated credential that proves identity or grants permission for a specific action — typically short-lived and scoped, unlike a static API key. Auth tokens are issued as part of a login or authorization flow and expire automatically. In this repo, GitHub Actions generates a `GITHUB_TOKEN` at the start of each workflow run — CI scripts use it to call the GitHub API, and it is revoked automatically when the job finishes. Contrast with API key / authentication, which tends to be long-lived and broad.
+
+**Bearer token**
+The HTTP convention for sending a credential to an API: the request includes a header `Authorization: Bearer <value>`. Any request that "bears" (carries) this header is treated as authenticated. Both API keys and auth tokens are typically sent this way — "bearer" describes the transport pattern, not the kind of credential. When scripts in this repo call the GitHub or Airtable APIs, they attach the relevant key or token in exactly this form.
+
+**LLM token**
+The smallest chunk of text a language model processes as a single unit. A token is roughly a word fragment — "tokenization" might split into `["token", "ization"]`; short common words are usually one token each. Limits and costs for Claude are measured in tokens, not words or characters: the context window is a token budget, and Anthropic's pricing is per input and output token. This is why the design of agentic moments in this repo keeps the data fed to Claude small — fewer tokens means faster, cheaper runs.
 
 ---
 
