@@ -190,6 +190,8 @@ Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `ButtonArro
 Phase 5d additions (Course Overview page): `Accordion`, `Badge`; `Button` gains a `ghost` variant (no background, link text color — replaces the standalone ShowMoreLink pattern); `useSlider` hook (content-stepper state for fade-in step-through UIs, no component).
 Do not add components outside these lists without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
 
+Before proposing a new component file, apply the three-question test from ADR-009: (1) same semantic role → add a prop/variant to the existing component; (2) different role despite similar shape → new component; (3) single parent, no other consumer in the fixed set → molecule-internal styled element in the parent's CSS Module. Visual similarity alone is not a reason to create a new component or to merge two that differ in role.
+
 ## Architectural decisions (ADRs)
 
 Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-template.md`). These are the load-bearing rationale a future contributor or agent needs to build and reuse components correctly — read the relevant ADR before changing the thing it governs.
