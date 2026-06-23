@@ -21,10 +21,11 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
-const GOVERNANCE_PATH = path.resolve(ROOT, "packages/tokens/governance.json");
-const USAGE_PATH      = path.resolve(ROOT, "packages/tokens/token-usage.json");
-const FIGMA_PATH      = path.resolve(ROOT, "packages/tokens/figma-variables.json");
-const OUTPUT_PATH     = path.resolve(ROOT, ".claude/STATUS_QUO.md");
+const GOVERNANCE_PATH  = path.resolve(ROOT, "packages/tokens/governance.json");
+const USAGE_PATH       = path.resolve(ROOT, "packages/tokens/token-usage.json");
+const FIGMA_PATH       = path.resolve(ROOT, "packages/tokens/figma-variables.json");
+const COMPONENTS_DIR   = path.resolve(ROOT, "packages/components/src/components");
+const OUTPUT_PATH      = path.resolve(ROOT, ".claude/STATUS_QUO.md");
 
 const STALE_AFTER_DAYS = 30;
 
@@ -141,6 +142,62 @@ function figmaSection(now) {
   return out.join("\n");
 }
 
+function componentSection() {
+  if (!fs.existsSync(COMPONENTS_DIR)) {
+    return ["## Components", "", "> ⚠️ No components directory found.", ""].join("\n");
+  }
+
+  const components = fs
+    .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .flatMap((d) => {
+      const p = path.join(COMPONENTS_DIR, d.name, `${d.name}.metadata.json`);
+      if (!fs.existsSync(p)) return [];
+      const meta = JSON.parse(fs.readFileSync(p, "utf8"));
+      return [meta.component];
+    });
+
+  const byStatus = { beta: [], ready: [], deprecated: [] };
+  const byType = {};
+  for (const c of components) {
+    (byStatus[c.status] ?? (byStatus[c.status] = [])).push(c.name);
+    (byType[c.type] ?? (byType[c.type] = [])).push(c.name);
+  }
+
+  const statusLine = Object.entries(byStatus)
+    .filter(([, names]) => names.length > 0)
+    .map(([s, names]) => `${names.length} ${s}`)
+    .join(" · ");
+
+  const typeLine = Object.entries(byType)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([type, names]) => `${type} (${names.length})`)
+    .join(" · ");
+
+  const out = [
+    "## Components",
+    "",
+    `- **${components.length} total** — ${statusLine}`,
+    `- By type: ${typeLine}`,
+    `- Source: \`packages/components/src/components/*/\*.metadata.json\``,
+    "",
+  ];
+
+  if (byStatus.beta?.length) {
+    out.push("### Beta (not production-ready)", "");
+    for (const name of byStatus.beta) out.push(`- \`${name}\``);
+    out.push("");
+  }
+
+  if (byStatus.deprecated?.length) {
+    out.push("### Deprecated — migration needed", "");
+    for (const name of byStatus.deprecated) out.push(`- \`${name}\``);
+    out.push("");
+  }
+
+  return out.join("\n");
+}
+
 function main() {
   const now = new Date();
   const governance = readJson(GOVERNANCE_PATH);
@@ -166,6 +223,7 @@ function main() {
 
   const body = [
     governanceSection(governance, usage),
+    componentSection(),
     usageSection(usage),
     figmaSection(now),
   ].join("\n");

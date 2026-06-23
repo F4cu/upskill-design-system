@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-06-22T10:32:00.047Z**
+Generated: **2026-06-23T12:34:58.467Z**
 
 Sources:
 - `packages/tokens/governance.json` (Airtable mirror)
@@ -21,6 +21,16 @@ Sources:
 
 None. No deprecated token has a live reference. ✅
 
+## Components
+
+- **26 total** — 1 beta · 25 ready
+- By type: container (6) · display (13) · input (3) · interactive (4)
+- Source: `packages/components/src/components/*/*.metadata.json`
+
+### Beta (not production-ready)
+
+- `Accordion`
+
 ## Token usage
 
 - **94** distinct CSS custom properties referenced in `packages/components/src`
@@ -30,7 +40,7 @@ None. No deprecated token has a live reference. ✅
 ## Figma drift
 
 - Snapshot captured: **2026-06-22** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **0 day(s)**
+- Age: **1 day(s)**
 - Variables mirrored: **414** (Primitives 252 · Theme 102 · Device 60)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 
