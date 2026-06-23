@@ -3,7 +3,7 @@
     "name": "CardVertical",
     "category": "molecule",
     "type": "display",
-    "status": "stable",
+    "status": "ready",
     "description": "A vertical course card with an image thumbnail, optional progress bar, serif title, and metadata row (duration and certified badge). Two image proportions via the size prop: lg uses a portrait 4/5 thumbnail (tall), sm uses a landscape 3/2 thumbnail (short). Used in Saved Courses and Discover carousels. No dark variant — appears on light and elevated backgrounds only.",
     "figmaNodeId": "52:4270"
   },

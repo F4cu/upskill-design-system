@@ -3,7 +3,7 @@
     "name": "ScrollArea",
     "category": "layout",
     "type": "container",
-    "status": "stable",
+    "status": "ready",
     "description": "Overflow scroll container that hides the native scrollbar cross-browser. orientation=horizontal clips vertical overflow and allows horizontal native scroll; orientation=vertical does the inverse. Pair with Inline(wrap=false) for horizontal card rows and Stack for vertical lists. For JS-animated carousels (translate-based), use a plain div with overflow:hidden instead — ScrollArea is for native scroll only.",
     "figmaNodeId": ""
   },

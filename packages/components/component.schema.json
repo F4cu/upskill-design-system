@@ -28,7 +28,7 @@
         },
         "status": {
           "type": "string",
-          "enum": ["draft", "stable", "deprecated"]
+          "enum": ["beta", "ready", "deprecated"]
         },
         "description": { "type": "string" },
         "figmaNodeId": { "type": "string" }

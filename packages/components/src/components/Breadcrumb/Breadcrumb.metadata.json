@@ -3,7 +3,7 @@
     "name": "Breadcrumb",
     "category": "molecule",
     "type": "display",
-    "status": "stable",
+    "status": "ready",
     "description": "An ordered list of navigation links separated by chevron-right icons. The last item is the current page (non-linked, default text colour). Accepts items as an array of { label, href? }.",
     "figmaNodeId": "none — no Figma component set exists"
   },

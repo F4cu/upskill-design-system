@@ -3,7 +3,7 @@
     "name": "ButtonArrow",
     "category": "atom",
     "type": "interactive",
-    "status": "stable",
+    "status": "ready",
     "description": "32px circular prev/next navigation button. Uses an Icon chevron internally. direction prop selects left or right. Disabled state: no background, muted icon, pointer-events blocked. Used in carousel paginators and chapter/slider navigators.",
     "figmaNodeId": "61:1228"
   },

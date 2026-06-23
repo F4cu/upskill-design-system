@@ -3,7 +3,7 @@
     "name": "Checkbox",
     "category": "molecule",
     "type": "input",
-    "status": "stable",
+    "status": "ready",
     "description": "A boolean toggle with a visible label. Wraps a native <input type='checkbox'> styled with design tokens. Use for independent on/off options; for exclusive choices use radio inputs. Supports checked, unchecked, disabled, and disabled-checked states.",
     "figmaNodeId": "none — no Figma component set exists; uses text styles only"
   },

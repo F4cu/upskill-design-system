@@ -3,7 +3,7 @@
     "name": "Stack",
     "category": "layout",
     "type": "container",
-    "status": "stable",
+    "status": "ready",
     "description": "Vertical flex container. Stacks children top-to-bottom with consistent spacing from the space.stack token scale. The primary building block for content hierarchy within a page section.",
     "figmaNodeId": ""
   },

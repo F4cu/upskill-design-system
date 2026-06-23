@@ -3,7 +3,7 @@
     "name": "Card",
     "category": "molecule",
     "type": "container",
-    "status": "stable",
+    "status": "ready",
     "description": "A generic surface container that groups related content with consistent padding, border-radius, and optional elevation. Use to visually separate page sections or form groups. Card is slot-based (children-only) and carries no content structure of its own — for course display use CardVertical or CardHorizontal instead.",
     "figmaNodeId": "none — no Figma component set exists"
   },

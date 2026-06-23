@@ -3,7 +3,7 @@
     "name": "Box",
     "category": "layout",
     "type": "container",
-    "status": "stable",
+    "status": "ready",
     "description": "The foundational layout primitive. A polymorphic container that applies spacing tokens via the padding props. Everything else in the system can be placed inside a Box.",
     "figmaNodeId": ""
   },

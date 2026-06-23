@@ -10,9 +10,24 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID ?? "appBfY2arkReKQNit";
 
-const PRIMITIVES_TABLE = "Primitive tokens";
-const SEMANTIC_TABLE = "Semantic tokens";
-const DEVICE_TABLE = "Device tokens";
+const PRIMITIVES_TABLE = "tblAl09uImcO1VPeb";
+const SEMANTIC_TABLE = "tblxMSyL7EFIXltqX";
+const DEVICE_TABLE = "tblQvDDo0EZoiYrdf";
+const COMPONENTS_TABLE = "tblT79kVwnCZJdlQE";
+
+const COMPONENT_FIELDS = {
+  name:               "Name",
+  type:               "Type",
+  status:             "Status",
+  variants:           "Variants",
+  colorTokens:        "Color tokens",
+  spacingTokens:      "Spacing tokens",
+  typographyTokens:   "Typography tokens",
+  borderRadiusTokens: "Border radius tokens",
+  otherTokens:        "Other tokens",
+  figmaNodeId:        "Figma node ID",
+  version:            "Version",
+};
 
 const PATHS = {
   primitives: path.resolve(__dirname, "../packages/tokens/src/primitives.json"),
@@ -53,6 +68,10 @@ function airtableHeaders() {
 }
 
 // --- Shared utilities ---
+
+function stripBraces(s) {
+  return typeof s === "string" ? s.replace(/^\{|\}$/g, "") : s;
+}
 
 function getByPath(dotPath, obj) {
   return dotPath.split(".").reduce((node, key) => node?.[key], obj);
@@ -111,9 +130,9 @@ function flattenSemantic(lightNode, darkNode, primitives, lightTree, darkTree, p
       const darkAlias  = darkVal?.$value  ?? "";
       records.push({
         tokenName:      tokenPath,
-        lightValueName: String(lightAlias),
+        lightValueName: stripBraces(String(lightAlias)),
         lightValue:     lightAlias ? resolveAlias(String(lightAlias), lightTree, primitives) : "",
-        darkValueName:  String(darkAlias),
+        darkValueName:  stripBraces(String(darkAlias)),
         darkValue:      darkAlias  ? resolveAlias(String(darkAlias),  darkTree,  primitives) : "",
         usage:     tokenPath.split(".")[0],
         component: tokenPath.split(".")[1] ?? "",
@@ -222,6 +241,66 @@ async function deleteOrphans(tableName, keyField, currentKeys) {
   }
 }
 
+// --- Component metadata ---
+
+const COMPONENTS_DIR = path.resolve(
+  __dirname,
+  "../packages/components/src/components"
+);
+
+function formatVariants(variants = {}) {
+  const entries = Object.entries(variants).filter(
+    ([, def]) => !(def.options.length === 1 && def.options[0] === "default")
+  );
+  if (!entries.length) return "—";
+  return entries
+    .map(([axis, def]) => `${axis}: ${def.options.join(", ")}`)
+    .join(" · ");
+}
+
+function formatTokenList(list = []) {
+  return list.length ? list.join(", ") : "—";
+}
+
+function cleanFigmaNodeId(raw) {
+  if (!raw || raw === "none" || raw.startsWith("none —")) return "";
+  return raw;
+}
+
+function readComponents() {
+  return fs
+    .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .flatMap((d) => {
+      const metaPath = path.join(COMPONENTS_DIR, d.name, `${d.name}.metadata.json`);
+      if (!fs.existsSync(metaPath)) return [];
+      const meta = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
+      const c = meta.component;
+      return [{
+        [COMPONENT_FIELDS.name]:               c.name,
+        [COMPONENT_FIELDS.type]:               c.type,
+        [COMPONENT_FIELDS.status]:             c.status,
+        [COMPONENT_FIELDS.variants]:           formatVariants(meta.variants),
+        [COMPONENT_FIELDS.colorTokens]:        formatTokenList(meta.tokens?.color),
+        [COMPONENT_FIELDS.spacingTokens]:      formatTokenList(meta.tokens?.spacing),
+        [COMPONENT_FIELDS.typographyTokens]:   formatTokenList(meta.tokens?.typography),
+        [COMPONENT_FIELDS.borderRadiusTokens]: formatTokenList(meta.tokens?.borderRadius),
+        [COMPONENT_FIELDS.otherTokens]:        formatTokenList(meta.tokens?.other),
+        [COMPONENT_FIELDS.figmaNodeId]:        cleanFigmaNodeId(c.figmaNodeId),
+        [COMPONENT_FIELDS.version]:            "1.0",
+      }];
+    });
+}
+
+async function pushComponents() {
+  console.log("Pushing components → Airtable…");
+  const components = readComponents();
+  console.log(`  ${components.length} components found`);
+  await upsertRecords(COMPONENTS_TABLE, COMPONENT_FIELDS.name, components, (r) => r);
+  await deleteOrphans(COMPONENTS_TABLE, COMPONENT_FIELDS.name, components.map((c) => c[COMPONENT_FIELDS.name]));
+  console.log("Done.");
+}
+
 // --- Commands ---
 
 async function pushPrimitives() {
@@ -288,11 +367,11 @@ async function pushDevice() {
   await upsertRecords(DEVICE_TABLE, "Token", records, (r) => ({
     "Token":          r.token,
     "Group":          r.group,
-    "Desktop alias":  r.desktopAlias,
+    "Desktop alias":  stripBraces(r.desktopAlias),
     "Desktop value":  r.desktopValue,
-    "Tablet alias":   r.tabletAlias,
+    "Tablet alias":   stripBraces(r.tabletAlias),
     "Tablet value":   r.tabletValue,
-    "Mobile alias":   r.mobileAlias,
+    "Mobile alias":   stripBraces(r.mobileAlias),
     "Mobile value":   r.mobileValue,
   }));
   await deleteOrphans(DEVICE_TABLE, "Token", records.map((r) => r.token));
@@ -302,9 +381,10 @@ async function pushDevice() {
 // --- Entry point ---
 
 const COMMANDS = {
-  "push:primitives": pushPrimitives,
-  "push:semantic": pushSemantic,
-  "push:device": pushDevice,
+  "push:primitives":  pushPrimitives,
+  "push:semantic":    pushSemantic,
+  "push:device":      pushDevice,
+  "push:components":  pushComponents,
 };
 
 async function main() {

@@ -3,7 +3,7 @@
     "name": "ProgressBar",
     "category": "atom",
     "type": "display",
-    "status": "stable",
+    "status": "ready",
     "description": "A 4px-tall track with a coloured fill representing a completion percentage (0–100). Used to show course progress on cards and profile sections.",
     "figmaNodeId": "none — no Figma component set exists"
   },

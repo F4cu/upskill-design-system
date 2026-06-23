@@ -3,7 +3,7 @@
     "name": "Button",
     "category": "atom",
     "type": "interactive",
-    "status": "draft",
+    "status": "beta",
     "description": "Triggers an action or navigation. The primary way a user initiates a response from the system.",
     "figmaNodeId": ""
   },

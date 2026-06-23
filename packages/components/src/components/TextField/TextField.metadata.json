@@ -3,7 +3,7 @@
     "name": "TextField",
     "category": "molecule",
     "type": "input",
-    "status": "stable",
+    "status": "ready",
     "description": "A labelled text input for collecting single-line user data. Includes a visible label, an optional error message with ARIA association, and interaction states. Use for any freeform text entry: names, emails, passwords, search terms.",
     "figmaNodeId": "none — no Figma component set exists; uses text styles only"
   },
