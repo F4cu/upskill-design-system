@@ -1,0 +1,117 @@
+{
+  "component": {
+    "name": "Accordion",
+    "category": "molecule",
+    "type": "interactive",
+    "status": "beta",
+    "description": "A vertically stacked set of disclosure panels. Each item has a trigger (title + optional subtitle) and a collapsible content panel. Multiple items can be open simultaneously. Follows the WAI-ARIA Accordion pattern.",
+    "figmaNodeId": "29:1153"
+  },
+
+  "usage": {
+    "keywords": ["accordion", "collapse", "expand", "disclosure", "faq", "course", "module", "section", "toggle"],
+    "when": [
+      "Presenting a list of content sections where users may only need to read a subset (e.g. course curriculum, FAQ, settings groups)",
+      "Reducing vertical space by hiding detail until requested",
+      "The content within each panel is self-contained and does not need to be visible simultaneously"
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Accordion for primary navigation or tabbed content",
+        "reason": "Accordion is a disclosure pattern, not navigation. Tabs or a nav component are the correct choice when content is mutually exclusive or linked to URLs.",
+        "alternative": "Use a Tabs component or page-level navigation"
+      },
+      {
+        "scenario": "Nesting Accordion inside another Accordion",
+        "reason": "Deep nesting creates a confusing mental model and breaks the heading hierarchy.",
+        "alternative": "Flatten the information architecture or use a sub-section heading and Text"
+      },
+      {
+        "scenario": "Placing an Accordion where all items are always open",
+        "reason": "If the content is always visible, the disclosure mechanism adds interaction cost without benefit.",
+        "alternative": "Use Stack with Heading and Text for always-visible sections"
+      }
+    ]
+  },
+
+  "variants": {
+    "variant": {
+      "options": ["default"],
+      "default": "default",
+      "purpose": {
+        "default": "Single variant. Visual style is always the same: transparent trigger, elevated background when expanded."
+      }
+    }
+  },
+
+  "states": [
+    { "state": "collapsed", "description": "Panel hidden; trigger shows chevron-down." },
+    { "state": "expanded", "description": "Panel visible with elevated background; trigger shows chevron-up." }
+  ],
+
+  "tokens": {
+    "color": [
+      "color.background.container.elevated",
+      "color.border.default",
+      "color.text.default",
+      "color.text.subtle"
+    ],
+    "spacing": [
+      "space.inset.md",
+      "space.inline.sm",
+      "space.stack.xs"
+    ],
+    "typography": [
+      "font.family.headline-default",
+      "font.family.body",
+      "font.size.title-small",
+      "font.size.body-default",
+      "font.weight.bold",
+      "font.weight.regular",
+      "font.line-height.title-default",
+      "font.line-height.body-single"
+    ],
+    "borderRadius": [],
+    "other": []
+  },
+
+  "accessibility": {
+    "role": "button",
+    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div.",
+    "ariaAttributes": [
+      "aria-expanded (true|false on the trigger button)",
+      "aria-controls (trigger → panel id)",
+      "aria-labelledby (panel → trigger id)",
+      "role='region' (on the panel)"
+    ],
+    "keyboardInteractions": [
+      { "key": "Enter", "action": "Toggles the focused accordion item open or closed" },
+      { "key": "Space", "action": "Toggles the focused accordion item open or closed" },
+      { "key": "Tab", "action": "Moves focus to the next focusable element" }
+    ]
+  },
+
+  "relationships": {
+    "composedOf": ["Icon"],
+    "accepts": ["*"],
+    "containedBy": ["Box", "Stack", "Card"],
+    "neverPairWith": [],
+    "compositionPatterns": [
+      {
+        "name": "course-curriculum",
+        "description": "A list of course modules, each expandable to reveal a description.",
+        "tree": "Accordion > [AccordionItem(title, subtitle), AccordionItem(title, subtitle), ...]"
+      },
+      {
+        "name": "faq-list",
+        "description": "A set of frequently asked questions where each answer is hidden by default.",
+        "tree": "Accordion > [AccordionItem(title='Question?') > Text(answer), ...]"
+      }
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

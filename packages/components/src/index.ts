@@ -72,3 +72,6 @@ export type { ScrollAreaProps, ScrollAreaOrientation } from './components/Scroll
 
 export { useCarousel } from './hooks/useCarousel'
 export type { UseCarouselReturn } from './hooks/useCarousel'
+
+export { Accordion, AccordionItem } from './components/Accordion'
+export type { AccordionProps, AccordionItemProps } from './components/Accordion'
