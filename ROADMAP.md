@@ -74,7 +74,7 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 
 ## Phase 7 — Agentic Moments
 
-> Six moments, implemented as `.claude/commands/` prompts (written in Phase 2, expanded through Phases 8–9). Developer-triggered, infrequent, each with a success signal. No continuous loops, no schedulers.
+> Seven moments, implemented as `.claude/commands/` prompts (written in Phase 2, expanded through Phases 8–9). Developer-triggered, infrequent, each with a success signal. No continuous loops, no schedulers.
 
 - [x] **Figma token audit** — run on real task: `figma-variables.json` captured via MCP, representational divergences (unitless line-heights) tagged and excluded from drift checks, ADR-002 amended. Commits: `6517b76`, `77f27b0`, `7c137d6`.
 - [ ] **Token deprecation pass** — command file exists; not yet run on a real deprecated token set.
@@ -82,6 +82,7 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [ ] **Layout generation** — command file exists; not yet run on a real page brief to produce a reviewed layout tree.
 - [x] **Figma variable push (code → Figma)** — command file `figma-variable-push.md` exists. Inverse of the audit: diffs committed tokens against Figma variable inventory and writes clean-missing variables via `use_figma`. Not yet run on a real push cycle.
 - [x] **Add component** (`/add-component`) — the verified scaffold loop (sense → scaffold → gate → adversarial review → PR). Badge shipped cleanly (Phase 9 pilot). Accordion shipped: 1 high a11y finding caught by the adversarial reviewer (`aria-controls` dead reference on conditional render) that no static linter or gate script can detect; all findings applied; 50/50 tests green. Run logs in `.claude/handoff/`.
+- [x] **Post-review retro** (`/post-review-retro`) — the self-improvement loop: reads `.review.json` + `.run.json` handoff files, classifies each finding by the metadata section it belongs to (`accessibility.ariaAttributes`, `accessibility.keyboardInteractions`, `composition`, `usage.antiPatterns`), drafts targeted amendments, gates on `validate:metadata`, opens a PR. Piloted on Accordion (PR #10): 4 metadata sections amended across 6 findings; 3 skipped as one-off bugs with no generalizable lesson. Prevents the same mistakes from appearing in future `/add-component` Stage 3 findings.
 
 **Exit condition:** each moment has been run once on a real task, met its success signal, and its prompt file updated with what was learned. Remaining: token deprecation pass, layout generation, first full Figma variable push.
 
