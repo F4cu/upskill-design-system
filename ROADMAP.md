@@ -13,151 +13,52 @@ Lite in two ways:
 
 ---
 
-## Phase 1 — Infrastructure
+## Phase 1 — Infrastructure *(done)*
 
-- [x] Monorepo structure + npm workspaces
-- [x] Token JSON files (primitives, theme, device layers)
-- [x] GitHub repo
-- [x] Airtable connected — `scripts/airtable-sync.js` pushes primitives/semantic/device tokens to three tables (one-directional, code → Airtable)
-- [x] Style Dictionary: CSS custom properties output for web
-- [x] Style Dictionary: custom platform config for device tokens — desktop to `:root`, tablet/mobile wrapped in `@media` blocks (single CSS output file)
-- [x] Custom SD transforms: px→rem, font-weight string→numeric, `$root` rename, media query combiner
-- [x] React + Vite + TypeScript in `packages/components`
-- [x] Storybook: install + configure `addon-themes` (light/dark toggle via `data-theme`)
-- [x] Token showcase stories (color swatches, spacing scale, type ramp, border radius — MDX)
-- [x] GitHub Actions: token build check on PR
+Monorepo + npm workspaces; DTCG token JSON (primitives, theme, device); Style Dictionary with custom transforms (px→rem, font-weight, `$root`, media query combiner); CSS custom properties + JS/TS outputs; Storybook with `addon-themes` light/dark toggle and MDX token showcase stories; GitHub Actions token build check on PR.
 
-**Exit condition (met):** `npm run build:tokens` produces CSS + JS outputs from DTCG source; Storybook renders the token inventory in light and dark.
+**Exit condition (met):** `npm run build:tokens` produces CSS + JS outputs; Storybook renders the token inventory in light and dark.
 
-## Phase 1.5 — Token Foundation Review
+## Phase 1.5 — Token Foundation Review *(done)*
 
-> Audit and clean up the token layer before building on top of it. Nothing here changes the design — it removes noise and documents decisions.
+Component metadata schema defined (JSON per component). Device layer cleaned: `layout.headerLayout` removed; `layout.min-width.column` and `layout.min-height.slider` kept (active Figma bindings). ADRs recorded: layout tokens as values (not CSS properties); `space` vs `size` split. Semantic token names audited for intent vs raw scale position.
 
-- [x] Define component metadata schema (JSON per component: purpose, variants, relationships, anti-patterns) — example file in place
-- [x] Remove Figma-artifact tokens from device layer — `layout.headerLayout` deleted (0 usages). `layout.min-width.column` (32 usages) and `layout.min-height.slider` (8 usages) kept: actively bound in Figma; will move to component CSS Modules when those components are built
-- [x] ADR: layout tokens = values (spacing, grid config), not CSS properties
-- [x] ADR: `space` vs `size` — `space` for spacing (gap, padding, margin); `size` for component dimensions (icon, avatar)
-- [x] Review `space.inline` duplication across breakpoints
-- [x] Audit semantic token naming — tokens should describe intent, not raw scale positions or ambiguous names
+**Exit condition (met):** naming audit complete; token names stable for components and Airtable.
 
-**Exit condition:** naming audit complete and any renames merged. Token names are stable enough that components and Airtable records can reference them without churn.
+## Phase 2 — Agentic Foundation *(done)*
 
-## Phase 2 — Agentic Foundation
+Airtable governance fields (`status`, `owner`, `successor`, `notes`); `scripts/airtable-pull.js` → `governance.json`; `scripts/token-usage.js` → `token-usage.json`. Metadata schema validated end-to-end. Six agentic-moment prompt files written to `.claude/commands/`.
 
-> Make the system's state readable by an agent **before** components exist, so every component is born with structured context around it. No MCP required for any of this — plain scripts and committed JSON.
+**Exit condition (met):** Claude can answer token status + usages from committed files with zero MCP calls; layout briefs produce valid React trees from metadata alone.
 
-**Governance infra — do these first; they unblock the deprecation agentic moment:**
+## Phase 3 — Component API Foundation *(done)*
 
-- [x] Airtable governance fields on token records: `status` (`active` | `deprecated`), `owner`, `successor` (dot-path to replacement token, e.g. `color.terracotta.9`; nullable — not every deprecated token has a direct successor), `notes`
-- [x] `scripts/airtable-pull.js` — dump governance state to `packages/tokens/governance.json` via REST, so Claude and CI read Airtable state from a committed file, not live MCP calls. Until Phase 6 automates this, run it manually before any deprecation work.
-- [x] `scripts/token-usage.js` — output `token-usage.json` with two maps: (1) **CSS usages**: scan `packages/components` for `var(--ds-*)` references → `token → [files]`; (2) **alias usages**: scan token source JSON for `{path.to.token}` references → `token → [files]`. Both maps feed the deprecation agentic moment and the PR diff comment.
+CSS reset, `grid.css`, `typography.css` global utilities. Layout primitives: `Box` (polymorphic, inset padding), `Stack` (vertical flex), `Inline` (horizontal flex), `ScrollArea` (hidden-scrollbar overflow, added retroactively in Phase 5c — see ADR-006). Storybook grid/layout stories.
 
-**Metadata and prompts — begin once the token layer is stable:**
+`storybook-design-token` wiring blocked: npm workspace version conflict (Storybook 8 at root vs 10 in components). Token showcase already handled by existing MDX stories; revisit on Storybook version unification.
 
-- [x] Validate the metadata schema with one end-to-end agent prompt — give Claude only a metadata file and ask it to explain when (not) to use the component; fix the schema where the answer is wrong
-- [x] Write the four agentic-moment definitions as prompt files in `.claude/commands/` (trigger, inputs, output, success signal — see Phase 7)
+**Exit condition (met):** sample page layout renders using only `Box`/`Stack`/`Inline` and the grid utility — no ad-hoc CSS.
 
-**Exit condition:** Claude can answer "what is this token's status, who owns it, and where is it used" from files in the repo alone, with zero MCP calls. Additionally, given all component metadata files, Claude can produce a valid React tree from a one-paragraph layout brief — selecting the right components, respecting `accepts`/`containedBy` constraints, and drawing from named `usage.patterns`. If the output requires manual structural correction, the metadata is not rich enough and must be revised before Phase 3 begins.
+## Phase 4 — Core Components *(done)*
 
-## Phase 3 — Component API Foundation
+`Text`, `Heading`, `Icon`, `Button` — semantic tokens, interaction states, size variants, leading icon. Metadata files per component. Code Connect omitted — requires Figma Org/Enterprise plan; not in scope.
 
-> The structural layer every component depends on. No design decisions — wiring existing tokens to CSS and the primitives everything else composes from.
+**Exit condition (met):** all four components render in both themes with stories and metadata.
 
-- [x] CSS reset / base styles
-- [x] `grid.css` utility — `.container` (max-width + `--ds-grid-margin` padding) and `.grid` (CSS Grid with `--ds-grid-columns` / `--ds-grid-gutter`); imported globally in Storybook preview
-- [x] Typography scale styles — `typography.css` utility classes (`.text-body-default` through `.text-display`) mapping semantic device tokens (`--ds-font-size-*`, `--ds-font-line-height-*`, `--ds-font-family-*`, `--ds-font-weight-*`); imported globally in preview
-- [x] `Box` — polymorphic via `as` prop; `padding` / `paddingX` / `paddingY` via `--_padding` private CSS properties mapped to `--ds-space-inset-*` tokens
-- [x] `Stack` — `display: flex; flex-direction: column`; `gap` maps to `--ds-space-stack-*`; `align` / `justify` props via `--_align` / `--_justify` private CSS properties
-- [x] `Inline` — horizontal counterpart to `Stack`; `gap` maps to `--ds-space-inline-*`; wraps by default; `wrap={false}` adds `.noWrap`
-- [x] Metadata file for each primitive (`Box.metadata.json`, `Stack.metadata.json`, `Inline.metadata.json`)
-- [x] Storybook: `Layout/Grid` page section story (exit condition), `Stack`/`Inline` gap-variant stories, `Box` padding-scale story
-- [x] `ScrollArea` — overflow scroll container that hides the native scrollbar cross-browser; `orientation`: `horizontal` | `vertical`. Retroactively added in Phase 5c after identifying the need for a standardised scroll primitive to underpin the carousel and other overflow patterns (see ADR-006).
-- [-] Wire `storybook-design-token` to SD CSS output — blocked: npm workspace has storybook@8 at root conflicting with storybook@10 in components; token showcase is already handled by existing MDX stories (Colors, Spacing, Typography, BorderRadius). Revisit when upgrading the npm workspace to a consistent Storybook version.
+## Phase 5 — Component Library *(done)*
 
-**Exit condition (met):** a sample page layout renders in Storybook using only `Box`/`Stack`/`Inline` and the grid utility — no ad-hoc CSS.
+Full fixed component set built across four batches. Library frozen at 22 components + 2 hooks.
 
-## Phase 4 — Core Components
+| Batch | Components |
+|---|---|
+| Core (5) | `TextField`, `Select`, `Checkbox`, `Card` |
+| User Settings (5b) | `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal` |
+| Homepage (5c) | `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow` |
+| Course Overview (5d) | `Accordion`, `Badge`, `Button` ghost variant + trailing icon, `useSlider` hook |
 
-> Establish the full pattern — token → CSS Module → component → metadata → story → Code Connect — so every later component has a template.
+Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlider. `Accordion` and `Badge` shipped through the `/add-component` loop (Phase 9 pilot). `ScrollArea` added retroactively in 5c as a scroll primitive underpinning the carousel pattern (ADR-006).
 
-- [x] `Text`, `Heading` — consume font device tokens and unitless line-heights
-- [x] `Icon` — single wrapper over a small fixed set of inline SVGs (hand-picked, no icon-library dependency); `currentColor` fill so it inherits text color; `size` prop maps to `size.*` tokens. Add a semantic `size.icon.*` alias if more than one component needs the same icon size
-- [x] `Button` — semantic color tokens, interaction states, size variants via `space.inset.*`; optional leading `Icon`
-- [x] Complete metadata file per component
-- [x] Document the component pattern in CLAUDE.md "Add a coded component" so the scaffolding moment has a template to follow
-- [~] Code Connect: blocked — requires Figma Organization or Enterprise plan (current plan: Pro personal). `Text` and `Heading` also have no Figma component sets (they use text styles). No plans to upgrade. Omitted from scope.
-
-**Exit condition:** all four components render in both themes with stories and metadata. Code Connect omitted — Figma plan gating makes it infeasible without an upgrade.
-
-## Phase 5 — SaaS Component Set
-
-> The rest of the fixed library. After this phase the library is frozen — growth happens by composition.
-
-- [x] `TextField` (label, error state)
-- [x] `Select`
-- [x] `Checkbox`
-- [x] `Card`
-- [x] Metadata + stories for each
-- [x] One composed example page story (`Layout/Examples/Settings Form`) built entirely from library components
-
-**Exit condition (met):** the example page uses only library components and tokens; component set declared complete.
-
-## Phase 5b — User Settings Page Components
-
-> Expand the fixed component set to cover the full User Settings page (Figma node 96:6222). The page analysis identified six net-new components; everything else composes from the existing library. This phase extends the "fixed set" declared in Phase 5 — any component added here must appear on the User Settings page and must not be coverable by composition alone.
-
-**Components already covered — no new work needed:**
-`TextField` (form fields + search with round/icon variant, added in Phase 5 extension), `Select` (language), `Checkbox` (email subscriptions), `Button` (Save, Download, See collection), `Card` (Profile Details + Account Settings panels), `Icon`, layout primitives.
-
-**Net-new components:**
-
-- [x] `Avatar` — circular user photo; `size` prop: `sm` (24px, used in nav) / `lg` (128px, used in profile). Accepts an image `src` + `alt`. No letter-fallback in scope.
-- [x] `AppHeader` — full-width top nav bar; fixed height (90px per Figma); slots: logo (BrandLogo asset), centre search (`TextField` round + icon), right nav links + user dropdown (Avatar + name + chevron). No routing logic — pass nav items as props. (renamed from `Header` to avoid ambiguity with `Heading`)
-- [x] `Breadcrumb` — ordered list of link items separated by `Icon name="chevron-right" size="sm"`; last item is non-linked (current page). Accept `items: { label: string; href?: string }[]`.
-- [x] `Divider` — horizontal separator; `<hr>` styled with `color.border.default` token; no props beyond `className`.
-- [x] `ProgressBar` — 4px tall track with a coloured fill; `value` (0–100) controls fill width as a percentage; uses `color.accent.accent-8` for fill and `color.background.neutral.subtle` for track.
-- [x] `CardHorizontal` — horizontal card: 80×80px square thumbnail + content column (title, optional ProgressBar, metadata row with duration + certified badge). Used in Started Courses, Saved Courses, and Footer recommendations. Two colour contexts: default (light) and inverted (dark footer) — controlled by a `variant` prop or inherited via `data-theme`.
-- [x] Composed page stories built entirely from library components: `Layout/Examples/Footer Highlights` (inverted surface pattern, AppHeader + CardHorizontal with progress) and `Layout/Examples/Settings Form` (existing). A separate Landing Page story was deferred — FooterHighlights covers the same components.
-
-**Exit condition (met):** all six components render in both light and dark themes with stories and metadata; composed layout stories build and pass visual review with no ad-hoc CSS outside component modules.
-
-## Phase 5c — Homepage Components
-
-> Expand the component set to cover the Homepage (Figma node 96:6110). The page analysis identified four net-new components after accounting for what Phase 5b introduces. The carousel layout pattern (horizontal scrollable card row + paginator footer) is a page-level composition — not a component — and is demonstrated in the Homepage example story instead.
-
-**Components already covered — no new work needed:**
-`Header`, `Breadcrumb`, `Avatar`, `Divider`, `ProgressBar`, `CardHorizontal` (Phase 5b); `Button`, `TextField`, `Icon`, layout primitives (Phase 4–5).
-
-**Components that look new but aren't:**
-- `HeadlineRow` (section title + optional top border) → composed from `Heading` + `Divider`; not a standalone.
-- Carousel container → `Inline` / `Stack` + `PaginationArrows`; the page story demonstrates the pattern.
-- Footer / Disclaimer → same page-level composition as User Settings.
-
-**Net-new components:**
-
-- [x] `CardVertical` — vertical course card: `Image` thumbnail (`aspectRatio="4/5"`, portrait, fills card width — height derives from ratio); card `size` prop controls card width (`sm` ≈ 144px / `lg` ≈ 272px, yielding ~180px / ~340px image height respectively); optional `ProgressBar` below image; serif title (`font-family-headline-serif`); metadata row (duration dot certified-badge). Used in Saved Courses and Discover carousels. No dark variant needed — appears on light and elevated backgrounds only.
-- [x] `Chip` — pill-shaped filter tag; `selected` boolean prop. Selected state: brand border (`color.border.selected`) + brand text (`color.text.selected`). Default: neutral border + subtle text. Not a Button variant — no action semantics, pure selection indicator; no dropdown arrow in scope (the page uses label-only chips).
-- [x] `VideoFrame` — rounded container (`border-radius-md`) with a fixed 16:9 aspect ratio thumbnail image and a centred play-button overlay (semi-transparent circle + triangle glyph). Props: `src` (thumbnail URL), `alt`. No playback logic — purely presentational.
-- [x] `ButtonArrow` — 32px circular prev/next navigation button; `direction`: `left` | `right`; disabled via native HTML `disabled` prop. Uses `Icon` chevron internally. Used in the carousel paginator row and in the chapter/slider navigator. Disabled state: no background, muted icon, pointer-events none. (Named `ButtonArrow` to match the `CardHorizontal`/`CardVertical` noun-first convention.)
-- [x] One composed layout story (`Layout/Examples/Carousel`) demonstrating the carousel pattern: section title + `Chip` filter bar + horizontal `CardVertical` row + `ButtonArrow` pair.
-
-**Exit condition:** all four components render in both themes with stories and metadata; the Carousel example story builds and passes visual review with no ad-hoc CSS outside component modules.
-
-## Phase 5d — Course Overview Page Components
-
-> Expand the component set to cover the Course Overview page (Figma node 96:5854). Two net-new components plus a new variant on `Button`; everything else (`AppHeader`, `Breadcrumb`, `VideoFrame`, `CardVertical`, `ButtonArrow`, `Chip`, `CardHorizontal`, layout primitives) is already in the library.
-
-**Components already covered — no new work needed:**
-`AppHeader`, `Breadcrumb` (Phase 5b); `VideoFrame`, `ButtonArrow`, `Chip`, `CardVertical` (Phase 5c); `CardHorizontal` (Phase 5b); `Button`, `Icon`, layout primitives (Phases 3–5).
-
-**Net-new components and variants:**
-
-- [x] `Accordion` — compound component (`Accordion` container + `AccordionItem`); each item has a heading-wrapped trigger button (configurable `headingLevel`, default h3) with `aria-expanded`/`aria-controls` and a `role="region"` panel always present in the DOM (toggled via the `hidden` attribute so `aria-controls` is never a dead reference). Props: `title`, `subtitle?`, `defaultOpen?` (uncontrolled), `open`/`onOpenChange` (controlled). Expanded item background: `color.background.container.elevated`. Ships with Tier-2 behavioral a11y test (9 tests). Figma node 29:1153. Shipped through the `/add-component` loop (Phase 9); see `.claude/handoff/Accordion.run.json`.
-- [x] `Badge` — static category label pill; `label: string`; `variant?: 'outline' | 'filled'` (outline: border only; filled: adds `color.background.neutral.subtlest`). `border-radius.sm`. Distinct from `Chip` — no selection state, no interaction semantics, purely display. Shipped through the `/add-component` loop (Phase 9 pilot).
-- [x] `Button` — `ghost` variant (no background, no border, `color.text.link.default`) plus a dedicated `trailingIcon` prop for trailing icons (chevron-down / chevron-up). The `icon` slot remains leading-only; trailing icon is a separate prop. Replaces the standalone `ShowMoreLink` Figma pattern. Documented in the `GhostToggle` story.
-- [ ] `useSlider` hook — content-stepper state: `{ currentIndex, total, goNext, goPrev, isFirst, isLast }`. Used for step-through UIs that show one item at a time with a CSS fade-in transition (e.g., the chapter description navigator on the Course Overview page). No component — the consuming component owns the fade animation and wires `ButtonArrow` to `goNext`/`goPrev`. Note: `useCarousel` (horizontal scroll offset model) already exists in `hooks/`; `useSlider` is a distinct single-item step-through model.
-
-**Exit condition:** `Accordion` and `Badge` render in both themes with stories and metadata ✓; `Button` ghost variant is documented in its story ✓. `useSlider` hook and the Course Overview example story remain. Partial exit: both components done; hook + story pending.
+**Exit condition (met):** all components render in both themes with stories and metadata; library frozen — growth by composition only.
 
 ## Phase 6 — Automation (scripts and Actions only — no MCP, no agents)
 
@@ -213,6 +114,7 @@ Lite in two ways:
   - **Stage 0 · script** — `npm run sense:component <Name>` writes the frozen snapshot.
   - **Stage 1 · in-session** — scaffold from snapshot + metadata schema + template component (reuses `/component-scaffold`, fed the snapshot).
   - **Stage 2 · script gate** — `npm run validate:metadata && npm run typecheck && npm run build`; fail-fast bounces back to Stage 1 with the error.
+  - **Stage 2b · visual checkpoint** — gate passed; Claude prompts the developer to open the Default story in Storybook and toggle both themes, then reply `go` or describe issues. `go` with manual edits re-runs the gate first; an issue description triggers a fix cycle before re-surfacing the checkpoint. Nothing proceeds to Stage 3 without a human sign-off.
   - **Stage 3 · one subagent** — adversarial review in a fresh context: `/code-review` on the diff + `npm run lint` (ESLint + `jsx-a11y`) + an a11y read against the metadata `accessibility` block; findings written to `.claude/handoff/<Name>.review.json`.
   - **Stage 4 · in-session** — apply review fixes, re-run the Stage 2 gate, commit on the current branch (no new branch unless asked) and open the PR with `gh`.
 - [x] Lint/a11y check wired as `npm run lint` (ESLint 9 flat config in `eslint.config.js`, scoped to `packages/components/src`, with `eslint-plugin-jsx-a11y` as the static a11y gate). The config existed from prior Phase 9 groundwork but no `lint` script invoked it; added the script and brought the baseline to green (fixed a pre-existing `CopyToken` div→button a11y bug). This is **Tier 1** (static), default for all components.

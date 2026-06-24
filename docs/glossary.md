@@ -75,20 +75,6 @@ The combined result of the DOM tree and the CSS rules, used by the browser to de
 **Working tree (Git)**
 The files on disk in your project folder that you can see and edit — distinct from Git's stored history. When you open a file and make changes, you are working in the working tree. `git status` compares your working tree against the last committed snapshot and reports what has changed. In Claude Code, the term appears when multiple simultaneous copies of a branch are needed: `git worktree` creates an additional working tree at a different folder path so two branches can be checked out at once without cloning the whole repo again.
 
-Two things are coupled when one depends on the other — changing or using one affects the other. For example, if `useSlider` needed to read the scroll position from a `ScrollArea`, they would be coupled. Coupling is not always bad, but it makes things harder to change independently. The opposite of orthogonal.
-
-**Hook (Claude Code)**
-A shell command that runs automatically when Claude does something — for example, "run the linter after every file edit." Configured in `.claude/settings.json`. Unrelated to React hooks despite sharing the name.
-
-**Hook (React)**
-A function that packages reusable state or behavior so multiple components can share it. In React, hooks always start with `use` by convention (`useCarousel`, `useSlider`, `useState`). They are not components — they have no visual output. Instead, you plug them *into* a component to give it behavior. In this repo, `useCarousel` tracks which card is currently active; the planned `useSlider` will track which step is visible in a step-through UI.
-
-**Orthogonal**
-Two things are orthogonal when they are fully independent — using or changing one has no effect on the other. In this repo, `ScrollArea` (native browser scroll), `useCarousel` (JS-animated carousel), and `useSlider` (fade-in step-through) are orthogonal: they solve different problems and share no state or implementation. The opposite of coupled.
-
-**Scaffold**
-To generate the skeleton files for a new component — the `index.tsx`, CSS module, stories file, and `metadata.json` — from a template, before any real logic is written. Scaffolding creates the structure; the developer (or agent) fills in the details afterward. In this repo the `/component-scaffold` command does this.
-
 ---
 
 ## Design tokens — core concepts
@@ -152,6 +138,9 @@ A cap on how many API calls you can make in a given time window. Exceed it and t
 
 **REST API**
 The style of API used by Airtable and GitHub in this repo. "REST" describes a set of conventions: each endpoint is a URL, requests use standard HTTP methods (`GET` to read, `POST` to create, `PATCH` to update, `DELETE` to remove), and responses come back as JSON. You don't need to know the conventions in detail — just that when CLAUDE.md says "direct REST calls," it means a script talking to one of these APIs without going through an intermediary tool.
+
+**Upsert**
+A portmanteau of "update" and "insert." An upsert tells an API or database: if a record with this identifier already exists, update it; if it doesn't exist, create it. You use it when syncing data where you don't know upfront whether a record is new or pre-existing — it handles both cases in one operation without needing a prior lookup. In this repo, `scripts/airtable-sync.js` calls Airtable's upsert endpoint when pushing tokens, so it doesn't need to first check whether a token row already exists. The alternatives are a plain **insert** (creates a new record, fails or errors if one already exists) or a plain **update** (modifies an existing record, does nothing if it doesn't exist). Some APIs also offer **replace** (delete then insert), which overwrites the whole record rather than merging changes.
 
 ---
 
