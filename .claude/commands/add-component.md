@@ -41,6 +41,17 @@ If any step fails, go back to Stage 1, fix the cause the error names, and re-run
 
 `a11y:coverage` (ADR-008) enforces the **Tier-2 behavioral a11y** rule: if the component is *interactive* — `component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a non-trivial keyboard contract (anything beyond plain Tab / native browser behaviour) — it **must** ship a co-located `<Name>.a11y.test.tsx` asserting the dynamic contract (state attributes toggling, focus, keyboard) plus an axe scan. Non-interactive components (display/landmark, e.g. Badge) need none — the gate is a no-op for them. Do **not** add a new interactive component to `scripts/a11y-backlog.json`; that ledger only waives pre-existing components pending backfill. Write the test in Stage 1 alongside the component, model it on `Button/Button.a11y.test.tsx`, and disable axe's `color-contrast` rule (jsdom can't judge it).
 
+### Stage 2b · Visual checkpoint (human go/no-go)
+Gate passed. Before spawning the adversarial reviewer, surface the component for a quick human visual check:
+
+> "Gate passed. Start Storybook with `npm run storybook` if it isn't already running (http://localhost:6006). Open the **<Name>** Default story and toggle both light and dark themes. Reply **`go`** to proceed to adversarial review, or describe any issues to fix first."
+
+Wait for the developer's reply. Three cases:
+
+- **`go`** (no changes made) — continue to Stage 3.
+- **`go`** (developer made manual edits) — re-run the Stage 2 gate first; if it passes, continue to Stage 3; if it fails, bounce back to fix the failure, then resurface this checkpoint.
+- **Any issue description** (Claude should fix) — apply the described changes, re-run the Stage 2 gate, then resurface this checkpoint.
+
 ### Stage 3 · Adversarial review (exactly one fresh subagent)
 Spawn **one** subagent (`general-purpose`) with fresh context. It must NOT inherit the scaffold's reasoning — give it only:
 - the path to the new component folder and the diff (`git diff` of the new files),
