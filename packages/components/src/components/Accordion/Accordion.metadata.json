@@ -61,6 +61,21 @@
         "scenario": "Setting a color prop or style directly on the chevron Icon",
         "reason": "Icon uses currentColor — setting color on the Icon itself bypasses the token system.",
         "alternative": "Apply color.icon.default on the trigger button element; the Icon inherits it via currentColor."
+      },
+      {
+        "scenario": "Conditionally rendering the panel element (e.g. {isOpen && <div>}) instead of always mounting it",
+        "reason": "aria-controls on the trigger must point to an element that is always in the DOM. Unmounting the panel when closed means the target id does not exist in the collapsed state, breaking the ARIA association for screen readers such as NVDA + Firefox.",
+        "alternative": "Always render the panel div and control visibility with the hidden HTML attribute: <div id={panelId} role='region' aria-labelledby={triggerId} hidden={!isOpen}>."
+      },
+      {
+        "scenario": "Passing both the open prop (controlled) and defaultOpen prop simultaneously to AccordionItem",
+        "reason": "The component cannot resolve two competing sources of truth. The controlled open prop silently wins but defaultOpen is ignored without warning, leading to unexpected initial state.",
+        "alternative": "Use open + onOpenChange for fully controlled mode, or defaultOpen alone for uncontrolled mode. Never supply both."
+      },
+      {
+        "scenario": "Placing elements other than AccordionItem as direct children of the Accordion container",
+        "reason": "The Accordion container's CSS and ARIA structure assumes all direct children are AccordionItem elements. Arbitrary children break the border-divider pattern and the heading hierarchy.",
+        "alternative": "All direct children of Accordion must be AccordionItem. Place other content above or below the Accordion wrapper."
       }
     ]
   },
@@ -113,10 +128,10 @@
   },
   "accessibility": {
     "role": "button",
-    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div.",
+    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly.",
     "ariaAttributes": [
       "aria-expanded (true|false on the trigger button)",
-      "aria-controls (trigger → panel id)",
+      "aria-controls (trigger → panel id) — the panel element must always be present in the DOM; use hidden={!isOpen} rather than conditional rendering so this id always resolves",
       "aria-labelledby (panel → trigger id)",
       "role='region' (on the panel)"
     ],
@@ -131,7 +146,7 @@
       },
       {
         "key": "Tab",
-        "action": "Moves focus to the next focusable element"
+        "action": "Moves focus sequentially through any focusable content within an open panel, then to the next accordion trigger"
       }
     ]
   },
