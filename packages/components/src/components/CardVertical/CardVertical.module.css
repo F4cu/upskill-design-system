@@ -5,6 +5,14 @@
   width: 100%;
 }
 
+.lg {
+  min-width: 220px;
+}
+
+.sm {
+  min-width: 160px;
+}
+
 .thumbnail {
   flex-shrink: 0;
 }

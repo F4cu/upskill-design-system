@@ -53,13 +53,15 @@ function CarouselPage() {
               ))}
             </Inline>
           </Stack>
-          <div style={{ display: 'flex', gap: 'var(--ds-grid-gutter)' }}>
-            {COURSES.slice(0, 4).map((course) => (
-              <div key={course.title} style={{ flex: '1 0 0', minWidth: 0 }}>
-                <CardVertical title={course.title} duration={course.duration} certified={course.certified} size="lg" />
-              </div>
-            ))}
-          </div>
+          <Box overflow="hidden">
+            <div style={{ display: 'flex', gap: 'var(--ds-grid-gutter)' }}>
+              {COURSES.slice(0, 4).map((course) => (
+                <div key={course.title} style={{ flex: '1 0 min-content' }}>
+                  <CardVertical title={course.title} duration={course.duration} certified={course.certified} size="lg" />
+                </div>
+              ))}
+            </div>
+          </Box>
         </Stack>
 
         <Divider />
@@ -77,7 +79,7 @@ function CarouselPage() {
             </Inline>
           </Stack>
           <Stack gap="md">
-            <div style={{ overflow: 'hidden' }}>
+            <Box overflow="hidden">
               <div
                 style={{
                   display: 'flex',
@@ -98,7 +100,7 @@ function CarouselPage() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Box>
             <Inline gap="sm" justify="end">
               <ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} />
               <ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} />
@@ -127,4 +129,68 @@ const meta = {
 export default meta
 type Story = StoryObj
 
-export const Default: Story = { render: () => <CarouselPage />, tags: ['!dev'] }
+export const Default: Story = {
+  render: () => <CarouselPage />,
+  tags: ['!dev'],
+  parameters: {
+    docs: {
+      source: {
+        language: 'tsx',
+        code: `
+const carousel = useCarousel(courses.length, VISIBLE_COUNT)
+const [filter, setFilter] = useState('All Courses')
+
+{/* Full-width grid: equal-width cards, no pagination */}
+<Stack gap="lg">
+  <Stack gap="md">
+    <Heading size="headline">Discover Courses</Heading>
+    <Inline gap="sm" wrap>
+      {FILTERS.map((f) => (
+        <Chip key={f} selected={f === filter} onClick={() => setFilter(f)}>{f}</Chip>
+      ))}
+    </Inline>
+  </Stack>
+  <Box overflow="hidden">
+    <div style={{ display: 'flex', gap: 'var(--ds-grid-gutter)' }}>
+      {courses.slice(0, 4).map((course) => (
+        <div key={course.title} style={{ flex: '1 0 min-content' }}>
+          <CardVertical title={course.title} duration={course.duration} certified={course.certified} size="lg" />
+        </div>
+      ))}
+    </div>
+  </Box>
+</Stack>
+
+<Divider />
+
+{/* Compact: fixed-width cards with ButtonArrow pagination */}
+<Stack gap="lg">
+  <Heading size="headline">Saved Courses</Heading>
+  <Stack gap="md">
+    <Box overflow="hidden">
+      <div
+        style={{
+          display: 'flex',
+          gap: 'var(--ds-grid-gutter)',
+          transform: \`translateX(calc(-\${carousel.offset} * (\${CARD_WIDTH}px + var(--ds-grid-gutter))))\`,
+          transition: 'transform 300ms ease',
+        }}
+      >
+        {courses.map((course) => (
+          <div key={course.title} style={{ flexShrink: 0, width: \`\${CARD_WIDTH}px\` }}>
+            <CardVertical title={course.title} duration={course.duration} certified={course.certified} progress={course.progress} size="sm" />
+          </div>
+        ))}
+      </div>
+    </Box>
+    <Inline gap="sm" justify="end">
+      <ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} />
+      <ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} />
+    </Inline>
+  </Stack>
+</Stack>
+`.trim(),
+      },
+    },
+  },
+}

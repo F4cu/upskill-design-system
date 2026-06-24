@@ -86,4 +86,41 @@ const meta = {
 export default meta
 type Story = StoryObj
 
-export const Default: Story = { render: () => <CourseSliderPage />, tags: ['!dev'] }
+export const Default: Story = {
+  render: () => <CourseSliderPage />,
+  tags: ['!dev'],
+  parameters: {
+    docs: {
+      source: {
+        language: 'tsx',
+        code: `
+const slider = useSlider(chapters.length)
+const chapter = chapters[slider.currentIndex]
+
+<Box style={{ maxWidth: '560px' }}>
+  <Stack gap="lg">
+    <div
+      key={slider.currentIndex}
+      style={{ animation: 'ds-fade-in 0.25s ease', minHeight: '180px' }}
+    >
+      <Stack gap="xs">
+        <Heading as="h2" size="subheader">{chapter.title}</Heading>
+        <Text>{chapter.description}</Text>
+      </Stack>
+    </div>
+
+    <Inline justify="end" align="center" gap="md">
+      <Text size="body-small" color="subtle" as="span">
+        Chapter <strong>{slider.currentIndex + 1}</strong> of{' '}
+        <strong>{slider.total}</strong>
+      </Text>
+      <ButtonArrow direction="left" disabled={slider.isFirst} onClick={slider.goPrev} />
+      <ButtonArrow direction="right" disabled={slider.isLast} onClick={slider.goNext} />
+    </Inline>
+  </Stack>
+</Box>
+`.trim(),
+      },
+    },
+  },
+}

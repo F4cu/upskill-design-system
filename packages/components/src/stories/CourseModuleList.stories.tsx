@@ -94,4 +94,42 @@ const meta = {
 export default meta
 type Story = StoryObj
 
-export const Default: Story = { render: () => <CourseModuleListPage />, tags: ['!dev'] }
+export const Default: Story = {
+  render: () => <CourseModuleListPage />,
+  tags: ['!dev'],
+  parameters: {
+    docs: {
+      source: {
+        language: 'tsx',
+        code: `
+const [showAll, setShowAll] = useState(false)
+const visible = showAll ? ALL_MODULES : ALL_MODULES.slice(0, DEFAULT_VISIBLE)
+
+<Stack gap="lg">
+  <Heading as="h2" size="headline">Course Modules</Heading>
+  <div>
+    <Accordion>
+      {visible.map((module) => (
+        <AccordionItem key={module.title} title={module.title} subtitle={module.subtitle}>
+          <Text>{module.body}</Text>
+        </AccordionItem>
+      ))}
+    </Accordion>
+    {ALL_MODULES.length > DEFAULT_VISIBLE && (
+      <Button
+        variant="ghost"
+        size="sm"
+        trailingIcon={showAll ? 'chevron-up' : 'chevron-down'}
+        onClick={() => setShowAll((prev) => !prev)}
+        style={{ marginLeft: 'var(--ds-space-inset-md)' }}
+      >
+        {showAll ? 'Show less' : \`Show \${ALL_MODULES.length - DEFAULT_VISIBLE} more\`}
+      </Button>
+    )}
+  </div>
+</Stack>
+`.trim(),
+      },
+    },
+  },
+}

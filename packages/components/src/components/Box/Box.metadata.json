@@ -4,7 +4,7 @@
     "category": "layout",
     "type": "container",
     "status": "ready",
-    "description": "The foundational layout primitive. A polymorphic container that applies spacing tokens via the padding props. Everything else in the system can be placed inside a Box.",
+    "description": "The foundational layout primitive. A polymorphic container that applies spacing tokens via the padding props and controls overflow clipping. Everything else in the system can be placed inside a Box.",
     "figmaNodeId": ""
   },
   "usage": {
@@ -15,7 +15,9 @@
       "div",
       "padding",
       "spacing",
-      "layout"
+      "layout",
+      "overflow",
+      "clip"
     ],
     "when": [
       "Wrapping content that needs padding without imposing flex or grid layout",

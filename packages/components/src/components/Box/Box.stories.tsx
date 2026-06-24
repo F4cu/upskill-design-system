@@ -17,6 +17,10 @@ const meta = {
       control: 'select',
       options: [undefined, 'xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl'],
     },
+    overflow: {
+      control: 'select',
+      options: [undefined, 'hidden', 'auto', 'scroll', 'visible', 'clip'],
+    },
     as: { control: 'text' },
   },
 } satisfies Meta<typeof Box>

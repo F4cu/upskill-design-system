@@ -9,6 +9,20 @@ export type UseCarouselReturn = {
   reset: () => void
 }
 
+/**
+ * Manages offset-based carousel pagination state.
+ *
+ * The caller is responsible for the required DOM contract:
+ * - Outer container must have `overflow: hidden` to clip sliding cards.
+ * - Inner track must apply `transform: translateX(...)` using `offset`.
+ *
+ * @example
+ * <div style={{ overflow: 'hidden' }}>
+ *   <div style={{ display: 'flex', transform: `translateX(calc(-${offset} * (${CARD_WIDTH}px + gap)))`, transition: 'transform 300ms ease' }}>
+ *     {items.map(...)}
+ *   </div>
+ * </div>
+ */
 export function useCarousel(itemCount: number, visibleCount: number): UseCarouselReturn {
   const maxOffset = Math.max(0, itemCount - visibleCount)
   const [offset, setOffset] = useState(0)

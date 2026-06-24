@@ -31,7 +31,7 @@ export function CardVertical({
 }: CardVerticalProps) {
   return (
     <div
-      className={[styles.card, className].filter(Boolean).join(' ')}
+      className={[styles.card, styles[size], className].filter(Boolean).join(' ')}
       {...rest}
     >
       <Image

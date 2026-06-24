@@ -2,12 +2,14 @@ import type { ElementType, HTMLAttributes, CSSProperties } from 'react'
 import styles from './Box.module.css'
 
 type SpaceInset = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'
+type Overflow = 'hidden' | 'auto' | 'scroll' | 'visible' | 'clip'
 
 export type BoxProps = {
   as?: ElementType
   padding?: SpaceInset
   paddingX?: SpaceInset
   paddingY?: SpaceInset
+  overflow?: Overflow
   className?: string
   style?: CSSProperties
   children?: React.ReactNode
@@ -18,6 +20,7 @@ export function Box({
   padding,
   paddingX,
   paddingY,
+  overflow,
   className,
   style,
   children,
@@ -28,6 +31,7 @@ export function Box({
   const cssVars: CSSProperties = {
     '--_box-px': resolvedX ? `var(--ds-space-inset-${resolvedX})` : '0',
     '--_box-py': resolvedY ? `var(--ds-space-inset-${resolvedY})` : '0',
+    ...(overflow && { overflow }),
     ...style,
   }
 
