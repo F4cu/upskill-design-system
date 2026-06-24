@@ -2,7 +2,7 @@
 
 ## Project purpose
 
-A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to six defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
+A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to seven defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
 
 Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and exit conditions.
 
@@ -136,6 +136,8 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 
 6. **Add component (verified scaffold)** — the ad-hoc agentic loop, piloted on new components. `/add-component <Name>` stages: **sense** (script writes the frozen per-component snapshot) → **scaffold** in-session (reuses moment 3) → **deterministic gate** (`validate:metadata` + `typecheck` + `build`) → **one adversarial reviewer subagent** (`/code-review` + lint + a11y, fresh context) → **apply fixes** → PR. Sequential, at most two agents (main session + one reviewer). The frozen snapshot is the only context handoff. See ROADMAP Phase 9; record ADR-007 when built.
 
+7. **Post-review retro (metadata self-improvement)** — after a component PR merges or after any session that fixes issues in an existing component. Read `.claude/handoff/<Name>.review.json` + `.run.json` (no live API); classify each finding by the metadata section it belongs to (`accessibility.ariaAttributes`, `accessibility.keyboardInteractions`, `composition.accepts`, `composition.layoutBehavior`, `usage.antiPatterns`, etc.); draft targeted amendments; gate on `validate:metadata`; open a PR. For `--all`, scan for patterns appearing in 2+ components and propose a CLAUDE.md addition (developer confirms before it lands). This is the learning loop: fixes that land only in code rot; fixes that land in metadata prevent the same mistake in every future scaffold.
+
 **For existing component reviews:** Use `/code-review` directly on the diff. It reviews for correctness, reuse/simplification, and efficiency. Pair it with `npm run validate:metadata && npm run typecheck && npm run build && npm run a11y:coverage && npm run test:a11y` to verify the gate passes, then test visually in Storybook before opening a PR.
 
 **Ad-hoc loops vs continuous loops.** A developer-triggered loop that runs a bounded sequence once and stops (moment 6) is allowed — it is a moment with stages, nothing more. A *continuous* loop, scheduled agent run, or always-on watcher is not: if asked for one, push back and propose a script, a GitHub Action, or one of these moments instead.
@@ -222,7 +224,7 @@ Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-te
 
 ## Common tasks
 
-Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The six developer-triggered commands are the "Agentic moments" above.
+Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The seven developer-triggered commands are the "Agentic moments" above.
 
 | Task | How |
 |---|---|
@@ -231,6 +233,7 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Scaffold a new component from the fixed set | `/component-scaffold` |
 | Run the verified component loop for a new component (sense → scaffold → adversarial review → PR) | `/add-component` |
 | Review changes to an existing component | Use `/code-review` on the diff, then verify with `npm run validate:metadata && npm run typecheck && npm run build && npm run a11y:coverage && npm run test:a11y`, test in Storybook via `/run-storybook` |
+| Back-fill metadata learnings after a review or bug-fix session | `/post-review-retro <Name>` (single) or `/post-review-retro --all` (batch) |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
 | Run a11y checks (static + behavioral) | `npm run lint` (Tier 1, all) · `npm run a11y:coverage && npm run test:a11y` (Tier 2, interactive components — ADR-008) |
 | Generate a page or section layout | `/layout-generation` |
