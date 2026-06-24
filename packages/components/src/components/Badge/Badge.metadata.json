@@ -7,13 +7,27 @@
     "description": "Static category label pill. Outline: border only, transparent background. Filled: neutral-subtlest background. Purely presentational — no selection state and no interaction semantics. Distinct from Chip, which is an interactive selection toggle.",
     "figmaNodeId": "none — scaffolded from the ROADMAP Phase 5d spec; no dedicated Figma node."
   },
-
   "usage": {
-    "keywords": ["badge", "label", "tag", "category", "pill", "meta", "status label"],
+    "keywords": [
+      "badge",
+      "label",
+      "tag",
+      "category",
+      "pill",
+      "meta",
+      "status label"
+    ],
     "when": [
       "Labelling a course or card with a static category (e.g. Design, Development)",
       "Showing a non-interactive level or status (e.g. Beginner, New, Certified)",
       "Displaying a compact metadata token in a card or list row"
+    ],
+    "patterns": [
+      {
+        "name": "card-category-row",
+        "description": "A row of static category badges in a card's metadata area.",
+        "tree": "Card > Stack > [Heading, Inline(gap=xs) > [Badge(outline), Badge(filled)]]"
+      }
     ],
     "antiPatterns": [
       {
@@ -33,10 +47,12 @@
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["outline", "filled"],
+      "options": [
+        "outline",
+        "filled"
+      ],
       "default": "outline",
       "purpose": {
         "outline": "Bordered pill on transparent background. Use on plain surfaces where a fill would compete with surrounding content.",
@@ -44,11 +60,12 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static label pill; the only state. No hover, focus, or disabled states — Badge is non-interactive." }
+    {
+      "state": "default",
+      "description": "Static label pill; the only state. No hover, focus, or disabled states — Badge is non-interactive."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.border.default",
@@ -65,28 +82,27 @@
       "font.weight.medium",
       "font.line-height.tight"
     ],
-    "borderRadius": ["border-radius.sm"],
+    "borderRadius": [
+      "border-radius.sm"
+    ],
     "other": []
   },
-
   "accessibility": {
     "role": "none",
     "ariaAttributes": [],
     "keyboardInteractions": [],
     "notes": "Renders a plain <span> with visible text — no ARIA role needed; the label is read inline as text content. Not focusable and not interactive. If the badge conveys meaning beyond the adjacent content (e.g. a status not otherwise stated), make the label text explicit rather than relying on colour alone."
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
     "accepts": [],
-    "containedBy": ["Box", "Inline", "Stack", "Card", "CardHorizontal", "CardVertical"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "card-category-row",
-        "description": "A row of static category badges in a card's metadata area.",
-        "tree": "Card > Stack > [Heading, Inline(gap=xs) > [Badge(outline), Badge(filled)]]"
-      }
+    "containedBy": [
+      "Box",
+      "Inline",
+      "Stack",
+      "Card",
+      "CardHorizontal",
+      "CardVertical"
     ],
     "layoutBehavior": {
       "widthBehavior": "hug",

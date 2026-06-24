@@ -7,13 +7,27 @@
     "description": "The foundational layout primitive. A polymorphic container that applies spacing tokens via the padding props. Everything else in the system can be placed inside a Box.",
     "figmaNodeId": ""
   },
-
   "usage": {
-    "keywords": ["box", "container", "wrapper", "div", "padding", "spacing", "layout"],
+    "keywords": [
+      "box",
+      "container",
+      "wrapper",
+      "div",
+      "padding",
+      "spacing",
+      "layout"
+    ],
     "when": [
       "Wrapping content that needs padding without imposing flex or grid layout",
       "Providing semantic HTML structure via the as prop (section, article, aside, main)",
       "Creating a padded surface or card-like region before Card is available"
+    ],
+    "patterns": [
+      {
+        "name": "padded-surface",
+        "description": "A Box wrapping a Stack to create a padded vertical content region.",
+        "tree": "Box(padding=lg) > Stack > [Heading, Text, Button]"
+      }
     ],
     "antiPatterns": [
       {
@@ -28,21 +42,23 @@
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default"],
+      "options": [
+        "default"
+      ],
       "default": "default",
       "purpose": {
         "default": "A generic padded container. Rendered as div by default; override with the as prop for semantic HTML."
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static container — no interactive states." }
+    {
+      "state": "default",
+      "description": "Static container — no interactive states."
+    }
   ],
-
   "tokens": {
     "spacing": [
       "space.inset.xxs",
@@ -55,24 +71,31 @@
       "space.inset.xxxl"
     ]
   },
-
   "accessibility": {
     "role": "generic",
     "ariaAttributes": [],
     "keyboardInteractions": []
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
-    "accepts": ["Box", "Stack", "Inline", "Text", "Heading", "Icon", "Button", "TextField", "Select", "Checkbox", "Card"],
-    "containedBy": ["Box", "Stack", "Inline", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "padded-surface",
-        "description": "A Box wrapping a Stack to create a padded vertical content region.",
-        "tree": "Box(padding=lg) > Stack > [Heading, Text, Button]"
-      }
+    "accepts": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Text",
+      "Heading",
+      "Icon",
+      "Button",
+      "TextField",
+      "Select",
+      "Checkbox",
+      "Card"
+    ],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

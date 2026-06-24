@@ -7,14 +7,45 @@
     "description": "Triggers an action or navigation. The primary way a user initiates a response from the system.",
     "figmaNodeId": ""
   },
-
   "usage": {
-    "keywords": ["button", "cta", "submit", "action", "trigger", "click", "confirm", "cancel", "icon-only", "toolbar", "save", "delete", "next", "back"],
+    "keywords": [
+      "button",
+      "cta",
+      "submit",
+      "action",
+      "trigger",
+      "click",
+      "confirm",
+      "cancel",
+      "icon-only",
+      "toolbar",
+      "save",
+      "delete",
+      "next",
+      "back"
+    ],
     "when": [
       "Submitting a form",
       "Triggering a modal or dialog",
       "Primary call-to-action on a page",
       "Confirming or cancelling a destructive operation"
+    ],
+    "patterns": [
+      {
+        "name": "form-actions-row",
+        "description": "Primary + secondary button pair at the bottom of a form. Primary commits, secondary cancels.",
+        "tree": "Inline > [Button(primary), Button(secondary)]"
+      },
+      {
+        "name": "card-cta",
+        "description": "Single call-to-action anchored to the bottom of a Card.",
+        "tree": "Card > Stack > [Heading, Text, Button(primary)]"
+      },
+      {
+        "name": "danger-confirmation",
+        "description": "Destructive action paired with a cancel. Danger variant always on the right.",
+        "tree": "Inline > [Button(secondary), Button(danger)]"
+      }
     ],
     "antiPatterns": [
       {
@@ -39,10 +70,12 @@
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default", "outlined"],
+      "options": [
+        "default",
+        "outlined"
+      ],
       "default": "default",
       "purpose": {
         "default": "The primary filled action on a surface. Use once per view section — multiple filled buttons collapse visual hierarchy.",
@@ -50,7 +83,10 @@
       }
     },
     "shape": {
-      "options": ["square", "round"],
+      "options": [
+        "square",
+        "round"
+      ],
       "default": null,
       "purpose": {
         "square": "Icon-only action in a square container. Use for compact affordances where a text label is unnecessary (e.g. toolbar actions).",
@@ -58,16 +94,32 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Resting state." },
-    { "state": "hover", "description": "Pointer is over the button." },
-    { "state": "focus", "description": "Keyboard focus ring visible. Must meet WCAG 3:1 contrast against the surface." },
-    { "state": "active", "description": "Button is being pressed." },
-    { "state": "disabled", "description": "Action is unavailable. Pointer events suppressed. Must not rely on color alone — also set aria-disabled='true'." },
-    { "state": "loading", "description": "Async action in progress. Label replaced by a spinner. Width must not collapse to prevent layout shift." }
+    {
+      "state": "default",
+      "description": "Resting state."
+    },
+    {
+      "state": "hover",
+      "description": "Pointer is over the button."
+    },
+    {
+      "state": "focus",
+      "description": "Keyboard focus ring visible. Must meet WCAG 3:1 contrast against the surface."
+    },
+    {
+      "state": "active",
+      "description": "Button is being pressed."
+    },
+    {
+      "state": "disabled",
+      "description": "Action is unavailable. Pointer events suppressed. Must not rely on color alone — also set aria-disabled='true'."
+    },
+    {
+      "state": "loading",
+      "description": "Async action in progress. Label replaced by a spinner. Width must not collapse to prevent layout shift."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.button.$root",
@@ -89,37 +141,34 @@
       "border-radius.md"
     ]
   },
-
   "accessibility": {
     "role": "button",
-    "ariaAttributes": ["aria-disabled", "aria-pressed", "aria-label"],
+    "ariaAttributes": [
+      "aria-disabled",
+      "aria-pressed",
+      "aria-label"
+    ],
     "keyboardInteractions": [
-      { "key": "Enter", "action": "Activates the button" },
-      { "key": "Space", "action": "Activates the button" }
+      {
+        "key": "Enter",
+        "action": "Activates the button"
+      },
+      {
+        "key": "Space",
+        "action": "Activates the button"
+      }
     ]
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
-    "accepts": ["Icon"],
-    "containedBy": ["Box", "Stack", "Inline", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "form-actions-row",
-        "description": "Primary + secondary button pair at the bottom of a form. Primary commits, secondary cancels.",
-        "tree": "Inline > [Button(primary), Button(secondary)]"
-      },
-      {
-        "name": "card-cta",
-        "description": "Single call-to-action anchored to the bottom of a Card.",
-        "tree": "Card > Stack > [Heading, Text, Button(primary)]"
-      },
-      {
-        "name": "danger-confirmation",
-        "description": "Destructive action paired with a cancel. Danger variant always on the right.",
-        "tree": "Inline > [Button(secondary), Button(danger)]"
-      }
+    "accepts": [
+      "Icon"
+    ],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "hug",

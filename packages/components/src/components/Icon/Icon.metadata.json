@@ -7,13 +7,25 @@
     "description": "Renders one of 20 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
     "figmaNodeId": "96:11108"
   },
-
   "usage": {
-    "keywords": ["icon", "svg", "glyph", "symbol", "pictogram"],
+    "keywords": [
+      "icon",
+      "svg",
+      "glyph",
+      "symbol",
+      "pictogram"
+    ],
     "when": [
       "Providing a visual cue alongside a label (Button leading icon, form field prefix)",
       "Indicating direction or action in a compact space (chevrons, plus, minus)",
       "Communicating theme state (sun/moon-star for light/dark toggle)"
+    ],
+    "patterns": [
+      {
+        "name": "icon-label-pair",
+        "description": "An Icon followed by a Text label inside an Inline, used for navigation items and feature callouts.",
+        "tree": "Inline(gap=xs, align=center) > [Icon(size=md), Text(size=body-default)]"
+      }
     ],
     "antiPatterns": [
       {
@@ -27,16 +39,18 @@
         "alternative": "Choose the closest existing icon, or propose expanding the fixed set deliberately."
       },
       {
-        "scenario": "Setting a raw color value on the Icon element",
-        "reason": "Icon uses currentColor — color must be set on an ancestor element using a semantic token.",
-        "alternative": "Wrap in a span with color: var(--ds-color-text-brand) or similar."
+        "scenario": "Setting a color prop or inline style directly on the Icon element",
+        "reason": "Icon uses currentColor — color must be set on the ancestor element that owns the color context, using a semantic token.",
+        "alternative": "Apply color.icon.default (or color.icon.subtle / color.icon.brand for intentional variants) via CSS on the parent element. Never set color on <Icon> itself. Each composing component's metadata implementation field specifies which token applies where."
       }
     ]
   },
-
   "variants": {
     "size": {
-      "options": ["sm", "md"],
+      "options": [
+        "sm",
+        "md"
+      ],
       "default": "md",
       "purpose": {
         "sm": "16px — use inside dense UI elements such as tags, badges, or inline metadata.",
@@ -44,36 +58,37 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static — no interactive states on the icon itself." }
+    {
+      "state": "default",
+      "description": "Static — no interactive states on the icon itself."
+    }
   ],
-
   "tokens": {
     "other": [
       "size.icon.sm",
       "size.icon.md"
     ]
   },
-
   "accessibility": {
     "role": "generic",
-    "ariaAttributes": ["aria-hidden (default true)", "aria-label (when label prop provided)", "role=img (when label prop provided)"],
+    "ariaAttributes": [
+      "aria-hidden (default true)",
+      "aria-label (when label prop provided)",
+      "role=img (when label prop provided)"
+    ],
     "keyboardInteractions": [],
     "notes": "Icons are decorative by default (aria-hidden=true). When an Icon is the only content conveying meaning, pass the label prop to add aria-label and role=img."
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Inline", "Button", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "icon-label-pair",
-        "description": "An Icon followed by a Text label inside an Inline, used for navigation items and feature callouts.",
-        "tree": "Inline(gap=xs, align=center) > [Icon(size=md), Text(size=body-default)]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Button",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "fixed",

@@ -7,13 +7,29 @@
     "description": "32px circular prev/next navigation button. Uses an Icon chevron internally. direction prop selects left or right. Disabled state: no background, muted icon, pointer-events blocked. Used in carousel paginators and chapter/slider navigators.",
     "figmaNodeId": "61:1228"
   },
-
   "usage": {
-    "keywords": ["arrow", "prev", "next", "previous", "navigation", "carousel", "paginator", "slider", "chapter"],
+    "keywords": [
+      "arrow",
+      "prev",
+      "next",
+      "previous",
+      "navigation",
+      "carousel",
+      "paginator",
+      "slider",
+      "chapter"
+    ],
     "when": [
       "Navigating backward or forward through a carousel of cards",
       "Stepping through chapters or slides in a sequence",
       "Disabling the left arrow when at the start of a sequence, and the right arrow at the end"
+    ],
+    "patterns": [
+      {
+        "name": "carousel-paginator",
+        "description": "A pair of ButtonArrow components flanking or below a carousel row, with the left disabled at the start and right disabled at the end.",
+        "tree": "Inline(gap=sm, align=center) > [ButtonArrow(direction=left, disabled), ButtonArrow(direction=right)]"
+      }
     ],
     "antiPatterns": [
       {
@@ -28,10 +44,12 @@
       }
     ]
   },
-
   "variants": {
     "direction": {
-      "options": ["left", "right"],
+      "options": [
+        "left",
+        "right"
+      ],
       "default": "right",
       "purpose": {
         "left": "Chevron-left icon. Navigates to the previous item. Set disabled when at the start of the sequence.",
@@ -39,13 +57,20 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Neutral-subtlest background, default border." },
-    { "state": "hover", "description": "Border darkens to border-strong; background unchanged." },
-    { "state": "disabled", "description": "No background, default border, muted icon color; pointer-events none." }
+    {
+      "state": "default",
+      "description": "Neutral-subtlest background, default border."
+    },
+    {
+      "state": "hover",
+      "description": "Border darkens to border-strong; background unchanged."
+    },
+    {
+      "state": "disabled",
+      "description": "No background, default border, muted icon color; pointer-events none."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.neutral.subtlest",
@@ -56,33 +81,39 @@
     ],
     "spacing": [],
     "typography": [],
-    "borderRadius": ["border-radius.full"],
-    "other": ["size.400"]
+    "borderRadius": [
+      "border-radius.full"
+    ],
+    "other": [
+      "size.400"
+    ]
   },
-
   "accessibility": {
     "role": "button",
     "ariaAttributes": [
       "aria-label — automatically set to 'Previous' or 'Next' from the direction prop; override via rest props for more specific context"
     ],
     "keyboardInteractions": [
-      { "key": "Enter / Space", "action": "Triggers the navigation callback" },
-      { "key": "Tab", "action": "Moves focus to the next focusable element" }
+      {
+        "key": "Enter / Space",
+        "action": "Triggers the navigation callback"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus to the next focusable element"
+      }
     ],
     "notes": "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS."
   },
-
-  "relationships": {
-    "composedOf": ["Icon"],
+  "composition": {
+    "composedOf": [
+      "Icon"
+    ],
     "accepts": [],
-    "containedBy": ["Box", "Inline", "Stack"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "carousel-paginator",
-        "description": "A pair of ButtonArrow components flanking or below a carousel row, with the left disabled at the start and right disabled at the end.",
-        "tree": "Inline(gap=sm, align=center) > [ButtonArrow(direction=left, disabled), ButtonArrow(direction=right)]"
-      }
+    "containedBy": [
+      "Box",
+      "Inline",
+      "Stack"
     ],
     "layoutBehavior": {
       "widthBehavior": "fixed",

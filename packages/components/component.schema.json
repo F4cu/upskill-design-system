@@ -10,7 +10,7 @@
     "states",
     "tokens",
     "accessibility",
-    "relationships"
+    "composition"
   ],
   "properties": {
     "component": {
@@ -50,8 +50,25 @@
           "type": "array",
           "items": { "type": "string" }
         },
+        "patterns": {
+          "description": "Named, proven compositions using this component. Guidance for layout generation — prefer a named pattern over ad-hoc composition when one fits.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description", "tree"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "tree": {
+                "type": "string",
+                "description": "Component tree as a readable expression, e.g. 'Card > Stack > [Heading, Text, Button(primary)]'"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
         "antiPatterns": {
-          "description": "Explicit misuses. Anti-patterns are load-bearing — they prevent the most common agent errors.",
+          "description": "Explicit misuses and implementation mistakes. Anti-patterns are load-bearing — they prevent the most common agent errors.",
           "type": "array",
           "items": {
             "type": "object",
@@ -147,7 +164,8 @@
       "additionalProperties": false
     },
 
-    "relationships": {
+    "composition": {
+      "description": "Component graph topology: what this component is built from, what it accepts, where it belongs, and how it behaves in a layout.",
       "type": "object",
       "properties": {
         "composedOf": {
@@ -164,28 +182,6 @@
           "description": "Component names that are valid direct parents of this component.",
           "type": "array",
           "items": { "type": "string" }
-        },
-        "neverPairWith": {
-          "description": "Components that must not appear as siblings or in the same composition as this one.",
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "compositionPatterns": {
-          "description": "Named, tested patterns that use this component. Concrete starting points for layout generation.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["name", "description", "tree"],
-            "properties": {
-              "name": { "type": "string" },
-              "description": { "type": "string" },
-              "tree": {
-                "type": "string",
-                "description": "Component tree as a readable expression, e.g. 'Card > Stack > [Heading, Text, Button(primary)]'"
-              }
-            },
-            "additionalProperties": false
-          }
         },
         "layoutBehavior": {
           "description": "How this component behaves inside a layout container. Used by the layout generation moment.",

@@ -7,14 +7,32 @@
     "description": "Triggers an action or navigation. Three visual variants (default brand-fill, outlined, ghost), three sizes, optional leading and/or trailing icon. Fully keyboard-accessible via the native button element.",
     "figmaNodeId": "57:1265"
   },
-
   "usage": {
-    "keywords": ["button", "action", "cta", "submit", "click", "interactive"],
+    "keywords": [
+      "button",
+      "action",
+      "cta",
+      "submit",
+      "click",
+      "interactive"
+    ],
     "when": [
       "The primary action on a page or section (use default variant, one per view)",
       "A secondary or supplementary action alongside a primary (use outlined)",
       "Triggering a form submit, modal open, or navigation",
       "The action is destructive (delete, remove, deactivate) — always use the default variant so the weight signals danger; never outlined"
+    ],
+    "patterns": [
+      {
+        "name": "form-actions",
+        "description": "A primary and secondary Button side by side at the bottom of a form.",
+        "tree": "Inline(gap=sm, justify=end) > [Button(variant=outlined), Button(variant=default)]"
+      },
+      {
+        "name": "hero-cta",
+        "description": "A single large primary Button below a Heading and Text block.",
+        "tree": "Stack(gap=lg) > [Heading(size=display), Text(size=body-default), Button(size=lg)]"
+      }
     ],
     "antiPatterns": [
       {
@@ -39,10 +57,13 @@
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default", "outlined", "ghost"],
+      "options": [
+        "default",
+        "outlined",
+        "ghost"
+      ],
       "default": "default",
       "purpose": {
         "default": "Primary action. Brand-fill background with inverted text. Use once per view section.",
@@ -51,7 +72,11 @@
       }
     },
     "size": {
-      "options": ["sm", "md", "lg"],
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
       "default": "md",
       "purpose": {
         "sm": "32px height. Dense UI: table rows, inline actions, toolbars.",
@@ -60,7 +85,10 @@
       }
     },
     "shape": {
-      "options": ["square", "round"],
+      "options": [
+        "square",
+        "round"
+      ],
       "default": null,
       "purpose": {
         "square": "Icon-only button with rounded-sm corners. Use in toolbars, table rows, and inline action groups. Requires the icon prop and an aria-label.",
@@ -68,15 +96,26 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Resting state." },
-    { "state": "hover", "description": "Darker background (default) or subtle fill (outlined) on pointer hover." },
-    { "state": "disabled", "description": "Muted background and text; cursor not-allowed; interaction blocked natively." }
+    {
+      "state": "default",
+      "description": "Resting state."
+    },
+    {
+      "state": "hover",
+      "description": "Darker background (default) or subtle fill (outlined) on pointer hover."
+    },
+    {
+      "state": "disabled",
+      "description": "Muted background and text; cursor not-allowed; interaction blocked natively."
+    }
   ],
-
   "tokens": {
-    "other": ["size.400", "size.500", "size.600"],
+    "other": [
+      "size.400",
+      "size.500",
+      "size.600"
+    ],
     "spacing": [
       "space.inset.md",
       "space.inset.lg",
@@ -101,35 +140,38 @@
       "font.size.body-default",
       "font.weight.semibold"
     ],
-    "borderRadius": ["border-radius.sm"]
+    "borderRadius": [
+      "border-radius.sm"
+    ]
   },
-
   "accessibility": {
     "role": "button",
-    "ariaAttributes": ["aria-label (set on icon-only buttons via shape to provide an accessible name; flows through ...rest)", "aria-disabled (native via disabled prop)"],
+    "ariaAttributes": [
+      "aria-label (set on icon-only buttons via shape to provide an accessible name; flows through ...rest)",
+      "aria-disabled (native via disabled prop)"
+    ],
     "keyboardInteractions": [
-      { "key": "Enter / Space", "action": "Activates the button" },
-      { "key": "Tab", "action": "Moves focus to the next focusable element" }
+      {
+        "key": "Enter / Space",
+        "action": "Activates the button"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus to the next focusable element"
+      }
     ],
     "notes": "Uses a native <button> element. The disabled prop sets the HTML disabled attribute, which natively prevents click events and removes the element from the tab order."
   },
-
-  "relationships": {
-    "composedOf": ["Icon"],
+  "composition": {
+    "composedOf": [
+      "Icon"
+    ],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Inline", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "form-actions",
-        "description": "A primary and secondary Button side by side at the bottom of a form.",
-        "tree": "Inline(gap=sm, justify=end) > [Button(variant=outlined), Button(variant=default)]"
-      },
-      {
-        "name": "hero-cta",
-        "description": "A single large primary Button below a Heading and Text block.",
-        "tree": "Stack(gap=lg) > [Heading(size=display), Text(size=body-default), Button(size=lg)]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "hug",

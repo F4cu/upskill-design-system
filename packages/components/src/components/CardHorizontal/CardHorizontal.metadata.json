@@ -7,12 +7,30 @@
     "description": "A horizontal course card (thumbnail-left layout) with an 80×80px square thumbnail and a content column (title, optional ProgressBar, metadata row with duration and certified badge). Two colour contexts: default (light) and inverted (dark footer) via the variant prop. For vertical image-top course cards use CardVertical; for generic surface containers use Card.",
     "figmaNodeId": "none — no Figma component set exists"
   },
-
   "usage": {
-    "keywords": ["card", "course card", "horizontal card", "list card", "started courses", "saved courses"],
+    "keywords": [
+      "card",
+      "course card",
+      "horizontal card",
+      "list card",
+      "started courses",
+      "saved courses"
+    ],
     "when": [
       "Listing started or saved courses in the User Settings page",
       "Displaying course recommendations in a footer or sidebar with an inverted dark background"
+    ],
+    "patterns": [
+      {
+        "name": "started-courses-list",
+        "description": "A vertical Stack of CardHorizontal items showing in-progress courses.",
+        "tree": "Stack(gap=sm) > [CardHorizontal(progress=65), CardHorizontal(progress=20), ...]"
+      },
+      {
+        "name": "footer-recommendations",
+        "description": "CardHorizontal items in inverted variant inside the dark footer section. The Box provides the inverted background color; no theme switch is needed — both parent and cards stay in the light theme.",
+        "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted), ...]"
+      }
     ],
     "antiPatterns": [
       {
@@ -29,13 +47,20 @@
         "scenario": "Using CardHorizontal for non-course content (e.g., user profile, article)",
         "reason": "The fixed 80×80 thumbnail and metadata row are designed for course items.",
         "alternative": "Use Card with a custom inner layout for other content types."
+      },
+      {
+        "scenario": "Placing CardHorizontal alongside Card or CardVertical in the same visual group",
+        "reason": "The three card variants have different aspect ratios, thumbnail shapes, and content structures. Mixing them in the same row or list breaks visual rhythm.",
+        "alternative": "Use one card variant consistently per section. CardHorizontal works best in vertical lists (e.g. search results, inverted footer sections); CardVertical in horizontal carousels."
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default", "inverted"],
+      "options": [
+        "default",
+        "inverted"
+      ],
       "default": "default",
       "purpose": {
         "default": "Standard light-theme context. Text uses default and subtle color tokens.",
@@ -43,11 +68,12 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static display card — no interactive states." }
+    {
+      "state": "default",
+      "description": "Static display card — no interactive states."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.container.default",
@@ -67,10 +93,13 @@
       "space.inset.sm"
     ],
     "typography": [],
-    "borderRadius": ["border-radius.md"],
-    "other": ["size.thumbnail.sm"]
+    "borderRadius": [
+      "border-radius.md"
+    ],
+    "other": [
+      "size.thumbnail.sm"
+    ]
   },
-
   "accessibility": {
     "role": "article",
     "ariaAttributes": [
@@ -78,23 +107,19 @@
     ],
     "keyboardInteractions": []
   },
-
-  "relationships": {
-    "composedOf": ["Heading", "ProgressBar", "Icon", "Text", "Image"],
+  "composition": {
+    "composedOf": [
+      "Heading",
+      "ProgressBar",
+      "Icon",
+      "Text",
+      "Image"
+    ],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Inline"],
-    "neverPairWith": ["Card", "CardVertical"],
-    "compositionPatterns": [
-      {
-        "name": "started-courses-list",
-        "description": "A vertical Stack of CardHorizontal items showing in-progress courses.",
-        "tree": "Stack(gap=sm) > [CardHorizontal(progress=65), CardHorizontal(progress=20), ...]"
-      },
-      {
-        "name": "footer-recommendations",
-        "description": "CardHorizontal items in inverted variant inside the dark footer section. The Box provides the inverted background color; no theme switch is needed — both parent and cards stay in the light theme.",
-        "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted), ...]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

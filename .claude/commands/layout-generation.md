@@ -10,7 +10,7 @@ description: Generate a page or section layout as a React tree using only librar
 
 ## Inputs (read all before starting)
 
-- All component metadata files in `packages/components/src/` (`*.metadata.json`) — focus on `relationships.accepts`, `relationships.containedBy`, `relationships.compositionPatterns`, `relationships.layoutBehavior`
+- All component metadata files in `packages/components/src/` (`*.metadata.json`) — focus on `composition.accepts`, `composition.containedBy`, `usage.patterns`, `composition.layoutBehavior`
 - Layout brief — provided by the developer in the prompt (intent, key content areas, constraints)
 
 ## Constraints (enforce strictly)
@@ -19,7 +19,7 @@ description: Generate a page or section layout as a React tree using only librar
 - Every structural choice must cite the metadata rule that justifies it:
   - `accepts` — a component can only contain what its metadata says it accepts
   - `containedBy` — a component can only appear inside what its metadata says allows it
-  - `compositionPatterns` — prefer named patterns over ad-hoc composition when one fits
+  - `usage.patterns` — prefer named patterns over ad-hoc composition when one fits
   - `layoutBehavior.widthBehavior` — determines whether a component fills its container or hugs its content
 - No ad-hoc CSS, no inline styles, no components outside the fixed set, no layout decisions without a metadata justification
 
@@ -27,7 +27,7 @@ description: Generate a page or section layout as a React tree using only librar
 
 1. Read the brief and identify the content areas (e.g. header, form, action row).
 2. For each area, select the appropriate layout primitive (`Stack` for vertical, `Inline` for horizontal, `Box` for padding/containment, `Card` for grouped content).
-3. For each leaf node, select the appropriate component and variant — cite the `when` or `compositionPatterns` field that justifies the choice.
+3. For each leaf node, select the appropriate component and variant — cite the `when` or `usage.patterns` field that justifies the choice.
 4. Validate the tree against `accepts`/`containedBy` constraints before outputting.
 5. Annotate each node in the output with the metadata rule that placed it there.
 

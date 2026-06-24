@@ -7,12 +7,29 @@
     "description": "A circular user photo displayed at a fixed size. Use to represent a person in navigation bars (sm) or profile sections (lg). Accepts an image src and alt text; no letter or icon fallback is in scope.",
     "figmaNodeId": "none — no Figma component set exists"
   },
-
   "usage": {
-    "keywords": ["avatar", "user photo", "profile photo", "profile picture", "user image"],
+    "keywords": [
+      "avatar",
+      "user photo",
+      "profile photo",
+      "profile picture",
+      "user image"
+    ],
     "when": [
       "Representing the signed-in user in a top navigation bar (size sm)",
       "Displaying the user's profile photo on a settings or profile page (size lg)"
+    ],
+    "patterns": [
+      {
+        "name": "nav-user-chip",
+        "description": "Avatar (sm) alongside user name and a chevron icon in the nav bar user dropdown trigger.",
+        "tree": "Inline(gap=xs, align=center) > [Avatar(size=sm), Text(size=body-small), Icon(name=chevron-down, size=sm)]"
+      },
+      {
+        "name": "profile-header",
+        "description": "Avatar (lg) above a Stack of the user's display name and account email in a profile section.",
+        "tree": "Stack(gap=md, align=center) > [Avatar(size=lg), Stack(gap=xs) > [Heading(as=h2, size=title-small), Text(color=subtle)]]"
+      }
     ],
     "antiPatterns": [
       {
@@ -27,10 +44,13 @@
       }
     ]
   },
-
   "variants": {
     "size": {
-      "options": ["sm", "md", "lg"],
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
       "default": "md",
       "purpose": {
         "sm": "24px — compact size for nav bars and inline user references.",
@@ -39,11 +59,12 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static image display — no interactive states." }
+    {
+      "state": "default",
+      "description": "Static image display — no interactive states."
+    }
   ],
-
   "tokens": {
     "color": [],
     "spacing": [],
@@ -55,7 +76,6 @@
       "size.avatar.lg"
     ]
   },
-
   "accessibility": {
     "role": "img",
     "ariaAttributes": [
@@ -63,23 +83,14 @@
     ],
     "keyboardInteractions": []
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Inline", "AppHeader"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "nav-user-chip",
-        "description": "Avatar (sm) alongside user name and a chevron icon in the nav bar user dropdown trigger.",
-        "tree": "Inline(gap=xs, align=center) > [Avatar(size=sm), Text(size=body-small), Icon(name=chevron-down, size=sm)]"
-      },
-      {
-        "name": "profile-header",
-        "description": "Avatar (lg) above a Stack of the user's display name and account email in a profile section.",
-        "tree": "Stack(gap=md, align=center) > [Avatar(size=lg), Stack(gap=xs) > [Heading(as=h2, size=title-small), Text(color=subtle)]]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "AppHeader"
     ],
     "layoutBehavior": {
       "widthBehavior": "fixed",

@@ -7,65 +7,22 @@
     "description": "Vertical flex container. Stacks children top-to-bottom with consistent spacing from the space.stack token scale. The primary building block for content hierarchy within a page section.",
     "figmaNodeId": ""
   },
-
   "usage": {
-    "keywords": ["stack", "vertical", "column", "flex", "spacing", "layout", "list"],
+    "keywords": [
+      "stack",
+      "vertical",
+      "column",
+      "flex",
+      "spacing",
+      "layout",
+      "list"
+    ],
     "when": [
       "Arranging content vertically with consistent spacing between items",
       "Building a form, card body, or sidebar section where elements flow top-to-bottom",
       "Composing a heading + body text + action group in a single vertical flow"
     ],
-    "antiPatterns": [
-      {
-        "scenario": "Using Stack for horizontal layout",
-        "reason": "Stack is always column direction. Horizontal spacing belongs to Inline.",
-        "alternative": "Use Inline for side-by-side arrangement of items"
-      },
-      {
-        "scenario": "Nesting Stack inside Stack with the same gap just to group items",
-        "reason": "Redundant nesting with identical gaps is visual noise with no structural benefit",
-        "alternative": "Use a single Stack and rely on Box with padding to create visual grouping if needed"
-      }
-    ]
-  },
-
-  "variants": {
-    "variant": {
-      "options": ["default"],
-      "default": "default",
-      "purpose": {
-        "default": "Column flex container with configurable gap, alignment, and justification."
-      }
-    }
-  },
-
-  "states": [
-    { "state": "default", "description": "Static layout container — no interactive states." }
-  ],
-
-  "tokens": {
-    "spacing": [
-      "space.stack.xs",
-      "space.stack.sm",
-      "space.stack.md",
-      "space.stack.lg",
-      "space.stack.xl",
-      "space.stack.xxl"
-    ]
-  },
-
-  "accessibility": {
-    "role": "generic",
-    "ariaAttributes": [],
-    "keyboardInteractions": []
-  },
-
-  "relationships": {
-    "composedOf": [],
-    "accepts": ["Box", "Stack", "Inline", "Text", "Heading", "Icon", "Button", "TextField", "Select", "Checkbox", "Card"],
-    "containedBy": ["Box", "Stack", "Inline", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
+    "patterns": [
       {
         "name": "form-field-group",
         "description": "Vertical list of form fields with consistent spacing.",
@@ -81,6 +38,72 @@
         "description": "Card inner content arranged as a vertical stack.",
         "tree": "Card > Box(padding=lg) > Stack(gap=sm) > [Heading, Text]"
       }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Stack for horizontal layout",
+        "reason": "Stack is always column direction. Horizontal spacing belongs to Inline.",
+        "alternative": "Use Inline for side-by-side arrangement of items"
+      },
+      {
+        "scenario": "Nesting Stack inside Stack with the same gap just to group items",
+        "reason": "Redundant nesting with identical gaps is visual noise with no structural benefit",
+        "alternative": "Use a single Stack and rely on Box with padding to create visual grouping if needed"
+      }
+    ]
+  },
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "purpose": {
+        "default": "Column flex container with configurable gap, alignment, and justification."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "default",
+      "description": "Static layout container — no interactive states."
+    }
+  ],
+  "tokens": {
+    "spacing": [
+      "space.stack.xs",
+      "space.stack.sm",
+      "space.stack.md",
+      "space.stack.lg",
+      "space.stack.xl",
+      "space.stack.xxl"
+    ]
+  },
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": []
+  },
+  "composition": {
+    "composedOf": [],
+    "accepts": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Text",
+      "Heading",
+      "Icon",
+      "Button",
+      "TextField",
+      "Select",
+      "Checkbox",
+      "Card"
+    ],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

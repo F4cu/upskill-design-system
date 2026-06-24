@@ -7,13 +7,33 @@
     "description": "Renders heading-level text using title and display size tokens. The as prop controls semantic HTML level (h1–h6); the size prop controls visual appearance independently. Does not add margin.",
     "figmaNodeId": "N/A — Heading uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
   },
-
   "usage": {
-    "keywords": ["heading", "title", "headline", "display", "section", "h1", "h2", "h3"],
+    "keywords": [
+      "heading",
+      "title",
+      "headline",
+      "display",
+      "section",
+      "h1",
+      "h2",
+      "h3"
+    ],
     "when": [
       "Labelling a page, section, or content region with a heading",
       "Rendering a display-scale hero headline",
       "Introducing a content block that a Text component will follow"
+    ],
+    "patterns": [
+      {
+        "name": "titled-section",
+        "description": "A Heading followed by Text inside a Stack to form a titled content block.",
+        "tree": "Stack(gap=sm) > [Heading(size=headline, as=h2), Text(size=body-default)]"
+      },
+      {
+        "name": "hero-block",
+        "description": "A display-scale heading centered in a padded Box with supporting Text and an Inline of actions.",
+        "tree": "Box(paddingY=xxl) > Stack(gap=md, align=center) > [Heading(size=display, as=h1), Text(size=subheader, color=subtle), Inline(gap=sm) > [Button, Button]]"
+      }
     ],
     "antiPatterns": [
       {
@@ -28,10 +48,15 @@
       }
     ]
   },
-
   "variants": {
     "size": {
-      "options": ["title-small", "subheader", "headline", "headline-serif", "display"],
+      "options": [
+        "title-small",
+        "subheader",
+        "headline",
+        "headline-serif",
+        "display"
+      ],
       "default": "headline",
       "purpose": {
         "title-small": "Card titles, widget headers. 1.125rem semibold.",
@@ -42,7 +67,11 @@
       }
     },
     "color": {
-      "options": ["default", "subtle", "brand"],
+      "options": [
+        "default",
+        "subtle",
+        "brand"
+      ],
       "default": "default",
       "purpose": {
         "default": "Primary heading colour on the page surface.",
@@ -51,11 +80,12 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static heading — no interactive states." }
+    {
+      "state": "default",
+      "description": "Static heading — no interactive states."
+    }
   ],
-
   "tokens": {
     "typography": [
       "font.family.headline-default",
@@ -80,30 +110,20 @@
       "color.text.brand"
     ]
   },
-
   "accessibility": {
     "role": "heading",
     "ariaAttributes": [],
     "keyboardInteractions": [],
     "notes": "Always set as to the correct heading level for document outline. Size and as are deliberately decoupled so visual scale never forces a skip in heading levels."
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Inline", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "titled-section",
-        "description": "A Heading followed by Text inside a Stack to form a titled content block.",
-        "tree": "Stack(gap=sm) > [Heading(size=headline, as=h2), Text(size=body-default)]"
-      },
-      {
-        "name": "hero-block",
-        "description": "A display-scale heading centered in a padded Box with supporting Text and an Inline of actions.",
-        "tree": "Box(paddingY=xxl) > Stack(gap=md, align=center) > [Heading(size=display, as=h1), Text(size=subheader, color=subtle), Inline(gap=sm) > [Button, Button]]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

@@ -7,13 +7,33 @@
     "description": "A self-contained image slot that renders a real image when src is provided, or a neutral grey placeholder with a centred icon when it is not. Fills its container width and maintains the given aspect ratio. Used for course thumbnails, card images, hero banners, and any layout slot that holds visual media.",
     "figmaNodeId": "92:16895"
   },
-
   "usage": {
-    "keywords": ["image", "photo", "thumbnail", "placeholder", "media", "hero", "banner", "fallback"],
+    "keywords": [
+      "image",
+      "photo",
+      "thumbnail",
+      "placeholder",
+      "media",
+      "hero",
+      "banner",
+      "fallback"
+    ],
     "when": [
       "Any layout slot that holds a course image, banner, or visual media",
       "A card thumbnail — pass src when available, omit for the placeholder state",
       "Hero or wide banner sections using a landscape aspect ratio"
+    ],
+    "patterns": [
+      {
+        "name": "card-thumbnail",
+        "description": "Used as the thumbnail slot in CardHorizontal. Falls back to placeholder when no src.",
+        "tree": "CardHorizontal > Image(aspectRatio=1/1, src?)"
+      },
+      {
+        "name": "hero-banner",
+        "description": "Full-width landscape image at the top of a page section.",
+        "tree": "Box(width=100%) > Image(aspectRatio=16/9, src)"
+      }
     ],
     "antiPatterns": [
       {
@@ -25,13 +45,21 @@
         "scenario": "Using Image for avatar or user profile pictures",
         "reason": "Avatar handles circular crop, initials fallback, and size tokens specific to user imagery.",
         "alternative": "Use Avatar."
+      },
+      {
+        "scenario": "Using Image and Avatar as siblings or in the same slot to represent a person or user",
+        "reason": "Avatar is the semantic component for user identity with initials fallback and fixed sizes; Image is for media and course thumbnails. Using both together creates duplication and breaks the identity/media semantic distinction.",
+        "alternative": "Use Avatar for all user identity contexts. Use Image for course thumbnails, hero banners, and other media slots — never for people."
       }
     ]
   },
-
   "variants": {
     "aspectRatio": {
-      "options": ["1/1", "16/9", "4/5"],
+      "options": [
+        "1/1",
+        "16/9",
+        "4/5"
+      ],
       "default": "1/1",
       "purpose": {
         "1/1": "Square thumbnail — CardHorizontal and small course slots.",
@@ -40,12 +68,16 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Renders the provided image with object-fit cover." },
-    { "state": "empty", "description": "No src provided — renders neutral grey surface with centred image icon." }
+    {
+      "state": "default",
+      "description": "Renders the provided image with object-fit cover."
+    },
+    {
+      "state": "empty",
+      "description": "No src provided — renders neutral grey surface with centred image icon."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.neutral.2",
@@ -53,10 +85,11 @@
     ],
     "spacing": [],
     "typography": [],
-    "borderRadius": ["border-radius.sm"],
+    "borderRadius": [
+      "border-radius.sm"
+    ],
     "other": []
   },
-
   "accessibility": {
     "role": "img",
     "ariaAttributes": [
@@ -64,23 +97,17 @@
     ],
     "keyboardInteractions": []
   },
-
-  "relationships": {
-    "composedOf": ["Icon"],
+  "composition": {
+    "composedOf": [
+      "Icon"
+    ],
     "accepts": [],
-    "containedBy": ["CardHorizontal", "CardVertical", "VideoFrame", "Card", "Box"],
-    "neverPairWith": ["Avatar"],
-    "compositionPatterns": [
-      {
-        "name": "card-thumbnail",
-        "description": "Used as the thumbnail slot in CardHorizontal. Falls back to placeholder when no src.",
-        "tree": "CardHorizontal > Image(aspectRatio=1/1, src?)"
-      },
-      {
-        "name": "hero-banner",
-        "description": "Full-width landscape image at the top of a page section.",
-        "tree": "Box(width=100%) > Image(aspectRatio=16/9, src)"
-      }
+    "containedBy": [
+      "CardHorizontal",
+      "CardVertical",
+      "VideoFrame",
+      "Card",
+      "Box"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

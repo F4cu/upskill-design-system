@@ -7,13 +7,34 @@
     "description": "A labelled text input for collecting single-line user data. Includes a visible label, an optional error message with ARIA association, and interaction states. Use for any freeform text entry: names, emails, passwords, search terms.",
     "figmaNodeId": "none — no Figma component set exists; uses text styles only"
   },
-
   "usage": {
-    "keywords": ["input", "text", "field", "form", "label", "email", "password", "search", "entry"],
+    "keywords": [
+      "input",
+      "text",
+      "field",
+      "form",
+      "label",
+      "email",
+      "password",
+      "search",
+      "entry"
+    ],
     "when": [
       "Collecting freeform single-line text from the user (name, email, password, search query)",
       "A form field needs a visible label and optional error feedback",
       "The value is typed, not selected — use Select for predefined option sets"
+    ],
+    "patterns": [
+      {
+        "name": "inline-name-row",
+        "description": "Two TextFields side by side for first/last name — each wrapped in a Box with flex:1 so they share the available width equally.",
+        "tree": "Inline(gap=md, align=start) > [Box(style={flex:1}) > TextField(label='First name'), Box(style={flex:1}) > TextField(label='Last name')]"
+      },
+      {
+        "name": "form-field-stack",
+        "description": "A vertical series of labelled fields inside a Card, grouped by topic.",
+        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+      }
     ],
     "antiPatterns": [
       {
@@ -33,10 +54,12 @@
       }
     ]
   },
-
   "variants": {
     "icon": {
-      "options": ["none", "any IconName"],
+      "options": [
+        "none",
+        "any IconName"
+      ],
       "default": "none",
       "purpose": {
         "none": "No icon. Standard text input.",
@@ -44,7 +67,10 @@
       }
     },
     "size": {
-      "options": ["default", "large"],
+      "options": [
+        "default",
+        "large"
+      ],
       "default": "default",
       "purpose": {
         "default": "40px tall. Standard form fields and inline inputs.",
@@ -52,7 +78,10 @@
       }
     },
     "shape": {
-      "options": ["square", "round"],
+      "options": [
+        "square",
+        "round"
+      ],
       "default": "square",
       "purpose": {
         "square": "Rounded-corner rectangle (border-radius-sm). Default for form fields.",
@@ -60,15 +89,28 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Resting state. Neutral border." },
-    { "state": "hover", "description": "Stronger border to signal interactivity." },
-    { "state": "focus", "description": "Brand-colour border to indicate the active field." },
-    { "state": "error", "description": "Error-colour border and a below-input error message. Set via the error prop." },
-    { "state": "disabled", "description": "Muted text and border; cursor not-allowed; interaction blocked natively." }
+    {
+      "state": "default",
+      "description": "Resting state. Neutral border."
+    },
+    {
+      "state": "hover",
+      "description": "Stronger border to signal interactivity."
+    },
+    {
+      "state": "focus",
+      "description": "Brand-colour border to indicate the active field."
+    },
+    {
+      "state": "error",
+      "description": "Error-colour border and a below-input error message. Set via the error prop."
+    },
+    {
+      "state": "disabled",
+      "description": "Muted text and border; cursor not-allowed; interaction blocked natively."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.input",
@@ -104,7 +146,6 @@
       "size.icon.sm"
     ]
   },
-
   "accessibility": {
     "role": "textbox",
     "ariaAttributes": [
@@ -112,27 +153,23 @@
       "aria-invalid (set to true when error prop is set)"
     ],
     "keyboardInteractions": [
-      { "key": "Tab", "action": "Moves focus to the input" },
-      { "key": "Any character", "action": "Enters text" }
-    ]
-  },
-
-  "relationships": {
-    "composedOf": [],
-    "accepts": [],
-    "containedBy": ["Box", "Stack", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
       {
-        "name": "inline-name-row",
-        "description": "Two TextFields side by side for first/last name — each wrapped in a Box with flex:1 so they share the available width equally.",
-        "tree": "Inline(gap=md, align=start) > [Box(style={flex:1}) > TextField(label='First name'), Box(style={flex:1}) > TextField(label='Last name')]"
+        "key": "Tab",
+        "action": "Moves focus to the input"
       },
       {
-        "name": "form-field-stack",
-        "description": "A vertical series of labelled fields inside a Card, grouped by topic.",
-        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+        "key": "Any character",
+        "action": "Enters text"
       }
+    ]
+  },
+  "composition": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

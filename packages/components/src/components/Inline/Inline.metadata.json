@@ -7,65 +7,25 @@
     "description": "Horizontal flex container. Arranges children side-by-side with consistent spacing from the space.inline token scale. Wraps by default when children exceed the container width.",
     "figmaNodeId": ""
   },
-
   "usage": {
-    "keywords": ["inline", "horizontal", "row", "flex", "spacing", "layout", "tags", "chips", "buttons", "breadcrumb"],
+    "keywords": [
+      "inline",
+      "horizontal",
+      "row",
+      "flex",
+      "spacing",
+      "layout",
+      "tags",
+      "chips",
+      "buttons",
+      "breadcrumb"
+    ],
     "when": [
       "Arranging items side-by-side with consistent spacing",
       "Displaying a group of buttons, tags, or chips that may wrap to a second line",
       "Building a toolbar row, breadcrumb trail, or action bar"
     ],
-    "antiPatterns": [
-      {
-        "scenario": "Using Inline for vertical content flow",
-        "reason": "Inline is always a row. Vertical stacking belongs to Stack.",
-        "alternative": "Use Stack for top-to-bottom arrangement"
-      },
-      {
-        "scenario": "Disabling wrap (wrap=false) in a context where the container width is variable",
-        "reason": "No-wrap content overflows its container when the viewport shrinks, breaking the layout",
-        "alternative": "Only use wrap=false when the container has a fixed or known minimum width and overflow is intentional (e.g., a horizontal scroll region)"
-      }
-    ]
-  },
-
-  "variants": {
-    "variant": {
-      "options": ["default"],
-      "default": "default",
-      "purpose": {
-        "default": "Row flex container with configurable gap, alignment, justification, and optional wrapping."
-      }
-    }
-  },
-
-  "states": [
-    { "state": "default", "description": "Static layout container — no interactive states." }
-  ],
-
-  "tokens": {
-    "spacing": [
-      "space.inline.xs",
-      "space.inline.sm",
-      "space.inline.md",
-      "space.inline.lg",
-      "space.inline.xl",
-      "space.inline.xxl"
-    ]
-  },
-
-  "accessibility": {
-    "role": "generic",
-    "ariaAttributes": [],
-    "keyboardInteractions": []
-  },
-
-  "relationships": {
-    "composedOf": [],
-    "accepts": ["Box", "Stack", "Inline", "Text", "Heading", "Icon", "Button", "TextField", "Select", "Checkbox"],
-    "containedBy": ["Box", "Stack", "Inline", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
+    "patterns": [
       {
         "name": "form-actions-row",
         "description": "Primary + secondary button pair at the bottom of a form.",
@@ -81,6 +41,71 @@
         "description": "Top navigation with logo on the left and actions on the right.",
         "tree": "Inline(justify=space-between) > [Text(logo), Inline(gap=md) > [Button, Button]]"
       }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Inline for vertical content flow",
+        "reason": "Inline is always a row. Vertical stacking belongs to Stack.",
+        "alternative": "Use Stack for top-to-bottom arrangement"
+      },
+      {
+        "scenario": "Disabling wrap (wrap=false) in a context where the container width is variable",
+        "reason": "No-wrap content overflows its container when the viewport shrinks, breaking the layout",
+        "alternative": "Only use wrap=false when the container has a fixed or known minimum width and overflow is intentional (e.g., a horizontal scroll region)"
+      }
+    ]
+  },
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "purpose": {
+        "default": "Row flex container with configurable gap, alignment, justification, and optional wrapping."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "default",
+      "description": "Static layout container — no interactive states."
+    }
+  ],
+  "tokens": {
+    "spacing": [
+      "space.inline.xs",
+      "space.inline.sm",
+      "space.inline.md",
+      "space.inline.lg",
+      "space.inline.xl",
+      "space.inline.xxl"
+    ]
+  },
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": []
+  },
+  "composition": {
+    "composedOf": [],
+    "accepts": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Text",
+      "Heading",
+      "Icon",
+      "Button",
+      "TextField",
+      "Select",
+      "Checkbox"
+    ],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

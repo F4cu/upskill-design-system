@@ -7,13 +7,32 @@
     "description": "A floating panel of selectable items. Shared dropdown primitive used by AppHeader (user menu) and Select (custom listbox). Supports both menu and listbox ARIA roles.",
     "figmaNodeId": "155:6261"
   },
-
   "usage": {
-    "keywords": ["dropdown", "menu", "listbox", "options", "contextual", "popup", "select"],
+    "keywords": [
+      "dropdown",
+      "menu",
+      "listbox",
+      "options",
+      "contextual",
+      "popup",
+      "select"
+    ],
     "when": [
       "Displaying a list of selectable items anchored to a trigger element",
       "Powering a custom Select listbox (listRole=listbox)",
       "Showing a contextual user menu in AppHeader (listRole=menu)"
+    ],
+    "patterns": [
+      {
+        "name": "user-context-menu",
+        "description": "AppHeader renders DropdownMenu anchored below the user button trigger using absolute positioning.",
+        "tree": "AppHeader > div.userWrapper(position:relative) > [button.userButton, DropdownMenu(listRole=menu)]"
+      },
+      {
+        "name": "custom-select",
+        "description": "Select renders DropdownMenu as a custom listbox anchored below its trigger button.",
+        "tree": "Select > div.wrapper(position:relative) > [button.trigger, DropdownMenu(listRole=listbox)]"
+      }
     ],
     "antiPatterns": [
       {
@@ -28,10 +47,12 @@
       }
     ]
   },
-
   "variants": {
     "listRole": {
-      "options": ["menu", "listbox"],
+      "options": [
+        "menu",
+        "listbox"
+      ],
       "default": "menu",
       "purpose": {
         "menu": "Contextual action menu. Items get role=menuitem. Use for AppHeader user menu.",
@@ -39,13 +60,20 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Panel visible; items in resting state." },
-    { "state": "item-hover", "description": "Neutral background on the hovered or focused item." },
-    { "state": "item-selected", "description": "Brand text colour and semibold weight on the currently selected item (listbox role only)." }
+    {
+      "state": "default",
+      "description": "Panel visible; items in resting state."
+    },
+    {
+      "state": "item-hover",
+      "description": "Neutral background on the hovered or focused item."
+    },
+    {
+      "state": "item-selected",
+      "description": "Brand text colour and semibold weight on the currently selected item (listbox role only)."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.container.default",
@@ -67,7 +95,6 @@
     ],
     "other": []
   },
-
   "accessibility": {
     "role": "menu or listbox (controlled via listRole prop)",
     "ariaAttributes": [
@@ -76,28 +103,26 @@
       "aria-selected (option items when listRole=listbox)"
     ],
     "keyboardInteractions": [
-      { "key": "Escape", "action": "Closes the dropdown and returns focus to the trigger" },
-      { "key": "Enter / Space", "action": "Selects the focused item" },
-      { "key": "Tab", "action": "Moves focus between items (tabIndex=0 on each item)" }
-    ]
-  },
-
-  "relationships": {
-    "composedOf": [],
-    "accepts": [],
-    "containedBy": ["AppHeader", "Select"],
-    "neverPairWith": [],
-    "compositionPatterns": [
       {
-        "name": "user-context-menu",
-        "description": "AppHeader renders DropdownMenu anchored below the user button trigger using absolute positioning.",
-        "tree": "AppHeader > div.userWrapper(position:relative) > [button.userButton, DropdownMenu(listRole=menu)]"
+        "key": "Escape",
+        "action": "Closes the dropdown and returns focus to the trigger"
       },
       {
-        "name": "custom-select",
-        "description": "Select renders DropdownMenu as a custom listbox anchored below its trigger button.",
-        "tree": "Select > div.wrapper(position:relative) > [button.trigger, DropdownMenu(listRole=listbox)]"
+        "key": "Enter / Space",
+        "action": "Selects the focused item"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus between items (tabIndex=0 on each item)"
       }
+    ]
+  },
+  "composition": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": [
+      "AppHeader",
+      "Select"
     ],
     "layoutBehavior": {
       "widthBehavior": "fixed",

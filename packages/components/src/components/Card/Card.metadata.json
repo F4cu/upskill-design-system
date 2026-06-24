@@ -7,14 +7,39 @@
     "description": "A generic surface container that groups related content with consistent padding, border-radius, and optional elevation. Use to visually separate page sections or form groups. Card is slot-based (children-only) and carries no content structure of its own — for course display use CardVertical or CardHorizontal instead.",
     "figmaNodeId": "none — no Figma component set exists"
   },
-
   "usage": {
-    "keywords": ["card", "surface", "container", "panel", "section", "group", "box", "elevated"],
+    "keywords": [
+      "card",
+      "surface",
+      "container",
+      "panel",
+      "section",
+      "group",
+      "box",
+      "elevated"
+    ],
     "when": [
       "Grouping a set of related form fields or content items into a distinct visual section",
       "A page section needs a distinct background to separate it from the page canvas",
       "Displaying a content item (course, article, product) in a list or grid",
       "A feature or selected state needs visual elevation above sibling content"
+    ],
+    "patterns": [
+      {
+        "name": "form-section",
+        "description": "A Card wrapping a Stack of form inputs, used to group related fields in a settings or onboarding form.",
+        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+      },
+      {
+        "name": "preferences-section",
+        "description": "A Card wrapping a group of Checkboxes with a section heading.",
+        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
+      },
+      {
+        "name": "content-card",
+        "description": "A Card presenting a single content item (course, article) with title, metadata, body text, and a CTA Button.",
+        "tree": "Card > Stack(gap=md) > [Stack(gap=xs) > [Heading, Text(size=body-small)], Text, Button(size=sm)]"
+      }
     ],
     "antiPatterns": [
       {
@@ -36,13 +61,20 @@
         "scenario": "Using padding='none' and adding raw padding via style",
         "reason": "Bypasses the token-driven padding system; visual inconsistency results.",
         "alternative": "Use the padding prop ('sm', 'md', 'lg') for all padding needs."
+      },
+      {
+        "scenario": "Using Card as a sibling of CardVertical or CardHorizontal in the same layout group",
+        "reason": "Card is a generic surface container; CardVertical and CardHorizontal are semantic course cards with fixed layouts. Mixing them in the same list or grid breaks visual rhythm and semantic consistency.",
+        "alternative": "Choose one card type per section. Use Card for generic content grouping; use CardVertical or CardHorizontal for course content — never both in the same visual row or list."
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default", "elevated"],
+      "options": [
+        "default",
+        "elevated"
+      ],
       "default": "default",
       "purpose": {
         "default": "Flat surface on the page background. Primary container for form sections and content groups.",
@@ -50,11 +82,12 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static container — no interactive states. Elevation is set at render time via the variant prop." }
+    {
+      "state": "default",
+      "description": "Static container — no interactive states. Elevation is set at render time via the variant prop."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.container.default",
@@ -73,7 +106,6 @@
     ],
     "other": []
   },
-
   "accessibility": {
     "role": "region",
     "ariaAttributes": [
@@ -81,28 +113,15 @@
     ],
     "keyboardInteractions": []
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
-    "accepts": ["*"],
-    "containedBy": ["Box", "Stack", "Inline"],
-    "neverPairWith": ["Card", "CardVertical", "CardHorizontal"],
-    "compositionPatterns": [
-      {
-        "name": "form-section",
-        "description": "A Card wrapping a Stack of form inputs, used to group related fields in a settings or onboarding form.",
-        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
-      },
-      {
-        "name": "preferences-section",
-        "description": "A Card wrapping a group of Checkboxes with a section heading.",
-        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
-      },
-      {
-        "name": "content-card",
-        "description": "A Card presenting a single content item (course, article) with title, metadata, body text, and a CTA Button.",
-        "tree": "Card > Stack(gap=md) > [Stack(gap=xs) > [Heading, Text(size=body-small)], Text, Button(size=sm)]"
-      }
+    "accepts": [
+      "*"
+    ],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

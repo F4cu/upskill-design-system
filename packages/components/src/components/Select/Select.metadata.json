@@ -7,13 +7,27 @@
     "description": "A labelled dropdown selector for choosing one option from a predefined list. Includes a visible label, a custom chevron indicator, optional placeholder, and an optional error message. Wraps a native <select> element for built-in accessibility and mobile keyboard support.",
     "figmaNodeId": "none — no Figma component set exists; uses text styles only"
   },
-
   "usage": {
-    "keywords": ["select", "dropdown", "choose", "option", "list", "picker", "form"],
+    "keywords": [
+      "select",
+      "dropdown",
+      "choose",
+      "option",
+      "list",
+      "picker",
+      "form"
+    ],
     "when": [
       "The user must pick exactly one value from a known, finite set of options",
       "The option list is too long for radio buttons (more than 4–5 options)",
       "Mobile usability is a priority — native selects open the platform picker"
+    ],
+    "patterns": [
+      {
+        "name": "form-field-stack",
+        "description": "A vertical series of labelled inputs inside a Card, with Select used for option sets and TextField for freeform entries.",
+        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+      }
     ],
     "antiPatterns": [
       {
@@ -33,25 +47,39 @@
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default"],
+      "options": [
+        "default"
+      ],
       "default": "default",
       "purpose": {
         "default": "Standard dropdown with label. Error state is controlled via the error prop."
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Resting state. Neutral border and chevron." },
-    { "state": "hover", "description": "Stronger border to signal interactivity." },
-    { "state": "focus", "description": "Brand-colour border to indicate the active control." },
-    { "state": "error", "description": "Error-colour border and a below-select error message. Set via the error prop." },
-    { "state": "disabled", "description": "Muted text, border, and chevron; cursor not-allowed; interaction blocked natively." }
+    {
+      "state": "default",
+      "description": "Resting state. Neutral border and chevron."
+    },
+    {
+      "state": "hover",
+      "description": "Stronger border to signal interactivity."
+    },
+    {
+      "state": "focus",
+      "description": "Brand-colour border to indicate the active control."
+    },
+    {
+      "state": "error",
+      "description": "Error-colour border and a below-select error message. Set via the error prop."
+    },
+    {
+      "state": "disabled",
+      "description": "Muted text, border, and chevron; cursor not-allowed; interaction blocked natively."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.input",
@@ -86,7 +114,6 @@
       "size.500"
     ]
   },
-
   "accessibility": {
     "role": "combobox",
     "ariaAttributes": [
@@ -94,24 +121,33 @@
       "aria-invalid (set to true when error prop is set)"
     ],
     "keyboardInteractions": [
-      { "key": "Tab", "action": "Moves focus to the select" },
-      { "key": "Space / Enter", "action": "Opens the option list" },
-      { "key": "Arrow Up / Down", "action": "Navigates options" },
-      { "key": "Escape", "action": "Closes the option list without changing value" }
+      {
+        "key": "Tab",
+        "action": "Moves focus to the select"
+      },
+      {
+        "key": "Space / Enter",
+        "action": "Opens the option list"
+      },
+      {
+        "key": "Arrow Up / Down",
+        "action": "Navigates options"
+      },
+      {
+        "key": "Escape",
+        "action": "Closes the option list without changing value"
+      }
     ]
   },
-
-  "relationships": {
-    "composedOf": ["Icon"],
+  "composition": {
+    "composedOf": [
+      "Icon"
+    ],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "form-field-stack",
-        "description": "A vertical series of labelled inputs inside a Card, with Select used for option sets and TextField for freeform entries.",
-        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

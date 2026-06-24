@@ -7,13 +7,28 @@
     "description": "A boolean toggle with a visible label. Wraps a native <input type='checkbox'> styled with design tokens. Use for independent on/off options; for exclusive choices use radio inputs. Supports checked, unchecked, disabled, and disabled-checked states.",
     "figmaNodeId": "none — no Figma component set exists; uses text styles only"
   },
-
   "usage": {
-    "keywords": ["checkbox", "toggle", "boolean", "agree", "opt-in", "notification", "preference", "multi-select"],
+    "keywords": [
+      "checkbox",
+      "toggle",
+      "boolean",
+      "agree",
+      "opt-in",
+      "notification",
+      "preference",
+      "multi-select"
+    ],
     "when": [
       "The user can independently toggle a single option on or off",
       "Multiple independent options can be enabled simultaneously (notification preferences, feature flags)",
       "The user must confirm an agreement or consent"
+    ],
+    "patterns": [
+      {
+        "name": "notification-preferences",
+        "description": "A group of independent Checkboxes in a Stack, each representing a toggleable preference.",
+        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
+      }
     ],
     "antiPatterns": [
       {
@@ -33,25 +48,39 @@
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default"],
+      "options": [
+        "default"
+      ],
       "default": "default",
       "purpose": {
         "default": "Single boolean toggle. Checked/disabled states are controlled via standard HTML props."
       }
     }
   },
-
   "states": [
-    { "state": "unchecked", "description": "Resting unchecked state. Neutral border." },
-    { "state": "unchecked-hover", "description": "Stronger border on hover to signal interactivity." },
-    { "state": "checked", "description": "Brand-fill background with white checkmark." },
-    { "state": "disabled-unchecked", "description": "Muted border; cursor not-allowed." },
-    { "state": "disabled-checked", "description": "Muted fill and border; checkmark still visible." }
+    {
+      "state": "unchecked",
+      "description": "Resting unchecked state. Neutral border."
+    },
+    {
+      "state": "unchecked-hover",
+      "description": "Stronger border on hover to signal interactivity."
+    },
+    {
+      "state": "checked",
+      "description": "Brand-fill background with white checkmark."
+    },
+    {
+      "state": "disabled-unchecked",
+      "description": "Muted border; cursor not-allowed."
+    },
+    {
+      "state": "disabled-checked",
+      "description": "Muted fill and border; checkmark still visible."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.input",
@@ -79,7 +108,6 @@
       "size.icon.sm"
     ]
   },
-
   "accessibility": {
     "role": "checkbox",
     "ariaAttributes": [
@@ -87,22 +115,23 @@
       "aria-disabled (managed natively via disabled prop)"
     ],
     "keyboardInteractions": [
-      { "key": "Tab", "action": "Moves focus to the checkbox" },
-      { "key": "Space", "action": "Toggles the checked state" }
+      {
+        "key": "Tab",
+        "action": "Moves focus to the checkbox"
+      },
+      {
+        "key": "Space",
+        "action": "Toggles the checked state"
+      }
     ]
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Card"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "notification-preferences",
-        "description": "A group of independent Checkboxes in a Stack, each representing a toggleable preference.",
-        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
     ],
     "layoutBehavior": {
       "widthBehavior": "hug",

@@ -7,12 +7,25 @@
     "description": "An ordered list of navigation links separated by chevron-right icons. The last item is the current page (non-linked, default text colour). Accepts items as an array of { label, href? }.",
     "figmaNodeId": "none — no Figma component set exists"
   },
-
   "usage": {
-    "keywords": ["breadcrumb", "navigation", "wayfinding", "trail", "path", "hierarchy"],
+    "keywords": [
+      "breadcrumb",
+      "navigation",
+      "wayfinding",
+      "trail",
+      "path",
+      "hierarchy"
+    ],
     "when": [
       "Showing the user's location within the page hierarchy below the AppHeader",
       "Any page more than one level deep from the root that benefits from a back-navigation trail"
+    ],
+    "patterns": [
+      {
+        "name": "page-header-trail",
+        "description": "Breadcrumb placed below AppHeader and above the page title in a Stack.",
+        "tree": "Stack(gap=sm) > [Breadcrumb, Heading(as=h1)]"
+      }
     ],
     "antiPatterns": [
       {
@@ -27,32 +40,35 @@
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default"],
+      "options": [
+        "default"
+      ],
       "default": "default",
       "purpose": {
         "default": "Ordered trail of linked items with a non-linked current page label."
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static trail — no interactive states beyond individual link hover." }
+    {
+      "state": "default",
+      "description": "Static trail — no interactive states beyond individual link hover."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.text.default",
       "color.text.subtle"
     ],
-    "spacing": ["space.inline.xs"],
+    "spacing": [
+      "space.inline.xs"
+    ],
     "typography": [],
     "borderRadius": [],
     "other": []
   },
-
   "accessibility": {
     "role": "navigation",
     "ariaAttributes": [
@@ -60,21 +76,22 @@
       "aria-current=\"page\" on the last item"
     ],
     "keyboardInteractions": [
-      { "key": "Tab", "action": "Move focus between linked breadcrumb items" }
+      {
+        "key": "Tab",
+        "action": "Move focus between linked breadcrumb items"
+      }
     ]
   },
-
-  "relationships": {
-    "composedOf": ["Icon", "Text"],
+  "composition": {
+    "composedOf": [
+      "Icon",
+      "Text"
+    ],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "AppHeader"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "page-header-trail",
-        "description": "Breadcrumb placed below AppHeader and above the page title in a Stack.",
-        "tree": "Stack(gap=sm) > [Breadcrumb, Heading(as=h1)]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "AppHeader"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

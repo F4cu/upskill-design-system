@@ -7,13 +7,27 @@
     "description": "Renders body-level text using semantic size tokens. Covers body copy, small text, metadata, and label sizes. Polymorphic via the as prop. Does not add margin.",
     "figmaNodeId": "N/A — Text uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
   },
-
   "usage": {
-    "keywords": ["text", "body", "paragraph", "label", "metadata", "copy", "prose"],
+    "keywords": [
+      "text",
+      "body",
+      "paragraph",
+      "label",
+      "metadata",
+      "copy",
+      "prose"
+    ],
     "when": [
       "Rendering body copy, descriptions, or explanatory prose",
       "Rendering UI labels that are not interactive (use Button for clickable labels)",
       "Rendering supporting metadata such as timestamps, counts, or secondary context"
+    ],
+    "patterns": [
+      {
+        "name": "body-section",
+        "description": "A Heading followed by Text inside a Stack to form a titled content block.",
+        "tree": "Stack(gap=sm) > [Heading(size=headline), Text(size=body-default)]"
+      }
     ],
     "antiPatterns": [
       {
@@ -28,10 +42,14 @@
       }
     ]
   },
-
   "variants": {
     "size": {
-      "options": ["body-default", "body-small", "metadata", "label"],
+      "options": [
+        "body-default",
+        "body-small",
+        "metadata",
+        "label"
+      ],
       "default": "body-default",
       "purpose": {
         "body-default": "Standard body copy. 1rem, regular weight, 1.5 line-height.",
@@ -41,7 +59,12 @@
       }
     },
     "color": {
-      "options": ["default", "subtle", "brand", "disabled"],
+      "options": [
+        "default",
+        "subtle",
+        "brand",
+        "disabled"
+      ],
       "default": "default",
       "purpose": {
         "default": "Primary reading colour on the page surface.",
@@ -51,11 +74,12 @@
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static text — no interactive states." }
+    {
+      "state": "default",
+      "description": "Static text — no interactive states."
+    }
   ],
-
   "tokens": {
     "typography": [
       "font.family.body",
@@ -75,25 +99,21 @@
       "color.text.disabled"
     ]
   },
-
   "accessibility": {
     "role": "generic",
     "ariaAttributes": [],
     "keyboardInteractions": [],
     "notes": "Use the as prop to select a semantically meaningful element when needed (e.g. as=span for inline text, as=p for block paragraphs — p is the default)."
   },
-
-  "relationships": {
+  "composition": {
     "composedOf": [],
     "accepts": [],
-    "containedBy": ["Box", "Stack", "Inline", "Card", "Heading"],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "body-section",
-        "description": "A Heading followed by Text inside a Stack to form a titled content block.",
-        "tree": "Stack(gap=sm) > [Heading(size=headline), Text(size=body-default)]"
-      }
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card",
+      "Heading"
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",

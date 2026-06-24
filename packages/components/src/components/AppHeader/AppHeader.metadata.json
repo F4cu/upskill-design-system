@@ -7,11 +7,25 @@
     "description": "Full-width top navigation bar. Fixed height (90px per Figma spec). Contains three slots: left logo, centred search field, and right area (nav links + user dropdown). No routing logic — pass nav items and callbacks as props.",
     "figmaNodeId": "none — no Figma component set exists"
   },
-
   "usage": {
-    "keywords": ["header", "nav", "navbar", "navigation", "top bar", "app header", "site header"],
+    "keywords": [
+      "header",
+      "nav",
+      "navbar",
+      "navigation",
+      "top bar",
+      "app header",
+      "site header"
+    ],
     "when": [
       "Every page that requires global navigation and search"
+    ],
+    "patterns": [
+      {
+        "name": "full-page-layout",
+        "description": "AppHeader at the top, followed by a page content Stack, composing the full-width application shell.",
+        "tree": "Stack(gap=none) > [AppHeader, main > Stack(gap=xl) > [...pageContent]]"
+      }
     ],
     "antiPatterns": [
       {
@@ -26,21 +40,23 @@
       }
     ]
   },
-
   "variants": {
     "variant": {
-      "options": ["default"],
+      "options": [
+        "default"
+      ],
       "default": "default",
       "purpose": {
         "default": "Elevated background bar with logo, search, nav links, and user dropdown."
       }
     }
   },
-
   "states": [
-    { "state": "default", "description": "Static bar — interactive states are limited to nav link hover and user button hover." }
+    {
+      "state": "default",
+      "description": "Static bar — interactive states are limited to nav link hover and user button hover."
+    }
   ],
-
   "tokens": {
     "color": [
       "color.background.container.elevated",
@@ -57,7 +73,6 @@
     "borderRadius": [],
     "other": []
   },
-
   "accessibility": {
     "role": "banner",
     "ariaAttributes": [
@@ -65,22 +80,21 @@
       "aria-current=\"page\" on the active nav link"
     ],
     "keyboardInteractions": [
-      { "key": "Tab", "action": "Cycle focus through nav links and the user button" }
+      {
+        "key": "Tab",
+        "action": "Cycle focus through nav links and the user button"
+      }
     ]
   },
-
-  "relationships": {
-    "composedOf": ["Avatar", "Icon", "TextField", "Text"],
+  "composition": {
+    "composedOf": [
+      "Avatar",
+      "Icon",
+      "TextField",
+      "Text"
+    ],
     "accepts": [],
     "containedBy": [],
-    "neverPairWith": [],
-    "compositionPatterns": [
-      {
-        "name": "full-page-layout",
-        "description": "AppHeader at the top, followed by a page content Stack, composing the full-width application shell.",
-        "tree": "Stack(gap=none) > [AppHeader, main > Stack(gap=xl) > [...pageContent]]"
-      }
-    ],
     "layoutBehavior": {
       "widthBehavior": "fill",
       "displayType": "block",
