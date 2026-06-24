@@ -75,3 +75,9 @@ export type { UseCarouselReturn } from './hooks/useCarousel'
 
 export { Accordion, AccordionItem } from './components/Accordion'
 export type { AccordionProps, AccordionItemProps } from './components/Accordion'
+
+export { Badge } from './components/Badge'
+export type { BadgeProps, BadgeVariant } from './components/Badge'
+
+export { useSlider } from './hooks/useSlider'
+export type { UseSliderReturn } from './hooks/useSlider'
