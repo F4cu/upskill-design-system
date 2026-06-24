@@ -12,7 +12,7 @@
   padding: var(--ds-space-inset-xs);
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-body-default);
-  line-height: var(--ds-font-line-height-body-single);
+  line-height: var(--ds-font-line-height-none);
   color: var(--ds-color-text-default);
   border-radius: var(--ds-border-radius-xs);
   cursor: pointer;

@@ -149,58 +149,6 @@
         "$type": "string",
         "$value": "{font.weight.bold}"
       }
-    },
-    "line-height": {
-      "body": {
-        "single": {
-          "$type": "number",
-          "$value": "{font.line-height.none}"
-        },
-        "default": {
-          "$type": "number",
-          "$value": "{font.line-height.relaxed}"
-        }
-      },
-      "title": {
-        "single": {
-          "$type": "number",
-          "$value": "{font.line-height.none}"
-        },
-        "tight": {
-          "$type": "number",
-          "$value": "{font.line-height.tight}"
-        },
-        "default": {
-          "$type": "number",
-          "$value": "{font.line-height.default}"
-        }
-      },
-      "subheader": {
-        "tight": {
-          "$type": "number",
-          "$value": "{font.line-height.tight}"
-        },
-        "default": {
-          "$type": "number",
-          "$value": "{font.line-height.default}"
-        }
-      },
-      "headline": {
-        "default": {
-          "$type": "number",
-          "$value": "{font.line-height.default}"
-        },
-        "serif": {
-          "$type": "number",
-          "$value": "{font.line-height.tight}"
-        }
-      },
-      "display": {
-        "default": {
-          "$type": "number",
-          "$value": "{font.line-height.tight}"
-        }
-      }
     }
   }
 }

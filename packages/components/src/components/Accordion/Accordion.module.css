@@ -40,7 +40,7 @@
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-title-small);
   font-weight: var(--ds-font-weight-bold);
-  line-height: var(--ds-font-line-height-title-default);
+  line-height: var(--ds-font-line-height-default);
   color: var(--ds-color-text-default);
   word-break: break-word;
 }

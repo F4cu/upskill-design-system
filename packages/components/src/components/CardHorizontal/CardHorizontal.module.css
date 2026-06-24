@@ -27,9 +27,8 @@
   min-width: 0;
 }
 
-/* Figma "Title Small Tight": tight line-height — overrides Heading default */
 .title {
-  line-height: var(--ds-font-line-height-title-tight);
+  line-height: var(--ds-font-line-height-tight);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

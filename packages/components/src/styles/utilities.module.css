@@ -2,7 +2,7 @@
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-label);
   font-weight: var(--ds-font-weight-bold);
-  line-height: var(--ds-font-line-height-body-single);
+  line-height: var(--ds-font-line-height-none);
   color: var(--ds-color-text-subtle);
 }
 

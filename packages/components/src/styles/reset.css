@@ -13,7 +13,7 @@ body {
   font-family: var(--ds-font-family-body);
   color: var(--ds-color-text-default);
   background-color: var(--ds-color-background-container-root);
-  line-height: var(--ds-font-line-height-body-default, 1.5);
+  line-height: var(--ds-font-line-height-relaxed, 1.5);
 }
 
 img, svg, video {

@@ -72,7 +72,7 @@
 .navLabel {
   font-size: var(--ds-font-size-body-default);
   font-weight: 600;
-  line-height: var(--ds-font-line-height-body-default);
+  line-height: var(--ds-font-line-height-relaxed);
   color: var(--ds-color-text-subtle);
   white-space: nowrap;
 }

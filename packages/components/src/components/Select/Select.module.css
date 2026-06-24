@@ -95,6 +95,6 @@
 .errorMessage {
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-body-small);
-  line-height: var(--ds-font-line-height-body-default);
+  line-height: var(--ds-font-line-height-relaxed);
   color: var(--ds-color-text-feedback-error);
 }

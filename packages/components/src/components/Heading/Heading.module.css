@@ -10,33 +10,33 @@
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-title-small);
   font-weight: var(--ds-font-weight-bold);
-  line-height: var(--ds-font-line-height-title-default);
+  line-height: var(--ds-font-line-height-default);
 }
 
 .subheader {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-subheader);
   font-weight: var(--ds-font-weight-bold);
-  line-height: var(--ds-font-line-height-subheader-default);
+  line-height: var(--ds-font-line-height-default);
 }
 
 .headline {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-headline);
   font-weight: var(--ds-font-weight-bold);
-  line-height: var(--ds-font-line-height-headline-default);
+  line-height: var(--ds-font-line-height-default);
 }
 
 .root.headline-serif {
   font-family: var(--ds-font-family-headline-serif);
   font-size: var(--ds-font-size-headline-serif);
   font-weight: var(--ds-font-weight-medium);
-  line-height: var(--ds-font-line-height-headline-serif);
+  line-height: var(--ds-font-line-height-tight);
 }
 
 .root.display {
   font-family: var(--ds-font-family-headline-serif);
   font-size: var(--ds-font-size-display);
   font-weight: var(--ds-font-weight-medium);
-  line-height: var(--ds-font-line-height-display-default);
+  line-height: var(--ds-font-line-height-tight);
 }
