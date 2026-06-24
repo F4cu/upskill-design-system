@@ -165,8 +165,9 @@ Lite in two ways:
 - [x] `scripts/airtable-pull.js` — pulls governance state from Airtable → `governance.json`; wired as `npm run governance:pull`. Run manually before deprecation work until the Action below is built.
 - [x] `scripts/airtable-setup-governance.js` — one-time setup that added the governance fields (`status`, `owner`, `successor`, `notes`) to the Airtable tables; safe to re-run. Already executed.
 - [ ] GH Action: run `airtable-pull.js` on a schedule or pre-merge so `governance.json` stays current without a manual step (script exists; Action wrapping it is not yet built)
-- [ ] GH Action: PR comment with token diff summary — deterministic script comparing built token output between base and head (script not yet written)
+- [x] GH Action: PR comment with token diff summary — `scripts/token-diff.js` compares built CSS between base and head; `tokens-check.yml` posts/updates the comment on every PR push (update-in-place via `<!-- token-diff -->` marker)
 - [ ] Changelog generation from token diffs on release (script not yet written)
+- [ ] Component version sync — Airtable has a `version` column per component but it is not wired to the pipeline. **Deferred:** wiring it requires defining what constitutes a version bump and what a consumer does with the number. Neither question has a useful answer until the design system has multiple consumers or a formal release cadence. Revisit if that changes.
 
 **Exit condition:** merging a token change updates Airtable with no manual step, and token PRs show a diff comment. Everything in this phase runs without Claude.
 
