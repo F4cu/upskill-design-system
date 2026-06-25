@@ -92,3 +92,7 @@ Append a record to `.claude/handoff/<Name>.run.json`:
 Gate passes, review verdict is `clean` or all findings applied, PR is open, and `.review.json` + `.run.json` are written. The PR contains only gate-cleared, reviewed code.
 
 Running `/extract-learnings <Name>` after the PR merges back-fills the findings into the component's metadata — the learning loop that prevents the same mistakes in future scaffolds.
+
+---
+
+> **After you merge the PR above**, run `/extract-learnings <Name>` to back-fill these findings into the component's metadata. Skipping this leaves the system with no memory of what went wrong — the same mistakes can reappear in future scaffolds.

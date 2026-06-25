@@ -25,6 +25,7 @@ const GOVERNANCE_PATH  = path.resolve(ROOT, "packages/tokens/governance.json");
 const USAGE_PATH       = path.resolve(ROOT, "packages/tokens/token-usage.json");
 const FIGMA_PATH       = path.resolve(ROOT, "packages/tokens/figma-variables.json");
 const COMPONENTS_DIR   = path.resolve(ROOT, "packages/components/src/components");
+const HANDOFF_DIR      = path.resolve(ROOT, ".claude/handoff");
 const OUTPUT_PATH      = path.resolve(ROOT, ".claude/STATUS_QUO.md");
 
 const STALE_AFTER_DAYS = 30;
@@ -198,6 +199,50 @@ function componentSection() {
   return out.join("\n");
 }
 
+function pendingLearningsSection() {
+  if (!fs.existsSync(HANDOFF_DIR)) {
+    return ["## Pending extract-learnings", "", "None. No handoff directory found.", ""].join("\n");
+  }
+
+  const pending = fs
+    .readdirSync(HANDOFF_DIR)
+    .filter((f) => f.endsWith(".review.json"))
+    .filter((f) => {
+      const name = f.replace(".review.json", "");
+      return !fs.existsSync(path.join(HANDOFF_DIR, `${name}.learnings.json`));
+    })
+    .map((f) => {
+      const name = f.replace(".review.json", "");
+      let reviewedAt = null;
+      try {
+        const review = JSON.parse(fs.readFileSync(path.join(HANDOFF_DIR, f), "utf8"));
+        reviewedAt = review.reviewedAt ?? null;
+      } catch {
+        // malformed file — still surface it
+      }
+      return { name, reviewedAt };
+    });
+
+  const out = ["## Pending extract-learnings", ""];
+
+  if (pending.length === 0) {
+    out.push("None. All review findings have been back-filled. ✅", "");
+  } else {
+    out.push(
+      `**${pending.length}** component(s) reviewed but learnings not yet back-filled into metadata.`,
+      "Run `/extract-learnings --all` to process all at once, or `/extract-learnings <Name>` individually.",
+      "",
+    );
+    for (const { name, reviewedAt } of pending) {
+      const when = reviewedAt ? `reviewed ${reviewedAt.slice(0, 10)}` : "review date unknown";
+      out.push(`- \`${name}\` — ${when} → \`/extract-learnings ${name}\``);
+    }
+    out.push("");
+  }
+
+  return out.join("\n");
+}
+
 function main() {
   const now = new Date();
   const governance = readJson(GOVERNANCE_PATH);
@@ -224,6 +269,7 @@ function main() {
   const body = [
     governanceSection(governance, usage),
     componentSection(),
+    pendingLearningsSection(),
     usageSection(usage),
     figmaSection(now),
   ].join("\n");

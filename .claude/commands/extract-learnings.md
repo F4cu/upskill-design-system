@@ -104,7 +104,20 @@ After classifying all findings: scan for the same pattern in 2+ components. If f
 
 Run `npm run validate:metadata`. If it fails, fix the offending amendment and re-run. Do not open the PR until the gate passes.
 
-### 6. PR
+### 6. Done marker
+
+After the gate passes and before opening the PR, write `.claude/handoff/<Name>.learnings.json` for each processed component:
+```json
+{
+  "component": "<Name>",
+  "processedAt": "<iso>",
+  "amendedSections": ["<section>"],
+  "skipped": 0
+}
+```
+This file is the signal that `npm run sense` uses to remove the component from the pending extract-learnings backlog. Write it even if all findings were skipped (no metadata amendments needed) — the absence of the file means unprocessed, not "nothing to do."
+
+### 7. PR
 
 Create a branch `extract-learnings/<kebab-name>` (e.g. `extract-learnings/accordion`) and open a PR against `main` with `gh`. Body structure:
 
