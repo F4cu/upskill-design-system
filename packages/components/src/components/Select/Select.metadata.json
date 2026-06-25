@@ -117,6 +117,7 @@
   },
   "accessibility": {
     "role": "combobox",
+    "notes": "Implements the WAI-ARIA combobox-with-listbox-popup pattern, so focus management is part of the contract: when the dropdown opens, focus must move into the listbox to the selected option (or the first option when none is selected); when it closes via Escape, selection, or click-outside, focus returns to the trigger button. Options are reachable with Arrow Up/Down inside the open listbox, not Tab — listbox options use tabIndex=-1. An implementation that leaves focus on the trigger after opening, or makes options Tab-navigable, is incorrect.",
     "ariaAttributes": [
       "aria-haspopup=\"listbox\" (declares the popup type — always present)",
       "aria-expanded (true when dropdown is open, false when closed)",
