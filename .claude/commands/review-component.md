@@ -1,5 +1,5 @@
 ---
-description: Run the adversarial review pass on a component, apply findings, and open a PR. Called by /add-component after Stage 2b, or standalone when reviewing an existing component after code changes. Writes .review.json and .run.json for /extract-learnings.
+description: Review a component's implementation for correctness, accessibility contract (ARIA, keyboard, focus), and coverage gaps — applies findings, opens a PR, and writes .review.json + .run.json for /extract-learnings.
 ---
 
 # Review component
