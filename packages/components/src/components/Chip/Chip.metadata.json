@@ -3,7 +3,7 @@
     "name": "Chip",
     "category": "atom",
     "type": "interactive",
-    "status": "ready",
+    "status": "beta",
     "description": "Pill-shaped filter tag for toggling a selection state. Default: neutral border and subtle text. Selected: brand border and brand text. Pure selection indicator — not a navigation element. Label-only; no dropdown arrow.",
     "figmaNodeId": "29:1257"
   },

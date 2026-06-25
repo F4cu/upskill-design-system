@@ -3,7 +3,7 @@
     "name": "Divider",
     "category": "atom",
     "type": "display",
-    "status": "ready",
+    "status": "beta",
     "description": "A horizontal rule that visually separates sections of content. Styled with the default border token. No props beyond className.",
     "figmaNodeId": "none — no Figma component set exists"
   },

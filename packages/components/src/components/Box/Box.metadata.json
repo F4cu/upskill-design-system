@@ -3,7 +3,7 @@
     "name": "Box",
     "category": "layout",
     "type": "container",
-    "status": "ready",
+    "status": "beta",
     "description": "The foundational layout primitive. A polymorphic container that applies spacing tokens via the padding props and controls overflow clipping. Everything else in the system can be placed inside a Box.",
     "figmaNodeId": ""
   },

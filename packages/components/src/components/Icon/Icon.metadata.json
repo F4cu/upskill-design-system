@@ -3,7 +3,7 @@
     "name": "Icon",
     "category": "atom",
     "type": "display",
-    "status": "ready",
+    "status": "beta",
     "description": "Renders one of 20 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
     "figmaNodeId": "96:11108"
   },

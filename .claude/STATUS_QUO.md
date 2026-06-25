@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-06-25T10:14:52.325Z**
+Generated: **2026-06-25T14:07:21.034Z**
 
 Sources:
 - `packages/tokens/governance.json` (Airtable mirror)
@@ -23,13 +23,47 @@ None. No deprecated token has a live reference. ✅
 
 ## Components
 
-- **26 total** — 1 beta · 25 ready
+- **26 total** — Maturity: 26 beta
 - By type: container (6) · display (13) · input (3) · interactive (4)
-- Source: `packages/components/src/components/*/*.metadata.json`
+- Implementation: 0 done · 2 in review · 0 in progress · 0 todo · 24 established (pre-loop)
+- Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
+
+### In review — awaiting human sign-off
+
+Gate, adversarial review, and learnings back-fill all green. Promote to `done`
+in Airtable (Implementation column) after the visual check in Storybook.
+
+- `Accordion` — maturity `beta` · reviewed 2026-06-23 · learnings back-filled
+- `Select` — maturity `beta` · reviewed 2026-06-25 · learnings back-filled
 
 ### Beta (not production-ready)
 
 - `Accordion`
+- `AppHeader`
+- `Avatar`
+- `Badge`
+- `Box`
+- `Breadcrumb`
+- `Button`
+- `ButtonArrow`
+- `Card`
+- `CardHorizontal`
+- `CardVertical`
+- `Checkbox`
+- `Chip`
+- `Divider`
+- `DropdownMenu`
+- `Heading`
+- `Icon`
+- `Image`
+- `Inline`
+- `ProgressBar`
+- `ScrollArea`
+- `Select`
+- `Stack`
+- `Text`
+- `TextField`
+- `VideoFrame`
 
 ## Pending extract-learnings
 

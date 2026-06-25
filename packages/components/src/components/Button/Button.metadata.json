@@ -3,7 +3,7 @@
     "name": "Button",
     "category": "atom",
     "type": "interactive",
-    "status": "ready",
+    "status": "beta",
     "description": "Triggers an action or navigation. Three visual variants (default brand-fill, outlined, ghost), three sizes, optional leading and/or trailing icon. Fully keyboard-accessible via the native button element.",
     "figmaNodeId": "57:1265"
   },

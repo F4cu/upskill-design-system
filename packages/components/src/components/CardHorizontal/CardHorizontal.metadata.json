@@ -3,7 +3,7 @@
     "name": "CardHorizontal",
     "category": "molecule",
     "type": "display",
-    "status": "ready",
+    "status": "beta",
     "description": "A horizontal course card (thumbnail-left layout) with an 80×80px square thumbnail and a content column (title, optional ProgressBar, metadata row with duration and certified badge). Two colour contexts: default (light) and inverted (dark footer) via the variant prop. For vertical image-top course cards use CardVertical; for generic surface containers use Card.",
     "figmaNodeId": "none — no Figma component set exists"
   },

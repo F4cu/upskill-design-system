@@ -27,6 +27,15 @@ const FIGMA_PATH       = path.resolve(ROOT, "packages/tokens/figma-variables.jso
 const COMPONENTS_DIR   = path.resolve(ROOT, "packages/components/src/components");
 const HANDOFF_DIR      = path.resolve(ROOT, ".claude/handoff");
 const OUTPUT_PATH      = path.resolve(ROOT, ".claude/STATUS_QUO.md");
+const PIPELINE_PATH    = path.resolve(ROOT, ".claude/component-pipeline.json");
+const SIGNOFF_PATH     = path.resolve(ROOT, ".claude/component-signoff.json");
+
+// Human-owned implementation values, set in Airtable and pulled via
+// airtable-pull.js. They win over the artifact-derived stage:
+//   done — the visual-check sign-off code can't know.
+//   todo — a planned/backlog component the maintainer is queuing.
+// The active stages (in progress / in review) are code-derived, never here.
+const HUMAN_OWNED_IMPL = new Set(["done", "todo"]);
 
 const STALE_AFTER_DAYS = 30;
 
@@ -143,30 +152,92 @@ function figmaSection(now) {
   return out.join("\n");
 }
 
-function componentSection() {
-  if (!fs.existsSync(COMPONENTS_DIR)) {
-    return ["## Components", "", "> ⚠️ No components directory found.", ""].join("\n");
+function handoffArtifact(name, ext) {
+  const p = path.join(HANDOFF_DIR, `${name}.${ext}.json`);
+  if (!fs.existsSync(p)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf8"));
+  } catch {
+    return {}; // present but malformed — still counts as existing
   }
+}
 
-  const components = fs
+// Implementation stage = where a component sits in the add-component →
+// review-component → extract-learnings loop, derived purely from its committed
+// handoff artifacts (never a live call):
+//
+//   in review   — loop fully closed: adversarial review ran AND learnings were
+//                 back-filled. Everything an agent/script can verify is green;
+//                 awaiting the human visual check + `done` sign-off.
+//   in progress — loop started but not closed: reviewed with learnings still
+//                 pending, or a run logged without a completed review.
+//   null        — pre-loop ("established"): never entered the formal loop.
+//                 A lone snapshot is just a context cache and does not count.
+//
+// `done`/`todo` are human-owned and authored in Airtable, pulled into
+// component-signoff.json by airtable-pull.js. They are layered on here and win
+// over the artifact-derived stage; the loop stages are never derived from them.
+function readSignoff() {
+  if (!fs.existsSync(SIGNOFF_PATH)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(SIGNOFF_PATH, "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+function deriveImplementation(name, signoff) {
+  const human = signoff[name];
+  if (HUMAN_OWNED_IMPL.has(human)) return human;
+  const review = handoffArtifact(name, "review");
+  const learnings = handoffArtifact(name, "learnings");
+  const run = handoffArtifact(name, "run");
+  if (review && learnings) return "in review";
+  if (review || run) return "in progress";
+  return "established"; // pre-loop: predates the add-component loop, no artifacts
+}
+
+function buildComponentPipeline() {
+  if (!fs.existsSync(COMPONENTS_DIR)) return [];
+  const signoff = readSignoff();
+  return fs
     .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
     .filter((d) => d.isDirectory())
     .flatMap((d) => {
       const p = path.join(COMPONENTS_DIR, d.name, `${d.name}.metadata.json`);
       if (!fs.existsSync(p)) return [];
-      const meta = JSON.parse(fs.readFileSync(p, "utf8"));
-      return [meta.component];
+      const c = JSON.parse(fs.readFileSync(p, "utf8")).component;
+      const review = handoffArtifact(c.name, "review");
+      return [{
+        name: c.name,
+        type: c.type,
+        maturity: c.status,
+        implementation: deriveImplementation(c.name, signoff),
+        signedOff: HUMAN_OWNED_IMPL.has(signoff[c.name]),
+        reviewedAt: review?.reviewedAt ?? null,
+        learningsBackfilled: handoffArtifact(c.name, "learnings") !== null,
+      }];
     });
+}
 
-  const byStatus = { beta: [], ready: [], deprecated: [] };
-  const byType = {};
-  for (const c of components) {
-    (byStatus[c.status] ?? (byStatus[c.status] = [])).push(c.name);
-    (byType[c.type] ?? (byType[c.type] = [])).push(c.name);
+function componentSection(pipeline) {
+  if (pipeline.length === 0) {
+    return ["## Components", "", "> ⚠️ No components directory found.", ""].join("\n");
   }
 
+  const byStatus = {};
+  const byType = {};
+  const byImpl = { done: [], "in review": [], "in progress": [], todo: [], established: [] };
+
+  for (const c of pipeline) {
+    (byStatus[c.maturity] ?? (byStatus[c.maturity] = [])).push(c.name);
+    (byType[c.type] ?? (byType[c.type] = [])).push(c.name);
+    byImpl[c.implementation].push(c);
+  }
+
+  const maturityOrder = ["beta", "ready", "deprecated"];
   const statusLine = Object.entries(byStatus)
-    .filter(([, names]) => names.length > 0)
+    .sort(([a], [b]) => maturityOrder.indexOf(a) - maturityOrder.indexOf(b))
     .map(([s, names]) => `${names.length} ${s}`)
     .join(" · ");
 
@@ -175,14 +246,67 @@ function componentSection() {
     .map(([type, names]) => `${type} (${names.length})`)
     .join(" · ");
 
+  const implLine = [
+    `${byImpl.done.length} done`,
+    `${byImpl["in review"].length} in review`,
+    `${byImpl["in progress"].length} in progress`,
+    `${byImpl.todo.length} todo`,
+    `${byImpl.established.length} established (pre-loop)`,
+  ].join(" · ");
+
   const out = [
     "## Components",
     "",
-    `- **${components.length} total** — ${statusLine}`,
+    `- **${pipeline.length} total** — Maturity: ${statusLine}`,
     `- By type: ${typeLine}`,
-    `- Source: \`packages/components/src/components/*/\*.metadata.json\``,
+    `- Implementation: ${implLine}`,
+    `- Source: \`packages/components/src/components/*/\*.metadata.json\` + \`.claude/handoff/\` + \`.claude/component-signoff.json\` (human \`done\`/\`todo\` from Airtable)`,
     "",
   ];
+
+  if (byImpl.done.length) {
+    out.push("### Done — human signed off", "");
+    for (const c of byImpl.done) out.push(`- \`${c.name}\` — maturity \`${c.maturity}\``);
+    out.push("");
+  }
+
+  if (byImpl["in review"].length) {
+    out.push(
+      "### In review — awaiting human sign-off",
+      "",
+      "Gate, adversarial review, and learnings back-fill all green. Promote to `done`",
+      "in Airtable (Implementation column) after the visual check in Storybook.",
+      "",
+    );
+    for (const c of byImpl["in review"]) {
+      const when = c.reviewedAt ? `reviewed ${c.reviewedAt.slice(0, 10)}` : "review date unknown";
+      out.push(`- \`${c.name}\` — maturity \`${c.maturity}\` · ${when} · learnings back-filled`);
+    }
+    out.push("");
+  }
+
+  if (byImpl["in progress"].length) {
+    out.push(
+      "### In progress — loop not yet closed",
+      "",
+      "Reviewed with learnings pending, or a run logged without a completed review.",
+      "",
+    );
+    for (const c of byImpl["in progress"]) {
+      const pending = c.learningsBackfilled ? "" : " · `/extract-learnings` pending";
+      out.push(`- \`${c.name}\` — maturity \`${c.maturity}\`${pending}`);
+    }
+    out.push("");
+  }
+
+  if (byImpl.todo.length) {
+    out.push(
+      "### Todo — planned / backlog (human-set in Airtable)",
+      "",
+    );
+    for (const c of byImpl.todo) out.push(`- \`${c.name}\` — maturity \`${c.maturity}\``);
+    out.push("");
+  }
 
   if (byStatus.beta?.length) {
     out.push("### Beta (not production-ready)", "");
@@ -266,9 +390,11 @@ function main() {
     "",
   ].join("\n");
 
+  const pipeline = buildComponentPipeline();
+
   const body = [
     governanceSection(governance, usage),
-    componentSection(),
+    componentSection(pipeline),
     pendingLearningsSection(),
     usageSection(usage),
     figmaSection(now),
@@ -277,7 +403,13 @@ function main() {
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
   fs.writeFileSync(OUTPUT_PATH, header + body.trimEnd() + "\n");
 
+  fs.writeFileSync(
+    PIPELINE_PATH,
+    JSON.stringify({ generatedAt: now.toISOString(), components: pipeline }, null, 2) + "\n",
+  );
+
   console.log(`Wrote ${rel(OUTPUT_PATH)}`);
+  console.log(`Wrote ${rel(PIPELINE_PATH)}`);
 }
 
 main();

@@ -3,7 +3,7 @@
     "name": "DropdownMenu",
     "category": "atom",
     "type": "display",
-    "status": "ready",
+    "status": "beta",
     "description": "A floating panel of selectable items. Shared dropdown primitive used by AppHeader (user menu) and Select (custom listbox). Supports both menu and listbox ARIA roles.",
     "figmaNodeId": "155:6261"
   },

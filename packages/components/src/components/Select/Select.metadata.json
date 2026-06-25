@@ -3,7 +3,7 @@
     "name": "Select",
     "category": "molecule",
     "type": "input",
-    "status": "ready",
+    "status": "beta",
     "description": "A labelled dropdown selector for choosing one option from a predefined list. Includes a visible label, a custom chevron indicator, optional placeholder, and an optional error message. Wraps a native <select> element for built-in accessibility and mobile keyboard support.",
     "figmaNodeId": "none — no Figma component set exists; uses text styles only"
   },

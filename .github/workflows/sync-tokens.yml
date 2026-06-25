@@ -7,6 +7,8 @@ on:
     paths:
       - "packages/tokens/src/**"
       - "packages/components/src/components/**/*.metadata.json"
+      - ".claude/handoff/**"
+      - ".claude/component-signoff.json"
 
 concurrency:
   group: airtable-sync
@@ -39,6 +41,9 @@ jobs:
         env:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+
+      - name: Derive component pipeline (sense)
+        run: node scripts/sense.js
 
       - name: Sync component metadata to Airtable
         run: node scripts/airtable-sync.js push:components

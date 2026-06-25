@@ -15,10 +15,15 @@ const SEMANTIC_TABLE = "tblxMSyL7EFIXltqX";
 const DEVICE_TABLE = "tblQvDDo0EZoiYrdf";
 const COMPONENTS_TABLE = "tblT79kVwnCZJdlQE";
 
+// Implementation values a human owns in Airtable — code never overwrites these
+// and never orphan-deletes a row holding one. See ADR-010.
+const HUMAN_OWNED_IMPL = new Set(["done", "todo"]);
+
 const COMPONENT_FIELDS = {
   name:               "Name",
   type:               "Type",
-  status:             "Status",
+  maturity:           "Maturity",
+  implementation:     "Implementation",
   variants:           "Variants",
   colorTokens:        "Color tokens",
   spacingTokens:      "Spacing tokens",
@@ -267,6 +272,16 @@ function cleanFigmaNodeId(raw) {
   return raw;
 }
 
+const PIPELINE_PATH = path.resolve(__dirname, "../.claude/component-pipeline.json");
+
+// sense.js-derived implementation stage per component (in progress / in review /
+// done / todo / null). Run `npm run sense` before pushing so this is fresh.
+function loadPipelineImpl() {
+  if (!fs.existsSync(PIPELINE_PATH)) return {};
+  const { components = [] } = JSON.parse(fs.readFileSync(PIPELINE_PATH, "utf8"));
+  return Object.fromEntries(components.map((c) => [c.name, c.implementation]));
+}
+
 function readComponents() {
   return fs
     .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
@@ -279,7 +294,7 @@ function readComponents() {
       return [{
         [COMPONENT_FIELDS.name]:               c.name,
         [COMPONENT_FIELDS.type]:               c.type,
-        [COMPONENT_FIELDS.status]:             c.status,
+        [COMPONENT_FIELDS.maturity]:           c.status,
         [COMPONENT_FIELDS.variants]:           formatVariants(meta.variants),
         [COMPONENT_FIELDS.colorTokens]:        formatTokenList(meta.tokens?.color),
         [COMPONENT_FIELDS.spacingTokens]:      formatTokenList(meta.tokens?.spacing),
@@ -292,12 +307,57 @@ function readComponents() {
     });
 }
 
+// Current Implementation value per component, so the push can protect human-set
+// states. Maps Name → Implementation (only records that have one set).
+async function fetchExistingImpl() {
+  const map = {};
+  let offset;
+  do {
+    const url = new URL(tableUrl(COMPONENTS_TABLE));
+    url.searchParams.append("fields[]", COMPONENT_FIELDS.name);
+    url.searchParams.append("fields[]", COMPONENT_FIELDS.implementation);
+    if (offset) url.searchParams.set("offset", offset);
+    const res = await fetch(url, { headers: airtableHeaders() });
+    if (!res.ok) return map;
+    const data = await res.json();
+    for (const r of data.records ?? []) {
+      const name = r.fields[COMPONENT_FIELDS.name];
+      const impl = r.fields[COMPONENT_FIELDS.implementation];
+      if (name && impl) map[name] = impl;
+    }
+    offset = data.offset;
+  } while (offset);
+  return map;
+}
+
 async function pushComponents() {
   console.log("Pushing components → Airtable…");
   const components = readComponents();
   console.log(`  ${components.length} components found`);
+
+  const pipelineImpl = loadPipelineImpl();
+  const existingImpl = await fetchExistingImpl();
+
+  // `done`/`todo` are human-owned: code never writes over them. Only the
+  // derived stages (in progress / in review) are pushed; if Airtable already
+  // holds a human-owned value the cell is left untouched (partial upsert).
+  for (const rec of components) {
+    const name = rec[COMPONENT_FIELDS.name];
+    const desired = pipelineImpl[name] ?? null;
+    if (desired && !HUMAN_OWNED_IMPL.has(existingImpl[name])) {
+      rec[COMPONENT_FIELDS.implementation] = desired;
+    }
+  }
+
+  // Keep code-backed components, plus any human-owned row (a planned `todo` may
+  // legitimately have no code yet) — never orphan-delete those.
+  const keepKeys = new Set(components.map((c) => c[COMPONENT_FIELDS.name]));
+  for (const [name, impl] of Object.entries(existingImpl)) {
+    if (HUMAN_OWNED_IMPL.has(impl)) keepKeys.add(name);
+  }
+
   await upsertRecords(COMPONENTS_TABLE, COMPONENT_FIELDS.name, components, (r) => r);
-  await deleteOrphans(COMPONENTS_TABLE, COMPONENT_FIELDS.name, components.map((c) => c[COMPONENT_FIELDS.name]));
+  await deleteOrphans(COMPONENTS_TABLE, COMPONENT_FIELDS.name, [...keepKeys]);
   console.log("Done.");
 }
 

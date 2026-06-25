@@ -3,7 +3,7 @@
     "name": "Image",
     "category": "atom",
     "type": "display",
-    "status": "ready",
+    "status": "beta",
     "description": "A self-contained image slot that renders a real image when src is provided, or a neutral grey placeholder with a centred icon when it is not. Fills its container width and maintains the given aspect ratio. Used for course thumbnails, card images, hero banners, and any layout slot that holds visual media.",
     "figmaNodeId": "92:16895"
   },

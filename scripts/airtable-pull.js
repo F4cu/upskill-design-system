@@ -13,6 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID ?? "appBfY2arkReKQNit";
 const OUTPUT_PATH = path.resolve(__dirname, "../packages/tokens/governance.json");
+const SIGNOFF_PATH = path.resolve(__dirname, "../.claude/component-signoff.json");
 
 const TABLES = {
   primitives: { name: "Primitive tokens", keyField: "Primitives" },
@@ -20,6 +21,13 @@ const TABLES = {
 };
 
 const GOV_FIELDS = ["Status", "Owner", "Successor", "Notes"];
+
+const COMPONENTS_TABLE = "Components";
+// Human-owned Implementation values are the only ones pulled back: `done` (the
+// sign-off) and `todo` (a planned/backlog component). The loop stages
+// (in progress / in review) are derived by sense.js, not pulled — pulling them
+// would be circular.
+const HUMAN_OWNED_IMPL = new Set(["done", "todo"]);
 
 function tableUrl(tableName) {
   return `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}`;
@@ -63,6 +71,34 @@ async function pullGovernance(tableName, keyField) {
   return records;
 }
 
+// Pull the human-owned component lifecycle sign-off (Implementation = done/todo).
+// Loop-derived stages are ignored so the value never round-trips through code.
+async function pullComponentSignoff() {
+  const signoff = {};
+  let offset;
+
+  do {
+    const url = new URL(tableUrl(COMPONENTS_TABLE));
+    url.searchParams.append("fields[]", "Name");
+    url.searchParams.append("fields[]", "Implementation");
+    url.searchParams.set("filterByFormula", "NOT({Implementation} = '')");
+    if (offset) url.searchParams.set("offset", offset);
+
+    const res = await fetch(url.toString(), { headers: headers() });
+    if (!res.ok) throw new Error(`Airtable list failed on "${COMPONENTS_TABLE}": ${res.status} ${await res.text()}`);
+    const data = await res.json();
+
+    for (const record of data.records ?? []) {
+      const name = record.fields["Name"];
+      const impl = record.fields["Implementation"];
+      if (name && HUMAN_OWNED_IMPL.has(impl)) signoff[name] = impl;
+    }
+    offset = data.offset;
+  } while (offset);
+
+  return signoff;
+}
+
 async function main() {
   validateEnv();
 
@@ -79,6 +115,11 @@ async function main() {
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(governance, null, 2) + "\n");
   console.log(`\nWrote governance.json (${total} total records).`);
+
+  console.log(`Pulling "${COMPONENTS_TABLE}" sign-off…`);
+  const signoff = await pullComponentSignoff();
+  fs.writeFileSync(SIGNOFF_PATH, JSON.stringify(signoff, null, 2) + "\n");
+  console.log(`  ${Object.keys(signoff).length} component(s) human-signed → wrote .claude/component-signoff.json`);
 }
 
 main().catch((err) => {

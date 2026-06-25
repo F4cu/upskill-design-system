@@ -79,21 +79,25 @@ Do not commit `$extensions` to source. Before pulling Figma changes into committ
 | **Storybook** | Component documentation, token showcase (MDX stories: colors, spacing, typography, radii), light/dark via `addon-themes` + `data-theme`. | Built |
 | **GitHub Actions** | Token build check on PR (`tokens-check.yml`); Airtable sync on merge to main (`sync-tokens.yml`). | Built |
 | **Airtable sync (code → Airtable)** | `scripts/airtable-sync.js` upserts primitives/semantic/device tokens to three tables via REST. One-directional. Runs in CI on merge. | Built |
-| **Airtable governance (Airtable → code)** | `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes` fields per token, pulled to `governance.json` by script. Run `scripts/airtable-pull.js` manually before deprecation work until Phase 6 automates it. | Planned (Phase 2) |
+| **Airtable governance (Airtable → code)** | Per token: `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes`, pulled to `governance.json`. Per component: `Implementation` = human `done`/`todo` sign-off, pulled to `.claude/component-signoff.json` (ADR-010). Both via `scripts/airtable-pull.js` (`npm run governance:pull`). Run manually before deprecation/sign-off work until Phase 6 automates it. | Planned (Phase 2) |
 | **Figma → code flow** | Code is source of truth; Figma is a downstream mirror. Token audit reconciles drift before pulling Figma changes into committed tokens; Code Connect mappings for components. | Planned (Phases 4, 7) |
 | **PR token diff comment, changelog** | Deterministic scripts in Actions. | Planned (Phase 6) |
 | **Component metadata** | JSON schema + example file exist; consumed by agentic moments. | Schema built; consumers planned |
 
 ## Frozen-memory snapshots
 
-Moments and loops read the system's status quo from **committed files, never live APIs** — this shields agents from rate limits and keeps each agent's context small. Four read-not-call artifacts:
+Moments and loops read the system's status quo from **committed files, never live APIs** — this shields agents from rate limits and keeps each agent's context small. Read-not-call artifacts:
 
 | File | Source | Captured by | Status |
 |---|---|---|---|
 | `governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) | Built |
 | `token-usage.json` | Repo scan (`var(--ds-*)` CSS refs + `{alias}` refs) | `scripts/token-usage.js` | Built |
 | `figma-variables.json` | Figma variables | `/figma-variable-audit` via Figma MCP (Plugin API) | Built |
-| `.claude/STATUS_QUO.md` | Aggregate of the three above | `scripts/sense.js` (`npm run sense`) | Built |
+| `.claude/component-signoff.json` | Airtable (`Implementation` = human `done`/`todo`) | `scripts/airtable-pull.js` (REST) | Built |
+| `.claude/component-pipeline.json` | Component metadata + handoff artifacts + sign-off | `scripts/sense.js` (`npm run sense`) | Built |
+| `.claude/STATUS_QUO.md` | Aggregate of the above | `scripts/sense.js` (`npm run sense`) | Built |
+
+**Component lifecycle has two axes** (ADR-010): **Maturity** (`beta`/`ready`/`deprecated`, the metadata `component.status`, pushed code → Airtable) and **Implementation** (`established`/`in progress`/`in review`/`done`/`todo`, the pipeline stage). `sense.js` *derives* `in progress`/`in review`/`established` from handoff artifacts (`in review` = `.review.json` + `.learnings.json` both present; a lone snapshot = `established`, pre-loop); `done`/`todo` are **human-set in Airtable**, pulled into `component-signoff.json`, and win over the derived stage. The push never overwrites an Airtable `done` ("don't downgrade done" guard). The two axes live in separate Airtable columns so a pushed value and a human value never collide.
 
 Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/<Name>.snapshot.json` by `npm run sense:component <Name>`. `figma-variables.json` tags or omits **representational divergences** — unitless tokens Figma can't store faithfully (line-heights) — so the audit diff doesn't flag them every run.
 

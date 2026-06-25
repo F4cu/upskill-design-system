@@ -1,0 +1,239 @@
+{
+  "generatedAt": "2026-06-25T14:07:21.034Z",
+  "components": [
+    {
+      "name": "Accordion",
+      "type": "interactive",
+      "maturity": "beta",
+      "implementation": "in review",
+      "signedOff": false,
+      "reviewedAt": "2026-06-23T11:30:00.000Z",
+      "learningsBackfilled": true
+    },
+    {
+      "name": "AppHeader",
+      "type": "container",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Avatar",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Badge",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Box",
+      "type": "container",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Breadcrumb",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Button",
+      "type": "interactive",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "ButtonArrow",
+      "type": "interactive",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Card",
+      "type": "container",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "CardHorizontal",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "CardVertical",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Checkbox",
+      "type": "input",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Chip",
+      "type": "interactive",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Divider",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "DropdownMenu",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Heading",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Icon",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Image",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Inline",
+      "type": "container",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "ProgressBar",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "ScrollArea",
+      "type": "container",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Select",
+      "type": "input",
+      "maturity": "beta",
+      "implementation": "in review",
+      "signedOff": false,
+      "reviewedAt": "2026-06-25T00:00:00.000Z",
+      "learningsBackfilled": true
+    },
+    {
+      "name": "Stack",
+      "type": "container",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "Text",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "TextField",
+      "type": "input",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "VideoFrame",
+      "type": "display",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    }
+  ]
+}
