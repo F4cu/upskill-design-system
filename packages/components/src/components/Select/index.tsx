@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import type { HTMLAttributes } from 'react'
+import type { HTMLAttributes, KeyboardEvent } from 'react'
 import { DropdownMenu } from '../DropdownMenu'
 import { Icon } from '../Icon'
 import styles from './Select.module.css'
@@ -49,6 +49,8 @@ export function Select({
 
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const prevOpenRef = useRef(false)
 
   useEffect(() => {
     if (!open) return
@@ -60,6 +62,29 @@ export function Select({
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [open])
+
+  useEffect(() => {
+    if (!open || !wrapperRef.current) return
+    const listbox = wrapperRef.current.querySelector<HTMLElement>('[role="listbox"]')
+    if (!listbox) return
+    const selected = listbox.querySelector<HTMLElement>('[aria-selected="true"]')
+    const first = listbox.querySelector<HTMLElement>('[role="option"]')
+    ;(selected || first)?.focus()
+  }, [open])
+
+  useEffect(() => {
+    if (prevOpenRef.current && !open) {
+      triggerRef.current?.focus()
+    }
+    prevOpenRef.current = open
+  }, [open])
+
+  function handleTriggerKeyDown(e: KeyboardEvent<HTMLButtonElement>) {
+    if (!open && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      e.preventDefault()
+      setOpen(true)
+    }
+  }
 
   function handleSelect(val: string) {
     if (!isControlled) setInternalValue(val)
@@ -81,6 +106,7 @@ export function Select({
 
       <div ref={wrapperRef} className={styles.wrapper}>
         <button
+          ref={triggerRef}
           type="button"
           id={id}
           role="combobox"
@@ -98,7 +124,8 @@ export function Select({
           ]
             .filter(Boolean)
             .join(' ')}
-          onClick={() => !disabled && setOpen(prev => !prev)}
+          onClick={() => setOpen(prev => !prev)}
+          onKeyDown={handleTriggerKeyDown}
         >
           <span className={styles.triggerLabel}>{selectedLabel}</span>
           <span className={styles.arrow} aria-hidden="true">

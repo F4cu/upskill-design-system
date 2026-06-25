@@ -44,7 +44,7 @@ describe('Select — a11y behavior', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
   })
 
-  it('opens on Enter/Space and closes on Escape (keyboard contract)', async () => {
+  it('opens on Enter and closes on Escape (keyboard contract)', async () => {
     const user = userEvent.setup()
     render(<Select label="Country" options={OPTIONS} />)
 
@@ -59,6 +59,82 @@ describe('Select — a11y behavior', () => {
     await user.keyboard('{Escape}')
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+  })
+
+  it('opens on Space (keyboard contract: Space / Enter)', async () => {
+    const user = userEvent.setup()
+    render(<Select label="Country" options={OPTIONS} />)
+
+    const trigger = screen.getByRole('combobox', { name: 'Country' })
+    await user.tab()
+    expect(trigger).toHaveFocus()
+
+    await user.keyboard(' ')
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('listbox')).toBeInTheDocument()
+  })
+
+  it('opens on ArrowDown and moves focus to the first option (keyboard contract: Arrow Up / Down)', async () => {
+    const user = userEvent.setup()
+    render(<Select label="Country" options={OPTIONS} />)
+
+    const trigger = screen.getByRole('combobox', { name: 'Country' })
+    await user.tab()
+    expect(trigger).toHaveFocus()
+
+    await user.keyboard('{ArrowDown}')
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('option', { name: 'United States' })).toHaveFocus()
+  })
+
+  it('moves focus to the selected option when it opens with a value', async () => {
+    const user = userEvent.setup()
+    render(<Select label="Country" options={OPTIONS} defaultValue="ca" />)
+
+    const trigger = screen.getByRole('combobox', { name: 'Country' })
+    await user.click(trigger)
+
+    expect(screen.getByRole('option', { name: 'Canada', selected: true })).toHaveFocus()
+  })
+
+  it('ArrowDown / ArrowUp navigate between options in the open listbox', async () => {
+    const user = userEvent.setup()
+    render(<Select label="Country" options={OPTIONS} />)
+
+    await user.click(screen.getByRole('combobox', { name: 'Country' }))
+
+    const [us, ca, mx] = screen.getAllByRole('option')
+    expect(us).toHaveFocus()
+
+    await user.keyboard('{ArrowDown}')
+    expect(ca).toHaveFocus()
+
+    await user.keyboard('{ArrowDown}')
+    expect(mx).toHaveFocus()
+
+    await user.keyboard('{ArrowUp}')
+    expect(ca).toHaveFocus()
+  })
+
+  it('Escape closes the listbox and returns focus to the trigger', async () => {
+    const user = userEvent.setup()
+    render(<Select label="Country" options={OPTIONS} />)
+
+    const trigger = screen.getByRole('combobox', { name: 'Country' })
+    await user.click(trigger)
+    expect(screen.getByRole('listbox')).toBeInTheDocument()
+
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
+  })
+
+  it('controlled mode — displays the label for the externally provided value', () => {
+    const { rerender } = render(<Select label="Country" options={OPTIONS} value="us" onValueChange={() => {}} />)
+    expect(screen.getByRole('combobox', { name: 'Country' })).toHaveTextContent('United States')
+
+    rerender(<Select label="Country" options={OPTIONS} value="mx" onValueChange={() => {}} />)
+    expect(screen.getByRole('combobox', { name: 'Country' })).toHaveTextContent('Mexico')
   })
 
   it('wires the error state to the role=alert message via aria-describedby + aria-invalid', () => {
