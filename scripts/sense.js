@@ -308,6 +308,20 @@ function componentSection(pipeline) {
     out.push("");
   }
 
+  if (byImpl.established.length) {
+    out.push(
+      "### Established — review backlog",
+      "",
+      "Stable, documented components that predate the loop and were never put",
+      "through an adversarial review. Not active work — candidates to harden with",
+      "`/review-component <Name>` when there's time. Running one moves the",
+      "component into the loop automatically.",
+      "",
+      byImpl.established.map((c) => `\`${c.name}\``).join(" · "),
+      "",
+    );
+  }
+
   if (byStatus.beta?.length) {
     out.push("### Beta (not production-ready)", "");
     for (const name of byStatus.beta) out.push(`- \`${name}\``);

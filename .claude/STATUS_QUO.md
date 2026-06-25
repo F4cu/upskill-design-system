@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-06-25T14:07:21.034Z**
+Generated: **2026-06-25T14:32:56.448Z**
 
 Sources:
 - `packages/tokens/governance.json` (Airtable mirror)
@@ -35,6 +35,15 @@ in Airtable (Implementation column) after the visual check in Storybook.
 
 - `Accordion` — maturity `beta` · reviewed 2026-06-23 · learnings back-filled
 - `Select` — maturity `beta` · reviewed 2026-06-25 · learnings back-filled
+
+### Established — review backlog
+
+Stable, documented components that predate the loop and were never put
+through an adversarial review. Not active work — candidates to harden with
+`/review-component <Name>` when there's time. Running one moves the
+component into the loop automatically.
+
+`AppHeader` · `Avatar` · `Badge` · `Box` · `Breadcrumb` · `Button` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Heading` · `Icon` · `Image` · `Inline` · `ProgressBar` · `ScrollArea` · `Stack` · `Text` · `TextField` · `VideoFrame`
 
 ### Beta (not production-ready)
 

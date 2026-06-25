@@ -62,8 +62,8 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 
 ## Phase 6 — Automation (scripts and Actions only — no MCP, no agents)
 
-- [x] GH Action: run `airtable-sync.js` on merge to `main` (direct REST, repo secret for the API key) — `sync-tokens.yml` pushes primitives, semantic, and device tokens, and now also syncs component metadata via `push:components`. Trigger path updated to include `packages/components/src/components/**/*.metadata.json` so component-only commits fire the workflow.
-- [x] `scripts/airtable-pull.js` — pulls governance state from Airtable → `governance.json`; wired as `npm run governance:pull`. Run manually before deprecation work until the Action below is built.
+- [x] GH Action: run `airtable-sync.js` on merge to `main` (direct REST, repo secret for the API key) — `sync-tokens.yml` pushes primitives, semantic, and device tokens, and now also syncs component metadata via `push:components`. Trigger path updated to include `packages/components/src/components/**/*.metadata.json` so component-only commits fire the workflow. Extended in Phase 10 to run `sense` first and push the two lifecycle axes (`Maturity` + `Implementation`).
+- [x] `scripts/airtable-pull.js` — pulls governance state from Airtable → `governance.json`; wired as `npm run governance:pull`. Run manually before deprecation work until the Action below is built. Phase 10 added a second pull: the human component sign-off (`Implementation` = `done`/`todo`) → `.claude/component-signoff.json`.
 - [x] `scripts/airtable-setup-governance.js` — one-time setup that added the governance fields (`status`, `owner`, `successor`, `notes`) to the Airtable tables; safe to re-run. Already executed.
 - [ ] GH Action: run `airtable-pull.js` on a schedule or pre-merge so `governance.json` stays current without a manual step (script exists; Action wrapping it is not yet built)
 - [x] GH Action: PR comment with token diff summary — `scripts/token-diff.js` compares built CSS between base and head; `tokens-check.yml` posts/updates the comment on every PR push (update-in-place via `<!-- token-diff -->` marker)
@@ -124,3 +124,17 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [x] **Pilot:** `Badge` shipped cleanly ✓. `Accordion` shipped ✓ — stateful component confirmed the adversarial reviewer earns its cost: it caught a silent `aria-controls` dead-reference bug (panel unmounted on collapse) that the gate and axe scanner both missed, plus Tab-navigation coverage gap in the test suite. 1 gate failure (minor: `process.env.NODE_ENV` → `import.meta.env.DEV`, no `@types/node` in tsconfig), 0 manual rescues. Promote ADR-007 `proposed` → `accepted`.
 
 **Exit condition (met):** both pilot components shipped through the loop with no manual restructuring; the human reviewed only clean code; the loop prompt updated with what was learned. The adversarial reviewer found things the gate could not — the review stage is earning its cost.
+
+## Phase 10 — Component Lifecycle Status (two axes) *(done)*
+
+> Make a component's lifecycle legible end-to-end: where it sits in the build/review pipeline *and* whether it's production-ready, mirrored to Airtable as the governance surface. Splits the previously overloaded single `Status` field into two independent axes, each owned by the right process and flowing the right direction (ADR-010). Stays inside the charter: derivation is a pure script, the sync is REST, the only human decision is one bit per component.
+
+- [x] **ADR-010** — two-axis model recorded. **Maturity** (`beta`/`ready`/`deprecated`) is code-owned via `component.status`. **Implementation** (`established`/`in progress`/`in review`/`done`/`todo`) is the pipeline stage: `sense.js` derives `established`/`in progress`/`in review` from handoff artifacts; `done`/`todo` are human-owned in Airtable.
+- [x] **Airtable schema** (`tblT79kVwnCZJdlQE`) — renamed `Status` → `Maturity` (options trimmed to the three maturity values); added an `Implementation` single-select. Done by hand: the data-plane PAT lacks `schema.bases:write` and the MCP token was unauthorized.
+- [x] **`sense.js`** — derives the Implementation stage per component (a lone snapshot is a context cache, not loop entry → `established`); layers pulled `done`/`todo` over the derived stage (human wins); emits a richer `## Components` section (both axes, an "In review — awaiting human sign-off" queue, and an "Established — review backlog" callout) plus the frozen `.claude/component-pipeline.json`.
+- [x] **`airtable-pull.js`** — pulls the human-owned `Implementation` (`done`/`todo`) → `.claude/component-signoff.json` (the one Airtable → code direction for components). Wired into `npm run governance:pull`.
+- [x] **`airtable-sync.js push:components`** — pushes `Maturity` + the derived `Implementation`, with two guards: never overwrites an Airtable `done`/`todo`, and exempts those rows from orphan deletion (so a planned `todo` can exist before any code). New `npm run sync:components` = `sense` + push.
+- [x] **`sync-tokens.yml`** — runs `sense` before `push:components`; trigger paths extended to `.claude/handoff/**` and `.claude/component-signoff.json`.
+- [x] **Maturity reset** — all 26 components set to `beta` pending per-component review; promotion to `ready` is a deliberate metadata PR, not an Airtable edit.
+
+**Exit condition (met):** `npm run sense` reports each component's maturity + implementation stage from committed files alone; `npm run sync:components` mirrors both axes to Airtable; a human `done`/`todo` set in Airtable survives every subsequent sync. Promoting a component to `done` is a human decision in Airtable; everything else is derived or pushed by script.
