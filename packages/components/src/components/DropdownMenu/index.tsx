@@ -36,10 +36,20 @@ export function DropdownMenu({
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
-  function handleItemKeyDown(e: KeyboardEvent<HTMLDivElement>, value: string) {
+  function handleItemKeyDown(e: KeyboardEvent<HTMLDivElement>, index: number, value: string) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       onSelect(value)
+    } else if (listRole === 'listbox') {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        const options = panelRef.current?.querySelectorAll<HTMLElement>('[role="option"]')
+        options?.[index + 1]?.focus()
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        const options = panelRef.current?.querySelectorAll<HTMLElement>('[role="option"]')
+        options?.[index - 1]?.focus()
+      }
     }
   }
 
@@ -51,7 +61,7 @@ export function DropdownMenu({
       className={[styles.panel, className].filter(Boolean).join(' ')}
       {...rest}
     >
-      {items.map(item => (
+      {items.map((item, index) => (
         <div
           key={item.value}
           role={listRole === 'listbox' ? 'option' : 'menuitem'}
@@ -62,9 +72,9 @@ export function DropdownMenu({
           ]
             .filter(Boolean)
             .join(' ')}
-          tabIndex={0}
+          tabIndex={listRole === 'listbox' ? -1 : 0}
           onClick={() => onSelect(item.value)}
-          onKeyDown={e => handleItemKeyDown(e, item.value)}
+          onKeyDown={e => handleItemKeyDown(e, index, item.value)}
         >
           {item.label}
         </div>

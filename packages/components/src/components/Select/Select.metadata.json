@@ -96,6 +96,7 @@
       "color.icon.disabled"
     ],
     "spacing": [
+      "space.stack.sm",
       "space.stack.xs",
       "space.inset.md"
     ],
@@ -105,7 +106,7 @@
       "font.size.body-default",
       "font.size.body-small",
       "font.weight.medium",
-      "font.line-height.body-default"
+      "font.line-height.relaxed"
     ],
     "borderRadius": [
       "border-radius.sm"
@@ -117,8 +118,12 @@
   "accessibility": {
     "role": "combobox",
     "ariaAttributes": [
+      "aria-haspopup=\"listbox\" (declares the popup type — always present)",
+      "aria-expanded (true when dropdown is open, false when closed)",
+      "aria-controls (points to the listbox element id)",
       "aria-describedby (points to error message element when error prop is set)",
-      "aria-invalid (set to true when error prop is set)"
+      "aria-invalid (set to true when error prop is set)",
+      "aria-required (mirrors the required prop; omitted when not set)"
     ],
     "keyboardInteractions": [
       {

@@ -47,12 +47,55 @@ describe('DropdownMenu — a11y behavior', () => {
     expect(screen.getByRole('option', { name: 'Gamma', selected: false })).toBeInTheDocument()
   })
 
-  it('makes every item focusable (tabIndex=0)', () => {
+  it('makes every item focusable (tabIndex=0) in menu mode', () => {
     render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} onClose={vi.fn()} />)
 
     for (const item of screen.getAllByRole('menuitem')) {
       expect(item).toHaveAttribute('tabindex', '0')
     }
+  })
+
+  it('listbox options have tabIndex=-1 (focusable via arrow keys, not Tab)', () => {
+    render(
+      <DropdownMenu
+        items={items}
+        listRole="listbox"
+        aria-label="Greek letters"
+        onSelect={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    )
+
+    for (const option of screen.getAllByRole('option')) {
+      expect(option).toHaveAttribute('tabindex', '-1')
+    }
+  })
+
+  it('ArrowDown / ArrowUp navigate focus between options in listbox mode', async () => {
+    const user = userEvent.setup()
+    render(
+      <DropdownMenu
+        items={items}
+        listRole="listbox"
+        aria-label="Greek letters"
+        onSelect={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    )
+
+    const [alpha, beta, gamma] = screen.getAllByRole('option')
+
+    alpha.focus()
+    expect(alpha).toHaveFocus()
+
+    await user.keyboard('{ArrowDown}')
+    expect(beta).toHaveFocus()
+
+    await user.keyboard('{ArrowDown}')
+    expect(gamma).toHaveFocus()
+
+    await user.keyboard('{ArrowUp}')
+    expect(beta).toHaveFocus()
   })
 
   it('fires onSelect with the item value on Enter and Space (keyboardInteractions: Enter / Space)', async () => {
