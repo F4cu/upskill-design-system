@@ -2,7 +2,7 @@
 
 ## Project purpose
 
-A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to seven defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
+A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to eight defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
 
 Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and exit conditions.
 
@@ -115,7 +115,7 @@ If a task could be done with a committed file, a script, or the `gh` CLI, do it 
 
 Commit directly to the current branch — do not create new branches unless explicitly asked. This is a solo project; branch management is the developer's responsibility.
 
-**Exception — `/add-component` loop:** Stage 4 always creates a branch named `component/<kebab-name>` (e.g. `component/accordion`) before committing, then opens a PR against `main` for human review. Agent-generated component code must go through a PR — it should never land on `main` without a review step.
+**Exception — `/add-component` + `/review-component` loop:** `/review-component` always creates a branch named `component/<kebab-name>` (e.g. `component/accordion`) when invoked from the `/add-component` flow, then opens a PR against `main` for human review. Agent-generated component code must go through a PR — it should never land on `main` without a review step.
 
 ## Commands and skills
 
@@ -134,11 +134,13 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 4. **Layout generation** — when starting a new page or section. Read all component metadata files (`composition.accepts`, `composition.containedBy`, `usage.patterns`, `composition.layoutBehavior`) + a one-paragraph layout brief; produce a React component tree using only library components and tokens, with each structural choice annotated by the metadata rule or pattern that justified it. No MCP needed. Success signal: the tree passes structural validation (accepts/containedBy constraints), builds, and renders in Storybook without manual restructuring.
 5. **Figma variable push (code → Figma)** — the inverse of moment 1: when committed tokens have moved ahead of Figma. Read committed token source + Figma variable inventory (MCP); diff into clean-missing / drift / Figma-extras, then write only the clean-missing variables into the Figma collections via `use_figma` (dependency-ordered, aliases preserved, scopes matched to siblings). Never delete or overwrite Figma variables without explicit confirmation — they may be bound to styles. Needs judgment (cross-scheme naming map, safe-add vs decision triage) and the Plugin API, so it can't be a script; the REST Variables API is Enterprise-gated. Success signal: every added variable resolves, counts move by exactly the clean-missing count, nothing deleted silently.
 
-6. **Add component (verified scaffold)** — the ad-hoc agentic loop, piloted on new components. `/add-component <Name>` stages: **sense** (script writes the frozen per-component snapshot) → **scaffold** in-session (reuses moment 3) → **deterministic gate** (`validate:metadata` + `typecheck` + `build`) → **one adversarial reviewer subagent** (`/code-review` + lint + a11y, fresh context) → **apply fixes** → PR. Sequential, at most two agents (main session + one reviewer). The frozen snapshot is the only context handoff. See ROADMAP Phase 9; record ADR-007 when built.
+6. **Add component (verified scaffold)** — the ad-hoc agentic loop, piloted on new components. `/add-component <Name>` stages: **sense** (script writes the frozen per-component snapshot) → **scaffold** in-session (reuses moment 3) → **deterministic gate** (`validate:metadata` + `typecheck` + `build`) → **visual checkpoint** (developer confirms in Storybook) → delegates to moment 7 (`/review-component`). Sequential, at most two agents total across moments 6 and 7. The frozen snapshot is the only context handoff. See ROADMAP Phase 9; ADR-007.
 
-7. **Post-review retro (metadata self-improvement)** — after a component PR merges or after any session that fixes issues in an existing component. Read `.claude/handoff/<Name>.review.json` + `.run.json` (no live API); classify each finding by the metadata section it belongs to (`accessibility.ariaAttributes`, `accessibility.keyboardInteractions`, `composition.accepts`, `composition.layoutBehavior`, `usage.antiPatterns`, etc.); draft targeted amendments; gate on `validate:metadata`; open a PR. For `--all`, scan for patterns appearing in 2+ components and propose a CLAUDE.md addition (developer confirms before it lands). This is the learning loop: fixes that land only in code rot; fixes that land in metadata prevent the same mistake in every future scaffold.
+7. **Review component (adversarial review + fix + PR)** — the review half of the verified scaffold loop, also runnable standalone when reviewing an existing component after code changes. Spawns one adversarial reviewer subagent with fresh context: `/code-review` on the diff + `npm run lint` (ESLint + jsx-a11y) + a11y read against the metadata `accessibility` block + behavioral test coverage check for interactive components (`component.type ∈ {interactive, input}` — not for display/landmark). Main session applies findings, re-runs the gate, creates branch `component/<kebab-name>`, opens the PR, writes `.claude/handoff/<Name>.review.json` and `.run.json`. Those files feed moment 8.
 
-**For existing component reviews:** Use `/code-review` directly on the diff. It reviews for correctness, reuse/simplification, and efficiency. Pair it with `npm run validate:metadata && npm run typecheck && npm run build && npm run a11y:coverage && npm run test:a11y` to verify the gate passes, then test visually in Storybook before opening a PR.
+8. **Extract learnings (metadata self-improvement)** — after a component PR merges or after any session that fixes issues in an existing component. Read `.claude/handoff/<Name>.review.json` + `.run.json` (no live API); classify each finding by the metadata section it belongs to (`accessibility.ariaAttributes`, `accessibility.keyboardInteractions`, `composition.accepts`, `composition.layoutBehavior`, `usage.antiPatterns`, etc.); draft targeted amendments; gate on `validate:metadata`; open a PR. For `--all`, scan for patterns appearing in 2+ components and propose a CLAUDE.md addition (developer confirms before it lands). This is the learning loop: fixes that land only in code rot; fixes that land in metadata prevent the same mistake in every future scaffold.
+
+**For existing component reviews:** Use `/review-component <Name>` for a full adversarial pass (spawns one subagent, writes `.review.json` for the learning loop). Use `/code-review` directly on the diff for a lighter, in-session review with no subagent or handoff file.
 
 **Ad-hoc loops vs continuous loops.** A developer-triggered loop that runs a bounded sequence once and stops (moment 6) is allowed — it is a moment with stages, nothing more. A *continuous* loop, scheduled agent run, or always-on watcher is not: if asked for one, push back and propose a script, a GitHub Action, or one of these moments instead.
 
@@ -224,7 +226,7 @@ Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-te
 
 ## Common tasks
 
-Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The seven developer-triggered commands are the "Agentic moments" above.
+Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The eight developer-triggered commands are the "Agentic moments" above.
 
 | Task | How |
 |---|---|
@@ -232,8 +234,9 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Push tokens to Airtable, or pull governance state | `/airtable-sync` |
 | Scaffold a new component from the fixed set | `/component-scaffold` |
 | Run the verified component loop for a new component (sense → scaffold → adversarial review → PR) | `/add-component` |
-| Review changes to an existing component | Use `/code-review` on the diff, then verify with `npm run validate:metadata && npm run typecheck && npm run build && npm run a11y:coverage && npm run test:a11y`, test in Storybook via `/run-storybook` |
-| Back-fill metadata learnings after a review or bug-fix session | `/post-review-retro <Name>` (single) or `/post-review-retro --all` (batch) |
+| Review an existing component after changes (adversarial subagent, writes `.review.json`) | `/review-component <Name>` |
+| Light in-session review without a subagent or handoff file | `/code-review` on the diff + `npm run validate:metadata && npm run typecheck && npm run build && npm run a11y:coverage && npm run test:a11y` |
+| Back-fill metadata learnings after a review or bug-fix session | `/extract-learnings <Name>` (single) or `/extract-learnings --all` (batch) |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
 | Run a11y checks (static + behavioral) | `npm run lint` (Tier 1, all) · `npm run a11y:coverage && npm run test:a11y` (Tier 2, interactive components — ADR-008) |
 | Generate a page or section layout | `/layout-generation` |

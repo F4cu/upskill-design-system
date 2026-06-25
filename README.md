@@ -41,7 +41,9 @@ Six developer-triggered commands where Claude reads structured repo context and 
 | `/token-deprecation-pass` | Migrates deprecated token usages to their successors |
 | `/component-scaffold` | Scaffolds a new component from the fixed set |
 | `/layout-generation` | Generates a React component tree from a one-paragraph brief |
-| `/add-component` | Full verified loop: sense → scaffold → gate → adversarial review → PR |
+| `/add-component` | Full verified loop: sense → scaffold → gate → visual checkpoint → delegates to `/review-component` |
+| `/review-component` | Adversarial review + fix + PR; also runnable standalone on existing components |
+| `/extract-learnings` | Back-fills review findings into component metadata |
 
 ## Getting started
 

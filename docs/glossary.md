@@ -162,7 +162,7 @@ The smallest chunk of text a language model processes as a single unit. A token 
 ## Agentic loops
 
 **Agentic moment**
-One of the six defined scenarios in this repo where invoking Claude with external tool access is worth the cost. Each moment is developer-triggered, has a clear input and output, and maps to a slash command. The six are: `/figma-variable-audit`, `/token-deprecation-pass`, `/component-scaffold`, `/layout-generation`, `/figma-variable-push`, and `/add-component`. Everything outside these moments is a script or a GitHub Action — not an agent.
+One of the eight defined scenarios in this repo where invoking Claude with external tool access is worth the cost. Each moment is developer-triggered, has a clear input and output, and maps to a slash command. The eight are: `/figma-variable-audit`, `/token-deprecation-pass`, `/component-scaffold`, `/layout-generation`, `/figma-variable-push`, `/add-component`, `/review-component`, and `/extract-learnings`. Everything outside these moments is a script or a GitHub Action — not an agent.
 
 **Context window**
 The amount of information an AI can hold and reason over at once — think of it as working memory. It has a hard limit. This is why this repo uses frozen snapshots: instead of streaming raw Figma or Airtable data into an agent mid-task, the relevant information is pre-written to a small file (`STATUS_QUO.md`, `handoff/<Name>.snapshot.json`) that the agent reads. Less data in context means more room for reasoning, and cheaper, faster runs.
@@ -177,13 +177,13 @@ A committed file that captures the state of an external system at a point in tim
 A protocol that connects Claude to external tools — Figma, Airtable, GitHub, Notion — so it can read and write to them during a conversation. MCP tools appear as capabilities Claude can call, like `get_design_context` (Figma) or `list_records` (Airtable). In this repo, MCP is reserved for one-off, developer-present tasks — never for recurring scripts or CI, because MCP calls are interactive and not scriptable.
 
 **Orchestrator**
-The main Claude session that coordinates a multi-stage agentic loop. In `/add-component`, the orchestrator runs every stage — sense, scaffold, gate — and spawns exactly one subagent for the adversarial review. It decides when to move forward, when to bounce back, and when to open the PR. Having one orchestrator keeps the loop sequential and predictable.
+The main Claude session that coordinates a multi-stage agentic loop. In `/add-component`, the orchestrator runs Stages 0–2b (sense, scaffold, gate, visual checkpoint), then delegates to `/review-component` which spawns the one adversarial subagent. It decides when to move forward, when to bounce back, and when to open the PR. Having one orchestrator keeps the loop sequential and predictable.
 
 **Prompt**
 The instruction given to an AI to tell it what to do. The slash commands in `.claude/commands/` are prompts — they describe the inputs, the steps, the constraints, and the expected output for each agentic moment. Prompt wording matters: a vague prompt produces vague output; a prompt that names specific files and rules produces consistent, verifiable results.
 
 **Subagent**
-A fresh Claude session spawned by the orchestrator for one specific stage that benefits from having no prior context. In `/add-component`, exactly one subagent runs the adversarial code review — it has never seen the scaffold, so it can spot issues the orchestrator might have rationalized away. After it finishes, control returns to the orchestrator. This repo's rule is at most two agents per loop (orchestrator + one subagent) to avoid draining the usage window.
+A fresh Claude session spawned by the orchestrator for one specific stage that benefits from having no prior context. In `/review-component` (called by `/add-component` or standalone), exactly one subagent runs the adversarial code review — it has never seen the scaffold, so it can spot issues the orchestrator might have rationalized away. After it finishes, control returns to the orchestrator. This repo's rule is at most two agents per loop (orchestrator + one subagent) to avoid draining the usage window.
 
 **Tool call**
 When an AI invokes a specific capability during a task — reading a file, running a shell command, calling a Figma MCP function, writing to disk. Each tool call is discrete and visible in the session transcript. In this repo's agentic moments, tool calls to external services (Figma MCP, Airtable MCP) are kept to a minimum and always happen with the developer present.

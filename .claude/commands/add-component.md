@@ -52,54 +52,11 @@ Wait for the developer's reply. Three cases:
 - **`go`** (developer made manual edits) — re-run the Stage 2 gate first; if it passes, continue to Stage 3; if it fails, bounce back to fix the failure, then resurface this checkpoint.
 - **Any issue description** (Claude should fix) — apply the described changes, re-run the Stage 2 gate, then resurface this checkpoint.
 
-### Stage 3 · Adversarial review (exactly one fresh subagent)
-Spawn **one** subagent (`general-purpose`) with fresh context. It must NOT inherit the scaffold's reasoning — give it only:
-- the path to the new component folder and the diff (`git diff` of the new files),
-- the snapshot path (`.claude/handoff/<Name>.snapshot.json`),
-- the instruction to run, and report findings from:
-  1. `/code-review` on the diff (correctness + reuse/simplification),
-  2. `npm run lint -- packages/components/src/components/<Name>` (ESLint, includes jsx-a11y a11y rules),
-  3. an a11y read of the component against its metadata `accessibility` block (role, aria, keyboard).
-  4. **For interactive components only** — judge whether `<Name>.a11y.test.tsx` actually *covers* the contract: does it assert every `keyboardInteraction` declared in the metadata, the state attribute(s) that toggle (e.g. `aria-expanded`, `aria-pressed`, `aria-selected`), focus movement, and the WAI-ARIA APG pattern's semantics? The deterministic gate proves the test *passes*; the reviewer judges whether it tests the *right things* — that is the part a script can't do. Thin or contract-incomplete tests are a `changes-required` a11y finding.
+### Stage 3+ · Review + PR
 
-The subagent writes its findings to `.claude/handoff/<Name>.review.json` as:
-```json
-{
-  "component": "<Name>",
-  "reviewedAt": "<iso>",
-  "lint": { "errors": 0, "warnings": 0, "findings": [] },
-  "codeReview": [ { "severity": "high|medium|low", "file": "", "issue": "", "fix": "" } ],
-  "a11y": [ { "severity": "", "issue": "", "fix": "" } ],
-  "verdict": "clean | changes-required"
-}
-```
-The subagent reviews and reports only — it does **not** edit files. Its final message back to the main session is a short summary + the verdict.
+Delegate to `/review-component <Name>`. That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
 
-### Stage 4 · Fix + PR (main session)
-Read `.claude/handoff/<Name>.review.json`. Apply every `high`/`medium` finding and any `lint` error; for `low` findings, apply or record why not. Re-run the **Stage 2 gate** after fixing. Then:
-- Create a branch `component/<kebab-name>` (e.g. `component/accordion`) off the current base and commit all component files to it.
-- Open a PR against `main` with `gh`, body summarising: what was generated, the gate result, the review verdict, and which findings were applied.
-
-Do **not** commit directly to `main`. Agent-generated component code must go through a PR so the developer can review the diff, run Storybook, and merge on their terms.
-
-The human only ever reviews code that has cleared the gate and the adversarial pass.
-
-## Per-run log (the learning goal)
-After Stage 4, append a record to `.claude/handoff/<Name>.run.json` capturing what Phase 9 is meant to learn:
-```json
-{
-  "component": "<Name>",
-  "ranAt": "<iso>",
-  "gate": { "passes": 0, "failures": 0, "failureReasons": [] },
-  "contextIsolationHeld": true,
-  "reviewerCaughtBeyondGate": ["<finding the script gate could not have caught>"],
-  "manualRescues": ["<any stage that needed hand-holding>"],
-  "notes": ""
-}
-```
-- `contextIsolationHeld` — did Stage 0's frozen snapshot suffice, or did a stage need data outside it?
-- `reviewerCaughtBeyondGate` — did the adversarial subagent find anything the deterministic gate missed? (If never, the review stage is not earning its cost.)
-- `manualRescues` — any stage that needed manual correction. If a stage needs rescuing every run, the snapshot or this prompt is too thin — fix it before declaring the loop done.
+`/review-component` is also the standalone entry point for reviewing existing components — the same command works in both contexts.
 
 ## Success signal
-The component ships *through* the loop — meeting its roadmap success signal with no manual restructuring, the human reviewing only clean code. The gate passes, the review verdict is `clean` (or all findings applied), and the run log is written. Update this prompt with anything learned.
+The component ships *through* the loop — meeting its roadmap success signal with no manual restructuring, the human reviewing only clean code. Stages 0–2b complete cleanly, then `/review-component` clears the adversarial review and opens the PR. Update this prompt with anything learned from each run.
