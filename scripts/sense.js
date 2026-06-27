@@ -47,6 +47,21 @@ function rel(absPath) {
   return path.relative(ROOT, absPath);
 }
 
+// Write only when the content changed apart from its embedded timestamp. The
+// timestamp records when the system state last changed, not when sense last ran,
+// so re-running with no real change must leave the file (and its timestamp)
+// untouched — otherwise every run churns git with a timestamp-only diff.
+// `normalize` blanks the timestamp so two outputs that differ only there compare
+// equal. Returns true if the file was (re)written.
+function writeIfChanged(filePath, content, normalize) {
+  const existing = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : null;
+  if (existing !== null && normalize(existing) === normalize(content)) {
+    return false;
+  }
+  fs.writeFileSync(filePath, content);
+  return true;
+}
+
 // dot-path token → SD CSS custom property, e.g. color.terracotta.9 → --ds-color-terracotta-9
 function dotPathToCssVar(dotPath) {
   return "--ds-" + dotPath.replace(/\./g, "-");
@@ -415,15 +430,26 @@ function main() {
   ].join("\n");
 
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
-  fs.writeFileSync(OUTPUT_PATH, header + body.trimEnd() + "\n");
 
-  fs.writeFileSync(
-    PIPELINE_PATH,
-    JSON.stringify({ generatedAt: now.toISOString(), components: pipeline }, null, 2) + "\n",
-  );
+  const statusQuo = header + body.trimEnd() + "\n";
+  const pipelineJson =
+    JSON.stringify({ generatedAt: now.toISOString(), components: pipeline }, null, 2) + "\n";
 
-  console.log(`Wrote ${rel(OUTPUT_PATH)}`);
-  console.log(`Wrote ${rel(PIPELINE_PATH)}`);
+  // Blank every wall-clock-derived line so the rewrite decision tracks captured
+  // state, not the clock: the run timestamp and the Figma snapshot Age (computed
+  // from now vs capturedAt) both change without any real change. When something
+  // real does change, the file is rewritten and these refresh to current.
+  const normalizeMd = (s) =>
+    s
+      .replace(/^Generated: \*\*.*\*\*$/m, "Generated: **TS**")
+      .replace(/^- Age: \*\*.*$/m, "- Age: **TS**");
+  const normalizeJson = (s) => s.replace(/"generatedAt": ".*"/, '"generatedAt": "TS"');
+
+  const wroteStatusQuo = writeIfChanged(OUTPUT_PATH, statusQuo, normalizeMd);
+  const wrotePipeline = writeIfChanged(PIPELINE_PATH, pipelineJson, normalizeJson);
+
+  console.log(`${wroteStatusQuo ? "Wrote" : "Unchanged"} ${rel(OUTPUT_PATH)}`);
+  console.log(`${wrotePipeline ? "Wrote" : "Unchanged"} ${rel(PIPELINE_PATH)}`);
 }
 
 main();
