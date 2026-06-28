@@ -4,10 +4,10 @@
   "description": "UpSkill Design System – coded component library",
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/components/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/components/src/index.d.ts",
       "import": "./dist/index.js"
     }
   },

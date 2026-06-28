@@ -16,13 +16,16 @@ const parser = require('@babel/parser')
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
 
-// Fixed 26-component set (CLAUDE.md "Component scope")
+// Fixed 26-component set (CLAUDE.md "Component scope") + required sub-components
 const FIXED_SET = new Set([
   'Box', 'Stack', 'Inline', 'Text', 'Heading', 'Icon', 'Button',
   'TextField', 'Select', 'Checkbox', 'Card',
   'Avatar', 'AppHeader', 'Breadcrumb', 'Divider', 'ProgressBar', 'CardHorizontal',
   'CardVertical', 'Chip', 'VideoFrame', 'ButtonArrow', 'ScrollArea',
   'Accordion', 'Badge',
+  // Required sub-components exported alongside their parent
+  'AccordionItem',      // child API of Accordion
+  'DropdownMenu',       // used by AppHeader's user dropdown
   // React built-ins used as wrappers — not user components, so ignored
   'Fragment', 'StrictMode', 'Suspense',
 ])

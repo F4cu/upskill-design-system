@@ -6,7 +6,7 @@ export default function Homepage() {
     <Box as="main">
       <Box as="section" aria-label="Coming soon" paddingY="xl">
         <Box className="container">
-          <Heading level={1}>Homepage</Heading>
+          <Heading as="h1">Homepage</Heading>
           <Text>Generated layout will go here.</Text>
         </Box>
       </Box>

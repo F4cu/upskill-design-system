@@ -6,7 +6,7 @@ export default function Dashboard() {
     <Box as="main">
       <Box as="section" aria-label="Dashboard" paddingY="xl">
         <Box className="container">
-          <Heading level={1}>Dashboard</Heading>
+          <Heading as="h1">Dashboard</Heading>
           <Text>Generated layout will go here.</Text>
         </Box>
       </Box>

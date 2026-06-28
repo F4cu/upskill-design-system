@@ -6,7 +6,7 @@ export default function UserSettings() {
     <Box as="main">
       <Box as="section" aria-label="User settings" paddingY="xl">
         <Box className="container">
-          <Heading level={1}>User Settings</Heading>
+          <Heading as="h1">User Settings</Heading>
           <Text>Generated layout will go here.</Text>
         </Box>
       </Box>
