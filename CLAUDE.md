@@ -173,6 +173,29 @@ Storybook lives in `packages/components` — it is the documentation layer for c
 - Use `args` + `argTypes` so controls work — no hard-coded prop values in stories
 - Dark mode must switch the `data-theme` attribute that activates `theme/dark.json` tokens, not just Storybook's background
 
+## Layout grammar
+
+Every generated page follows a fixed hierarchy mapping Figma structure to HTML landmarks. The skill applies this as its first pass before choosing components. The full rationale is in ADR-011.
+
+| Figma level | Code | Landmark / role |
+|---|---|---|
+| Page | `<Box as="main">` | `main` — exactly one per route |
+| Header | `<Box as="header">` or `<AppHeader>` | `banner` / `navigation` |
+| Section | `<Box as="section" aria-labelledby={headingId}>` + `paddingY` | `region` — must have accessible name |
+| Container | `<Box className="container">` (max-width + grid margin) | presentational |
+| Column (N-column card grid) | `className="grid"` (CSS Grid, auto-reflows via `--ds-grid-columns`) | presentational |
+| Column (two-panel wrapping) | `Inline wrap` + `style={{ flex: '1 0 0', minWidth }}` | presentational |
+| Component | library component from fixed 26 set | per component |
+| Footer | `<Box as="footer">` | `contentinfo` |
+
+**Inline-style reconciliation** (replaces the blanket "no inline styles" for layout files):
+- **Allowed:** `.container` / `.grid` classNames; `style={{ flex: '1 0 0' }}` for column fill; `style={{ minWidth }}` for wrapping threshold; `style={{ maxWidth }}` for content measure.
+- **Forbidden:** raw color via inline style → use `<Text color=…>` / `<Heading>`; raw token values outside `var()`; arbitrary CSS properties that belong in a component's CSS Module.
+
+**Responsive rule:** rely on device tokens for spacing/typography (device CSS auto-applies media queries). Use `.grid` or `Inline wrap` for column→stack reflow. Never write `@media` queries by hand in layout files.
+
+After generating, run `npm run validate:layout <file>` to enforce these rules deterministically.
+
 ## Coding conventions
 
 ### Token JSON

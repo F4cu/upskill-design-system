@@ -1,0 +1,43 @@
+/* Token layers — imported before component CSS so tokens are available */
+@import '@upskill/tokens/css/primitives';
+@import '@upskill/tokens/css/theme.light';
+@import '@upskill/tokens/css/theme.dark';
+@import '@upskill/tokens/css/device';
+
+/* Component styles */
+@import '@upskill/components/dist/index.css';
+
+/* Page-level resets */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--ds-color-background-container-page);
+  color: var(--ds-color-text-default);
+  font-family: var(--ds-font-family-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layout grammar global utilities (mirrors packages/components/src/styles/grid.css) */
+.container {
+  width: 100%;
+  max-width: 90rem; /* 1440px */
+  margin-inline: auto;
+  padding-inline: var(--ds-grid-margin);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ds-grid-columns), 1fr);
+  column-gap: var(--ds-grid-gutter);
+}

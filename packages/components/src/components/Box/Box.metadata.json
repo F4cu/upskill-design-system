@@ -29,6 +29,31 @@
         "name": "padded-surface",
         "description": "A Box wrapping a Stack to create a padded vertical content region.",
         "tree": "Box(padding=lg) > Stack > [Heading, Text, Button]"
+      },
+      {
+        "name": "page-main",
+        "description": "Box rendered as the page's <main> landmark — the polymorphic as prop emits a real <main> element. Exactly one per route (ADR-011).",
+        "tree": "Box(as='main') > [Box(as='header'), Box(as='section'), Box(as='footer')]"
+      },
+      {
+        "name": "page-header",
+        "description": "Box rendered as the page's <header> landmark. Use AppHeader directly when the full header component is available; any child <nav> needs a unique aria-label.",
+        "tree": "Box(as='header') > AppHeader"
+      },
+      {
+        "name": "page-section",
+        "description": "Box rendered as a <section> landmark. aria-labelledby must point to the visible Heading id; use aria-label only when there is no visible heading. Add paddingY for vertical rhythm. A .container div inside handles max-width and grid margins.",
+        "tree": "Box(as='section', aria-labelledby='section-heading-id', paddingY='xl') > [div.container > ...]"
+      },
+      {
+        "name": "page-footer",
+        "description": "Box rendered as the page's <footer> (contentinfo landmark). One per page; a .container div inside handles max-width and grid margins.",
+        "tree": "Box(as='footer') > [div.container > ...]"
+      },
+      {
+        "name": "container",
+        "description": "Box with className='container' to center content in a section. The .container global class applies max-width + grid margin (packages/components/src/styles/grid.css). Prefer this over a raw <div className='container'>.",
+        "tree": "Box(className='container') > Stack > [...]"
       }
     ],
     "antiPatterns": [
@@ -41,6 +66,16 @@
         "scenario": "Nesting Boxes purely to add padding when a single Box with paddingX/paddingY suffices",
         "reason": "Unnecessary nesting inflates the DOM and makes spacing harder to reason about",
         "alternative": "Use the paddingX and paddingY props on a single Box to apply asymmetric spacing"
+      },
+      {
+        "scenario": "Using a raw <div className='container'> instead of Box",
+        "reason": "The grammar requires all structural elements to go through the component system. A raw div bypasses the as-prop pattern and makes the tree inconsistent.",
+        "alternative": "Use <Box className='container'> or <div className='container'> only as a presentational wrapper inside a Box landmark — never as a replacement for a landmark Box"
+      },
+      {
+        "scenario": "Setting color via inline style on Box or a child span",
+        "reason": "Inline color styles bypass the token system and break dark-mode switching.",
+        "alternative": "Use <Text color='…'> or <Heading> with a token-backed color prop. Apply the semantic color token on the element that owns the color context, not on Box."
       }
     ]
   },

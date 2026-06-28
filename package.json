@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "devDependencies": {
     "@eslint/js": "^9.39.4",
@@ -34,6 +35,7 @@
     "sense:component": "node scripts/sense-component.js",
     "lint": "eslint packages/components/src",
     "validate:metadata": "node scripts/validate-metadata.js",
+    "validate:layout": "node scripts/validate-layout.js",
     "a11y:coverage": "node scripts/a11y-coverage.js",
     "test:a11y": "npm run test:a11y -w @upskill/components"
   }
