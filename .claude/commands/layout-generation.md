@@ -1,18 +1,33 @@
 ---
-description: Generate a page or section layout as a React tree using only library components and tokens, with each structural choice justified by component metadata relationships. Use when starting a new page or section from a one-paragraph brief.
+description: Generate a page or section layout as a React tree using only library components and tokens, with each structural choice justified by component metadata relationships. Use when starting a new page or section from a one-paragraph brief, a Figma file URL, or both.
 ---
 
 # Layout generation
 
 **Trigger:** Developer, when starting a new page or section layout.
 
-**When to use:** You have a one-paragraph brief describing what the layout needs to do and what content it contains. No Figma input required — this moment works entirely from metadata and the brief.
+**When to use:** You have a layout brief (one paragraph describing the page intent and key content areas), a Figma file URL pointing to the design, or both. The skill works from either input; a Figma reference improves fidelity significantly.
+
+## First step — clarify inputs before doing any work
+
+Before reading metadata or drafting any structure, determine which inputs are available:
+
+1. **If a Figma URL or node ID was provided** — call `get_design_context` immediately and use the resulting layout, spacing values, and sub-element details as the primary source. The brief (if also provided) sets intent and fills gaps the Figma output leaves ambiguous.
+
+2. **If only a text brief was provided** — ask the developer one question before proceeding:
+
+   > "Do you have a Figma prototype or design file I can reference? A URL or node ID gives me exact spacing, avatar images, icon placements, and other sub-elements that are invisible from a text description alone. If not, I'll generate from the brief only."
+
+   If the developer says no (or doesn't reply with a URL), proceed from the brief alone.
+
+3. **If both are provided** — Figma is the layout authority for structure and spacing; the brief is the authority for intent and content labels when they conflict.
 
 ## Inputs (read all before starting)
 
 - All component metadata files in `packages/components/src/` (`*.metadata.json`) — focus on `composition.accepts`, `composition.containedBy`, `usage.patterns`, `composition.layoutBehavior`
 - Device grid tokens and `packages/components/src/styles/grid.css` utilities — these are part of the layout vocabulary
 - Layout brief — provided by the developer in the prompt (intent, key content areas, constraints)
+- Figma design context — from `get_design_context` when a URL or node ID is provided; captures exact structure, spacing tokens, and every visible sub-element
 
 ## Layout grammar (mandatory — apply this before choosing components)
 
@@ -66,6 +81,7 @@ For each content area identified in Pass 1, select the appropriate library compo
 - Cite the `when` or `usage.patterns` field from that component's metadata that justifies the choice.
 - Check `accepts`/`containedBy` — the parent must accept the child, the child must allow being contained by the parent.
 - Apply the CLAUDE.md typography rules: any visible text must go through `<Text>` or `<Heading>`, never a raw string, `<span>`, or `<p>`.
+- **Map every visible Figma sub-element to a prop** — do not only read the text labels. Images, icons, badges, chevrons, and avatar circles each correspond to a prop. A missing prop silently omits the element with no error at build or runtime. For composite components (AppHeader, CardHorizontal, Breadcrumb), cross-check the emitted props against the component's Storybook `Default` story to confirm all required props are present.
 
 ### Pass 3: Spacing and responsive tokens
 
@@ -96,6 +112,21 @@ Logos live in `apps/showcase/public/` (served as `/logo.svg`, `/logo-dark.svg`).
 
 ### AppHeader
 `AppHeader` manages its own inner container — do **not** wrap it in a `.container` div. Place it directly under `<Box as="main">`. The component's inner width is aligned to the `.container` max-width (90 rem); extra wrappers break alignment.
+
+**Figma-to-props mapping (read this every time you use AppHeader from a Figma reference):**
+
+When the Figma design context shows an AppHeader, map every visible sub-element to a prop — not just the text labels. Use the Storybook `Default` story (`AppHeader.stories.tsx`) as the canonical reference for the full prop set.
+
+| Figma element | Prop to emit | Notes |
+|---|---|---|
+| Logo mark (light) | `logoSrc="/logo.svg"` | Always include |
+| Logo mark (dark/mono) | `logoSrcDark="/logo-dark.svg"` | Include when a second logo variant is visible |
+| Nav link labels | `navItems={[{ label, href, active }]}` | Set `active: true` on the highlighted link |
+| **Avatar / profile photo** | **`userAvatarSrc="…"`** | **Always emit when an avatar circle is visible, even if it is a placeholder.** Use a placeholder URL (e.g. `https://placehold.co/24x24/D15D50/ffffff?text=S`) when the Figma image is a generic photo. Missing this prop silently omits the avatar. |
+| User name text | `userName="…"` | Emit alongside `userAvatarSrc` — never one without the other when both are visible in Figma |
+| Chevron-down next to user name | `userMenuItems={[…]}` | A chevron in Figma means a dropdown menu exists. Emit sensible defaults: `My Profile`, `Settings`, `Log out`. |
+
+**Checklist before leaving AppHeader:** logo ✓ · nav items ✓ · `userAvatarSrc` ✓ · `userName` ✓ · `userMenuItems` ✓ (when chevron visible).
 
 ### Accordion with show-more
 When the design has an accordion list with a "Show more / Show less" trigger, use the CourseModuleList pattern (`Layout/Examples/CourseModuleList` in Storybook):

@@ -118,3 +118,35 @@
   right: 0;
   z-index: 100;
 }
+
+/* Hamburger button — hidden on tablet/desktop, shown on mobile only */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--ds-space-inset-xs);
+  color: var(--ds-color-text-default);
+  flex-shrink: 0;
+}
+
+/* ── Mobile only (< 768px) ───────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .navList {
+    display: none;
+  }
+
+  .userWrapper {
+    display: none;
+  }
+
+  .search {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}

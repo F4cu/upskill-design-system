@@ -137,6 +137,16 @@ export function AppHeader({
             </div>
           )}
         </div>
+
+        {navItems.length > 0 && (
+          <button
+            type="button"
+            className={styles.hamburger}
+            aria-label="Open menu"
+          >
+            <Icon name="menu" />
+          </button>
+        )}
       </div>
     </header>
   )

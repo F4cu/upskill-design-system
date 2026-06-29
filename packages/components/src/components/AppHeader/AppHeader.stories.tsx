@@ -53,3 +53,19 @@ export const Minimal: Story = {
     logoAlt: 'UpSkill',
   },
 }
+
+export const TabletViewport: Story = {
+  args: {
+    logoSrc: logoLight,
+    logoSrcDark: logoDark,
+    logoAlt: 'UpSkill',
+    navItems: NAV_ITEMS,
+    userAvatarSrc: AVATAR,
+    userName: 'Sarah',
+    userMenuItems: USER_MENU_ITEMS,
+  },
+  parameters: {
+    viewport: { defaultViewport: 'tablet' },
+    layout: 'fullscreen',
+  },
+}

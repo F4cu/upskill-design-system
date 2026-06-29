@@ -113,7 +113,13 @@ export default function CourseOverview() {
           { label: 'All Courses', href: '/courses' },
           { label: 'My Courses', href: '/my-courses', active: true },
         ]}
+        userAvatarSrc="https://placehold.co/24x24/D15D50/ffffff?text=S"
         userName="Sarah"
+        userMenuItems={[
+          { value: 'profile', label: 'My Profile' },
+          { value: 'settings', label: 'Settings' },
+          { value: 'logout', label: 'Log out' },
+        ]}
       />
 
       {/* ── Section 1: Course overview ── aria-label because there is no visible section-level heading */}
