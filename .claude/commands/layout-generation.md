@@ -76,6 +76,45 @@ Apply spacing tokens to the structure — never raw values:
 - Column gaps: `gap` via device token (`.grid` uses `--ds-grid-gutter`; `Inline` uses a `gap` prop mapped to a token step)
 - Responsive column reflow: `.grid` auto-reflows by `--ds-grid-columns` (12→8→4); `Inline wrap` reflows via `minWidth`.
 
+## Recurring patterns (use these exact shapes — do not reinvent)
+
+### Fonts
+Fonts are referenced via CSS tokens (`--ds-font-family-body`, `--ds-font-family-headline-serif`) but the typefaces must be loaded. Check `apps/showcase/index.html` — if the Google Fonts `<link>` for Roboto / Playfair Display is missing, add it before generating the page. Without it the browser falls back to a system serif.
+
+### Column inset padding
+When the Figma frame for a column (or card-like region) has an **inset** padding token (all four sides), apply it as `<Box padding="…">` wrapping that column's content. Do not omit column-level padding just because the parent section already has `paddingY` — section rhythm and column inset are independent. Keep the `style={{ flex, minWidth }}` on the `Box`, put the layout primitive (`Stack`/`Inline`) inside it.
+
+### Text color on inverted (dark) backgrounds
+On any section with `background: var(--ds-color-background-container-inverted)`:
+- **Primary body text** (the main paragraph, descriptions) → `var(--ds-color-text-inverted-default)` — full-brightness inverted white.
+- **Secondary / supporting text** (captions, metadata, legal copy) → `var(--ds-color-text-inverted-subtle)` — muted inverted.
+
+Never apply `inverted-subtle` to the main descriptive paragraph. When in doubt, check the Figma variable name on the text layer — `color/text/inverted/default` vs `color/text/inverted/subtle` maps directly to these token names.
+
+### Logos / static assets
+Logos live in `apps/showcase/public/` (served as `/logo.svg`, `/logo-dark.svg`). Do not use string paths like `/logo.png` unless the file already exists in that folder. Pass these paths to `AppHeader`'s `logoSrc`/`logoSrcDark` props exactly as the Storybook story does (`AppHeader.stories.tsx`). For a dark-background footer use `/logo-dark.svg`.
+
+### AppHeader
+`AppHeader` manages its own inner container — do **not** wrap it in a `.container` div. Place it directly under `<Box as="main">`. The component's inner width is aligned to the `.container` max-width (90 rem); extra wrappers break alignment.
+
+### Accordion with show-more
+When the design has an accordion list with a "Show more / Show less" trigger, use the CourseModuleList pattern (`Layout/Examples/CourseModuleList` in Storybook):
+- Keep the full data array outside the component.
+- Add `const [showAll, setShowAll] = useState(false)` (import `useState` from `'react'`).
+- Slice: `const visible = showAll ? ALL : ALL.slice(0, DEFAULT_COUNT)`.
+- Render only `visible` items inside `<Accordion>`.
+- Below the accordion, render a `<Button variant="ghost" size="sm" trailingIcon={…} onClick={…}>` whose label and icon reflect the toggle state.
+- Wrap the `<Accordion>` + button in a `<div>` (not `<Stack>`) so button indentation via `marginLeft` isn't overridden.
+
+### Card carousel with arrows
+When the design shows a horizontal row of cards that paginate with left/right arrows, use the Carousel pattern (`Layout/Examples/Carousel` in Storybook):
+- Import `useCarousel` from `@upskill/components`.
+- `const carousel = useCarousel(items.length, VISIBLE_COUNT)`.
+- Outer: `<Box overflow="hidden">` clips the track.
+- Inner: `<div style={{ display:'flex', gap:'var(--ds-grid-gutter)', transform:\`translateX(calc(-${carousel.offset} * (${CARD_WIDTH}px + var(--ds-grid-gutter))))\`, transition:'transform 300ms ease' }}>`.
+- Each card: `<div style={{ flexShrink:0, width:\`${CARD_WIDTH}px\` }}>`.
+- Paginator: `<Inline gap="md"><Text …>{carousel.offset+1} of {items.length}</Text><ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} /><ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} /></Inline>`.
+
 ## Output
 
 ### Default: route page component
@@ -85,22 +124,20 @@ Emit the layout as a route page component into `apps/showcase/src/pages/<Name>.t
 ```tsx
 // apps/showcase/src/pages/CourseOverview.tsx
 
-import { Box } from '@upskill/components'
-import { AppHeader } from '@upskill/components'
-import styles from './CourseOverview.module.css'
+import { useState } from 'react'
+import { Box, AppHeader, useCarousel } from '@upskill/components'
 
 // Pass 1 skeleton annotated with grammar level
 // Pass 2 components annotated with metadata justification
 // Pass 3 spacing tokens applied
 
-export default function CourseOverview() {
+export default function CoursePage() {
+  // stateful patterns (show-more, carousel) declared here
   return (
     // Page — grammar: one <main> per route
     <Box as="main">
-      {/* Header — grammar: <header> landmark */}
-      <Box as="header">
-        <AppHeader … />
-      </Box>
+      {/* Header — AppHeader goes directly under <main>, no .container wrapper */}
+      <AppHeader logoSrc="/logo.svg" logoSrcDark="/logo-dark.svg" … />
 
       {/* Section — grammar: named region, aria-labelledby → section Heading id */}
       <Box as="section" aria-labelledby="overview-heading" paddingY="xl">
@@ -109,7 +146,7 @@ export default function CourseOverview() {
         </Box>
       </Box>
 
-      {/* Footer — grammar: one <footer> per page */}
+      {/* Footer — grammar: one <footer> per page; use /logo-dark.svg on dark backgrounds */}
       <Box as="footer">
         {/* … */}
       </Box>
