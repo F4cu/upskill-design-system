@@ -9,7 +9,8 @@
     ".": {
       "types": "./dist/components/src/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./styles": "./dist/index.css"
   },
   "files": [
     "dist/"

@@ -5,7 +5,7 @@
 @import '@upskill/tokens/css/device';
 
 /* Component styles */
-@import '@upskill/components/dist/index.css';
+@import '@upskill/components/styles';
 
 /* Page-level resets */
 *,
