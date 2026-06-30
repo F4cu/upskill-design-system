@@ -169,8 +169,8 @@ export default function CourseOverview() {
                     <Text size="metadata" color="subtle">12 Lessons</Text>
                     <span className="dot" aria-hidden />
                     <Text size="metadata" color="subtle">4 hours, 30min</Text>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-inline-xs)' }}>
-                      <Icon name="badge-check" color="subtle" size="sm" />
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-inline-xs)', color: 'var(--ds-color-icon-subtle)' }}>
+                      <Icon name="badge-check" size="sm" />
                       <Text as="span" size="metadata" color="subtle">Certified</Text>
                     </span>
                   </Inline>

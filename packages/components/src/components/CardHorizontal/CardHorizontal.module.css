@@ -57,5 +57,5 @@
 }
 
 .badge svg {
-  color: var(--ds-color-icon-default);
+  color: var(--ds-color-icon-subtle);
 }

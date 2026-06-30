@@ -41,7 +41,7 @@
       {
         "scenario": "Setting a color prop or inline style directly on the Icon element",
         "reason": "Icon uses currentColor — color must be set on the ancestor element that owns the color context, using a semantic token.",
-        "alternative": "Apply color.icon.default (or color.icon.subtle / color.icon.brand for intentional variants) via CSS on the parent element. Never set color on <Icon> itself. Each composing component's metadata implementation field specifies which token applies where."
+        "alternative": "Apply the token via style or CSS on the ancestor span/element, never on <Icon> itself. Token choice depends on context: use color.icon.default for standalone or button-adjacent icons; use color.icon.subtle when the icon appears inline alongside color.text.subtle or metadata-scale text, so the icon sits in the same visual register as its label."
       }
     ]
   },
