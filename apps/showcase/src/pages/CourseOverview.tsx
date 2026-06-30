@@ -30,12 +30,12 @@ import {
 } from '@upskill/components'
 
 // ─── Sample data ─────────────────────────────────────────────────────────────
-const VIDEO_SRC = 'https://picsum.photos/seed/tenfaces/740/413'
+const VIDEO_SRC = '/course-video-image-example.png'
 const CARD_IMGS = [
-  'https://picsum.photos/seed/changebydesign/452/452',
-  'https://picsum.photos/seed/creativeconfidence/452/452',
-  'https://picsum.photos/seed/designeveryday/452/452',
-  'https://picsum.photos/seed/designthinking/452/452',
+  '/image-placeholder.png',
+  '/image-placeholder.png',
+  '/image-placeholder.png',
+  '/image-placeholder.png',
 ]
 const BOOK_IMGS = [
   'https://picsum.photos/seed/zenmin/80/80',
@@ -96,7 +96,6 @@ export default function CourseOverview() {
   const [showAll, setShowAll] = useState(false)
   const carousel = useCarousel(RECOMMENDED_COURSES.length, VISIBLE_COUNT)
 
-  const visibleModules = showAll ? ALL_MODULES : ALL_MODULES.slice(0, VISIBLE_MODULES)
   const hiddenCount = ALL_MODULES.length - VISIBLE_MODULES
 
   return (
@@ -190,7 +189,7 @@ export default function CourseOverview() {
                 {/* showAll state slices ALL_MODULES; button label + icon reflect toggle state */}
                 <div>
                   <Accordion>
-                    {visibleModules.map((m) => (
+                    {ALL_MODULES.slice(0, VISIBLE_MODULES).map((m) => (
                       <AccordionItem
                         key={m.title}
                         title={m.title}
@@ -201,6 +200,27 @@ export default function CourseOverview() {
                         <Text>{m.body}</Text>
                       </AccordionItem>
                     ))}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateRows: showAll ? '1fr' : '0fr',
+                        transition: 'grid-template-rows 300ms ease',
+                      }}
+                    >
+                      <div style={{ overflow: 'hidden' }}>
+                        {ALL_MODULES.slice(VISIBLE_MODULES).map((m) => (
+                          <AccordionItem
+                            key={m.title}
+                            title={m.title}
+                            subtitle={m.subtitle}
+                            headingLevel={3}
+                            defaultOpen={m.defaultOpen}
+                          >
+                            <Text>{m.body}</Text>
+                          </AccordionItem>
+                        ))}
+                      </div>
+                    </div>
                   </Accordion>
                   {hiddenCount > 0 && (
                     <Button
