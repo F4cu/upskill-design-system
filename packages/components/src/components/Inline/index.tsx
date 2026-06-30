@@ -1,4 +1,4 @@
-import type { HTMLAttributes, CSSProperties } from 'react'
+import type { ElementType, HTMLAttributes, CSSProperties } from 'react'
 import styles from './Inline.module.css'
 
 type InlineGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
@@ -6,10 +6,12 @@ type InlineAlign = 'start' | 'center' | 'end' | 'stretch' | 'baseline'
 type InlineJustify = 'start' | 'center' | 'end' | 'space-between' | 'space-around' | 'space-evenly'
 
 export type InlineProps = {
+  as?: ElementType
   gap?: InlineGap
   align?: InlineAlign
   justify?: InlineJustify
   wrap?: boolean
+  fullWidth?: boolean
   className?: string
   style?: CSSProperties
   children?: React.ReactNode
@@ -33,10 +35,12 @@ const justifyMap: Record<InlineJustify, string> = {
 }
 
 export function Inline({
+  as: Tag = 'div',
   gap,
   align,
   justify,
   wrap = true,
+  fullWidth,
   className,
   style,
   children,
@@ -50,12 +54,12 @@ export function Inline({
   }
 
   return (
-    <div
-      className={[styles.inline, !wrap && styles.noWrap, className].filter(Boolean).join(' ')}
+    <Tag
+      className={[styles.inline, !wrap && styles.noWrap, fullWidth && styles.fullWidth, className].filter(Boolean).join(' ')}
       style={cssVars}
       {...rest}
     >
       {children}
-    </div>
+    </Tag>
   )
 }

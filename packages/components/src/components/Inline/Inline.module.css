@@ -10,3 +10,7 @@
 .noWrap {
   flex-wrap: nowrap;
 }
+
+.fullWidth {
+  width: 100%;
+}

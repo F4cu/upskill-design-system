@@ -5,6 +5,7 @@ const meta = {
   title: 'Layout/Box',
   component: Box,
   argTypes: {
+    as: { control: 'text' },
     padding: {
       control: 'select',
       options: [undefined, 'xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl'],
@@ -21,7 +22,8 @@ const meta = {
       control: 'select',
       options: [undefined, 'hidden', 'auto', 'scroll', 'visible', 'clip'],
     },
-    as: { control: 'text' },
+    minWidth: { control: 'text' },
+    maxWidth: { control: 'text' },
   },
 } satisfies Meta<typeof Box>
 
@@ -51,6 +53,14 @@ export const PaddingScale: Story = {
         </Box>
       ))}
     </div>
+  ),
+}
+
+export const MaxWidthContainer: Story = {
+  render: () => (
+    <Box maxWidth="32rem" padding="md" style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: '4px' }}>
+      <span style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>maxWidth="32rem" — content measure constraint</span>
+    </Box>
   ),
 }
 

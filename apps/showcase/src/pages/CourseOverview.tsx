@@ -216,7 +216,7 @@ export default function CourseOverview() {
                 </div>
 
                 {/* CTA row — Button metadata "form-actions-row" pattern */}
-                <Inline justify="end" gap="sm">
+                <Inline fullWidth justify="end" gap="sm">
                   <Button
                     variant="outlined"
                     shape="square"

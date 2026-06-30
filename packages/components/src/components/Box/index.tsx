@@ -10,6 +10,8 @@ export type BoxProps = {
   paddingX?: SpaceInset
   paddingY?: SpaceInset
   overflow?: Overflow
+  minWidth?: string | number
+  maxWidth?: string | number
   className?: string
   style?: CSSProperties
   children?: React.ReactNode
@@ -21,6 +23,8 @@ export function Box({
   paddingX,
   paddingY,
   overflow,
+  minWidth,
+  maxWidth,
   className,
   style,
   children,
@@ -32,6 +36,8 @@ export function Box({
     '--_box-px': resolvedX ? `var(--ds-space-inset-${resolvedX})` : '0',
     '--_box-py': resolvedY ? `var(--ds-space-inset-${resolvedY})` : '0',
     ...(overflow && { overflow }),
+    ...(minWidth !== undefined && { minWidth }),
+    ...(maxWidth !== undefined && { maxWidth }),
     ...style,
   }
 

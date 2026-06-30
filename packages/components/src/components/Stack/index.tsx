@@ -1,4 +1,4 @@
-import type { HTMLAttributes, CSSProperties } from 'react'
+import type { ElementType, HTMLAttributes, CSSProperties } from 'react'
 import styles from './Stack.module.css'
 
 type StackGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
@@ -6,9 +6,11 @@ type StackAlign = 'start' | 'center' | 'end' | 'stretch' | 'baseline'
 type StackJustify = 'start' | 'center' | 'end' | 'space-between' | 'space-around' | 'space-evenly'
 
 export type StackProps = {
+  as?: ElementType
   gap?: StackGap
   align?: StackAlign
   justify?: StackJustify
+  fullWidth?: boolean
   className?: string
   style?: CSSProperties
   children?: React.ReactNode
@@ -32,9 +34,11 @@ const justifyMap: Record<StackJustify, string> = {
 }
 
 export function Stack({
+  as: Tag = 'div',
   gap,
   align,
   justify,
+  fullWidth,
   className,
   style,
   children,
@@ -48,12 +52,12 @@ export function Stack({
   }
 
   return (
-    <div
-      className={[styles.stack, className].filter(Boolean).join(' ')}
+    <Tag
+      className={[styles.stack, fullWidth && styles.fullWidth, className].filter(Boolean).join(' ')}
       style={cssVars}
       {...rest}
     >
       {children}
-    </div>
+    </Tag>
   )
 }

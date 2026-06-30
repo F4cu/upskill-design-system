@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { Button } from '../Button'
 import { Inline } from './index'
 
 const Chip = ({ label }: { label: string }) => (
@@ -20,6 +21,7 @@ const meta = {
   title: 'Layout/Inline',
   component: Inline,
   argTypes: {
+    as: { control: 'text' },
     gap: {
       control: 'select',
       options: [undefined, 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'],
@@ -33,6 +35,7 @@ const meta = {
       options: [undefined, 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly'],
     },
     wrap: { control: 'boolean' },
+    fullWidth: { control: 'boolean' },
   },
 } satisfies Meta<typeof Inline>
 
@@ -81,6 +84,17 @@ export const SpaceBetween: Story = {
       </>
     ),
   },
+}
+
+export const JustifyEnd: Story = {
+  render: () => (
+    <div style={{ width: '400px', background: 'var(--ds-color-background-neutral-subtle)', padding: '16px', borderRadius: '4px' }}>
+      <Inline fullWidth justify="end" gap="sm">
+        <Button variant="outlined" shape="square" icon="bookmark" aria-label="Bookmark" />
+        <Button variant="default">Add to your cart</Button>
+      </Inline>
+    </div>
+  ),
 }
 
 export const Wrapping: Story = {

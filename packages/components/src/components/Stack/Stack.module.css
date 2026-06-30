@@ -5,3 +5,7 @@
   align-items: var(--_align, stretch);
   justify-content: var(--_justify, flex-start);
 }
+
+.fullWidth {
+  width: 100%;
+}

@@ -19,6 +19,7 @@ const meta = {
   title: 'Layout/Stack',
   component: Stack,
   argTypes: {
+    as: { control: 'text' },
     gap: {
       control: 'select',
       options: [undefined, 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'],
@@ -31,6 +32,7 @@ const meta = {
       control: 'select',
       options: [undefined, 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly'],
     },
+    fullWidth: { control: 'boolean' },
   },
 } satisfies Meta<typeof Stack>
 
@@ -63,6 +65,27 @@ export const GapScale: Story = {
           </Stack>
         </div>
       ))}
+    </div>
+  ),
+}
+
+export const AsOrderedList: Story = {
+  render: () => (
+    <Stack as="ol" gap="sm" style={{ paddingLeft: '1.25rem' }}>
+      <li><Swatch label="First item" /></li>
+      <li><Swatch label="Second item" /></li>
+      <li><Swatch label="Third item" /></li>
+    </Stack>
+  ),
+}
+
+export const FullWidth: Story = {
+  render: () => (
+    <div style={{ width: '400px', background: 'var(--ds-color-background-neutral-subtle)', padding: '16px', borderRadius: '4px' }}>
+      <Stack gap="sm" fullWidth align="end">
+        <Swatch label="Aligned to right edge" />
+        <Swatch label="Also right" />
+      </Stack>
     </div>
   ),
 }
