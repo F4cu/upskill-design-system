@@ -128,9 +128,9 @@ const TYPESCALE_CONFIG: {
   { key: 'body-default',   label: 'Body Default',   fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
   { key: 'metadata',       label: 'Metadata',       fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 400, fontWeightLabel: 'Regular'  },
   { key: 'label',          label: 'Label',          fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 500, fontWeightLabel: 'Medium'   },
-  { key: 'title-small',    label: 'Title Small',    fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 500, fontWeightLabel: 'Medium'   },
+  { key: 'title-small',    label: 'Title Small',    fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 600, fontWeightLabel: 'Semibold' },
   { key: 'subheader',      label: 'Subheader',      fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 600, fontWeightLabel: 'Semibold' },
-  { key: 'headline',       label: 'Headline',       fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 700, fontWeightLabel: 'Bold'     },
+  { key: 'headline',       label: 'Headline',       fontFamily: "'Roboto', sans-serif",      fontFamilyLabel: 'Roboto',           fontWeight: 600, fontWeightLabel: 'Semibold' },
   { key: 'headline-serif', label: 'Headline Serif', fontFamily: "'Playfair Display', serif", fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium'   },
   { key: 'display',        label: 'Display',        fontFamily: "'Playfair Display', serif", fontFamilyLabel: 'Playfair Display', fontWeight: 500, fontWeightLabel: 'Medium'   },
 ]

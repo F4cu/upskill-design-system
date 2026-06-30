@@ -61,7 +61,7 @@
       "purpose": {
         "title-small": "Card titles, widget headers. 1.125rem semibold.",
         "subheader": "Section sub-labels or feature callouts. 1.375rem semibold.",
-        "headline": "Primary section headings. 1.625rem bold.",
+        "headline": "Primary section headings. 1.625rem semibold.",
         "headline-serif": "Editorial or feature headings in the serif typeface. 1.75rem medium.",
         "display": "Hero headlines. 2rem serif, medium weight, tight leading."
       }
@@ -96,7 +96,6 @@
       "font.size.headline-serif",
       "font.size.display",
       "font.weight.semibold",
-      "font.weight.bold",
       "font.weight.medium",
       "font.line-height.title-default",
       "font.line-height.subheader-default",

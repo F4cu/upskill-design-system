@@ -12,8 +12,9 @@ html {
 body {
   font-family: var(--ds-font-family-body);
   color: var(--ds-color-text-default);
-  background-color: var(--ds-color-background-container-root);
+  background-color: var(--ds-color-background-container-page);
   line-height: var(--ds-font-line-height-relaxed, 1.5);
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 img, svg, video {

@@ -9,21 +9,21 @@
 .title-small {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-title-small);
-  font-weight: var(--ds-font-weight-bold);
+  font-weight: var(--ds-font-weight-semibold);
   line-height: var(--ds-font-line-height-default);
 }
 
 .subheader {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-subheader);
-  font-weight: var(--ds-font-weight-bold);
+  font-weight: var(--ds-font-weight-semibold);
   line-height: var(--ds-font-line-height-default);
 }
 
 .headline {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-headline);
-  font-weight: var(--ds-font-weight-bold);
+  font-weight: var(--ds-font-weight-semibold);
   line-height: var(--ds-font-line-height-default);
 }
 
