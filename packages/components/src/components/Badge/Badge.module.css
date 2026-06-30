@@ -3,12 +3,12 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--ds-border-radius-sm);
-  padding: var(--ds-space-inset-xs);
+  padding: var(--ds-space-inset-xxs) var(--ds-space-inset-xs);
   color: var(--ds-color-text-subtle);
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-body-small);
   font-weight: var(--ds-font-weight-regular);
-  line-height: var(--ds-font-line-height-none);
+  line-height: var(--ds-font-line-height-default);
   white-space: nowrap;
 }
 

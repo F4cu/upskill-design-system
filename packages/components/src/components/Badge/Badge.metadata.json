@@ -73,14 +73,14 @@
       "color.background.neutral.subtlest"
     ],
     "spacing": [
-      "space.inset.xs",
-      "space.inset.sm"
+      "space.inset.xxs",
+      "space.inset.xs"
     ],
     "typography": [
       "font.family.body",
       "font.size.body-small",
-      "font.weight.medium",
-      "font.line-height.tight"
+      "font.weight.regular",
+      "font.line-height.default"
     ],
     "borderRadius": [
       "border-radius.sm"

@@ -37,6 +37,8 @@
     "validate:metadata": "node scripts/validate-metadata.js",
     "validate:layout": "node scripts/validate-layout.js",
     "a11y:coverage": "node scripts/a11y-coverage.js",
-    "test:a11y": "npm run test:a11y -w @upskill/components"
+    "test:a11y": "npm run test:a11y -w @upskill/components",
+    "component:check": "npm run validate:metadata && npm run typecheck && npm run build && echo 'Gate passed. Preview changes with: npm run storybook. Once confirmed, run: npm run component:sync to update documentation and memory'",
+    "component:sync": "npm run token-usage && npm run sense"
   }
 }
