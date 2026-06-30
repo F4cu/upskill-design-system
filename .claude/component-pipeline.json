@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T14:32:56.448Z",
+  "generatedAt": "2026-06-30T14:57:24.008Z",
   "components": [
     {
       "name": "Accordion",
@@ -220,6 +220,15 @@
     {
       "name": "TextField",
       "type": "input",
+      "maturity": "beta",
+      "implementation": "established",
+      "signedOff": false,
+      "reviewedAt": null,
+      "learningsBackfilled": false
+    },
+    {
+      "name": "TextLink",
+      "type": "interactive",
       "maturity": "beta",
       "implementation": "established",
       "signedOff": false,

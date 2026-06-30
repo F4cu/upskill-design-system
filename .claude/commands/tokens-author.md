@@ -51,3 +51,15 @@ change — record or amend an ADR (see CLAUDE.md → "Architectural decisions").
 - No trailing commas (strict JSON). No `$extensions` in source.
 - Line-heights are unitless ratios (`1`, `1.25`, `1.4`, `1.5`, `1.75`) — never px.
 - Don't mix color sub-scales on one token: `1–12` (light), `dark-1…dark-12`, `alpha-1…alpha-12`.
+
+## After authoring — downstream sync
+
+Token changes propagate to two downstream systems. Always close out with:
+
+| What changed | Action |
+|---|---|
+| Any semantic token added or renamed (`theme/*.json`) | Run `/figma-variable-push` to add the new Figma variables. Old names become Figma extras — report them; never delete without confirmation. |
+| Any primitive added (`primitives.json`) | Run `/figma-variable-push` if the primitive is an alias target for a new semantic token; otherwise Airtable sync is enough. |
+| Airtable (all token changes) | `npm run sync:semantic:push` (theme) or `npm run sync:tokens:push` (primitives) — already part of CI on merge, but run manually if you need it immediately. |
+
+Figma sync is interactive and developer-present — it cannot be scripted or automated.

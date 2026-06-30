@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-06-30T08:27:48.758Z**
+Generated: **2026-06-30T14:57:24.008Z**
 
 Sources:
 - `packages/tokens/governance.json` (Airtable mirror)
@@ -23,9 +23,9 @@ None. No deprecated token has a live reference. ✅
 
 ## Components
 
-- **26 total** — Maturity: 26 beta
-- By type: container (6) · display (13) · input (3) · interactive (4)
-- Implementation: 0 done · 2 in review · 0 in progress · 0 todo · 24 established (pre-loop)
+- **27 total** — Maturity: 27 beta
+- By type: container (6) · display (13) · input (3) · interactive (5)
+- Implementation: 0 done · 2 in review · 0 in progress · 0 todo · 25 established (pre-loop)
 - Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
 
 ### In review — awaiting human sign-off
@@ -43,7 +43,7 @@ through an adversarial review. Not active work — candidates to harden with
 `/review-component <Name>` when there's time. Running one moves the
 component into the loop automatically.
 
-`AppHeader` · `Avatar` · `Badge` · `Box` · `Breadcrumb` · `Button` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Heading` · `Icon` · `Image` · `Inline` · `ProgressBar` · `ScrollArea` · `Stack` · `Text` · `TextField` · `VideoFrame`
+`AppHeader` · `Avatar` · `Badge` · `Box` · `Breadcrumb` · `Button` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Heading` · `Icon` · `Image` · `Inline` · `ProgressBar` · `ScrollArea` · `Stack` · `Text` · `TextField` · `TextLink` · `VideoFrame`
 
 ### Beta (not production-ready)
 
@@ -72,6 +72,7 @@ component into the loop automatically.
 - `Stack`
 - `Text`
 - `TextField`
+- `TextLink`
 - `VideoFrame`
 
 ## Pending extract-learnings
@@ -80,7 +81,7 @@ None. All review findings have been back-filled. ✅
 
 ## Token usage
 
-- **92** distinct CSS custom properties referenced in `packages/components/src`
+- **91** distinct CSS custom properties referenced in `packages/components/src`
 - **139** distinct dot-path tokens referenced via `{alias}` syntax in theme/device JSON
 - Full token→files maps: `packages/tokens/token-usage.json`
 

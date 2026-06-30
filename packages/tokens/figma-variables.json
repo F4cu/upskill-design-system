@@ -5,7 +5,7 @@
   "capturedVia": "Figma MCP use_figma (read-only)",
   "summary": {
     "Primitives": 252,
-    "Theme": 102,
+    "Theme": 104,
     "Device": 60
   },
   "representationalDivergences": {
@@ -419,6 +419,14 @@
           "Dark": "-> color/brand/default"
         },
         "color/text/link/hover": {
+          "Light": "-> color/brand/brand-11",
+          "Dark": "-> color/brand/brand-11"
+        },
+        "color/text/interactive/default": {
+          "Light": "-> color/brand/default",
+          "Dark": "-> color/brand/default"
+        },
+        "color/text/interactive/hover": {
           "Light": "-> color/brand/brand-11",
           "Dark": "-> color/brand/brand-11"
         },
