@@ -26,6 +26,7 @@ import {
   Stack,
   Text,
   VideoFrame,
+  useCarousel,
 } from '@upskill/components'
 
 // ─── Sample data ─────────────────────────────────────────────────────────────
@@ -88,17 +89,15 @@ const RECOMMENDED_COURSES = [
 ]
 
 const VISIBLE_MODULES = 3
-const PAGE_SIZE = 4
+const CARD_WIDTH = 280
+const VISIBLE_COUNT = 4
 
 export default function CourseOverview() {
   const [showAll, setShowAll] = useState(false)
-  const [page, setPage] = useState(0)
+  const carousel = useCarousel(RECOMMENDED_COURSES.length, VISIBLE_COUNT)
 
   const visibleModules = showAll ? ALL_MODULES : ALL_MODULES.slice(0, VISIBLE_MODULES)
   const hiddenCount = ALL_MODULES.length - VISIBLE_MODULES
-  const totalPages = Math.ceil(RECOMMENDED_COURSES.length / PAGE_SIZE)
-  const visibleCourses = RECOMMENDED_COURSES.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
-  const shownCount = Math.min((page + 1) * PAGE_SIZE, RECOMMENDED_COURSES.length)
 
   return (
     // ── Page ── grammar: exactly one <main> per route (ADR-011)
@@ -245,39 +244,33 @@ export default function CourseOverview() {
               </Heading>
             </Stack>
 
-            {/* Carousel — full-width equal cards, page-based flip (Layout/Examples/Carousel → Discover pattern) */}
-            {/* Each card: flex 1 0 min-content fills the row equally; PAGE_SIZE=4 per page */}
-            <div style={{ display: 'flex', gap: 'var(--ds-grid-gutter)' }}>
-              {visibleCourses.map((course, i) => (
-                <div key={course.title} style={{ flex: '1 0 min-content' }}>
-                  <CardVertical
-                    thumbnailSrc={CARD_IMGS[i % CARD_IMGS.length]}
-                    title={course.title}
-                    duration={course.duration}
-                    certified={course.certified}
-                    size="lg"
-                  />
-                </div>
-              ))}
-            </div>
+            {/* Carousel — Box clips track; .carousel-outer switches to native scroll on mobile */}
+            <Box overflow="hidden" className="carousel-outer">
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 'var(--ds-grid-gutter)',
+                  transform: `translateX(calc(-${carousel.offset} * (${CARD_WIDTH}px + var(--ds-grid-gutter))))`,
+                  transition: 'transform 300ms ease',
+                }}
+              >
+                {RECOMMENDED_COURSES.map((course, i) => (
+                  <div key={course.title} style={{ flexShrink: 0, width: `${CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
+                    <CardVertical
+                      thumbnailSrc={CARD_IMGS[i % CARD_IMGS.length]}
+                      title={course.title}
+                      duration={course.duration}
+                      certified={course.certified}
+                      size="lg"
+                    />
+                  </div>
+                ))}
+              </div>
+            </Box>
 
-            {/* Paginator — counter + ButtonArrow pair; arrows flip a full page at a time */}
-            <Inline gap="md" align="center">
-              <Text size="body-default" color="subtle">
-                {shownCount} of {RECOMMENDED_COURSES.length}
-              </Text>
-              <ButtonArrow
-                direction="left"
-                disabled={page === 0}
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                aria-label="Previous"
-              />
-              <ButtonArrow
-                direction="right"
-                disabled={page === totalPages - 1}
-                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                aria-label="Next"
-              />
+            <Inline gap="sm" justify="end" className="hide-on-mobile">
+              <ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} aria-label="Previous" />
+              <ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} aria-label="Next" />
             </Inline>
 
           </Stack>

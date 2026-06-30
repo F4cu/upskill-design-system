@@ -138,13 +138,53 @@ When the design has an accordion list with a "Show more / Show less" trigger, us
 - Wrap the `<Accordion>` + button in a `<div>` (not `<Stack>`) so button indentation via `marginLeft` isn't overridden.
 
 ### Card carousel with arrows
-When the design shows a horizontal row of cards that paginate with left/right arrows, use the Carousel pattern (`Layout/Examples/Carousel` in Storybook):
-- Import `useCarousel` from `@upskill/components`.
-- `const carousel = useCarousel(items.length, VISIBLE_COUNT)`.
-- Outer: `<Box overflow="hidden">` clips the track.
-- Inner: `<div style={{ display:'flex', gap:'var(--ds-grid-gutter)', transform:\`translateX(calc(-${carousel.offset} * (${CARD_WIDTH}px + var(--ds-grid-gutter))))\`, transition:'transform 300ms ease' }}>`.
-- Each card: `<div style={{ flexShrink:0, width:\`${CARD_WIDTH}px\` }}>`.
-- Paginator: `<Inline gap="md"><Text …>{carousel.offset+1} of {items.length}</Text><ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} /><ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} /></Inline>`.
+When the design shows a horizontal row of cards that paginate with left/right arrows — **or when Figma design context contains a component named "Carousel", "carousel", or a scrollable card row with navigation arrows** — use this pattern exactly:
+
+```tsx
+import { useCarousel } from '@upskill/components'
+
+const CARD_WIDTH = 280   // adjust to fit ~VISIBLE_COUNT cards in the container
+const VISIBLE_COUNT = 4
+
+const carousel = useCarousel(items.length, VISIBLE_COUNT)
+
+<Stack gap="md">
+  {/* Box owns the clip; .carousel-outer only overrides to native scroll on mobile */}
+  <Box overflow="hidden" className="carousel-outer">
+    <div
+      style={{
+        display: 'flex',
+        gap: 'var(--ds-grid-gutter)',
+        transform: `translateX(calc(-${carousel.offset} * (${CARD_WIDTH}px + var(--ds-grid-gutter))))`,
+        transition: 'transform 300ms ease',
+      }}
+    >
+      {items.map((item) => (
+        <div key={item.title} style={{ flexShrink: 0, width: `${CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
+          <CardVertical … />
+        </div>
+      ))}
+    </div>
+  </Box>
+  {/* .hide-on-mobile: arrows hidden on mobile — user scrolls with finger instead */}
+  <Inline gap="sm" justify="end" className="hide-on-mobile">
+    <ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} aria-label="Previous" />
+    <ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} aria-label="Next" />
+  </Inline>
+</Stack>
+```
+
+**Rules:**
+- **Always** import `useCarousel` from `@upskill/components` — never use page-based `useState` for carousel navigation.
+- No counter (no "X of Y" text) — arrows only, right-aligned via `justify="end"`.
+- `CARD_WIDTH` is a px constant; set it so ~`VISIBLE_COUNT` cards fit the container.
+- Use `<Box overflow="hidden" className="carousel-outer">` — `overflow="hidden"` (Box prop) clips the track on desktop; `.carousel-outer` only overrides to `overflow-x:auto` + scroll-snap on mobile (`global.css`).
+- Use `className="hide-on-mobile"` on the arrow row — mobile users scroll with their finger.
+
+**Figma signal checklist** — treat any of these as a carousel trigger:
+- A Figma component or frame named "Carousel" or "carousel".
+- A horizontally scrollable frame with multiple same-type cards and arrow/chevron buttons.
+- A card row where the outer frame has `overflow: hidden` and the inner track slides.
 
 ## Output
 

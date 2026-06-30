@@ -11,3 +11,19 @@
   grid-template-columns: repeat(var(--ds-grid-columns), 1fr);
   column-gap: var(--ds-grid-gutter);
 }
+
+/* Hide on mobile — assumes touch scroll replaces arrow navigation */
+@media (max-width: 767px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
+/* Carousel outer — mobile-only override; pair with <Box overflow="hidden"> for the desktop clip */
+@media (max-width: 767px) {
+  .carousel-outer {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+}
