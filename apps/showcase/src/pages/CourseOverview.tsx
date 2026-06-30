@@ -21,6 +21,7 @@ import {
   CardVertical,
   Divider,
   Heading,
+  Icon,
   Inline,
   Stack,
   Text,
@@ -165,11 +166,13 @@ export default function CourseOverview() {
                   </Stack>
 
                   <Inline gap="sm" align="center">
-                    <Text size="body-default" color="subtle">12 Lessons</Text>
-                    <Text size="body-default" color="subtle" aria-hidden>·</Text>
-                    <Text size="body-default" color="subtle">4 hours, 30min</Text>
-                    <Text size="body-default" color="subtle" aria-hidden>·</Text>
-                    <Text size="body-default" color="subtle">Certified</Text>
+                    <Text size="metadata" color="subtle">12 Lessons</Text>
+                    <span className="dot" aria-hidden />
+                    <Text size="metadata" color="subtle">4 hours, 30min</Text>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-inline-xs)' }}>
+                      <Icon name="badge-check" size="sm" />
+                      <Text as="span" size="metadata" color="subtle">Certified</Text>
+                    </span>
                   </Inline>
 
                   <Inline gap="sm">
@@ -206,7 +209,7 @@ export default function CourseOverview() {
                       size="sm"
                       trailingIcon={showAll ? 'chevron-up' : 'chevron-down'}
                       onClick={() => setShowAll((prev) => !prev)}
-                      style={{ marginLeft: 'var(--ds-space-inset-md)' }}
+                      style={{ marginLeft: 'var(--ds-space-inset-md)', marginTop: 'var(--ds-space-inset-xxs)' }}
                     >
                       {showAll ? 'Show less' : `Show ${hiddenCount} more`}
                     </Button>

@@ -41,3 +41,12 @@ body {
   grid-template-columns: repeat(var(--ds-grid-columns), 1fr);
   column-gap: var(--ds-grid-gutter);
 }
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
