@@ -27,10 +27,10 @@ button, input, select, textarea {
 }
 
 a {
-  color: var(--ds-color-text-link);
+  color: var(--ds-color-text-interactive-default);
   text-decoration: none;
 }
 
 a:hover {
-  color: var(--ds-color-text-link-hover);
+  color: var(--ds-color-text-interactive-hover);
 }

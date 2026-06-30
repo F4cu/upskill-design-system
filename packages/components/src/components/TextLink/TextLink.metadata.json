@@ -1,0 +1,135 @@
+{
+  "component": {
+    "name": "TextLink",
+    "category": "atom",
+    "type": "interactive",
+    "status": "beta",
+    "description": "Inline hyperlink with permanent underline and brand interactive color. Semibold weight distinguishes it from surrounding body text. Color shifts to a darker brand tone on hover. Always renders as an <a> element — use only for navigation (URL changes), never for in-page actions."
+  },
+  "usage": {
+    "keywords": [
+      "link",
+      "anchor",
+      "hyperlink",
+      "inline link",
+      "text link",
+      "navigation link",
+      "author link"
+    ],
+    "when": [
+      "Linking an author name, entity, or term inline within a paragraph or metadata line",
+      "Any inline navigational link embedded in body copy",
+      "When the link destination is a URL and browser navigation semantics (<a href>) are required"
+    ],
+    "patterns": [
+      {
+        "name": "author-credit",
+        "description": "An author or contributor name linked inline before a role or affiliation label.",
+        "tree": "Text(size=body-default, color=subtle) > [TextLink(href=...), ', Author and educator, MICA']"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using TextLink for an in-page action (e.g. 'Show more', 'Delete')",
+        "reason": "TextLink renders an <a> element. In-page actions that do not change the URL must be <button> elements for correct keyboard and screen-reader semantics.",
+        "alternative": "Use Button variant='ghost' for low-emphasis in-page text actions."
+      },
+      {
+        "scenario": "Using TextLink without an href",
+        "reason": "An <a> without href loses its interactive role and is not focusable by keyboard.",
+        "alternative": "Always supply href. Use Button for actions that do not navigate."
+      },
+      {
+        "scenario": "Wrapping block-level content (Heading, Card, Stack) inside TextLink",
+        "reason": "Interactive content must not contain other interactive content; block elements inside an <a> create invalid HTML.",
+        "alternative": "Place the TextLink adjacent to the content, or use a card-level overlay link pattern with a separate invisible <a> spanning the card."
+      },
+      {
+        "scenario": "Overriding the color or removing the underline via an inline style",
+        "reason": "Underline and brand color are the only visual affordances distinguishing a TextLink from surrounding text. Removing either breaks recognisability.",
+        "alternative": "Use the size prop for scale adjustments. Never override color or text-decoration."
+      }
+    ]
+  },
+  "variants": {
+    "size": {
+      "options": ["body-default", "body-small", "metadata", "label"],
+      "default": "body-default",
+      "purpose": {
+        "body-default": "Standard inline link within body copy.",
+        "body-small": "Link within smaller supporting text (e.g. captions, footnotes).",
+        "metadata": "Link in metadata lines (e.g. lesson count, duration rows).",
+        "label": "Link in label-sized UI text (e.g. form helper text)."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "default",
+      "description": "Brand interactive color with permanent underline and semibold weight."
+    },
+    {
+      "state": "hover",
+      "description": "Shifts to the darker brand interactive hover color; underline remains."
+    },
+    {
+      "state": "focus-visible",
+      "description": "Browser default focus ring; no custom override."
+    },
+    {
+      "state": "visited",
+      "description": "No visited style override — inherits browser default."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.text.interactive.default",
+      "color.text.interactive.hover"
+    ],
+    "spacing": [],
+    "typography": [
+      "font.family.body",
+      "font.size.body-default",
+      "font.size.body-small",
+      "font.size.metadata",
+      "font.size.label",
+      "font.weight.semibold",
+      "font.line-height.relaxed",
+      "font.line-height.none"
+    ],
+    "borderRadius": [],
+    "other": []
+  },
+  "accessibility": {
+    "role": "link",
+    "notes": "Renders a native <a> element. href is always required — omitting it removes the link from the tab order. Do not nest interactive children (buttons, inputs, other links) inside TextLink.",
+    "ariaAttributes": [
+      "aria-label — use when the link text alone is ambiguous (e.g. 'Read more' repeated multiple times on a page)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Enter",
+        "action": "Follows the href"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus to the next focusable element"
+      }
+    ]
+  },
+  "composition": {
+    "composedOf": [],
+    "accepts": [],
+    "containedBy": [
+      "Text",
+      "Box",
+      "Inline",
+      "Stack"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}

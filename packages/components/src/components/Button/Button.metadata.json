@@ -130,8 +130,8 @@
       "color.text.inverted.disabled",
       "color.text.subtle",
       "color.text.disabled",
-      "color.text.link.default",
-      "color.text.link.hover",
+      "color.text.interactive.default",
+      "color.text.interactive.hover",
       "color.border.default",
       "color.border.disabled"
     ],

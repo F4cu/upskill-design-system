@@ -83,3 +83,6 @@ export type { BadgeProps, BadgeVariant } from './components/Badge'
 
 export { useSlider } from './hooks/useSlider'
 export type { UseSliderReturn } from './hooks/useSlider'
+
+export { TextLink } from './components/TextLink'
+export type { TextLinkProps, TextLinkSize } from './components/TextLink'

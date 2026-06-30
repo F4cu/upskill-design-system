@@ -47,7 +47,6 @@
     ],
     "--ds-font-weight-bold": [
       "packages/components/src/components/Accordion/Accordion.module.css",
-      "packages/components/src/components/Heading/Heading.module.css",
       "packages/components/src/styles/utilities.module.css"
     ],
     "--ds-font-line-height-default": [
@@ -72,8 +71,6 @@
     ],
     "--ds-color-icon-default": [
       "packages/components/src/components/Accordion/Accordion.module.css",
-      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
-      "packages/components/src/components/CardVertical/CardVertical.module.css",
       "packages/components/src/components/Select/Select.module.css"
     ],
     "--ds-size-icon-md": [
@@ -86,7 +83,8 @@
       "packages/components/src/stories/Carousel.stories.tsx",
       "packages/components/src/stories/CourseModuleList.stories.tsx",
       "packages/components/src/stories/CourseSlider.stories.tsx",
-      "packages/components/src/stories/SettingsForm.stories.tsx"
+      "packages/components/src/stories/SettingsForm.stories.tsx",
+      "packages/components/src/styles/reset.css"
     ],
     "--ds-color-border-brand": [
       "packages/components/src/components/AppHeader/AppHeader.module.css"
@@ -114,7 +112,9 @@
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Text/Text.module.css",
-      "packages/components/src/components/TextField/TextField.module.css"
+      "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css",
+      "packages/components/src/components/TextLink/TextLink.stories.tsx"
     ],
     "--ds-font-line-height-relaxed": [
       "packages/components/src/components/AppHeader/AppHeader.module.css",
@@ -123,6 +123,8 @@
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css",
+      "packages/components/src/components/TextLink/TextLink.stories.tsx",
       "packages/components/src/styles/reset.css"
     ],
     "--ds-color-text-subtle": [
@@ -138,6 +140,7 @@
       "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/components/Text/Text.stories.tsx",
       "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/components/TextLink/TextLink.stories.tsx",
       "packages/components/src/styles/utilities.module.css"
     ],
     "--ds-color-text-brand": [
@@ -182,6 +185,8 @@
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css",
+      "packages/components/src/components/TextLink/TextLink.stories.tsx",
       "packages/components/src/styles/reset.css",
       "packages/components/src/styles/utilities.module.css",
       "packages/components/src/tokens/tokenComponents.module.css"
@@ -190,7 +195,8 @@
       "packages/components/src/components/Badge/Badge.module.css",
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Text/Text.module.css",
-      "packages/components/src/components/TextField/TextField.module.css"
+      "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css"
     ],
     "--ds-font-weight-regular": [
       "packages/components/src/components/Badge/Badge.module.css",
@@ -206,7 +212,9 @@
       "packages/components/src/components/Card/index.tsx"
     ],
     "--ds-font-weight-semibold": [
-      "packages/components/src/components/Button/Button.module.css"
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css"
     ],
     "--ds-size-400": [
       "packages/components/src/components/Button/Button.module.css",
@@ -272,11 +280,14 @@
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
-    "--ds-color-text-link-default": [
-      "packages/components/src/components/Button/Button.module.css"
-    ],
-    "--ds-color-text-link-hover": [
+    "--ds-color-text-interactive-default": [
       "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css",
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-color-text-interactive-hover": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/reset.css"
     ],
     "--ds-color-border-strong": [
@@ -296,7 +307,8 @@
     "--ds-color-background-neutral-subtle": [
       "packages/components/src/components/Card/Card.module.css",
       "packages/components/src/components/Inline/Inline.stories.tsx",
-      "packages/components/src/components/ProgressBar/ProgressBar.module.css"
+      "packages/components/src/components/ProgressBar/ProgressBar.module.css",
+      "packages/components/src/components/Stack/Stack.stories.tsx"
     ],
     "--ds-size-thumbnail-sm": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
@@ -304,6 +316,10 @@
     "--ds-font-line-height-tight": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/Heading/Heading.module.css"
+    ],
+    "--ds-color-icon-subtle": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css"
     ],
     "--ds-color-background-container-inverted": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.stories.tsx",
@@ -365,6 +381,7 @@
     "--ds-font-line-height-none": [
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/utilities.module.css"
     ],
     "--ds-color-background-neutral-hover": [
@@ -410,10 +427,12 @@
       "packages/components/src/components/Stack/index.tsx"
     ],
     "--ds-font-size-metadata": [
-      "packages/components/src/components/Text/Text.module.css"
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css"
     ],
     "--ds-font-size-label": [
       "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/utilities.module.css"
     ],
     "--ds-color-neutral-3": [
@@ -434,12 +453,6 @@
     ],
     "--ds-grid-columns": [
       "packages/components/src/styles/grid.css"
-    ],
-    "--ds-color-background-container-root": [
-      "packages/components/src/styles/reset.css"
-    ],
-    "--ds-color-text-link": [
-      "packages/components/src/styles/reset.css"
     ],
     "--ds-color-brand-9": [
       "packages/components/src/tokens/tokenComponents.module.css"

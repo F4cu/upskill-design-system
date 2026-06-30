@@ -89,13 +89,13 @@
 
 .ghost {
   --_bg: transparent;
-  --_text: var(--ds-color-text-link-default);
+  --_text: var(--ds-color-text-interactive-default);
   --_px: 0;
 }
 
 .ghost:hover:not(:disabled) {
   --_bg: transparent;
-  --_text: var(--ds-color-text-link-hover);
+  --_text: var(--ds-color-text-interactive-hover);
 }
 
 .ghost:disabled {

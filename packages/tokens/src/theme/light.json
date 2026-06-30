@@ -291,7 +291,7 @@
           "$value": "{color.teal.dark.11}"
         }
       },
-      "link": {
+      "interactive": {
         "default": {
           "$type": "color",
           "$value": "{color.brand.default}"

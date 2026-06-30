@@ -25,6 +25,7 @@ import {
   Inline,
   Stack,
   Text,
+  TextLink,
   VideoFrame,
   useCarousel,
 } from '@upskill/components'
@@ -146,12 +147,7 @@ export default function CourseOverview() {
 
                 <Stack gap="sm">
                   <Text size="body-default" color="subtle">
-                    <a
-                      href="#"
-                      style={{ color: 'var(--ds-color-text-link-default)', fontWeight: 600, textDecoration: 'underline' }}
-                    >
-                      Edward Clark
-                    </a>
+                    <TextLink href="#">Edward Clark</TextLink>
                     {', Author and educator, MICA'}
                   </Text>
 
