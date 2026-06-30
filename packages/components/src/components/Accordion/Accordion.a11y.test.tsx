@@ -19,7 +19,7 @@ describe('AccordionItem — a11y behavior', () => {
       'aria-expanded',
       'false',
     )
-    expect(screen.queryByRole('region')).not.toBeInTheDocument()
+    expect(screen.queryByRole('region')).toBeNull()
   })
 
   it('sets aria-expanded=true and shows region when opened', async () => {
@@ -48,7 +48,7 @@ describe('AccordionItem — a11y behavior', () => {
     )
 
     const trigger = screen.getByRole('button', { name: /Module 1/i })
-    // Panel is always in the DOM (hidden attribute), so aria-controls is always valid.
+    // Panel is always in the DOM (aria-hidden when collapsed), so aria-controls is always valid.
     const panel = screen.getByRole('region', { hidden: true })
     expect(trigger.getAttribute('aria-controls')).toBe(panel.id)
 

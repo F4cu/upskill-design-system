@@ -1,5 +1,6 @@
 .accordion {
   width: 100%;
+  min-width: 0;
   border-top: 1px solid var(--ds-color-border-default);
 }
 
@@ -22,10 +23,13 @@
   cursor: pointer;
   text-align: left;
   color: inherit;
+  transition: background-color 0.15s ease;
 }
 
 .trigger[aria-expanded='true'] {
   background: var(--ds-color-background-container-elevated);
+  /* delay matches panel so trigger and panel surface appear together */
+  transition: background-color 0.2s ease 0.05s;
 }
 
 .titleGroup {
@@ -52,11 +56,31 @@
   color: var(--ds-color-icon-default);
 }
 
+.panelOuter {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+}
+
+.panelOuterOpen {
+  grid-template-rows: 1fr;
+}
+
+/* Grid item — padding-free so the track can truly collapse to 0 */
+.panelInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .panel {
   background: var(--ds-color-background-container-elevated);
   padding: 0 calc(var(--ds-space-inset-md) + var(--ds-size-icon-md) + var(--ds-space-inline-sm)) var(--ds-space-inset-md) var(--ds-space-inset-md);
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
-.panel[hidden] {
-  display: none;
+/* Fade content in after height starts, so no colored strip mid-animation */
+.panelOuterOpen .panel {
+  opacity: 1;
+  transition: opacity 0.2s ease 0.05s;
 }

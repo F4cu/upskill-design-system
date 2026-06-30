@@ -64,13 +64,19 @@ export function AccordionItem({
         </button>
       </Heading>
       <div
-        id={panelId}
-        role="region"
-        aria-labelledby={triggerId}
-        className={styles.panel}
-        hidden={!isOpen}
+        className={[styles.panelOuter, isOpen ? styles.panelOuterOpen : ''].filter(Boolean).join(' ')}
       >
-        {children}
+        <div className={styles.panelInner}>
+          <div
+            id={panelId}
+            role="region"
+            aria-labelledby={triggerId}
+            className={styles.panel}
+            aria-hidden={!isOpen ? true : undefined}
+          >
+            {children}
+          </div>
+        </div>
       </div>
     </div>
   )
