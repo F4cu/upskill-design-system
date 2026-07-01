@@ -71,7 +71,7 @@
     ]
   },
   "accessibility": {
-    "role": "generic",
+    "role": "img (only when label prop provided; otherwise no role, aria-hidden=true)",
     "ariaAttributes": [
       "aria-hidden (default true)",
       "aria-label (when label prop provided)",
@@ -88,7 +88,16 @@
       "Stack",
       "Inline",
       "Button",
-      "Card"
+      "Card",
+      "ButtonArrow",
+      "Accordion",
+      "TextField",
+      "CardHorizontal",
+      "CardVertical",
+      "Image",
+      "AppHeader",
+      "Select",
+      "Breadcrumb"
     ],
     "layoutBehavior": {
       "widthBehavior": "fixed",
