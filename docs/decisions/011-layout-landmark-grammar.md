@@ -42,7 +42,7 @@ The skill's **inline-style reconciliation** replaces the prior blanket prohibiti
 
 The skill's default output target changes from a Storybook story to a route page in `apps/showcase/src/pages/<Name>.tsx`. A `--story` mode retains the prior Storybook-story format for component-level review.
 
-A `scripts/validate-layout.js` script (`npm run validate:layout`) enforces the grammar deterministically (one `<main>`, named sections, labelled navs, fixed-set component names only). It gates the skill: the validator must exit 0 before the output is declared done. Deterministic checks stay in scripts per the lite-agentic charter.
+A `scripts/validate-layout.js` script (`npm run layout:validate`) enforces the grammar deterministically (one `<main>`, named sections, labelled navs, fixed-set component names only). It gates the skill: the validator must exit 0 before the output is declared done. Deterministic checks stay in scripts per the lite-agentic charter.
 
 ## Consequences
 

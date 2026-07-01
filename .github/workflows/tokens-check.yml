@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Build tokens
-        run: npm run build:tokens
+        run: npm run tokens:build
 
       - name: Verify output files exist
         run: |

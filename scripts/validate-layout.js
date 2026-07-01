@@ -210,7 +210,7 @@ function collectTsxFiles(target) {
 
 const target = process.argv[2]
 if (!target) {
-  console.error('Usage: npm run validate:layout <file-or-directory>')
+  console.error('Usage: npm run layout:validate <file-or-directory>')
   process.exit(1)
 }
 

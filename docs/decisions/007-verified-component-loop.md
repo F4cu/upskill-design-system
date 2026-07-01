@@ -38,7 +38,7 @@ Options considered for how to run the loop:
 
 1. **Sense** (script, no AI) — `npm run sense:component <Name>` writes `.claude/handoff/<Name>.snapshot.json` from the committed frozen-memory files (`governance.json`, `token-usage.json`, `figma-variables.json`). No live API call.
 2. **Scaffold** (main session) — reuses the `/component-scaffold` moment, fed only the snapshot + schema + a template component.
-3. **Gate** (script) — `npm run validate:metadata && npm run typecheck && npm run build`; fail-fast bounces back to stage 2 with the error.
+3. **Gate** (script) — `npm run metadata:validate && npm run typecheck && npm run build`; fail-fast bounces back to stage 2 with the error.
 4. **Adversarial review** (one spawned subagent) — fresh, independent context running `/code-review` + lint + a11y; findings written to `.claude/handoff/<Name>.review.json`.
 5. **Fix + PR** (main session) — apply findings, re-run the gate, open the PR. No agent-written code reaches `main` unreviewed.
 
@@ -66,8 +66,8 @@ Option 1 was rejected because its cost model inverts on Pro. Option 3 was reject
 ADR-008 adds a Tier-2 behavioral a11y check (Vitest + Testing Library + `vitest-axe`, jsdom), gated to
 interactive components. It folds into this loop at two points:
 
-- **Stage 2 (gate)** gains `npm run a11y:coverage && npm run test:a11y` after the build. `a11y:coverage`
-  fails fast if an interactive component lacks its `<Name>.a11y.test.tsx`; `test:a11y` runs the
+- **Stage 2 (gate)** gains `npm run a11y:coverage && npm run a11y:test` after the build. `a11y:coverage`
+  fails fast if an interactive component lacks its `<Name>.a11y.test.tsx`; `a11y:test` runs the
   behavioral assertions. Non-interactive components (e.g. Badge) are a no-op — the gate is
   complexity-scoped, so the Badge pilot path is unchanged.
 - **Stage 3 (adversarial review)** now judges, for interactive components, whether the a11y test

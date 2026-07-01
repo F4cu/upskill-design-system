@@ -102,7 +102,7 @@ A named design decision stored as data — a color, a spacing size, a font size,
 The output format that the browser reads, produced by the Style Dictionary build. Looks like `--ds-color-action-primary`. Components reference these in their stylesheets via `var(--ds-color-action-primary)`. You never write these by hand — they are generated from the token JSON files.
 
 **Style Dictionary**
-The build tool that converts the token JSON source files into CSS custom properties and JS constants. Running `npm run build:tokens` triggers Style Dictionary. It applies transforms (such as px → rem) and produces the files that components actually consume.
+The build tool that converts the token JSON source files into CSS custom properties and JS constants. Running `npm run tokens:build` triggers Style Dictionary. It applies transforms (such as px → rem) and produces the files that components actually consume.
 
 **Transform**
 A conversion step applied by Style Dictionary during the build. Examples in this repo: converting pixel values to `rem` units, converting font-weight strings like `"Bold"` to their numeric equivalent (`700`), and wrapping device tokens in `@media` blocks. Transforms are configured in `style-dictionary.config.js`.
@@ -168,7 +168,7 @@ One of the eight defined scenarios in this repo where invoking Claude with exter
 The amount of information an AI can hold and reason over at once — think of it as working memory. It has a hard limit. This is why this repo uses frozen snapshots: instead of streaming raw Figma or Airtable data into an agent mid-task, the relevant information is pre-written to a small file (`STATUS_QUO.md`, `handoff/<Name>.snapshot.json`) that the agent reads. Less data in context means more room for reasoning, and cheaper, faster runs.
 
 **Deterministic gate**
-A fixed set of automated checks that must pass before agent-written code is allowed to proceed to human review. In this repo the gate is: `npm run validate:metadata` + `npm run typecheck` + `npm run build`. "Deterministic" means the result is always the same for the same input — no judgment involved, just pass or fail. If the gate fails, the loop bounces back to the scaffold stage rather than pushing broken code forward.
+A fixed set of automated checks that must pass before agent-written code is allowed to proceed to human review. In this repo the gate is: `npm run metadata:validate` + `npm run typecheck` + `npm run build`. "Deterministic" means the result is always the same for the same input — no judgment involved, just pass or fail. If the gate fails, the loop bounces back to the scaffold stage rather than pushing broken code forward.
 
 **Frozen snapshot**
 A committed file that captures the state of an external system at a point in time, so agents can read it without making a live API call. In this repo: `governance.json` (Airtable state), `token-usage.json` (repo scan), `figma-variables.json` (Figma variables), and `.claude/STATUS_QUO.md` (aggregate of all three). Regenerated manually before a loop run with `npm run sense`. Frozen snapshots keep agents fast, cheap, and immune to rate limits during a task.

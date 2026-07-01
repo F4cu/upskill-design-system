@@ -18,7 +18,7 @@ Three layers resolve in order; the committed JSON is the source of truth — Fig
 | Theme | `theme/light.json`, `theme/dark.json` | Semantic color aliases |
 | Device | `device/desktop.json`, `device/tablet.json`, `device/mobile.json` | Responsive spacing and typography per breakpoint |
 
-`npm run build:tokens` transforms DTCG source into CSS custom properties (desktop in `:root`, tablet/mobile in `@media` blocks) and JS/TS constants.
+`npm run tokens:build` transforms DTCG source into CSS custom properties (desktop in `:root`, tablet/mobile in `@media` blocks) and JS/TS constants.
 
 ## Automation
 
@@ -49,7 +49,7 @@ Six developer-triggered commands where Claude reads structured repo context and 
 
 ```bash
 npm install
-npm run build:tokens
+npm run tokens:build
 npm run storybook --workspace=@upskill/components
 ```
 

@@ -44,7 +44,7 @@ Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never 
 
 ## Style Dictionary build (built)
 
-`npm run build:tokens` transforms DTCG source into CSS custom properties (dimensions in `rem`; desktop device tokens in `:root`, tablet/mobile in `@media` blocks) and JS/TS constants. Config and custom transforms (px→rem, font-weight string→numeric, `$root` rename, media-query combiner) live in `packages/tokens/style-dictionary.config.js`.
+`npm run tokens:build` transforms DTCG source into CSS custom properties (dimensions in `rem`; desktop device tokens in `:root`, tablet/mobile in `@media` blocks) and JS/TS constants. Config and custom transforms (px→rem, font-weight string→numeric, `$root` rename, media-query combiner) live in `packages/tokens/style-dictionary.config.js`.
 
 **Invariant:** components only ever consume the built output, never source JSON. The authoring and rebuild procedure — including when a transform change needs an ADR — is `/tokens-author`.
 
@@ -75,7 +75,7 @@ Do not commit `$extensions` to source. Before pulling Figma changes into committ
 | **Storybook** | Component documentation, token showcase (MDX stories: colors, spacing, typography, radii), light/dark via `addon-themes` + `data-theme`. | Built |
 | **GitHub Actions** | Token build check on PR (`tokens-check.yml`); Airtable sync on merge to main (`sync-tokens.yml`). | Built |
 | **Airtable sync (code → Airtable)** | `scripts/airtable-sync.js` upserts primitives/semantic/device tokens to three tables via REST. One-directional. Runs in CI on merge. | Built |
-| **Airtable governance (Airtable → code)** | Per token: `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes`, pulled to `governance.json`. Per component: `Implementation` = human `done`/`todo` sign-off, pulled to `.claude/component-signoff.json` (ADR-010). Both via `scripts/airtable-pull.js` (`npm run governance:pull`). Run manually before deprecation/sign-off work until Phase 6 automates it. | Planned (Phase 2) |
+| **Airtable governance (Airtable → code)** | Per token: `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes`, pulled to `governance.json`. Per component: `Implementation` = human `done`/`todo` sign-off, pulled to `.claude/component-signoff.json` (ADR-010). Both via `scripts/airtable-pull.js` (`npm run airtable:pull:governance`). Run manually before deprecation/sign-off work until Phase 6 automates it. | Planned (Phase 2) |
 | **Figma → code flow** | Code is source of truth; Figma is a downstream mirror. Token audit reconciles drift before pulling Figma changes into committed tokens; Code Connect mappings for components. | Planned (Phases 4, 7) |
 | **PR token diff comment, changelog** | Deterministic scripts in Actions. | Planned (Phase 6) |
 | **Component metadata** | JSON schema + example file exist; consumed by agentic moments. | Schema built; consumers planned |
@@ -170,7 +170,7 @@ Storybook lives in `packages/components` — it is the documentation layer for c
 
 ## Layout grammar
 
-Every page follows a fixed hierarchy mapping Figma structure to HTML landmarks (rationale in ADR-011). The full grammar table — Page/Header/Section/Container/Column/Footer → sanctioned code and landmark — lives in `/layout-generation`, which applies it as its first pass. Enforce deterministically with `npm run validate:layout <file>`.
+Every page follows a fixed hierarchy mapping Figma structure to HTML landmarks (rationale in ADR-011). The full grammar table — Page/Header/Section/Container/Column/Footer → sanctioned code and landmark — lives in `/layout-generation`, which applies it as its first pass. Enforce deterministically with `npm run layout:validate <file>`.
 
 Load-bearing invariants for **any** layout file (hand-edited or generated):
 - Exactly one `<Box as="main">` per route; every `<Box as="section">` has an accessible name (`aria-labelledby` → its `Heading`); every extra `<nav>` has a unique `aria-label`.
@@ -243,10 +243,10 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Scaffold a new component from the fixed set | `/component-scaffold` |
 | Run the verified component loop for a new component (sense → scaffold → adversarial review → PR) | `/add-component` |
 | Review an existing component after changes (adversarial subagent, writes `.review.json`) | `/review-component <Name>` |
-| Light in-session review without a subagent or handoff file | `/code-review` on the diff + `npm run validate:metadata && npm run typecheck && npm run build && npm run a11y:coverage && npm run test:a11y` |
+| Light in-session review without a subagent or handoff file | `/code-review` on the diff + `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test` |
 | Back-fill metadata learnings after a review or bug-fix session | `/extract-learnings <Name>` (single) or `/extract-learnings --all` (batch) |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
-| Run a11y checks (static + behavioral) | `npm run lint` (Tier 1, all) · `npm run a11y:coverage && npm run test:a11y` (Tier 2, interactive components — ADR-008) |
+| Run a11y checks (static + behavioral) | `npm run lint` (Tier 1, all) · `npm run a11y:coverage && npm run a11y:test` (Tier 2, interactive components — ADR-008) |
 | Generate a page or section layout | `/layout-generation` |
 | Audit Figma variables against committed tokens (drift check) | `/figma-variable-audit` |
 | Push committed tokens into Figma as variables (code → Figma) | `/figma-variable-push` |
@@ -260,6 +260,6 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 
 This convention is shared by `/component-scaffold`, `/layout-generation`, and metadata validation, so it stays here rather than in one skill. `*.metadata.json` is validated against `component.schema.json` by `scripts/validate-metadata.js`. Variants are modelled as **named axes**: `variants` is an object keyed by axis name (`variant`, `size`, `shape`, …), each axis holding `{ options, default, purpose }`. A component with a single visual axis uses one key named `variant`; `default` may be `null` for an axis that is off unless set (e.g. Button `shape`). `tokens` keys are fixed: `color`, `spacing`, `typography`, `borderRadius`, `other`. `component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`, `component.status` ∈ `beta|ready|deprecated`. `composition.accepts`/`containedBy` and `usage.patterns` are required for layout generation.
 
-After scaffolding or editing a component, `npm run validate:metadata`, `npm run typecheck`, `npm run build`, `npm run a11y:coverage`, and `npm run test:a11y` must all pass with no manual changes, and it must render in both light and dark themes in Storybook (`components-check.yml` runs these on every PR). Following the pattern needs no ADR; a deviation — a new variant-axis convention, a token category the schema lacks, or a change to the schema itself — requires recording or amending an ADR before merging.
+After scaffolding or editing a component, `npm run metadata:validate`, `npm run typecheck`, `npm run build`, `npm run a11y:coverage`, and `npm run a11y:test` must all pass with no manual changes, and it must render in both light and dark themes in Storybook (`components-check.yml` runs these on every PR). Following the pattern needs no ADR; a deviation — a new variant-axis convention, a token category the schema lacks, or a change to the schema itself — requires recording or amending an ADR before merging.
 
 **Two-tier a11y (ADR-008).** Tier 1 is static `jsx-a11y` lint (`npm run lint`), default for all components. Tier 2 is a **behavioral** a11y test — a co-located `<Name>.a11y.test.tsx` (Vitest + Testing Library + `vitest-axe`, jsdom) asserting the dynamic ARIA contract (state attributes toggling, focus, keyboard) plus an axe scan — required **only for interactive components**. `scripts/a11y-coverage.js` derives interactivity from metadata (`component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab / native scroll) and fails if an interactive component lacks its test. Non-interactive components (display/landmark, e.g. `Badge`, `Divider`) need none. Model new tests on `Button/Button.a11y.test.tsx`; disable axe's `color-contrast` rule (jsdom can't judge layout/colour — that stays with visual review and the addon-a11y panel). `scripts/a11y-backlog.json` is a shrinking ledger waiving pre-existing interactive components pending backfill; never add a new component to it.
