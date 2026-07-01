@@ -53,7 +53,7 @@
       "default": "body-default",
       "purpose": {
         "body-default": "Standard body copy. 1rem, regular weight, 1.5 line-height.",
-        "body-small": "Secondary body text or sidebar content. 0.875rem.",
+        "body-small": "Secondary body text or sidebar content. 0.875rem, 1.4 line-height.",
         "metadata": "Supporting details such as timestamps, counts, tags. 0.875rem.",
         "label": "UI labels for form fields and controls. 1rem, medium weight, single line-height."
       }
@@ -89,6 +89,7 @@
       "font.size.label",
       "font.weight.regular",
       "font.weight.medium",
+      "font.line-height.default",
       "font.line-height.relaxed",
       "font.line-height.none"
     ],
