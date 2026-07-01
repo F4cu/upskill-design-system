@@ -37,8 +37,8 @@
       },
       {
         "scenario": "Using Badge as a clickable action",
-        "reason": "Badge renders a <span> and carries no action weight.",
-        "alternative": "Use Button for actions."
+        "reason": "Badge renders a <span> and carries no action weight. BadgeProps only omits 'children' from the spread HTMLAttributes type, so nothing currently stops a consumer from attaching onClick/onKeyDown — the restriction is documentation-only, not type-enforced.",
+        "alternative": "Use Button for actions. If Badge's non-interactive contract needs to be type-enforced, narrow BadgeProps to omit interactive handlers (onClick, onKeyDown) from the spread, not just 'children'."
       },
       {
         "scenario": "Putting long sentences inside a Badge",

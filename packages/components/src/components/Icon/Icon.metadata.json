@@ -40,7 +40,7 @@
       },
       {
         "scenario": "Setting a color prop or inline style directly on the Icon element",
-        "reason": "Icon uses currentColor — color must be set on the ancestor element that owns the color context, using a semantic token.",
+        "reason": "Icon uses currentColor — color must be set on the ancestor element that owns the color context, using a semantic token. IconProps currently only omits 'children' from the spread SVGAttributes type, so color, fill, stroke, strokeWidth, role, aria-hidden, and aria-label can all be passed through and silently override Icon's intended behavior with no type error.",
         "alternative": "Apply the token via style or CSS on the ancestor span/element, never on <Icon> itself. Token choice depends on context: use color.icon.default for standalone or button-adjacent icons; use color.icon.subtle when the icon appears inline alongside color.text.subtle or metadata-scale text, so the icon sits in the same visual register as its label."
       }
     ]
@@ -71,7 +71,7 @@
     ]
   },
   "accessibility": {
-    "role": "generic",
+    "role": "none (aria-hidden) by default; img when label is provided",
     "ariaAttributes": [
       "aria-hidden (default true)",
       "aria-label (when label prop provided)",
@@ -88,7 +88,16 @@
       "Stack",
       "Inline",
       "Button",
-      "Card"
+      "Card",
+      "ButtonArrow",
+      "Accordion",
+      "TextField",
+      "CardHorizontal",
+      "CardVertical",
+      "Image",
+      "AppHeader",
+      "Select",
+      "Breadcrumb"
     ],
     "layoutBehavior": {
       "widthBehavior": "fixed",

@@ -54,6 +54,11 @@
         "scenario": "Passing raw design values via the style prop",
         "reason": "Breaks token alignment and prevents theme switching from working.",
         "alternative": "Use the variant and size props; extend via className if needed"
+      },
+      {
+        "scenario": "Building a new native-button-wrapping component without defaulting the type attribute",
+        "reason": "An unset <button> type defaults to \"submit\" inside a <form>; Button, Chip, and ButtonArrow all default to type=\"button\" internally for exactly this reason — a new component would silently submit forms without it.",
+        "alternative": "Default type to \"button\" internally (as Button does) and let consumers opt in to type=\"submit\" explicitly."
       }
     ]
   },
