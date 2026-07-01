@@ -30,7 +30,7 @@ export type IconProps = {
   size?: IconSize
   label?: string
   className?: string
-} & Omit<SVGAttributes<SVGSVGElement>, 'children'>
+} & Omit<SVGAttributes<SVGSVGElement>, 'children' | 'color' | 'fill' | 'stroke' | 'strokeWidth' | 'role' | 'aria-hidden' | 'aria-label'>
 
 const paths: Record<IconName, React.ReactNode> = {
   'chevron-right': <polyline points="9 18 15 12 9 6" />,
