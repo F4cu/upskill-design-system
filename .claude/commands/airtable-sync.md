@@ -1,5 +1,5 @@
 ---
-description: Sync design tokens to Airtable or pull governance state back into the repo. Use when pushing primitives/semantic/device tokens to Airtable, or refreshing governance.json (status/owner/successor) before token deprecation work. Uses the committed scripts, never the Airtable MCP.
+description: Sync design tokens to Airtable or pull governance state back into the repo. Use when pushing primitives/semantic/device tokens to Airtable, or refreshing airtable-governance.json (status/owner/successor) before token deprecation work. Uses the committed scripts, never the Airtable MCP.
 ---
 
 Both directions are deterministic scripts with direct REST calls — never the
@@ -28,7 +28,7 @@ snapshot first, then pushes.
 
 ## Pull governance state (Airtable → code)
 
-`scripts/airtable-pull.js` updates `packages/tokens/governance.json` — the source
+`scripts/airtable-pull.js` updates `packages/tokens/airtable-governance.json` — the source
 of truth for token `status`, `owner`, and `successor` that agents and CI read.
 Run it **before any deprecation work**:
 
@@ -38,5 +38,5 @@ npm run airtable:pull:governance
 
 The `successor` field is a dot-path to the replacement token (e.g.
 `color.terracotta.9`); it is nullable when a deprecated token has no direct
-replacement. Always read governance from the committed `governance.json`, never
+replacement. Always read governance from the committed `airtable-governance.json`, never
 via the Airtable MCP. After pulling, `/token-deprecation-pass` migrates usages.

@@ -1,16 +1,16 @@
 ---
-description: Migrate usages of deprecated tokens to their successors — read governance.json + token usage report + component metadata and produce a migration PR replacing each usage with its successor token. Use after tokens are marked deprecated in Airtable.
+description: Migrate usages of deprecated tokens to their successors — read airtable-governance.json + token usage report + component metadata and produce a migration PR replacing each usage with its successor token. Use after tokens are marked deprecated in Airtable.
 ---
 
 # Token deprecation pass
 
 **Trigger:** Developer, after marking one or more tokens as `deprecated` in Airtable and running `npm run airtable:pull:governance`.
 
-**When to use:** `packages/tokens/governance.json` contains tokens with `"status": "deprecated"` and you want a migration PR that eliminates all usages.
+**When to use:** `packages/tokens/airtable-governance.json` contains tokens with `"status": "deprecated"` and you want a migration PR that eliminates all usages.
 
 ## Inputs (read all before starting)
 
-- Governance state — `packages/tokens/governance.json`
+- Governance state — `packages/tokens/airtable-governance.json`
 - Token usage map — `packages/tokens/token-usage.json` (run `npm run tokens:usage` first if stale)
 - Theme alias files — `packages/tokens/src/theme/light.json`, `packages/tokens/src/theme/dark.json`
 - Device token files — `packages/tokens/src/device/desktop.json`, `packages/tokens/src/device/tablet.json`, `packages/tokens/src/device/mobile.json`
@@ -18,7 +18,7 @@ description: Migrate usages of deprecated tokens to their successors — read go
 
 ## Steps
 
-1. Collect all deprecated tokens from `governance.json` (both `primitives` and `semantic` sections).
+1. Collect all deprecated tokens from `airtable-governance.json` (both `primitives` and `semantic` sections).
 2. For each deprecated token:
    a. Look up its `successor` (dot-path). If `successor` is null, flag it — no automated migration is possible; note it for manual review.
    b. From `token-usage.json`:
@@ -37,7 +37,7 @@ A summary of every file changed:
   - [file]: {old.ref} → {new.ref}
 
 ## Tokens with no successor (manual review required)
-[token path] — used in [files] — no successor defined in governance.json
+[token path] — used in [files] — no successor defined in airtable-governance.json
 
 ## Next step
 After PR merges: remove deprecated token entries from primitives.json (or theme JSON),

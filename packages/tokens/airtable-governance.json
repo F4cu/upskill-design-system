@@ -1,4 +1,5 @@
 {
+  "$comment": "Frozen mirror of the Airtable governance layer (status/owner/successor/notes per token). Pulled via scripts/airtable-pull.js (npm run airtable:pull:governance) — never hand-edited, never read live via the Airtable MCP. Keys starting with '$' are metadata, not governed sections.",
   "primitives": {
     "color.terracotta.2": {
       "status": "active",

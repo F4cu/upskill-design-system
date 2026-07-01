@@ -19,7 +19,7 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
-const GOVERNANCE_PATH = path.resolve(ROOT, "packages/tokens/governance.json");
+const GOVERNANCE_PATH = path.resolve(ROOT, "packages/tokens/airtable-governance.json");
 const USAGE_PATH      = path.resolve(ROOT, "packages/tokens/token-usage.json");
 const FIGMA_PATH      = path.resolve(ROOT, "packages/tokens/figma-variables.json");
 const COMPONENTS_DIR  = path.resolve(ROOT, "packages/components/src/components");
@@ -55,8 +55,10 @@ function daysBetween(isoDate, now) {
 }
 
 // Governance keys live under either section; absent = active by convention (see airtable-pull.js).
+// Keys starting with '$' (e.g. $comment) are metadata, not a governed section.
 function governanceFor(dotPath, governance) {
-  for (const records of Object.values(governance)) {
+  for (const [section, records] of Object.entries(governance)) {
+    if (section.startsWith("$")) continue;
     if (records[dotPath]) return records[dotPath];
   }
   return null;
@@ -64,7 +66,8 @@ function governanceFor(dotPath, governance) {
 
 function deprecatedTokens(governance) {
   const out = [];
-  for (const records of Object.values(governance)) {
+  for (const [section, records] of Object.entries(governance)) {
+    if (section.startsWith("$")) continue;
     for (const [token, r] of Object.entries(records)) {
       if (r.status === "deprecated") out.push({ token, successor: r.successor });
     }

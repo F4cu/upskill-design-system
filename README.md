@@ -25,7 +25,7 @@ Three layers resolve in order; the committed JSON is the source of truth — Fig
 | Tool | What it does |
 |---|---|
 | **GitHub Actions** | Token build check on every PR; Airtable sync on merge to `main` |
-| **Airtable** | Token governance — `status` / `owner` / `successor` / `notes` per token, pulled to `governance.json` |
+| **Airtable** | Token governance — `status` / `owner` / `successor` / `notes` per token, pulled to `airtable-governance.json` |
 | **`npm run sense`** | Aggregates governance + token usage + Figma drift into `.claude/STATUS_QUO.md` — the frozen baseline agents read |
 
 Everything recurring runs as a plain script or GitHub Action. No MCP in CI.

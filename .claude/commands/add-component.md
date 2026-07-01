@@ -22,7 +22,7 @@ This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps `/compone
 ## Stages
 
 ### Stage 0 · Sense (script — no AI)
-Run `npm run sense:component <Name>`. This writes `.claude/handoff/<Name>.snapshot.json` from the committed frozen-memory files (`governance.json`, `token-usage.json`, `figma-variables.json`) — the frozen context every later stage reads. No live API call.
+Run `npm run sense:component <Name>`. This writes `.claude/handoff/<Name>.snapshot.json` from the committed frozen-memory files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) — the frozen context every later stage reads. No live API call.
 
 If the Figma snapshot is reported absent or stale (`figma.snapshot.stale: true`) and the component has a Figma node, tell the developer and offer to refresh via `/figma-variable-audit` before continuing. Do not silently rely on stale drift state.
 

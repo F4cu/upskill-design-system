@@ -75,7 +75,7 @@ Do not commit `$extensions` to source. Before pulling Figma changes into committ
 | **Storybook** | Component documentation, token showcase (MDX stories: colors, spacing, typography, radii), light/dark via `addon-themes` + `data-theme`. | Built |
 | **GitHub Actions** | Token build check on PR (`tokens-check.yml`); Airtable sync on merge to main (`sync-tokens.yml`). | Built |
 | **Airtable sync (code → Airtable)** | `scripts/airtable-sync.js` upserts primitives/semantic/device tokens to three tables via REST. One-directional. Runs in CI on merge. | Built |
-| **Airtable governance (Airtable → code)** | Per token: `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes`, pulled to `governance.json`. Per component: `Implementation` = human `done`/`todo` sign-off, pulled to `.claude/component-signoff.json` (ADR-010). Both via `scripts/airtable-pull.js` (`npm run airtable:pull:governance`). Run manually before deprecation/sign-off work until Phase 6 automates it. | Planned (Phase 2) |
+| **Airtable governance (Airtable → code)** | Per token: `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes`, pulled to `airtable-governance.json`. Per component: `Implementation` = human `done`/`todo` sign-off, pulled to `.claude/component-signoff.json` (ADR-010). Both via `scripts/airtable-pull.js` (`npm run airtable:pull:governance`). Run manually before deprecation/sign-off work until Phase 6 automates it. | Planned (Phase 2) |
 | **Figma → code flow** | Code is source of truth; Figma is a downstream mirror. Token audit reconciles drift before pulling Figma changes into committed tokens; Code Connect mappings for components. | Planned (Phases 4, 7) |
 | **PR token diff comment, changelog** | Deterministic scripts in Actions. | Planned (Phase 6) |
 | **Component metadata** | JSON schema + example file exist; consumed by agentic moments. | Schema built; consumers planned |
@@ -86,7 +86,7 @@ Moments and loops read the system's status quo from **committed files, never liv
 
 | File | Source | Captured by | Status |
 |---|---|---|---|
-| `governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) | Built |
+| `airtable-governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) | Built |
 | `token-usage.json` | Repo scan (`var(--ds-*)` CSS refs + `{alias}` refs) | `scripts/token-usage.js` | Built |
 | `figma-variables.json` | Figma variables | `/figma-variable-audit` via Figma MCP (Plugin API) | Built |
 | `.claude/component-signoff.json` | Airtable (`Implementation` = human `done`/`todo`) | `scripts/airtable-pull.js` (REST) | Built |
@@ -104,7 +104,7 @@ General rule: MCP calls are for **interactive, one-off tasks with the developer 
 | MCP | Use it for | Do NOT use it for |
 |---|---|---|
 | **Figma** | (1) Reading variables/design context during `/figma-variable-audit` (drift check). (2) Code Connect mapping and design context when scaffolding a component. (3) Writing variables into Figma during `/figma-variable-push` (`use_figma` Plugin API) when code is ahead of Figma. | Treating Figma as the token source — tokens are authored as code (ADR-002 amendment). Bulk-reading many nodes. |
-| **Airtable** | (1) One-off schema changes (adding governance fields). (2) Ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state in tasks — read the committed `governance.json` instead. Bulk record operations. |
+| **Airtable** | (1) One-off schema changes (adding governance fields). (2) Ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state in tasks — read the committed `airtable-governance.json` instead. Bulk record operations. |
 | **GitHub** | Rarely — cross-repo searches the `gh` CLI handles awkwardly. | Everything else. Prefer `gh` CLI for PRs, issues, API calls; it's already authenticated and scriptable. |
 | **Google Drive** | Fetching a spec or brief the user explicitly links. | Anything recurring; storing or syncing project docs. |
 | **Notion** | Fetching planning notes the user explicitly links. | A documentation target — docs live in Storybook (components) and Airtable (tokens). |
@@ -131,7 +131,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 | # | Moment | Command | Invariant that must survive |
 |---|---|---|---|
 | 1 | Figma variable audit (drift check) | `/figma-variable-audit` | Never overwrite primitives without diffing against usage; capture the read into `figma-variables.json`; exclude representational divergences from the drift report. |
-| 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the Airtable `successor`; read `governance.json`, no MCP. |
+| 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the Airtable `successor`; read `airtable-governance.json`, no MCP. |
 | 3 | Component scaffold | `/component-scaffold` | Read schema + template + Figma context; produce the four component files. |
 | 4 | Layout generation | `/layout-generation` | Only fixed-set components and tokens; every structural choice cites a metadata rule. |
 | 5 | Figma variable push (code → Figma) | `/figma-variable-push` | Write only clean-missing variables; never delete or overwrite Figma variables without explicit confirmation. |

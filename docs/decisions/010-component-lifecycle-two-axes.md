@@ -16,7 +16,7 @@ Symptoms:
 
 Constraints carried in from existing decisions:
 - **Airtable is a downstream mirror for component metadata** (`airtable-sync.js push:components` is code → Airtable, partial-upsert, deletes orphan records). A value a human edits in a *pushed* field is overwritten on the next sync.
-- **Governance flows the other way** (ADR-002): token `status`/`owner`/`successor`/`notes` are authored in Airtable and pulled into code (`airtable-pull.js` → `governance.json`). A human lifecycle decision on a component is the same kind of signal.
+- **Governance flows the other way** (ADR-002): token `status`/`owner`/`successor`/`notes` are authored in Airtable and pulled into code (`airtable-pull.js` → `airtable-governance.json`). A human lifecycle decision on a component is the same kind of signal.
 - **`sense.js` is a pure aggregator with no live API calls** (frozen-memory principle). It cannot itself call Airtable.
 
 ## Decision

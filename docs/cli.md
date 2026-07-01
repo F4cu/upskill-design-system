@@ -54,10 +54,10 @@ Airtable is the governance layer — it holds ownership, status, and successor f
 | `npm run airtable:push:components` | Upsert component metadata (maturity axis) — pushes the current snapshot without refreshing it. |
 | `npm run airtable:sync:components` 🔶 | Refresh the snapshot, then push components. **Runs:** `sense` → `airtable:push:components`. Prefer this over the raw `push` so you don't ship a stale snapshot. |
 | `npm run airtable:sync:all` 🔶 | Push every layer in sequence. **Runs:** `airtable:push:primitives` → `:semantic` → `:device` → `airtable:sync:components` (sense-first, matching the standalone). Use after a build that changed multiple layers. |
-| `npm run airtable:pull:governance` | Pull governance state from Airtable → `packages/tokens/governance.json`. |
+| `npm run airtable:pull:governance` | Pull governance state from Airtable → `packages/tokens/airtable-governance.json`. |
 | `npm run airtable:setup` | One-off: create the governance fields in Airtable (run once per new base). |
 
-`airtable:pull:governance` should be run before any deprecation work — `governance.json` is what CI and agents read for token status, owner, and successor. Do not read governance state via the Airtable MCP; always use the committed file.
+`airtable:pull:governance` should be run before any deprecation work — `airtable-governance.json` is what CI and agents read for token status, owner, and successor. Do not read governance state via the Airtable MCP; always use the committed file.
 
 ---
 
@@ -67,7 +67,7 @@ The "frozen-memory" files agents and CI read instead of hitting live APIs. All p
 
 | Command | What it does |
 |---|---|
-| `npm run sense` | Aggregate the committed mirror files (`governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`. Regenerate before a loop run. |
+| `npm run sense` | Aggregate the committed mirror files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`. Regenerate before a loop run. |
 | `npm run sense:component` | Narrow the baseline to one component → `.claude/handoff/<Name>.snapshot.json`. Usage: `npm run sense:component -- <Name>`. |
 
 ---

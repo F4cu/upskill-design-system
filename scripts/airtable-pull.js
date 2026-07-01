@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Pulls governance state from Airtable → packages/tokens/governance.json.
+// Pulls governance state from Airtable → packages/tokens/airtable-governance.json.
 // Only records with a Status set are included; absent = treated as active by consumers.
 // Run before any deprecation work until the Phase 6 Action automates this.
 
@@ -12,7 +12,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID ?? "appBfY2arkReKQNit";
-const OUTPUT_PATH = path.resolve(__dirname, "../packages/tokens/governance.json");
+const OUTPUT_PATH = path.resolve(__dirname, "../packages/tokens/airtable-governance.json");
+const GOVERNANCE_COMMENT =
+  "Frozen mirror of the Airtable governance layer (status/owner/successor/notes per token). " +
+  "Pulled via scripts/airtable-pull.js (npm run airtable:pull:governance) — never hand-edited, " +
+  "never read live via the Airtable MCP. Keys starting with '$' are metadata, not governed sections.";
 const SIGNOFF_PATH = path.resolve(__dirname, "../.claude/component-signoff.json");
 
 const TABLES = {
@@ -102,7 +106,7 @@ async function pullComponentSignoff() {
 async function main() {
   validateEnv();
 
-  const governance = {};
+  const governance = { $comment: GOVERNANCE_COMMENT };
   let total = 0;
 
   for (const [section, { name, keyField }] of Object.entries(TABLES)) {
@@ -114,7 +118,7 @@ async function main() {
   }
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(governance, null, 2) + "\n");
-  console.log(`\nWrote governance.json (${total} total records).`);
+  console.log(`\nWrote airtable-governance.json (${total} total records).`);
 
   console.log(`Pulling "${COMPONENTS_TABLE}" sign-off…`);
   const signoff = await pullComponentSignoff();

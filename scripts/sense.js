@@ -3,7 +3,7 @@
 // frozen-memory files into .claude/STATUS_QUO.md, the single readable baseline a
 // loop agent reads instead of calling Airtable/Figma.
 //
-//   governance.json      — Airtable mirror   (scripts/airtable-pull.js)
+//   airtable-governance.json — Airtable mirror (scripts/airtable-pull.js)
 //   token-usage.json     — repo usage scan   (scripts/token-usage.js)
 //   figma-variables.json — Figma mirror      (/figma-variable-audit via MCP)
 //
@@ -21,7 +21,7 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
-const GOVERNANCE_PATH  = path.resolve(ROOT, "packages/tokens/governance.json");
+const GOVERNANCE_PATH  = path.resolve(ROOT, "packages/tokens/airtable-governance.json");
 const USAGE_PATH       = path.resolve(ROOT, "packages/tokens/token-usage.json");
 const FIGMA_PATH       = path.resolve(ROOT, "packages/tokens/figma-variables.json");
 const COMPONENTS_DIR   = path.resolve(ROOT, "packages/components/src/components");
@@ -86,6 +86,7 @@ function governanceSection(governance, usage) {
   const deprecatedWithUsage = [];
 
   for (const [section, records] of Object.entries(governance)) {
+    if (section.startsWith("$")) continue;
     const entries = Object.entries(records);
     const active = entries.filter(([, r]) => r.status === "active").length;
     const deprecated = entries.filter(([, r]) => r.status === "deprecated");
