@@ -44,11 +44,9 @@ Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never 
 
 ## Style Dictionary build (built)
 
-`npm run build:tokens` transforms DTCG source into:
-- CSS custom properties — dimensions converted to `rem`; desktop device tokens land in `:root`, tablet/mobile are wrapped in `@media` blocks in a single CSS file
-- JS/TS constants
+`npm run build:tokens` transforms DTCG source into CSS custom properties (dimensions in `rem`; desktop device tokens in `:root`, tablet/mobile in `@media` blocks) and JS/TS constants. Config and custom transforms (px→rem, font-weight string→numeric, `$root` rename, media-query combiner) live in `packages/tokens/style-dictionary.config.js`.
 
-Config: `packages/tokens/style-dictionary.config.js`. Custom transforms in place: px→rem, font-weight string→numeric, `$root` rename, media query combiner. When changing token structure, run the build and check both outputs before committing — components only ever consume the built output, never source JSON.
+**Invariant:** components only ever consume the built output, never source JSON. The authoring and rebuild procedure — including when a transform change needs an ADR — is `/tokens-author`.
 
 ## Figma sync
 
@@ -67,9 +65,7 @@ Do not commit `$extensions` to source. Before pulling Figma changes into committ
 
 **Figma representational constraints.** Figma variables cannot store **unitless values**. Line-heights are authored in code as unitless ratios (`1.5`); Figma must hold them as fixed values, so these tokens *always* differ between code and Figma. This is an expected **representational divergence, not drift**: the audit and push moments exclude it, and `figma-variables.json` tags or omits it so the diff never flags it. Code stays authoritative for the unitless value; Figma's fixed value is a display approximation that never flows back into `primitives.json`. The running list of accepted divergences lives in the drift memory note (`figma-file-variable-drift.md`). See ADR-002 (2026-06-22 amendment).
 
-**Figma-to-code translation rules.** When the Figma MCP output is used as a reference for component scaffold or layout generation, follow these rules exactly:
-- **Translate variable names directly.** The Figma output includes explicit CSS variable names (e.g., `gap-[var(--space/inline/md, 16px)]`). The segment after `--space/` maps directly to our gap token name — `inline/md` → `gap="md"`, `stack/xs` → `gap="xs"`. Never substitute a different scale step; never use the fallback px value as a guide.
-- **Match the Figma DOM structure.** Do not introduce wrapper elements (e.g., a nested `<Inline>`) that do not appear in the Figma layout. Extra wrappers add an undesigned gap and override the parent's spacing. If two items are siblings in the Figma flex row, keep them as siblings in the code.
+**Figma-to-code translation rules** (direct gap-name mapping, no undesigned wrappers) apply when Figma MCP output drives code generation. They live where they are used — `/component-scaffold` and `/layout-generation`.
 
 ## Integrations
 
@@ -130,19 +126,18 @@ Note: Claude Code's naming is the inverse of plain English intuition — "skills
 
 ## Agentic moments
 
-The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/`. Everything else is a script or a GitHub Action.
+The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/` — the full inputs, steps, and success signals live there; this is the index and the load-bearing invariants. Everything else is a script or a GitHub Action.
 
-1. **Figma variable audit (drift check)** — committed JSON is the source of truth, so this reconciles Figma variables against code tokens rather than importing wholesale. Read Figma variables (MCP) + committed tokens + token usage report; produce a diff report (tokens that drifted, removed/renamed with usages, broken aliases, scale mixing, naming violations), then a PR applying any intended Figma changes to the committed tokens (cleaned: `$extensions` stripped, colors converted). Never overwrite primitives without diffing against current usage. Capture the Figma read into the committed `figma-variables.json` (frozen mirror) so downstream steps read the file, not a live call. Exclude **representational divergences** (unitless tokens Figma can't store, e.g. line-heights) from the drift report — they differ by construction, not error.
-2. **Token deprecation pass** — after tokens are marked deprecated in Airtable. Read `governance.json` + token usage report + component metadata (no MCP needed); produce a migration PR replacing usages with the `successor` token.
-3. **Component scaffold** — when starting a new component from the fixed set. Read the metadata schema + an existing component as template + Figma design context (MCP); produce the component folder (index, CSS Module, stories, metadata) and a Code Connect mapping.
-4. **Layout generation** — when starting a new page or section. Read all component metadata files (`composition.accepts`, `composition.containedBy`, `usage.patterns`, `composition.layoutBehavior`) + a one-paragraph layout brief; produce a React component tree using only library components and tokens, with each structural choice annotated by the metadata rule or pattern that justified it. No MCP needed. Success signal: the tree passes structural validation (accepts/containedBy constraints), builds, and renders in Storybook without manual restructuring.
-5. **Figma variable push (code → Figma)** — the inverse of moment 1: when committed tokens have moved ahead of Figma. Read committed token source + Figma variable inventory (MCP); diff into clean-missing / drift / Figma-extras, then write only the clean-missing variables into the Figma collections via `use_figma` (dependency-ordered, aliases preserved, scopes matched to siblings). Never delete or overwrite Figma variables without explicit confirmation — they may be bound to styles. Needs judgment (cross-scheme naming map, safe-add vs decision triage) and the Plugin API, so it can't be a script; the REST Variables API is Enterprise-gated. Success signal: every added variable resolves, counts move by exactly the clean-missing count, nothing deleted silently.
-
-6. **Add component (verified scaffold)** — the ad-hoc agentic loop, piloted on new components. `/add-component <Name>` stages: **sense** (script writes the frozen per-component snapshot) → **scaffold** in-session (reuses moment 3) → **deterministic gate** (`validate:metadata` + `typecheck` + `build`) → **visual checkpoint** (developer confirms in Storybook) → delegates to moment 7 (`/review-component`). Sequential, at most two agents total across moments 6 and 7. The frozen snapshot is the only context handoff. See ROADMAP Phase 9; ADR-007.
-
-7. **Review component (adversarial review + fix + PR)** — the review half of the verified scaffold loop, also runnable standalone when reviewing an existing component after code changes. Spawns one adversarial reviewer subagent with fresh context: `/code-review` on the diff + `npm run lint` (ESLint + jsx-a11y) + a11y read against the metadata `accessibility` block + behavioral test coverage check for interactive components (`component.type ∈ {interactive, input}` — not for display/landmark). Main session applies findings, re-runs the gate, creates branch `component/<kebab-name>`, opens the PR, writes `.claude/handoff/<Name>.review.json` and `.run.json`. Those files feed moment 8.
-
-8. **Extract learnings (metadata self-improvement)** — after a component PR merges or after any session that fixes issues in an existing component. Read `.claude/handoff/<Name>.review.json` + `.run.json` (no live API); classify each finding by the metadata section it belongs to (`accessibility.ariaAttributes`, `accessibility.keyboardInteractions`, `composition.accepts`, `composition.layoutBehavior`, `usage.antiPatterns`, etc.); draft targeted amendments; gate on `validate:metadata`; open a PR. For `--all`, scan for patterns appearing in 2+ components and propose a CLAUDE.md addition (developer confirms before it lands). This is the learning loop: fixes that land only in code rot; fixes that land in metadata prevent the same mistake in every future scaffold.
+| # | Moment | Command | Invariant that must survive |
+|---|---|---|---|
+| 1 | Figma variable audit (drift check) | `/figma-variable-audit` | Never overwrite primitives without diffing against usage; capture the read into `figma-variables.json`; exclude representational divergences from the drift report. |
+| 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the Airtable `successor`; read `governance.json`, no MCP. |
+| 3 | Component scaffold | `/component-scaffold` | Read schema + template + Figma context; produce the four component files. |
+| 4 | Layout generation | `/layout-generation` | Only fixed-set components and tokens; every structural choice cites a metadata rule. |
+| 5 | Figma variable push (code → Figma) | `/figma-variable-push` | Write only clean-missing variables; never delete or overwrite Figma variables without explicit confirmation. |
+| 6 | Add component (verified scaffold) | `/add-component` | The ad-hoc loop: sense → scaffold → gate → visual checkpoint → moment 7. Frozen snapshot is the only handoff. ADR-007. |
+| 7 | Review component (adversarial review + fix + PR) | `/review-component` | One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for moment 8. |
+| 8 | Extract learnings (metadata self-improvement) | `/extract-learnings` | Route each finding to its metadata section; fixes that land only in code rot — land them in metadata. `--all` proposes a CLAUDE.md addition (developer confirms). |
 
 **For existing component reviews:** Use `/review-component <Name>` for a full adversarial pass (spawns one subagent, writes `.review.json` for the learning loop). Use `/code-review` directly on the diff for a lighter, in-session review with no subagent or handoff file.
 
@@ -175,26 +170,12 @@ Storybook lives in `packages/components` — it is the documentation layer for c
 
 ## Layout grammar
 
-Every generated page follows a fixed hierarchy mapping Figma structure to HTML landmarks. The skill applies this as its first pass before choosing components. The full rationale is in ADR-011.
+Every page follows a fixed hierarchy mapping Figma structure to HTML landmarks (rationale in ADR-011). The full grammar table — Page/Header/Section/Container/Column/Footer → sanctioned code and landmark — lives in `/layout-generation`, which applies it as its first pass. Enforce deterministically with `npm run validate:layout <file>`.
 
-| Figma level | Code | Landmark / role |
-|---|---|---|
-| Page | `<Box as="main">` | `main` — exactly one per route |
-| Header | `<Box as="header">` or `<AppHeader>` | `banner` / `navigation` |
-| Section | `<Box as="section" aria-labelledby={headingId}>` + `paddingY` | `region` — must have accessible name |
-| Container | `<Box className="container">` (max-width + grid margin) | presentational |
-| Column (N-column card grid) | `className="grid"` (CSS Grid, auto-reflows via `--ds-grid-columns`) | presentational |
-| Column (two-panel wrapping) | `Inline wrap` + `style={{ flex: '1 0 0', minWidth }}` | presentational |
-| Component | library component from fixed 26 set | per component |
-| Footer | `<Box as="footer">` | `contentinfo` |
-
-**Inline-style reconciliation** (replaces the blanket "no inline styles" for layout files):
-- **Allowed:** `.container` / `.grid` classNames; `style={{ flex: '1 0 0' }}` for column fill; `style={{ minWidth }}` for wrapping threshold; `style={{ maxWidth }}` for content measure.
-- **Forbidden:** raw color via inline style → use `<Text color=…>` / `<Heading>`; raw token values outside `var()`; arbitrary CSS properties that belong in a component's CSS Module.
-
-**Responsive rule:** rely on device tokens for spacing/typography (device CSS auto-applies media queries). Use `.grid` or `Inline wrap` for column→stack reflow. Never write `@media` queries by hand in layout files.
-
-After generating, run `npm run validate:layout <file>` to enforce these rules deterministically.
+Load-bearing invariants for **any** layout file (hand-edited or generated):
+- Exactly one `<Box as="main">` per route; every `<Box as="section">` has an accessible name (`aria-labelledby` → its `Heading`); every extra `<nav>` has a unique `aria-label`.
+- **Inline styles** (replaces the blanket "no inline styles"): allowed only for `.container`/`.grid` classNames and `style={{ flex: '1 0 0' }}` / `minWidth` / `maxWidth`. Forbidden: raw color (use `<Text color=…>` / `<Heading>`), raw token values outside `var()`, arbitrary CSS that belongs in a component's CSS Module.
+- Rely on device tokens for responsive spacing/typography; reflow via `.grid` or `Inline wrap`. Never hand-write `@media` in layout files.
 
 ## Coding conventions
 

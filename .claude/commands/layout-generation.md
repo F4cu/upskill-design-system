@@ -49,6 +49,10 @@ Every generated page must follow this fixed hierarchy. One abstraction level per
 - **Allowed:** `.container` and `.grid` global classNames; `style={{ flex: '1 0 0' }}` for column fill; `style={{ minWidth }}` for column wrapping threshold; `style={{ maxWidth }}` for content measure.
 - **Forbidden:** raw color via inline style (e.g. `style={{ color: '#d15d50' }}`) — use `<Text color=…>` or `<Heading>` with a token-backed prop; any raw token value outside `var()`; arbitrary CSS properties that belong in a component's CSS Module.
 
+**Figma-to-code translation rules** (when the Figma MCP output is the reference — follow exactly):
+- **Translate variable names directly.** The Figma output includes explicit CSS variable names (e.g. `gap-[var(--space/inline/md, 16px)]`). The segment after `--space/` maps directly to our gap token name — `inline/md` → `gap="md"`, `stack/xs` → `gap="xs"`. Never substitute a different scale step; never use the fallback px value as a guide.
+- **Match the Figma DOM structure.** Do not introduce wrapper elements (e.g. a nested `<Inline>`) that do not appear in the Figma layout. Extra wrappers add an undesigned gap and override the parent's spacing. If two items are siblings in the Figma flex row, keep them as siblings in the code.
+
 ## Constraints (enforce strictly)
 
 - Only use components from the fixed 26-component set (see CLAUDE.md "Component scope").
