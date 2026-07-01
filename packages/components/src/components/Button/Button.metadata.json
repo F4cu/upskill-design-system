@@ -103,7 +103,7 @@
     },
     {
       "state": "hover",
-      "description": "Darker background (default) or subtle fill (outlined) on pointer hover."
+      "description": "Darker background (default), subtle fill (outlined), or text-color-only shift (ghost) on pointer hover."
     },
     {
       "state": "disabled",
@@ -148,7 +148,7 @@
     "role": "button",
     "ariaAttributes": [
       "aria-label (set on icon-only buttons via shape to provide an accessible name; flows through ...rest)",
-      "aria-disabled (native via disabled prop)"
+      "disabled (native HTML attribute via disabled prop, not aria-disabled)"
     ],
     "keyboardInteractions": [
       {

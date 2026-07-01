@@ -35,6 +35,7 @@ export function Button({
   const iconSize = size === 'sm' ? 'sm' : 'md'
   return (
     <button
+      type="button"
       className={[styles.button, styles[variant], styles[size], shape && styles[shape], className].filter(Boolean).join(' ')}
       {...rest}
     >
