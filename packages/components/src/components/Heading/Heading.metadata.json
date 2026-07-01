@@ -97,11 +97,8 @@
       "font.size.display",
       "font.weight.semibold",
       "font.weight.medium",
-      "font.line-height.title-default",
-      "font.line-height.subheader-default",
-      "font.line-height.headline-default",
-      "font.line-height.headline-serif",
-      "font.line-height.display-default"
+      "font.line-height.default",
+      "font.line-height.tight"
     ],
     "color": [
       "color.text.default",

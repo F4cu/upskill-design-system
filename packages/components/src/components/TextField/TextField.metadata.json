@@ -134,7 +134,7 @@
       "font.size.body-default",
       "font.size.body-small",
       "font.weight.medium",
-      "font.line-height.body-default"
+      "font.line-height.relaxed"
     ],
     "borderRadius": [
       "border-radius.sm",

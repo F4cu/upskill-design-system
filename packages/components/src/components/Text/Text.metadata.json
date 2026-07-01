@@ -89,8 +89,8 @@
       "font.size.label",
       "font.weight.regular",
       "font.weight.medium",
-      "font.line-height.body-default",
-      "font.line-height.body-single"
+      "font.line-height.relaxed",
+      "font.line-height.none"
     ],
     "color": [
       "color.text.default",

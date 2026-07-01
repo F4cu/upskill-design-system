@@ -103,7 +103,7 @@
     "typography": [
       "font.family.headline-serif",
       "font.weight.medium",
-      "font.line-height.subheader-tight"
+      "font.line-height.tight"
     ],
     "borderRadius": [],
     "other": []

@@ -120,8 +120,7 @@
       "font.size.body-default",
       "font.weight.bold",
       "font.weight.regular",
-      "font.line-height.title-default",
-      "font.line-height.body-single"
+      "font.line-height.default"
     ],
     "borderRadius": [],
     "other": []

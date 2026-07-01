@@ -87,7 +87,7 @@
     "typography": [
       "font.family.body",
       "font.size.body-default",
-      "font.line-height.body-default"
+      "font.line-height.none"
     ],
     "borderRadius": [
       "border-radius.sm",

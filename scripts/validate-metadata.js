@@ -15,10 +15,50 @@ const ROOT = path.resolve(__dirname, "..");
 const COMPONENTS_DIR = path.resolve(ROOT, "packages/components/src/components");
 const SCHEMA_PATH = path.resolve(ROOT, "packages/components/component.schema.json");
 const EXAMPLE_PATH = path.resolve(ROOT, "packages/components/component.metadata.example.json");
+const TOKENS_SRC = path.resolve(ROOT, "packages/tokens/src");
 
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schema);
+
+// Merge every source token file into one tree so metadata dot-paths can be
+// resolved against the tokens they claim to use. A node is a token when it
+// carries a $value; the metadata ref must land on one.
+const TOKEN_FILES = [
+  "primitives.json",
+  "theme/light.json",
+  "theme/dark.json",
+  "device/desktop.json",
+  "device/tablet.json",
+  "device/mobile.json",
+];
+
+function mergeTokens(target, source) {
+  for (const key of Object.keys(source)) {
+    const value = source[key];
+    if (value && typeof value === "object" && !Array.isArray(value) && !("$value" in value)) {
+      target[key] ??= {};
+      mergeTokens(target[key], value);
+    } else {
+      target[key] = value;
+    }
+  }
+  return target;
+}
+
+const tokenTree = TOKEN_FILES.reduce(
+  (tree, rel) => mergeTokens(tree, JSON.parse(fs.readFileSync(path.join(TOKENS_SRC, rel), "utf8"))),
+  {},
+);
+
+function tokenExists(dotPath) {
+  let node = tokenTree;
+  for (const segment of dotPath.split(".")) {
+    if (node && typeof node === "object" && segment in node) node = node[segment];
+    else return false;
+  }
+  return node != null && typeof node === "object" && "$value" in node;
+}
 
 const targets = [];
 for (const dir of fs.readdirSync(COMPONENTS_DIR)) {
@@ -47,6 +87,18 @@ for (const { file, expectedName } of targets) {
 
   if (expectedName && data.component?.name !== expectedName) {
     errors.push(`component.name "${data.component?.name}" does not match folder "${expectedName}"`);
+  }
+
+  // The example file uses illustrative token paths that need not resolve; only
+  // real components must reference tokens that exist in the source tree.
+  if (expectedName && data.tokens) {
+    for (const [category, refs] of Object.entries(data.tokens)) {
+      for (const ref of Array.isArray(refs) ? refs : [refs]) {
+        if (typeof ref === "string" && !tokenExists(ref)) {
+          errors.push(`tokens.${category} references unknown token "${ref}"`);
+        }
+      }
+    }
   }
 
   if (errors.length) {
