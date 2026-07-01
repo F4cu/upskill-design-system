@@ -13,5 +13,6 @@
 }
 
 .filled {
+  border: 1px solid transparent;
   background: var(--ds-color-background-neutral-subtlest);
 }
