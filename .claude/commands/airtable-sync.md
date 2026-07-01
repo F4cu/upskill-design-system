@@ -15,11 +15,16 @@ explicit `export` or CI secret overrides it). The PAT needs scopes
 tables via REST. One-directional; runs in CI on merge to main. npm scripts wrap it:
 
 ```bash
-npm run sync:tokens:push     # primitives
-npm run sync:semantic:push   # semantic (theme)
-npm run sync:device:push     # device
-npm run sync:all:push        # all three, in order
+npm run airtable:push:primitives    # primitives
+npm run airtable:push:semantic      # semantic (theme)
+npm run airtable:push:device        # device
+npm run airtable:push:components    # component metadata (raw upsert of current snapshot)
+npm run airtable:sync:components    # sense-refresh, then push components
+npm run airtable:sync:all           # all four layers in order (components sense-first)
 ```
+
+`push:*` upserts the current snapshot as-is; `sync:*` runs `sense` to refresh the
+snapshot first, then pushes.
 
 ## Pull governance state (Airtable → code)
 
@@ -28,7 +33,7 @@ of truth for token `status`, `owner`, and `successor` that agents and CI read.
 Run it **before any deprecation work**:
 
 ```bash
-npm run governance:pull
+npm run airtable:pull:governance
 ```
 
 The `successor` field is a dot-path to the replacement token (e.g.

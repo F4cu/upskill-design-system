@@ -35,7 +35,7 @@ Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, 
 ### Stage 2 · Gate (script — fail-fast)
 Run, in order:
 ```
-npm run validate:metadata && npm run typecheck && npm run build && npm run a11y:coverage && npm run test:a11y
+npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test
 ```
 If any step fails, go back to Stage 1, fix the cause the error names, and re-run the gate. Do not proceed until all pass.
 

@@ -16,7 +16,7 @@ category (`color`, `space`, `font`, etc.). Every token needs `$type` and
 Then rebuild and verify both outputs:
 
 ```bash
-npm run build:tokens   # → packages/tokens/dist/{css,js}
+npm run tokens:build   # → packages/tokens/dist/{css,js}
 ```
 
 ## Add a semantic alias
@@ -60,6 +60,6 @@ Token changes propagate to two downstream systems. Always close out with:
 |---|---|
 | Any semantic token added or renamed (`theme/*.json`) | Run `/figma-variable-push` to add the new Figma variables. Old names become Figma extras — report them; never delete without confirmation. |
 | Any primitive added (`primitives.json`) | Run `/figma-variable-push` if the primitive is an alias target for a new semantic token; otherwise Airtable sync is enough. |
-| Airtable (all token changes) | `npm run sync:semantic:push` (theme) or `npm run sync:tokens:push` (primitives) — already part of CI on merge, but run manually if you need it immediately. |
+| Airtable (all token changes) | `npm run airtable:push:semantic` (theme) or `npm run airtable:push:primitives` (primitives) — already part of CI on merge, but run manually if you need it immediately. |
 
 Figma sync is interactive and developer-present — it cannot be scripted or automated.

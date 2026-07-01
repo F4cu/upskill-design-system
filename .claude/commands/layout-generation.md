@@ -241,13 +241,13 @@ When the developer passes `--story`, emit a Storybook story file instead, follow
 After generating the file, run:
 
 ```
-npm run validate:layout apps/showcase/src/pages/<Name>.tsx
+npm run layout:validate apps/showcase/src/pages/<Name>.tsx
 ```
 
 The validator checks landmark structure (one `<main>`, named sections, labelled navs), fixed-set usage, and the inline-style reconciliation rules. Fix any violations before declaring the layout done.
 
 ## Success signal
 
-- `npm run validate:layout` exits 0.
+- `npm run layout:validate` exits 0.
 - The JSX builds without errors (`npm run typecheck`).
 - The page renders in `apps/showcase` via `npm run dev` at desktop (≥1440px), tablet (≥768px), and mobile (<768px) in both light and dark themes with **zero manual restructuring** after generation. If restructuring was needed, fix the grammar or metadata before scaling up — the skill's success signal is no-touch generation.

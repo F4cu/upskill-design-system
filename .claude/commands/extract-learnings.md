@@ -1,5 +1,5 @@
 ---
-description: Turn review findings into permanent system knowledge — reads .review.json handoff files, routes each finding to the right section of the component's metadata schema (accessibility contract, composition rules, usage antiPatterns), drafts amendments, gates on validate:metadata, and opens a PR. Run after /review-component or after any session that fixes issues in an existing component.
+description: Turn review findings into permanent system knowledge — reads .review.json handoff files, routes each finding to the right section of the component's metadata schema (accessibility contract, composition rules, usage antiPatterns), drafts amendments, gates on metadata:validate, and opens a PR. Run after /review-component or after any session that fixes issues in an existing component.
 ---
 
 # Extract learnings
@@ -102,7 +102,7 @@ After classifying all findings: scan for the same pattern in 2+ components. If f
 
 ### 5. Gate
 
-Run `npm run validate:metadata`. If it fails, fix the offending amendment and re-run. Do not open the PR until the gate passes.
+Run `npm run metadata:validate`. If it fails, fix the offending amendment and re-run. Do not open the PR until the gate passes.
 
 ### 6. Done marker
 
@@ -154,4 +154,4 @@ Pattern appeared in [A] and [B]. Proposed CLAUDE.md addition — confirm to appl
 
 ## Success signal
 
-`validate:metadata` passes. Every amendment traces to a specific finding. Future `/add-component` runs for similar components scaffold with the corrected contracts — the same mistakes do not appear in Stage 3 findings again.
+`metadata:validate` passes. Every amendment traces to a specific finding. Future `/add-component` runs for similar components scaffold with the corrected contracts — the same mistakes do not appear in Stage 3 findings again.

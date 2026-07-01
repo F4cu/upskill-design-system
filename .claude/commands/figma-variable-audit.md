@@ -13,7 +13,7 @@ description: Audit Figma variables against the committed tokens (drift check) �
 - Figma variables — read via Figma MCP (`get_variable_defs` or `get_design_context` on the variables page)
 - Current committed primitives — `packages/tokens/src/primitives.json`
 - Current theme aliases — `packages/tokens/src/theme/light.json`, `packages/tokens/src/theme/dark.json`
-- Token usage map — `packages/tokens/token-usage.json` (run `npm run token-usage` first if stale)
+- Token usage map — `packages/tokens/token-usage.json` (run `npm run tokens:usage` first if stale)
 - Accepted divergences — the drift memory note (`figma-file-variable-drift.md`), which lists code↔Figma differences that are structural, not drift (notably unitless line-heights, which Figma can only store as fixed values)
 
 ## Steps
@@ -56,4 +56,4 @@ A report with four sections:
 
 ## Success signal
 
-No removed or renamed token with active usages merges silently. If the report is clean, write the cleaned export to `packages/tokens/src/primitives.json`, run `npm run build:tokens`, and confirm the build passes.
+No removed or renamed token with active usages merges silently. If the report is clean, write the cleaned export to `packages/tokens/src/primitives.json`, run `npm run tokens:build`, and confirm the build passes.
