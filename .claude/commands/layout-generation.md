@@ -250,4 +250,4 @@ The validator checks landmark structure (one `<main>`, named sections, labelled 
 
 - `npm run layout:validate` exits 0.
 - The JSX builds without errors (`npm run typecheck`).
-- The page renders in `apps/showcase` via `npm run dev` at desktop (≥1440px), tablet (≥768px), and mobile (<768px) in both light and dark themes with **zero manual restructuring** after generation. If restructuring was needed, fix the grammar or metadata before scaling up — the skill's success signal is no-touch generation.
+- The page renders in `apps/showcase` via `npm run dev -w @upskill/showcase` at desktop (≥1440px), tablet (≥768px), and mobile (<768px) in both light and dark themes with **zero manual restructuring** after generation. If restructuring was needed, fix the grammar or metadata before scaling up — the skill's success signal is no-touch generation.
