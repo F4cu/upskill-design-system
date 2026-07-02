@@ -122,6 +122,7 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [x] **Tier-2 behavioral a11y (ADR-008)** — runtime a11y resolved via **Vitest + Testing Library + `vitest-axe` (jsdom)**, not the Storybook test-runner the earlier deferral assumed (so the Storybook version conflict is moot). `npm run a11y:test` runs `<Name>.a11y.test.tsx` assertions (state attributes, focus, keyboard) + an axe scan; `npm run a11y:coverage` (`scripts/a11y-coverage.js`) derives interactivity from metadata and **requires** a behavioral test only for interactive components — Badge and other display/landmark components are exempt. A shrinking `scripts/a11y-backlog.json` ledger waives the six pre-existing interactive components (ButtonArrow, Checkbox, Chip, DropdownMenu, Select, TextField) pending backfill; `Button` is backfilled as the infra proof. Wired into the `/add-component` Stage-2 gate and `components-check.yml`. Color-contrast / visible-focus / real-AT stay out of scope (visual review + addon-a11y panel).
 - [x] Per-run log defined in the command — `.claude/handoff/<Name>.run.json` (gitignored): gate pass/fail counts, whether Stage-0 context isolation held, and whether the verifier caught anything the gate missed. Exercised during the pilot.
 - [x] **Pilot:** `Badge` shipped cleanly ✓. `Accordion` shipped ✓ — stateful component confirmed the adversarial reviewer earns its cost: it caught a silent `aria-controls` dead-reference bug (panel unmounted on collapse) that the gate and axe scanner both missed, plus Tab-navigation coverage gap in the test suite. 1 gate failure (minor: `process.env.NODE_ENV` → `import.meta.env.DEV`, no `@types/node` in tsconfig), 0 manual rescues. Promote ADR-007 `proposed` → `accepted`.
+- [ ] `docs/add-component-loop-case-study.html` — stage-by-stage write-up of the Accordion pilot run, created 2026-06-23. **Out of date:** written before the loop split Stage 3–4 into the standalone `/review-component` command and added the Stage 2b visual checkpoint. Needs a refresh pass before it's linked from anywhere (e.g. the Phase 11 case-study site).
 
 **Exit condition (met):** both pilot components shipped through the loop with no manual restructuring; the human reviewed only clean code; the loop prompt updated with what was learned. The adversarial reviewer found things the gate could not — the review stage is earning its cost.
 
@@ -138,3 +139,48 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [x] **Maturity reset** — all 26 components set to `beta` pending per-component review; promotion to `ready` is a deliberate metadata PR, not an Airtable edit.
 
 **Exit condition (met):** `npm run sense` reports each component's maturity + implementation stage from committed files alone; `npm run airtable:sync:components` mirrors both axes to Airtable; a human `done`/`todo` set in Airtable survives every subsequent sync. Promoting a component to `done` is a human decision in Airtable; everything else is derived or pushed by script.
+
+---
+
+## Pivot — Case-study visibility (Phase 11)
+
+> Phases 1–10 built the system; nothing outside Storybook makes it *visible*. This pivot adds a public artifact — one shareable URL — for demonstrating the pipeline in interviews: real responsive pages built from the component library, a health dashboard exposing the frozen-memory snapshots a maintainer would actually watch, an interactive pipeline diagram, an `llms.txt`, and a written system case study explaining the architecture end-to-end (token pipeline, CLI-script automation vs. the agentic moments, Airtable governance in both directions, benefits per audience). It stays inside the lite-agentic charter: `apps/showcase` is a new npm workspace in this monorepo (not a separate repo), consumes `@upskill/components`/`@upskill/tokens` via the workspace protocol and the **built** token CSS (never source JSON — same rule as components), composes only the frozen 26-component set, and adds no new always-on automation. The dashboard follows the same rule as every agentic moment: it reads **committed frozen files** (`STATUS_QUO.md`, `.claude/component-pipeline.json`, governance/usage/Figma-variables JSON), never live Airtable/Figma calls at runtime.
+
+## Phase 11 — Public Showcase & Health Dashboard *(in progress)*
+
+**Showcase pages** — real pages generated via `/layout-generation`, each structural choice justified by component metadata, composing the fixed set only:
+- [x] `apps/showcase` workspace scaffolded (Vite + React + TypeScript + `react-router`), added to root `workspaces`, depends on `@upskill/components`/`@upskill/tokens` via `workspace:*`, imports the built token CSS once at the app root.
+- [x] Routing stubbed for all four planned routes: `/`, `/showcase/homepage`, `/showcase/settings`, `/showcase/course`, `/dashboard`.
+- [x] Course Overview page (`/showcase/course`) — real, generated page composing `Accordion`/`Badge`/`ProgressBar`/`CardHorizontal`/`Button` ghost variant.
+- [ ] Homepage page (`/showcase/homepage`) — still a stub; generate from the Carousel / FooterHighlights / CardVertical composed stories.
+- [ ] Settings page (`/showcase/settings`) — still a stub; generate from the SettingsForm composed story.
+- [ ] Cross-page navigation via `AppHeader` linking `/`, `/showcase/homepage`, `/showcase/settings`, `/showcase/course`.
+- [ ] Responsive + theme QA on all three showcase pages (desktop ≥1440 / tablet ≥768 / mobile <768, light + dark).
+- [ ] Root build chain extended to include the showcase app (`npm run build` currently stops at `@upskill/components`).
+- [ ] Vercel deployment config (`vercel.json` or documented project settings) — the developer runs the actual `vercel` login/deploy.
+
+**Health dashboard** (`/dashboard`) — currently a stub:
+- [ ] Deterministic build-time ingestion of the committed JSON (import or a prebuild copy step) — documented, no runtime API calls.
+- [ ] Component lifecycle view: both axes (Maturity `beta`/`ready`/`deprecated`; Implementation `established`/`in progress`/`in review`/`done`/`todo`), counts plus a per-component table, sourced from `.claude/component-pipeline.json`.
+- [ ] Token governance view: governed/active/deprecated counts and the deprecated-in-use migration backlog, sourced from `airtable-governance.json` + `token-usage.json`.
+- [ ] Figma drift summary from `figma-variables.json`, with accepted representational divergences (e.g. unitless line-heights) labeled as expected — not flagged as drift.
+- [ ] Pending GitHub issues surfaced on the dashboard (read via `gh`/REST at build time into a committed or prebuild-fetched snapshot — not a live call from the browser).
+
+**Interactive token pipeline diagram** — Figma → token export → Style Dictionary build → CSS/JS outputs → components → (Airtable governance, GitHub Actions), reflecting this repo's actual stages and tools (reference shape only: `learn.thedesignsystem.guide`'s automated-token-workflow diagram):
+- [ ] Ships as a standalone route.
+- [ ] Embedded in `/dashboard` as well.
+- [ ] MVP is a clear static diagram; interactivity (hover for stage detail, click-through to the relevant script/ADR) is a stretch goal, not a blocker.
+
+**`llms.txt`**:
+- [ ] Generated at the site root from real metadata (component prop types, variants, composition rules, `usage.antiPatterns`) and semantic token names, following the llms.txt convention (concise, link-structured, machine-readable) — not a knowledge graph.
+
+**System case study** — the comprehensive narrative; supersedes the earlier "landing page blurb" framing. Format decision first: written directly as the landing page (`/`) content, or as a dedicated `docs/system-case-study.html` (same styled format as the existing per-moment doc) with the landing page as a shorter entry point linking to it:
+- [ ] Token pipeline: Figma → primitives/theme/device layers → Style Dictionary build → CSS/JS outputs, with the code-as-source-of-truth rationale (ADR-002 amendment).
+- [ ] CLI/script automation vs. agentic moments: what "lite agentic" means in practice — GitHub Actions + scripts for anything recurring, the 8 developer-triggered moments reserved for judgment work, and why the split exists (Claude Pro usage-window economics, one-person maintainability).
+- [ ] Airtable governance flow, both directions: code → Airtable (`airtable-sync.js`, on merge to `main`) and Airtable → code (`airtable-pull.js`, governance + component sign-off) — what each direction is for and who edits which side.
+- [ ] Benefits framed per audience: maintainers (frozen-memory snapshots, one-bit Airtable sign-off, drift/migration backlog), developers/consumers (metadata-driven scaffolding, enforced a11y contract, layout generation), reviewers (the adversarial-review loop catching what deterministic gates can't).
+- [ ] Honest rejected-alternatives framing: Enterprise-gated Figma REST, parallel-agent swarms, appearance-based renames — senior-level judgment calls, not just what shipped. Accuracy over flourish — no claim ahead of what's actually built.
+- [ ] `docs/add-component-loop-case-study.html` (Phase 9, currently stale) refreshed to match the current loop shape and demoted to a linked deep-dive under the agentic-moments section — not the standalone entry point to the story.
+- [ ] Storybook linked from the site without breaking the Vite app's build.
+
+**Exit condition:** one shareable URL — all four showcase pages responsive and theme-correct, a health dashboard reading lifecycle/governance/drift/issues from committed files alone, the pipeline diagram reachable standalone and from the dashboard, `llms.txt` reachable at the site root and accurate, and a system case study that explains the architecture end-to-end for an interviewer with no prior context. Centerpiece artifact for job-search case studies.

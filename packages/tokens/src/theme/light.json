@@ -234,11 +234,11 @@
       "button": {
         "default": {
           "$type": "color",
-          "$value": "{color.brand.default}"
+          "$value": "{color.terracotta.11}"
         },
         "hover": {
           "$type": "color",
-          "$value": "{color.brand.10}"
+          "$value": "{color.terracotta.12}"
         },
         "disabled": {
           "$type": "color",
@@ -275,11 +275,11 @@
       },
       "brand": {
         "$type": "color",
-        "$value": "{color.brand.default}"
+        "$value": "{color.brand.11}"
       },
       "selected": {
         "$type": "color",
-        "$value": "{color.brand.default}"
+        "$value": "{color.brand.11}"
       },
       "accent": {
         "default": {
@@ -294,11 +294,11 @@
       "interactive": {
         "default": {
           "$type": "color",
-          "$value": "{color.brand.default}"
+          "$value": "{color.brand.11}"
         },
         "hover": {
           "$type": "color",
-          "$value": "{color.brand.11}"
+          "$value": "{color.brand.12}"
         }
       },
       "inverted": {
@@ -322,7 +322,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.11}"
+          "$value": "{color.terracotta.12}"
         },
         "warning": {
           "$type": "color",
@@ -330,7 +330,7 @@
         },
         "success": {
           "$type": "color",
-          "$value": "{color.teal.11}"
+          "$value": "{color.teal.12}"
         }
       }
     },
@@ -346,7 +346,7 @@
       "input": {
         "default": {
           "$type": "color",
-          "$value": "{color.black.alpha.5}"
+          "$value": "{color.neutral.9}"
         },
         "hover": {
           "$type": "color",
@@ -430,11 +430,11 @@
         },
         "success": {
           "$type": "color",
-          "$value": "{color.teal.9}"
+          "$value": "{color.teal.11}"
         },
         "warning": {
           "$type": "color",
-          "$value": "{color.amber.7}"
+          "$value": "{color.amber.9}"
         }
       }
     }
