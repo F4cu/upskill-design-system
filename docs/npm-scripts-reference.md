@@ -1,4 +1,4 @@
-# CLI reference
+# npm scripts reference
 
 Every npm script available at the repo root, grouped by what it's for. These cover the full maintenance loop: building tokens into CSS/JS outputs, developing and documenting components, keeping local snapshots fresh, validating, and syncing Airtable with the committed token source.
 

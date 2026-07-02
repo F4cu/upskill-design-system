@@ -194,7 +194,7 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 
 ## Phase 12 — Docsify Reference Site *(not started)*
 
-- [ ] Docsify shell (`index.html` + `_sidebar.md`, zero/near-zero build) built around the existing `docs/` content (`cli.md`, `glossary.md`, `decisions/`) rather than a parallel folder.
+- [ ] Docsify shell (`index.html` + `_sidebar.md`, zero/near-zero build) built around the existing `docs/` content (`npm-scripts-reference.md`, `glossary.md`, `decisions/`) rather than a parallel folder.
 - [ ] Nine pages per the draft IA: `00-start-here` through `06-agentic-moments` (synthesized from CLAUDE.md + ADRs + commands), `07-cli-reference` and `08-glossary` adapted from the existing files. Every ADR (001–011) and every command (10 files) referenced from at least one page.
 - [ ] Mermaid diagrams for genuinely spatial/sequential relationships only (token resolution order, lifecycle's two axes, the `/add-component` loop stages) — wrapped in a horizontally-scrollable container.
 - [ ] `add-component-loop-case-study.html` linked from the relevant page as a standalone HTML artifact, not folded in as markdown.
