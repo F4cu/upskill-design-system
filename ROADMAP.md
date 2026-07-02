@@ -47,7 +47,7 @@ CSS reset, `grid.css`, `typography.css` global utilities. Layout primitives: `Bo
 
 ## Phase 5 — Component Library *(done)*
 
-Full fixed component set built across four batches. Library frozen at 22 components + 2 hooks.
+Full fixed component set built across four batches. Library frozen at **27 components + 2 hooks** (`useCarousel`, `useSlider`). The batches below cover 24; `DropdownMenu` and `Image` (added 2026-06-18) and `TextLink` (added 2026-06-30) landed as explicit scope expansions after the batch plan was written.
 
 | Batch | Components |
 |---|---|
@@ -137,7 +137,7 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [x] **`airtable-pull.js`** — pulls the human-owned `Implementation` (`done`/`todo`) → `.claude/component-signoff.json` (the one Airtable → code direction for components). Wired into `npm run airtable:pull:governance`.
 - [x] **`airtable-sync.js push:components`** — pushes `Maturity` + the derived `Implementation`, with two guards: never overwrites an Airtable `done`/`todo`, and exempts those rows from orphan deletion (so a planned `todo` can exist before any code). New `npm run airtable:sync:components` = `sense` + push.
 - [x] **`sync-tokens.yml`** — runs `sense` before `push:components`; trigger paths extended to `.claude/handoff/**` and `.claude/component-signoff.json`.
-- [x] **Maturity reset** — all 26 components set to `beta` pending per-component review; promotion to `ready` is a deliberate metadata PR, not an Airtable edit.
+- [x] **Maturity reset** — all components set to `beta` (26 at the time; 27 since `TextLink`, 2026-06-30) pending per-component review; promotion to `ready` is a deliberate metadata PR, not an Airtable edit.
 
 **Exit condition (met):** `npm run sense` reports each component's maturity + implementation stage from committed files alone; `npm run airtable:sync:components` mirrors both axes to Airtable; a human `done`/`todo` set in Airtable survives every subsequent sync. Promoting a component to `done` is a human decision in Airtable; everything else is derived or pushed by script.
 
@@ -145,7 +145,7 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 
 ## Pivot — Case-study visibility (Phase 11)
 
-> Phases 1–10 built the system; nothing outside Storybook makes it *visible*. This pivot adds a public artifact — one shareable URL — for demonstrating the pipeline in interviews: real responsive pages built from the component library, a health dashboard exposing the frozen-memory snapshots a maintainer would actually watch, an interactive pipeline diagram, an `llms.txt`, and a written system case study explaining the architecture end-to-end (token pipeline, CLI-script automation vs. the agentic moments, Airtable governance in both directions, benefits per audience). It stays inside the lite-agentic charter: `apps/showcase` is a new npm workspace in this monorepo (not a separate repo), consumes `@upskill/components`/`@upskill/tokens` via the workspace protocol and the **built** token CSS (never source JSON — same rule as components), composes only the frozen 26-component set, and adds no new always-on automation. The dashboard follows the same rule as every agentic moment: it reads **committed frozen files** (`STATUS_QUO.md`, `.claude/component-pipeline.json`, governance/usage/Figma-variables JSON), never live Airtable/Figma calls at runtime.
+> Phases 1–10 built the system; nothing outside Storybook makes it *visible*. This pivot adds a public artifact — one shareable URL — for demonstrating the pipeline in interviews: real responsive pages built from the component library, a health dashboard exposing the frozen-memory snapshots a maintainer would actually watch, an interactive pipeline diagram, an `llms.txt`, and a written system case study explaining the architecture end-to-end (token pipeline, CLI-script automation vs. the agentic moments, Airtable governance in both directions, benefits per audience). It stays inside the lite-agentic charter: `apps/showcase` is a new npm workspace in this monorepo (not a separate repo), consumes `@upskill/components`/`@upskill/tokens` via the workspace protocol and the **built** token CSS (never source JSON — same rule as components), composes only the frozen 27-component set, and adds no new always-on automation. The dashboard follows the same rule as every agentic moment: it reads **committed frozen files** (`STATUS_QUO.md`, `.claude/component-pipeline.json`, governance/usage/Figma-variables JSON), never live Airtable/Figma calls at runtime.
 
 ## Phase 11 — Public Showcase & Health Dashboard *(in progress)*
 
