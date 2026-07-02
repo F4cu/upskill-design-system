@@ -185,3 +185,20 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [ ] Storybook linked from the site without breaking the Vite app's build.
 
 **Exit condition:** one shareable URL — all four showcase pages responsive and theme-correct, a health dashboard reading lifecycle/governance/drift/issues from committed files alone, the pipeline diagram reachable standalone and from the dashboard, `llms.txt` reachable at the site root and accurate, and a system case study that explains the architecture end-to-end for an interviewer with no prior context. Centerpiece artifact for job-search case studies.
+
+---
+
+## Pivot — Standalone documentation site (Phase 12)
+
+> A **third** documentation artifact, distinct from the other two: `system-case-study-draft.md` (narrative, interview-register case study) and `apps/showcase` (live Vite/React app — pages, dashboard, pipeline diagram, `llms.txt`, Phase 11). This one is a plain-markdown reference site — "how this system actually works, page by page" — for a reader who wants to browse the architecture rather than read a narrative or watch a live artifact. Decided 2026-07-02: it gets its own phase here rather than staying an undecided open question. Full spec, sources, and IA lives in `.claude/handoff/docsify-docs-site.handoff.md`.
+
+## Phase 12 — Docsify Reference Site *(not started)*
+
+- [ ] Docsify shell (`index.html` + `_sidebar.md`, zero/near-zero build) built around the existing `docs/` content (`cli.md`, `glossary.md`, `decisions/`) rather than a parallel folder.
+- [ ] Nine pages per the draft IA: `00-start-here` through `06-agentic-moments` (synthesized from CLAUDE.md + ADRs + commands), `07-cli-reference` and `08-glossary` adapted from the existing files. Every ADR (001–011) and every command (10 files) referenced from at least one page.
+- [ ] Mermaid diagrams for genuinely spatial/sequential relationships only (token resolution order, lifecycle's two axes, the `/add-component` loop stages) — wrapped in a horizontally-scrollable container.
+- [ ] `add-component-loop-case-study.html` linked from the relevant page as a standalone HTML artifact, not folded in as markdown.
+- [ ] Mobile-friendly at 375–430px: no forced horizontal scroll, collapsible sidebar, 44×44px tap targets — same bar as the sibling `design-systems-101` repo.
+- [ ] GitHub Pages enabled off `main` (`/docs`), after confirming no existing Pages config conflicts.
+
+**Exit condition:** `npx docsify serve docs` renders locally with working nav and no broken internal links; GitHub Pages URL is live; site checked at mobile viewport with no page-level horizontal scroll. Remaining open question (deliberately unresolved): whether/how this site should cross-link with the Phase 11 case study and `apps/showcase` once both exist.
