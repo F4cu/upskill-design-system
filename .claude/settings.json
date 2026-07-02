@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run typecheck)",
+      "Bash(npm run a11y:coverage)",
+      "Bash(npm run metadata:validate)",
+      "Bash(npm run a11y:test)",
+      "Bash(npm run test:a11y)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(gh label list *)",
+      "mcp__claude_ai_Notion__notion-fetch",
+      "mcp__claude_ai_Figma__get_design_context"
+    ]
+  }
+}
