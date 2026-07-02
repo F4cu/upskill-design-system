@@ -35,6 +35,9 @@ jobs:
       - name: Build tokens
         run: npm run tokens:build
 
+      - name: Check token contrast (WCAG AA)
+        run: npm run tokens:contrast-check
+
       - name: Verify output files exist
         run: |
           for f in \

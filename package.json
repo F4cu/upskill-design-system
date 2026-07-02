@@ -32,6 +32,7 @@
     "airtable:pull:governance": "node scripts/airtable-pull.js",
     "tokens:usage": "node scripts/token-usage.js",
     "tokens:diff": "node scripts/token-diff.js",
+    "tokens:contrast-check": "node scripts/token-contrast-check.js",
     "sense": "node scripts/sense.js",
     "sense:component": "node scripts/sense-component.js",
     "lint": "eslint packages/components/src",

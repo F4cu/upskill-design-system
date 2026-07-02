@@ -346,11 +346,11 @@
       "input": {
         "default": {
           "$type": "color",
-          "$value": "{color.neutral.9}"
+          "$value": "{color.neutral.10}"
         },
         "hover": {
           "$type": "color",
-          "$value": "{color.neutral.10}"
+          "$value": "{color.neutral.11}"
         }
       },
       "disabled": {

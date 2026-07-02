@@ -1,0 +1,16 @@
+[
+  {
+    "theme": "light",
+    "foreground": "--ds-color-text-selected",
+    "background": "--ds-color-background-neutral-subtlest",
+    "reason": "4.35:1, needs 4.5:1. Next primitive step (terracotta.12) overshoots to 10.6:1 and collides with text.feedback.error — needs a design decision, not a token tweak.",
+    "issue": 21
+  },
+  {
+    "theme": "light",
+    "foreground": "--ds-color-text-brand",
+    "background": "--ds-color-background-neutral-hover",
+    "reason": "4.35:1, needs 4.5:1. Same terracotta.12 collision as text.selected above.",
+    "issue": 21
+  }
+]

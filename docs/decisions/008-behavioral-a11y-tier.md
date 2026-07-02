@@ -1,6 +1,7 @@
 # ADR-008 — Behavioral a11y verification tier, gated by component complexity
 
 **Date:** 2026-06-22
+**Amended:** 2026-07-02
 **Status:** `accepted`
 
 ## Context
@@ -88,3 +89,51 @@ ledger fails if an entry becomes stale (covered, no longer interactive, or gone)
 - Revisit if the plan gains Figma/browser CI capacity (a real-browser axe pass could supplement
   jsdom) or if jsdom proves too lossy for a specific widget (escalate that component to a Storybook
   play-function test rather than switching the whole tier).
+
+## Amendment (2026-07-02) — Third tier: deterministic token-level color-contrast check
+
+Color-contrast was explicitly out of scope for both tiers above — Tier 1's static lint doesn't render
+anything, and Tier 2 disables axe's `color-contrast` rule because jsdom can't compute layout/paint. It
+was left to manual visual review and the Storybook `addon-a11y` panel. A manual audit (2026-07-02,
+issue #20) found 12 failing text/icon/border pairs in the light theme and 6 in dark shipping silently —
+proof the manual-only path wasn't catching real regressions, including a primary Button label at
+3.70:1 against a 4.5:1 requirement.
+
+Color-contrast turns out not to need a browser at all: it's pure math (WCAG relative luminance) over
+*resolved* color values, and Style Dictionary already resolves every alias to a concrete hex/rgba in
+the built CSS (`dist/css/theme.{light,dark}.css`). That sidesteps the jsdom limitation that kept the
+rule disabled in Tier 2 — the gap wasn't "contrast checking is hard," it was "jsdom can't paint," and
+the built output is already painted, in the sense that matters for this math.
+
+**Decision:** add a third, independent, deterministic check — `scripts/token-contrast-check.js`
+(`npm run tokens:contrast-check`), wired into `tokens-check.yml` on every PR touching token source. It
+is not a Tier (it doesn't gate on component interactivity or metadata) and it doesn't touch
+`a11y-coverage.js`; it runs against the token build directly, independent of any one component.
+
+Foreground/background pairs are **hand-curated** in the script (grouped by component, with the
+rendering context documented inline), not derived by scanning CSS Modules for co-occurring custom
+properties. An automated derivation was implemented and rejected during this work: pairing every
+foreground token referenced in a file against every background token in that same file over-generates
+— a single component's mutually-exclusive state variants (e.g. Button's default/disabled/outlined)
+get cross-multiplied into pairs that never actually render together, producing dozens of false
+failures with no real defect behind them. The curated list is the more "lite" choice: it's exactly as
+large as what's actually shipped, each entry is traceable to a real render, and the convention (add a
+pair when a component's rendered foreground/background combination changes) is stated once, in the
+script's header comment, rather than requiring a cascade-resolving CSS parser to stay correct.
+
+The check surfaced two additional near-miss failures in the very token family the 2026-07-02 manual
+fix touched (`text.selected` and `text.brand`, each ~4.35:1 against a 4.5:1 requirement on hover/
+selected overlay backgrounds) that the manual/visual pass missed. Rather than force a token change
+into this PR — the only available fix, a primitive scale step, overshoots and collides visually with
+`text.feedback.error` — these are tracked in `scripts/token-contrast-waivers.json`, a shrinking ledger
+in the same shape as `scripts/a11y-backlog.json` (stale entries fail the check), linked to issue #21
+for a deliberate design fix.
+
+### Consequences
+
+- Color-contrast for real component surfaces is now machine-verified in CI, closing the gap this ADR
+  originally left as an accepted trade-off.
+- The curated-pairs convention adds a small, explicit maintenance step to changing a component's
+  color usage — the same shape as `scripts/a11y-backlog.json`'s discipline, not a new pattern.
+- Two known failures are tracked, not hidden or force-fixed under time pressure; the waiver ledger's
+  stale-entry check ensures they can't be silently forgotten once resolved.
