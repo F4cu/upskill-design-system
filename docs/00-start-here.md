@@ -1,0 +1,42 @@
+# Start here
+
+UpSkill is a learning-first, **lite agentic** design system for a small SaaS product. "Lite" is a deliberate constraint, not an apology: a fixed, small component set (layout primitives, typography, `Button`, form inputs, `Card`, and the page-specific additions listed per phase), and economic maintenance — recurring automation is plain scripts and GitHub Actions calling REST APIs directly, MCP tools are reserved for one-off interactive tasks, and agent involvement is limited to eight defined moments. The premise stated in `CLAUDE.md` is that **one person must be able to maintain the whole system**, and every architectural choice documented on this site traces back to that.
+
+The pipeline in one sentence: design tokens are authored as committed DTCG JSON, built by Style Dictionary into CSS custom properties and JS/TS constants, consumed by coded React components, governed through Airtable, automated through GitHub Actions — with Figma as a downstream mirror rather than the source of truth.
+
+## The two documentation surfaces
+
+This repo documents itself in two distinct registers. Knowing which one you're reading saves confusion:
+
+1. **This site** — the reference. "How this system actually works, page by page," written for someone evaluating or maintaining it who wants to browse the architecture. Every claim links to the file, script, or ADR it comes from.
+2. **The live showcase** — `apps/showcase`, a Vite/React app deployed via Vercel, containing built pages, a system-health dashboard, and a pipeline diagram. It is the system *running*, not the system *explained*.
+
+Where a page on this site describes something the showcase demonstrates live, it links out — for example, the pages produced by the layout grammar and the fixed component set:
+
+- [Homepage.tsx](https://github.com/F4cu/upskill-design-system/blob/main/apps/showcase/src/pages/Homepage.tsx) — the carousel pattern (ADR-006) and Phase 5c components in situ
+- [CourseOverview.tsx](https://github.com/F4cu/upskill-design-system/blob/main/apps/showcase/src/pages/CourseOverview.tsx) — the page whose Figma frame (node 96:5854) drove the landmark grammar in ADR-011
+- [UserSettings.tsx](https://github.com/F4cu/upskill-design-system/blob/main/apps/showcase/src/pages/UserSettings.tsx) — Phase 5b components
+- [Dashboard.tsx](https://github.com/F4cu/upskill-design-system/blob/main/apps/showcase/src/pages/Dashboard.tsx) — the system-health dashboard
+
+## How to read this site
+
+Pages 01–06 each follow the same template:
+
+1. **What it is** — plain description
+2. **Why it's built this way** — the real constraint or trade-off, cited from the ADR that records it
+3. **How it works, concretely** — real code, config shapes, and file paths from this repo
+4. **Diagram** — only where the relationship is genuinely spatial or sequential
+5. **Related** — the specific ADRs, commands, and scripts the page draws on
+
+The suggested reading order is the page order — tokens first, because everything downstream consumes them:
+
+- [01 — Token pipeline](01-token-pipeline.md) — the three-layer model, the Style Dictionary build, and why code (not Figma) is the source of truth
+- [02 — Component lifecycle](02-component-lifecycle.md) — the metadata schema, the two-axis lifecycle, and the tests for when a new component is justified
+- [03 — Accessibility](03-accessibility.md) — the three-tier a11y contract and the jsdom trade-off
+- [04 — Layout grammar](04-layout-grammar.md) — the fixed Figma-level → HTML-landmark mapping
+- [05 — Governance](05-governance.md) — the Airtable two-way sync and the "don't downgrade done" guard
+- [06 — Agentic moments](06-agentic-moments.md) — the lite-agentic charter, the eight moments, and the verified `/add-component` loop
+- [07 — npm scripts reference](07-npm-scripts-reference.md) — every npm script, grouped by purpose
+- [08 — Glossary](08-glossary.md) — terms explained for a non-developer collaborator
+
+The eleven architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
