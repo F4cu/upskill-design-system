@@ -1,0 +1,454 @@
+{
+  "color": {
+    "brand": {
+      "1": {
+        "$type": "color",
+        "$value": "{color.teal.1}"
+      },
+      "2": {
+        "$type": "color",
+        "$value": "{color.teal.2}"
+      },
+      "3": {
+        "$type": "color",
+        "$value": "{color.teal.3}"
+      },
+      "4": {
+        "$type": "color",
+        "$value": "{color.teal.4}"
+      },
+      "5": {
+        "$type": "color",
+        "$value": "{color.teal.5}"
+      },
+      "6": {
+        "$type": "color",
+        "$value": "{color.teal.6}"
+      },
+      "7": {
+        "$type": "color",
+        "$value": "{color.teal.7}"
+      },
+      "8": {
+        "$type": "color",
+        "$value": "{color.teal.8}"
+      },
+      "9": {
+        "$type": "color",
+        "$value": "{color.teal.9}"
+      },
+      "10": {
+        "$type": "color",
+        "$value": "{color.teal.10}"
+      },
+      "11": {
+        "$type": "color",
+        "$value": "{color.teal.11}"
+      },
+      "12": {
+        "$type": "color",
+        "$value": "{color.teal.12}"
+      },
+      "dark": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.teal.dark.1}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.teal.dark.2}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.teal.dark.3}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.teal.dark.4}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.teal.dark.5}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.teal.dark.6}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.teal.dark.7}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.teal.dark.8}"
+        },
+        "9": {
+          "$type": "color",
+          "$value": "{color.teal.dark.9}"
+        },
+        "10": {
+          "$type": "color",
+          "$value": "{color.teal.dark.10}"
+        },
+        "11": {
+          "$type": "color",
+          "$value": "{color.teal.dark.11}"
+        },
+        "12": {
+          "$type": "color",
+          "$value": "{color.teal.dark.12}"
+        }
+      },
+      "default": {
+        "$type": "color",
+        "$value": "{color.brand.9}"
+      }
+    },
+    "accent": {
+      "1": {
+        "$type": "color",
+        "$value": "{color.amber.1}"
+      },
+      "2": {
+        "$type": "color",
+        "$value": "{color.amber.2}"
+      },
+      "3": {
+        "$type": "color",
+        "$value": "{color.amber.3}"
+      },
+      "4": {
+        "$type": "color",
+        "$value": "{color.amber.4}"
+      },
+      "5": {
+        "$type": "color",
+        "$value": "{color.amber.5}"
+      },
+      "6": {
+        "$type": "color",
+        "$value": "{color.amber.6}"
+      },
+      "7": {
+        "$type": "color",
+        "$value": "{color.amber.7}"
+      },
+      "8": {
+        "$type": "color",
+        "$value": "{color.amber.8}"
+      },
+      "9": {
+        "$type": "color",
+        "$value": "{color.amber.9}"
+      },
+      "10": {
+        "$type": "color",
+        "$value": "{color.amber.10}"
+      },
+      "11": {
+        "$type": "color",
+        "$value": "{color.amber.11}"
+      },
+      "12": {
+        "$type": "color",
+        "$value": "{color.amber.12}"
+      },
+      "dark": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.amber.dark.1}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.amber.dark.2}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.amber.dark.3}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.amber.dark.4}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.amber.dark.5}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.amber.dark.6}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.amber.dark.7}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.amber.dark.8}"
+        },
+        "9": {
+          "$type": "color",
+          "$value": "{color.amber.dark.9}"
+        },
+        "10": {
+          "$type": "color",
+          "$value": "{color.amber.dark.10}"
+        },
+        "11": {
+          "$type": "color",
+          "$value": "{color.amber.dark.11}"
+        },
+        "12": {
+          "$type": "color",
+          "$value": "{color.amber.dark.12}"
+        }
+      },
+      "default": {
+        "$type": "color",
+        "$value": "{color.accent.9}"
+      }
+    },
+    "neutral": {
+      "1": {
+        "$type": "color",
+        "$value": "{color.grey.1}"
+      },
+      "2": {
+        "$type": "color",
+        "$value": "{color.grey.2}"
+      },
+      "3": {
+        "$type": "color",
+        "$value": "{color.grey.3}"
+      },
+      "4": {
+        "$type": "color",
+        "$value": "{color.grey.4}"
+      },
+      "5": {
+        "$type": "color",
+        "$value": "{color.grey.5}"
+      },
+      "6": {
+        "$type": "color",
+        "$value": "{color.grey.6}"
+      },
+      "7": {
+        "$type": "color",
+        "$value": "{color.grey.7}"
+      },
+      "8": {
+        "$type": "color",
+        "$value": "{color.grey.8}"
+      },
+      "9": {
+        "$type": "color",
+        "$value": "{color.grey.9}"
+      },
+      "10": {
+        "$type": "color",
+        "$value": "{color.grey.10}"
+      },
+      "11": {
+        "$type": "color",
+        "$value": "{color.grey.11}"
+      },
+      "12": {
+        "$type": "color",
+        "$value": "{color.grey.12}"
+      },
+      "dark": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.grey.dark.1}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.grey.dark.2}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.grey.dark.3}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.grey.dark.4}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.grey.dark.5}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.grey.dark.6}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.grey.dark.7}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.grey.dark.8}"
+        },
+        "9": {
+          "$type": "color",
+          "$value": "{color.grey.dark.9}"
+        },
+        "10": {
+          "$type": "color",
+          "$value": "{color.grey.dark.10}"
+        },
+        "11": {
+          "$type": "color",
+          "$value": "{color.grey.dark.11}"
+        },
+        "12": {
+          "$type": "color",
+          "$value": "{color.grey.dark.12}"
+        }
+      }
+    },
+    "surface": {
+      "1": {
+        "$type": "color",
+        "$value": "{color.grey.1}"
+      },
+      "2": {
+        "$type": "color",
+        "$value": "{color.grey.2}"
+      },
+      "3": {
+        "$type": "color",
+        "$value": "{color.grey.3}"
+      },
+      "4": {
+        "$type": "color",
+        "$value": "{color.grey.4}"
+      },
+      "5": {
+        "$type": "color",
+        "$value": "{color.grey.5}"
+      },
+      "6": {
+        "$type": "color",
+        "$value": "{color.grey.6}"
+      },
+      "7": {
+        "$type": "color",
+        "$value": "{color.grey.7}"
+      },
+      "8": {
+        "$type": "color",
+        "$value": "{color.grey.8}"
+      },
+      "9": {
+        "$type": "color",
+        "$value": "{color.grey.9}"
+      },
+      "10": {
+        "$type": "color",
+        "$value": "{color.grey.10}"
+      },
+      "11": {
+        "$type": "color",
+        "$value": "{color.grey.11}"
+      },
+      "12": {
+        "$type": "color",
+        "$value": "{color.grey.12}"
+      },
+      "dark": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.grey.dark.1}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.grey.dark.2}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.grey.dark.3}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.grey.dark.4}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.grey.dark.5}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.grey.dark.6}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.grey.dark.7}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.grey.dark.8}"
+        },
+        "9": {
+          "$type": "color",
+          "$value": "{color.grey.dark.9}"
+        },
+        "10": {
+          "$type": "color",
+          "$value": "{color.grey.dark.10}"
+        },
+        "11": {
+          "$type": "color",
+          "$value": "{color.grey.dark.11}"
+        },
+        "12": {
+          "$type": "color",
+          "$value": "{color.grey.dark.12}"
+        }
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "headline-default": {
+        "$type": "string",
+        "$value": "{font.font-family.Playfair Display}"
+      },
+      "headline-serif": {
+        "$type": "string",
+        "$value": "{font.font-family.Playfair Display}"
+      },
+      "body": {
+        "$type": "string",
+        "$value": "{font.font-family.Roboto}"
+      }
+    }
+  },
+  "border-radius": {
+    "null": {
+      "$type": "number",
+      "$value": 0
+    },
+    "xs": {
+      "$type": "number",
+      "$value": 2
+    },
+    "sm": {
+      "$type": "number",
+      "$value": 4
+    },
+    "md": {
+      "$type": "number",
+      "$value": 8
+    },
+    "lg": {
+      "$type": "number",
+      "$value": 12
+    },
+    "full": {
+      "$type": "number",
+      "$value": 50
+    }
+  }
+}
