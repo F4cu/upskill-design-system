@@ -1,5 +1,11 @@
 import StyleDictionary from 'style-dictionary'
 import fs from 'fs'
+import { readdirSync } from 'fs'
+
+const DEFAULT_BRAND = 'upskill'
+const BRANDS = readdirSync('src/brands')
+  .filter(f => f.endsWith('.json'))
+  .map(f => f.replace('.json', ''))
 
 fs.rmSync('dist', { recursive: true, force: true })
 
@@ -143,45 +149,60 @@ const primitivesSD = new StyleDictionary({
   },
 })
 
-// ── Light theme ────────────────────────────────────────────────
-const lightSD = new StyleDictionary({
-  ...shared,
-  parsers: ['upskill/clean-theme'],
-  source: ['src/primitives.json', 'src/theme/light.json'],
-  platforms: {
-    css: {
-      transformGroup: 'upskill/css',
-      prefix: 'ds',
-      buildPath: 'dist/css/',
-      files: [{
-        destination: 'theme.light.css',
-        format: 'css/variables',
-        filter: (token) => token.filePath.includes('light'),
-        options: { selector: ':root, [data-theme="light"]', outputReferences: false },
-      }],
-    },
-  },
-})
+// Brand and theme instances emit per-hop var() chains (outputReferences: true)
+// with `include` + a filePath filter. SD v5 treats the filtered-out references
+// as a warning ("filtered out token references"), so these instances must run
+// warnings:'warn' — the two post-build gates below compensate.
+const brandShared = { usesDtcg: true, log: { warnings: 'warn', verbosity: 'default' } }
 
-// ── Dark theme ─────────────────────────────────────────────────
-const darkSD = new StyleDictionary({
-  ...shared,
-  parsers: ['upskill/clean-theme'],
-  source: ['src/primitives.json', 'src/theme/dark.json'],
+// ── Brand layer ────────────────────────────────────────────────
+const brandBuilds = BRANDS.map(brand => new StyleDictionary({
+  ...brandShared,
+  include: ['src/primitives.json'],
+  source: [`src/brands/${brand}.json`],
   platforms: {
     css: {
       transformGroup: 'upskill/css',
       prefix: 'ds',
       buildPath: 'dist/css/',
       files: [{
-        destination: 'theme.dark.css',
+        destination: `brand.${brand}.css`,
         format: 'css/variables',
-        filter: (token) => token.filePath.includes('dark'),
-        options: { selector: '[data-theme="dark"]', outputReferences: false },
+        filter: (t) => t.filePath.includes(`brands/${brand}.json`),
+        options: {
+          selector: brand === DEFAULT_BRAND
+            ? `:root, [data-brand="${brand}"]`
+            : `[data-brand="${brand}"]`,
+          outputReferences: true,
+        },
       }],
     },
   },
-})
+}))
+
+// ── Themes (shared, brand-agnostic) ────────────────────────────
+const themeConfigs = { light: ':root, [data-theme="light"]', dark: '[data-theme="dark"]' }
+const themeBuilds = Object.entries(themeConfigs).map(([mode, selector]) =>
+  new StyleDictionary({
+    ...brandShared,
+    parsers: ['upskill/clean-theme'],
+    include: ['src/primitives.json', `src/brands/${DEFAULT_BRAND}.json`],
+    source: [`src/theme/${mode}.json`],
+    platforms: {
+      css: {
+        transformGroup: 'upskill/css',
+        prefix: 'ds',
+        buildPath: 'dist/css/',
+        files: [{
+          destination: `theme.${mode}.css`,
+          format: 'css/variables',
+          filter: (t) => t.filePath.includes(`theme/${mode}.json`),
+          options: { selector, outputReferences: true },
+        }],
+      },
+    },
+  })
+)
 
 // ── Device tokens ──────────────────────────────────────────────
 const deviceConfigs = {
@@ -222,8 +243,12 @@ const deviceBuilds = Object.entries(deviceConfigs).map(
 )
 
 await primitivesSD.buildAllPlatforms()
-await lightSD.buildAllPlatforms()
-await darkSD.buildAllPlatforms()
+for (const build of brandBuilds) {
+  await build.buildAllPlatforms()
+}
+for (const build of themeBuilds) {
+  await build.buildAllPlatforms()
+}
 for (const build of deviceBuilds) {
   await build.buildAllPlatforms()
 }
@@ -236,5 +261,110 @@ const tablet  = fs.readFileSync('dist/css/device.tablet.css', 'utf8')
 const mobile  = fs.readFileSync('dist/css/device.mobile.css', 'utf8')
 const combined = desktop.trimEnd() + '\n\n' + stripHeader(tablet).trimEnd() + '\n\n' + stripHeader(mobile)
 fs.writeFileSync('dist/css/device.css', combined)
+
+// ── Post-build gates ───────────────────────────────────────────
+// These compensate for the warnings:'warn' downgrade on brand/theme instances.
+
+// (a) Shape gate — every brand's leaf-path set must deep-equal the default brand's.
+function leafPaths(obj, prefix = [], out = new Set()) {
+  if (obj && typeof obj === 'object' && '$value' in obj) {
+    out.add(prefix.join('.'))
+    return out
+  }
+  if (obj && typeof obj === 'object') {
+    for (const k of Object.keys(obj)) {
+      if (k.startsWith('$')) continue
+      leafPaths(obj[k], [...prefix, k], out)
+    }
+  }
+  return out
+}
+{
+  const brandPaths = Object.fromEntries(
+    BRANDS.map(b => [b, leafPaths(JSON.parse(fs.readFileSync(`src/brands/${b}.json`, 'utf8')))])
+  )
+  const ref = brandPaths[DEFAULT_BRAND]
+  for (const b of BRANDS) {
+    if (b === DEFAULT_BRAND) continue
+    const set = brandPaths[b]
+    const missing = [...ref].filter(p => !set.has(p))
+    const extra = [...set].filter(p => !ref.has(p))
+    if (missing.length || extra.length) {
+      throw new Error(
+        `Shape gate FAILED: brand '${b}' differs from '${DEFAULT_BRAND}'.` +
+        (missing.length ? ` Missing: ${missing.join(', ')}.` : '') +
+        (extra.length ? ` Extra: ${extra.join(', ')}.` : '')
+      )
+    }
+  }
+  console.log(`✓ Shape gate: ${BRANDS.length} brand(s) share an identical token shape.`)
+}
+
+// (b) No-inlined / no-dangling gate.
+function parseVars(file) {
+  const css = fs.readFileSync(`dist/css/${file}`, 'utf8')
+  const map = {}
+  const re = /(--ds-[\w-]+):\s*([^;]+);/g
+  let m
+  while ((m = re.exec(css)) !== null) map[m[1]] = m[2].trim()
+  return map
+}
+function refsIn(value) {
+  const out = []
+  const re = /var\((--ds-[\w-]+)/g
+  let m
+  while ((m = re.exec(value)) !== null) out.push(m[1])
+  return out
+}
+{
+  const primitives = parseVars('primitives.css')
+  const brandVars = Object.fromEntries(BRANDS.map(b => [b, parseVars(`brand.${b}.css`)]))
+  const themeVars = { light: parseVars('theme.light.css'), dark: parseVars('theme.dark.css') }
+
+  const primNames = new Set(Object.keys(primitives))
+  // Intersection of all brand-defined names (a token any brand may resolve through).
+  const brandDefSets = BRANDS.map(b => new Set(Object.keys(brandVars[b])))
+  const brandIntersection = new Set(
+    [...brandDefSets[0]].filter(n => brandDefSets.every(s => s.has(n)))
+  )
+
+  const varOnly = /^var\(--ds-[\w-]+\)(\s*,.*)?$/
+
+  // No-inlined: every theme value must be a var() chain, never a raw color.
+  for (const mode of ['light', 'dark']) {
+    for (const [name, value] of Object.entries(themeVars[mode])) {
+      if (!varOnly.test(value)) {
+        throw new Error(
+          `No-inlined gate FAILED: theme.${mode}.css ${name}: ${value} — SD inlined a value instead of a var() reference.`
+        )
+      }
+    }
+  }
+
+  // No-dangling: every referenced var must be defined by its allowed set.
+  for (const mode of ['light', 'dark']) {
+    const selfNames = new Set(Object.keys(themeVars[mode]))
+    for (const [name, value] of Object.entries(themeVars[mode])) {
+      for (const ref of refsIn(value)) {
+        if (primNames.has(ref) || brandIntersection.has(ref) || selfNames.has(ref)) continue
+        throw new Error(
+          `No-dangling gate FAILED: theme.${mode}.css ${name} references ${ref}, undefined in primitives ∪ brand-intersection ∪ self.`
+        )
+      }
+    }
+  }
+  for (const b of BRANDS) {
+    const selfNames = new Set(Object.keys(brandVars[b]))
+    for (const [name, value] of Object.entries(brandVars[b])) {
+      for (const ref of refsIn(value)) {
+        if (primNames.has(ref) || selfNames.has(ref)) continue
+        throw new Error(
+          `No-dangling gate FAILED: brand.${b}.css ${name} references ${ref}, undefined in primitives ∪ self.`
+        )
+      }
+    }
+  }
+  console.log('✓ No-inlined / no-dangling gate: theme output is fully referential and resolvable.')
+}
 
 console.log('\n✓ Token build complete → dist/css/ and dist/js/')

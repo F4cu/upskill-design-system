@@ -1,5 +1,6 @@
 [
   {
+    "brand": "upskill",
     "theme": "light",
     "foreground": "--ds-color-text-selected",
     "background": "--ds-color-background-neutral-subtlest",
@@ -7,6 +8,7 @@
     "issue": 21
   },
   {
+    "brand": "upskill",
     "theme": "light",
     "foreground": "--ds-color-text-brand",
     "background": "--ds-color-background-neutral-hover",

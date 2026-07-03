@@ -42,6 +42,7 @@ jobs:
         run: |
           for f in \
             packages/tokens/dist/css/primitives.css \
+            packages/tokens/dist/css/brand.upskill.css \
             packages/tokens/dist/css/theme.light.css \
             packages/tokens/dist/css/theme.dark.css \
             packages/tokens/dist/css/device.desktop.css \

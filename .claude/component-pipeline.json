@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-30T14:57:24.008Z",
+  "generatedAt": "2026-07-03T09:34:24.676Z",
   "components": [
     {
       "name": "Accordion",
@@ -32,10 +32,10 @@
       "name": "Badge",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-01T12:00:00.000Z",
+      "learningsBackfilled": true
     },
     {
       "name": "Box",
@@ -59,10 +59,10 @@
       "name": "Button",
       "type": "interactive",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-01T15:10:05.000Z",
+      "learningsBackfilled": true
     },
     {
       "name": "ButtonArrow",
@@ -149,10 +149,10 @@
       "name": "Icon",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-01T15:22:28Z",
+      "learningsBackfilled": true
     },
     {
       "name": "Image",

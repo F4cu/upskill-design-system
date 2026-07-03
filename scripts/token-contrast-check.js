@@ -46,10 +46,17 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const WAIVERS_PATH = path.resolve(__dirname, "token-contrast-waivers.json");
-const CSS_DIST = {
-  light: path.resolve(ROOT, "packages/tokens/dist/css/theme.light.css"),
-  dark: path.resolve(ROOT, "packages/tokens/dist/css/theme.dark.css"),
-};
+const CSS_DIR = path.resolve(ROOT, "packages/tokens/dist/css");
+const PRIMITIVES_CSS = path.resolve(CSS_DIR, "primitives.css");
+const themeCss = (mode) => path.resolve(CSS_DIR, `theme.${mode}.css`);
+const brandCss = (brand) => path.resolve(CSS_DIR, `brand.${brand}.css`);
+
+function discoverBrands() {
+  return fs
+    .readdirSync(CSS_DIR)
+    .filter((f) => /^brand\..+\.css$/.test(f))
+    .map((f) => f.replace(/^brand\.(.+)\.css$/, "$1"));
+}
 
 // Rendered on whatever ambient surface a component is placed on (page or a
 // default card/container) — the two general-purpose canvas backgrounds.
@@ -188,13 +195,30 @@ function toDotPath(varName) {
   return varName.replace("--ds-color-", "").split("-").join(".");
 }
 
-function parseThemeCss(file) {
+function parseCss(file) {
   const content = fs.readFileSync(file, "utf8");
   const map = {};
-  const re = /(--ds-color-[\w-]+):\s*([^;]+);/g;
+  const re = /(--ds-[\w-]+):\s*([^;]+);/g;
   let m;
   while ((m = re.exec(content)) !== null) map[m[1]] = m[2].trim();
   return map;
+}
+
+// Resolve a custom property through its var() chain against a layered map.
+// Cycle-guards via `seen`; throws on undefined names and cycles. Doubles as a
+// runtime dangling-ref check for exactly the vars the paired components render.
+function resolve(name, map, seen = new Set()) {
+  if (seen.has(name)) {
+    throw new Error(`Cycle resolving ${name}`);
+  }
+  seen.add(name);
+  const value = map[name];
+  if (value === undefined) {
+    throw new Error(`Undefined custom property: ${name}`);
+  }
+  const m = value.match(/^var\((--ds-[\w-]+)\s*(?:,.*)?\)$/);
+  if (m) return resolve(m[1], map, seen);
+  return value;
 }
 
 function parseColor(value) {
@@ -240,7 +264,9 @@ function contrastRatio(c1, c2) {
 }
 
 function evaluateTheme(theme, vars) {
-  const baseCanvas = parseColor(vars["--ds-color-background-container-default"]);
+  const baseCanvas = parseColor(
+    resolve("--ds-color-background-container-default", vars)
+  );
   const seen = new Set();
   const checked = [];
 
@@ -250,11 +276,8 @@ function evaluateTheme(theme, vars) {
     seen.add(key);
 
     const role = roleOverride || roleOf(foreground);
-    const fgValue = vars[foreground];
-    const bgValue = vars[background];
-    if (!fgValue || !bgValue) {
-      throw new Error(`${theme}: unknown token referenced — ${foreground} or ${background}`);
-    }
+    const fgValue = resolve(foreground, vars);
+    const bgValue = resolve(background, vars);
 
     const bgColor = compositeOver(parseColor(bgValue), baseCanvas);
     const fgColor = compositeOver(parseColor(fgValue), bgColor);
@@ -276,56 +299,66 @@ function loadWaivers() {
 
 function main() {
   const waivers = loadWaivers();
-  const waiverKey = (theme, foreground, background) => `${theme}|${foreground}|${background}`;
+  const waiverKey = (brand, theme, foreground, background) =>
+    `${brand}|${theme}|${foreground}|${background}`;
   const waiverMap = new Map(
-    waivers.map((w) => [waiverKey(w.theme, w.foreground, w.background), w])
+    waivers.map((w) => [waiverKey(w.brand, w.theme, w.foreground, w.background), w])
   );
   const usedWaivers = new Set();
   let totalFailures = 0;
 
-  for (const theme of ["light", "dark"]) {
-    const vars = parseThemeCss(CSS_DIST[theme]);
-    const checked = evaluateTheme(theme, vars);
-    const failures = checked.filter((r) => !r.pass);
+  const primitives = parseCss(PRIMITIVES_CSS);
+  const brands = discoverBrands();
 
-    console.log(`\nTheme: ${theme}`);
-    console.log(`  ${checked.length} pair(s) checked.`);
+  for (const brand of brands) {
+    const brandVars = parseCss(brandCss(brand));
+    for (const theme of ["light", "dark"]) {
+      const themeVars = parseCss(themeCss(theme));
+      const vars = { ...primitives, ...brandVars, ...themeVars };
+      const checked = evaluateTheme(theme, vars);
+      const failures = checked.filter((r) => !r.pass);
 
-    const realFailures = [];
-    const waivedFailures = [];
-    for (const f of failures) {
-      const key = waiverKey(theme, f.foreground, f.background);
-      const waiver = waiverMap.get(key);
-      if (waiver) {
-        usedWaivers.add(key);
-        waivedFailures.push({ ...f, waiver });
-      } else {
-        realFailures.push(f);
+      console.log(`\nBrand: ${brand} · Theme: ${theme}`);
+      console.log(`  ${checked.length} pair(s) checked.`);
+
+      const realFailures = [];
+      const waivedFailures = [];
+      for (const f of failures) {
+        const key = waiverKey(brand, theme, f.foreground, f.background);
+        const waiver = waiverMap.get(key);
+        if (waiver) {
+          usedWaivers.add(key);
+          waivedFailures.push({ ...f, waiver });
+        } else {
+          realFailures.push(f);
+        }
       }
-    }
-    totalFailures += realFailures.length;
+      totalFailures += realFailures.length;
 
-    if (realFailures.length) {
-      for (const f of realFailures) {
-        console.error(
-          `  ✗ ${toDotPath(f.foreground)} on ${toDotPath(f.background)} — ${formatRatio(f.ratio)} (needs ${f.min}:1)`
+      if (realFailures.length) {
+        for (const f of realFailures) {
+          console.error(
+            `  ✗ ${toDotPath(f.foreground)} on ${toDotPath(f.background)} — ${formatRatio(f.ratio)} (needs ${f.min}:1)`
+          );
+        }
+      } else {
+        console.log(`  ✓ All checked pairs meet their WCAG AA threshold (besides tracked waivers).`);
+      }
+      for (const f of waivedFailures) {
+        console.log(
+          `  ⚠ waived: ${toDotPath(f.foreground)} on ${toDotPath(f.background)} — ${formatRatio(f.ratio)} (needs ${f.min}:1) — issue #${f.waiver.issue}`
         );
       }
-    } else {
-      console.log(`  ✓ All checked pairs meet their WCAG AA threshold (besides tracked waivers).`);
-    }
-    for (const f of waivedFailures) {
-      console.log(
-        `  ⚠ waived: ${toDotPath(f.foreground)} on ${toDotPath(f.background)} — ${formatRatio(f.ratio)} (needs ${f.min}:1) — issue #${f.waiver.issue}`
-      );
     }
   }
 
-  const staleWaivers = waivers.filter((w) => !usedWaivers.has(waiverKey(w.theme, w.foreground, w.background)));
+  const staleWaivers = waivers.filter(
+    (w) => !usedWaivers.has(waiverKey(w.brand, w.theme, w.foreground, w.background))
+  );
   if (staleWaivers.length) {
     console.error("\nStale waiver(s) — no longer failing, remove from scripts/token-contrast-waivers.json:");
     for (const w of staleWaivers) {
-      console.error(`  ✗ ${w.theme}: ${toDotPath(w.foreground)} on ${toDotPath(w.background)}`);
+      console.error(`  ✗ ${w.brand}|${w.theme}: ${toDotPath(w.foreground)} on ${toDotPath(w.background)}`);
     }
     totalFailures += staleWaivers.length;
   }

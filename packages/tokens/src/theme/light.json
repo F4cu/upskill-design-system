@@ -1,163 +1,5 @@
 {
   "color": {
-    "brand": {
-      "1": {
-        "$type": "color",
-        "$value": "{color.terracotta.1}"
-      },
-      "2": {
-        "$type": "color",
-        "$value": "{color.terracotta.2}"
-      },
-      "3": {
-        "$type": "color",
-        "$value": "{color.terracotta.3}"
-      },
-      "4": {
-        "$type": "color",
-        "$value": "{color.terracotta.4}"
-      },
-      "5": {
-        "$type": "color",
-        "$value": "{color.terracotta.5}"
-      },
-      "6": {
-        "$type": "color",
-        "$value": "{color.terracotta.6}"
-      },
-      "7": {
-        "$type": "color",
-        "$value": "{color.terracotta.7}"
-      },
-      "8": {
-        "$type": "color",
-        "$value": "{color.terracotta.8}"
-      },
-      "9": {
-        "$type": "color",
-        "$value": "{color.terracotta.9}"
-      },
-      "10": {
-        "$type": "color",
-        "$value": "{color.terracotta.10}"
-      },
-      "11": {
-        "$type": "color",
-        "$value": "{color.terracotta.11}"
-      },
-      "12": {
-        "$type": "color",
-        "$value": "{color.terracotta.12}"
-      },
-      "default": {
-        "$type": "color",
-        "$value": "{color.brand.9}"
-      }
-    },
-    "accent": {
-      "1": {
-        "$type": "color",
-        "$value": "{color.teal.1}"
-      },
-      "2": {
-        "$type": "color",
-        "$value": "{color.teal.2}"
-      },
-      "3": {
-        "$type": "color",
-        "$value": "{color.teal.3}"
-      },
-      "4": {
-        "$type": "color",
-        "$value": "{color.teal.4}"
-      },
-      "5": {
-        "$type": "color",
-        "$value": "{color.teal.5}"
-      },
-      "6": {
-        "$type": "color",
-        "$value": "{color.teal.6}"
-      },
-      "7": {
-        "$type": "color",
-        "$value": "{color.teal.7}"
-      },
-      "8": {
-        "$type": "color",
-        "$value": "{color.teal.8}"
-      },
-      "9": {
-        "$type": "color",
-        "$value": "{color.teal.9}"
-      },
-      "10": {
-        "$type": "color",
-        "$value": "{color.teal.10}"
-      },
-      "11": {
-        "$type": "color",
-        "$value": "{color.teal.11}"
-      },
-      "12": {
-        "$type": "color",
-        "$value": "{color.teal.12}"
-      },
-      "default": {
-        "$type": "color",
-        "$value": "{color.accent.9}"
-      }
-    },
-    "neutral": {
-      "1": {
-        "$type": "color",
-        "$value": "{color.sand.1}"
-      },
-      "2": {
-        "$type": "color",
-        "$value": "{color.sand.2}"
-      },
-      "3": {
-        "$type": "color",
-        "$value": "{color.sand.3}"
-      },
-      "4": {
-        "$type": "color",
-        "$value": "{color.sand.4}"
-      },
-      "5": {
-        "$type": "color",
-        "$value": "{color.sand.5}"
-      },
-      "6": {
-        "$type": "color",
-        "$value": "{color.sand.6}"
-      },
-      "7": {
-        "$type": "color",
-        "$value": "{color.sand.7}"
-      },
-      "8": {
-        "$type": "color",
-        "$value": "{color.sand.8}"
-      },
-      "9": {
-        "$type": "color",
-        "$value": "{color.sand.9}"
-      },
-      "10": {
-        "$type": "color",
-        "$value": "{color.sand.10}"
-      },
-      "11": {
-        "$type": "color",
-        "$value": "{color.sand.11}"
-      },
-      "12": {
-        "$type": "color",
-        "$value": "{color.sand.12}"
-      }
-    },
     "background": {
       "neutral": {
         "subtle": {
@@ -188,19 +30,19 @@
       "container": {
         "page": {
           "$type": "color",
-          "$value": "{color.gold.2}"
+          "$value": "{color.surface.2}"
         },
         "elevated": {
           "$type": "color",
-          "$value": "{color.gold.3}"
+          "$value": "{color.surface.3}"
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.sand.dark.2}"
+          "$value": "{color.neutral.dark.2}"
         },
         "default": {
           "$type": "color",
-          "$value": "{color.gold.1}"
+          "$value": "{color.surface.1}"
         }
       },
       "feedback": {
@@ -234,11 +76,11 @@
       "button": {
         "default": {
           "$type": "color",
-          "$value": "{color.terracotta.11}"
+          "$value": "{color.brand.11}"
         },
         "hover": {
           "$type": "color",
-          "$value": "{color.terracotta.12}"
+          "$value": "{color.brand.12}"
         },
         "disabled": {
           "$type": "color",
@@ -246,21 +88,21 @@
         },
         "ghost": {
           "$type": "color",
-          "$value": "{color.gold.1}"
+          "$value": "{color.surface.1}"
         },
         "outline": {
           "hover": {
             "$type": "color",
-            "$value": "{color.gold.2}"
+            "$value": "{color.surface.2}"
           }
         },
         "elevated": {
           "$type": "color",
-          "$value": "{color.gold.3}"
+          "$value": "{color.surface.3}"
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.sand.dark.2}"
+          "$value": "{color.neutral.dark.2}"
         }
       }
     },
@@ -288,7 +130,7 @@
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.teal.dark.11}"
+          "$value": "{color.accent.dark.11}"
         }
       },
       "interactive": {
@@ -304,7 +146,7 @@
       "inverted": {
         "default": {
           "$type": "color",
-          "$value": "{color.sand.2}"
+          "$value": "{color.neutral.2}"
         },
         "subtle": {
           "$type": "color",
@@ -417,7 +259,7 @@
       },
       "brand": {
         "$type": "color",
-        "$value": "{color.terracotta.9}"
+        "$value": "{color.brand.9}"
       },
       "default": {
         "$type": "color",
@@ -436,22 +278,6 @@
           "$type": "color",
           "$value": "{color.amber.9}"
         }
-      }
-    }
-  },
-  "font": {
-    "family": {
-      "headline-default": {
-        "$type": "string",
-        "$value": "{font.font-family.Roboto}"
-      },
-      "headline-serif": {
-        "$type": "string",
-        "$value": "{font.font-family.Playfair Display}"
-      },
-      "body": {
-        "$type": "string",
-        "$value": "{font.font-family.Roboto}"
       }
     }
   }

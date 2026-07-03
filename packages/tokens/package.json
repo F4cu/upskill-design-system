@@ -6,6 +6,7 @@
   "main": "dist/js/primitives.js",
   "exports": {
     "./css/primitives": "./dist/css/primitives.css",
+    "./css/brand.upskill": "./dist/css/brand.upskill.css",
     "./css/theme.light": "./dist/css/theme.light.css",
     "./css/theme.dark": "./dist/css/theme.dark.css",
     "./css/device": "./dist/css/device.css",
