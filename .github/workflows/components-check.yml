@@ -9,6 +9,8 @@ on:
       - 'scripts/validate-metadata.js'
       - 'scripts/a11y-coverage.js'
       - 'scripts/a11y-backlog.json'
+      - 'scripts/generate-pattern-schema.js'
+      - '.claude/component-patterns.json'
       - 'package.json'
       - 'package-lock.json'
   pull_request:
@@ -18,6 +20,8 @@ on:
       - 'scripts/validate-metadata.js'
       - 'scripts/a11y-coverage.js'
       - 'scripts/a11y-backlog.json'
+      - 'scripts/generate-pattern-schema.js'
+      - '.claude/component-patterns.json'
       - 'package.json'
       - 'package-lock.json'
 
@@ -54,3 +58,10 @@ jobs:
 
       - name: Behavioral a11y tests
         run: npm run a11y:test
+
+      - name: Pattern schema staleness check (ADR-013)
+        # -I ignores the generatedFrom commit-sha line, which legitimately
+        # differs between the committed file and a CI regeneration
+        run: |
+          npm run patterns:generate
+          git diff --exit-code -I'"generatedFrom"' -- .claude/component-patterns.json

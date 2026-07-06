@@ -96,11 +96,14 @@ Moments and loops read the system's status quo from **committed files, never liv
 | `figma-variables.json` | Figma variables | `/figma-variable-audit` via Figma MCP (Plugin API) | Built |
 | `.claude/component-signoff.json` | Airtable (`Implementation` = human `done`/`todo`) | `scripts/airtable-pull.js` (REST) | Built |
 | `.claude/component-pipeline.json` | Component metadata + handoff artifacts + sign-off | `scripts/sense.js` (`npm run sense`) | Built |
+| `.claude/component-patterns.json` | Cross-component pattern aggregate: pattern buckets, ARIA contracts, prop-name drift (deterministic AST + metadata scan) | `scripts/generate-pattern-schema.js` (`npm run patterns:generate`) | Built |
 | `.claude/STATUS_QUO.md` | Aggregate of the above | `scripts/sense.js` (`npm run sense`) | Built |
 
 **Component lifecycle has two axes** (ADR-010): **Maturity** (`beta`/`ready`/`deprecated`, the metadata `component.status`, pushed code → Airtable) and **Implementation** (`established`/`in progress`/`in review`/`done`/`todo`, the pipeline stage). `sense.js` *derives* `in progress`/`in review`/`established` from handoff artifacts (`in review` = `.review.json` + `.learnings.json` both present; a lone snapshot = `established`, pre-loop); `done`/`todo` are **human-set in Airtable**, pulled into `component-signoff.json`, and win over the derived stage. The push never overwrites an Airtable `done` ("don't downgrade done" guard). The two axes live in separate Airtable columns so a pushed value and a human value never collide.
 
 Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/<Name>.snapshot.json` by `npm run sense:component <Name>`. `figma-variables.json` tags or omits **representational divergences** — unitless tokens Figma can't store faithfully (line-heights) — so the audit diff doesn't flag them every run.
+
+`component-patterns.json` is consumed by `/layout-generation` **only** — the before/after accuracy harness measured a clear improvement for layout/composition generation but a regression for component scaffolds, so it must not be injected into `/component-scaffold` (ADR-013). `components-check.yml` enforces staleness: regenerate-and-diff on every PR touching components.
 
 ## MCP tools — when to use vs when to avoid
 

@@ -25,6 +25,7 @@ Before reading metadata or drafting any structure, determine which inputs are av
 ## Inputs (read all before starting)
 
 - All component metadata files in `packages/components/src/` (`*.metadata.json`) — focus on `composition.accepts`, `composition.containedBy`, `usage.patterns`, `composition.layoutBehavior`
+- `.claude/component-patterns.json` — the cross-component pattern aggregate (ADR-013). Read it whole; it fits in context. Use `patterns.*.implementedBy` to pick between components that implement the same interaction pattern, `state.props` for each pattern's canonical state/callback prop names, and the `drift` array to avoid guessing a prop name by analogy — when two components name the same axis differently (e.g. Accordion `onOpenChange` vs Select `onValueChange`), always use the prop name listed for the component you are composing. This file is a consumer input for layout/composition work only — do not inject it into component scaffolding (ADR-013 records why).
 - Device grid tokens and `packages/components/src/styles/grid.css` utilities — these are part of the layout vocabulary
 - Layout brief — provided by the developer in the prompt (intent, key content areas, constraints)
 - Figma design context — from `get_design_context` when a URL or node ID is provided; captures exact structure, spacing tokens, and every visible sub-element
