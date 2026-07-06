@@ -63,7 +63,12 @@ function walkJsx(node, ancestors, fn) {
   if (!node || typeof node !== 'object' || Array.isArray(node)) return
   const isElement = node.type === 'JSXElement'
   if (node.type) fn(node, ancestors)
-  const nextAncestors = isElement ? [...ancestors, elementName(node.openingElement)] : ancestors
+  // '@attr' marks attribute position: a text prop passed TO a component
+  // (title={x} on CardVertical) is the component's job to render correctly,
+  // unlike the same expression in child/render position
+  const nextAncestors = isElement ? [...ancestors, elementName(node.openingElement)]
+    : node.type === 'JSXAttribute' ? [...ancestors, '@attr']
+    : ancestors
   for (const key of Object.keys(node)) {
     if (key === 'parent') continue
     const child = node[key]
@@ -173,7 +178,7 @@ function trapChecksTsx(rel, source, violations) {
         expr?.type === 'Identifier' ? expr.name :
         expr?.type === 'MemberExpression' && expr.property?.type === 'Identifier' ? expr.property.name :
         null
-      if (propName && TEXT_PROP_NAMES.has(propName)) {
+      if (propName && TEXT_PROP_NAMES.has(propName) && ancestors[ancestors.length - 1] !== '@attr') {
         const wrapper = nearestComponent(ancestors)
         if (wrapper !== 'Text' && wrapper !== 'Heading') {
           violations.push({

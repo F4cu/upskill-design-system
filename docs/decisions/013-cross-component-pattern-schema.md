@@ -1,6 +1,7 @@
 # ADR-013 — Cross-component pattern schema: layout/composition consumer only
 
 **Date:** 2026-07-06
+**Amended:** 2026-07-06
 **Status:** `accepted`
 
 ## Context
@@ -37,3 +38,19 @@ Supporting decisions:
 - The pattern file becomes CI-enforced state: any PR changing components without regenerating it fails `components-check.yml`. The regeneration cost is one `npm run patterns:generate`.
 - The accuracy harness remains in-repo as the measurement instrument for any future change to what context generation consumes.
 - Related: ADR-001 (metadata schema, the scanner's declared-contract input), ADR-007 (verified component loop whose scaffold stage this file is excluded from), ADR-011 (layout grammar `/layout-generation` applies alongside this file).
+
+## Amendment (2026-07-06) — corrected harness numbers after a scorer fix
+
+A post-run learnings pass found a false positive in the harness trap checker: `raw-text-prop-render` fired on text props passed **to** library components in attribute position (`title={course.title}` on `CardVertical`), which is correct usage — the component renders the prop through `<Heading>`/`<Text>` internally. The check now exempts attribute position (an `@attr` sentinel in the JSX walk) and only flags render-position expressions. All 14 cells were rescored from the retained scratch outputs — no regeneration, so the arms' outputs are unchanged.
+
+Corrected table (replaces the one above):
+
+| Task kind | Arm A violations | Arm B violations |
+|---|---:|---:|
+| component scaffold (3 tasks) | 19 | 24 |
+| composition (2 tasks) | 6 | 1 |
+| layout (2 tasks) | 7 | 3 |
+
+Overall 32 → 28. The false positives were nearly symmetric across arms, so removing them sharpens the split rather than changing it: composition/layout improvement is now 13 → 4 violations, and the component-scaffold regression is slightly larger (+5). **The decision is unchanged** — layout/composition consumer only.
+
+The same pass surfaced a real library finding the false positive had been masquerading as: `Accordion` (`title`), `Select`/`TextField` (`label`), and `Checkbox` (`label`) render text props as raw `<span>`/`<label>` rather than through `<Text>`, contradicting CLAUDE.md's typography rule. Tracked as a separate issue, not fixed here — whether form labels via `utilities.module.css` are an accepted exception or drift is its own decision.
