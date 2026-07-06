@@ -202,3 +202,20 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [ ] GitHub Pages enabled off `main` (`/docs`), after confirming no existing Pages config conflicts.
 
 **Exit condition:** `npx docsify serve docs` renders locally with working nav and no broken internal links; GitHub Pages URL is live; site checked at mobile viewport with no page-level horizontal scroll. Remaining open question (deliberately unresolved): whether/how this site should cross-link with the Phase 11 case study and `apps/showcase` once both exist.
+
+---
+
+## Pivot — Multi-brand tokens (Phase 13)
+
+> Turns the single-brand system into a multi-brand one: a shared core (primitives, theme, device, components) plus a per-brand identity layer (color ramp mapping, font family, border radius), selected at runtime via `data-brand` mirroring the existing `data-theme` pattern. Second brand (`horizon`) is fictional, built from existing primitive hues — no new ramps, no Airtable/Figma changes (explicitly out of scope; see ADR-012). Full spec and verified mechanics: `.claude/handoff/multi-brand-refactor.md`. Executed as three sequential phases per the handoff plan.
+
+## Phase 13 — Brand Layer *(done)*
+
+- [x] **Phase 1 — extraction (zero visual change)** — `brands/upskill.json` created (four color slots `brand`/`accent`/`neutral`/`surface` + `font.family.*` + literal `border-radius.*`); `theme/{light,dark}.json` reshaped to brand-agnostic `var()` references; `build.js` restructured with a brand loop plus the shape gate and no-inlined/no-dangling gate; `tokens.css` import order documented as load-bearing. Verified bit-for-bit equivalent to the pre-refactor build. Commit `93d06d0`.
+- [x] **Phase 2 — second brand (`horizon`)** — `brands/horizon.json` added (`brand → cyan`, `accent → teal`, `neutral`/`surface → grey`); Storybook brand toolbar (`globalTypes` + decorator, since `addon-themes` only supports one `withThemeByDataAttribute` instance). Contrast triage found horizon's original `teal` brand-hue mapping failing 15 pairs; resolved by patching `cyan`'s light ramp with a custom Radix-generated scale and adding its missing dark ramp (making `cyan` brand-eligible for the first time), then swapping horizon's brand hue from `teal` to the patched `cyan`. Commits `d4ef04f`, `2e8fa32`.
+- [x] **Phase 3 — docs and tooling catch-up** — ADR-012 recorded (`accepted`); CLAUDE.md documents the four-layer token model, brand-eligibility rule (full light+dark ramp required), and build/gate mechanics; `run-storybook` driver gained a `--brand` flag; Docsify token-pipeline reference page updated for the brand layer. Commits `831279a`, `7a88e11`, `b219b0b`, `cf08fd9`.
+- [ ] Issue #22 — components directly consuming raw-ramp `var()`s (bypassing theme semantics) render light-ramp colors in dark mode post-extraction; needs an audit pass over component CSS Modules.
+- [ ] Issue #21 — `text.brand`/`text.selected` fall just under WCAG AA on hover/selected overlay backgrounds for both brands (waived in `token-contrast-waivers.json`; needs a deliberate token/step decision).
+- [ ] Issue #23 — horizon's `border.selected` (pinned to shared step 9 across brands) falls under WCAG AA against dark `container.page`/`input` surfaces (waived; brands swap hues not steps, so this needs either a horizon-specific step exception decision or accepting the waiver long-term).
+
+**Exit condition (met for the build):** two brands render correctly in both themes via `data-brand`, shape and no-inlined/no-dangling gates pass, `tokens-check.yml` covers both brands, ADR-012 + CLAUDE.md document the layer. **Open:** three tracked issues (#21, #22, #23) from contrast/raw-ramp triage — none blocking, all filed for follow-up.
