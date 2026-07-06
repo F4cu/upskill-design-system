@@ -1,0 +1,13 @@
+{
+  "id": "composition-settings-form",
+  "kind": "composition",
+  "brief": "Compose a NotificationPreferences form section (NotificationPreferences.tsx, named export) using ONLY components imported from '@upskill/components'. It renders inside an existing page, so do NOT emit a main landmark. Contents: a Card containing a Heading; a Select for email digest frequency whose chosen value is held in React state; a one-sentence helper line under the Select rendered in the secondary text color; three Checkboxes for notification channels, each held in React state; and a save Button with a leading check icon. Spacing must come from the layout components' token-based props — no hand-written CSS, inline spacing styles, or media queries.",
+  "gates": ["typecheck", "lint"],
+  "outputHint": ["NotificationPreferences.tsx"],
+  "contextMetadata": ["Card", "Stack", "Heading", "Text", "Select", "Checkbox", "Button", "Icon"],
+  "includeSchema": false,
+  "requiredPatterns": [
+    { "file": "NotificationPreferences.tsx", "pattern": "onValueChange", "reason": "canonical Select change-callback name" }
+  ],
+  "forbiddenPatterns": []
+}

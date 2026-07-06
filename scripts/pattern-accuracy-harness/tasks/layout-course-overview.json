@@ -1,0 +1,15 @@
+{
+  "id": "layout-course-overview",
+  "kind": "layout",
+  "brief": "Generate a course-overview page layout (CourseOverviewPage.tsx, default export) for the UpSkill showcase app, using ONLY components imported from '@upskill/components'. Structure: a single page containing (1) a hero area with the course Heading, a short description, and a VideoFrame; (2) a 'Course modules' area listing four AccordionItems built from a data array — the first module open by default, and the page must track how many modules are currently open using React state updated from each item's open-state changes; each module's body ends with a duration line showing a small clock Icon before the duration text, both rendered in the secondary text color; (3) a 'You may also like' area with a grid of three CardVerticals built from a data array. Use proper HTML landmarks throughout. Spacing must come from the layout components' token-based props — do not hand-write CSS, inline spacing styles, or media queries.",
+  "gates": ["typecheck", "lint", "layout:validate"],
+  "outputHint": ["CourseOverviewPage.tsx"],
+  "contextMetadata": ["Box", "Stack", "Inline", "Heading", "Text", "Icon", "Accordion", "VideoFrame", "CardVertical"],
+  "includeSchema": false,
+  "requiredPatterns": [
+    { "file": "CourseOverviewPage.tsx", "pattern": "onOpenChange", "reason": "canonical disclosure change-callback name — required to track open modules" }
+  ],
+  "forbiddenPatterns": [
+    { "file": "CourseOverviewPage.tsx", "pattern": "\\bonToggle\\b|\\bonExpandedChange\\b", "reason": "non-canonical disclosure callback names" }
+  ]
+}

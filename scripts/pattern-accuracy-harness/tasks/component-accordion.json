@@ -1,0 +1,21 @@
+{
+  "id": "component-accordion",
+  "kind": "component",
+  "brief": "Implement a disclosure component for the UpSkill design system: `AccordionItem`, a flat props-driven React component (no context, no compound statics) exported from Accordion/index.tsx. Requirements: a `title` string and optional `subtitle` string shown in the trigger row; a chevron icon in the trigger that visually indicates the open state; expandable body content via `children`; supports BOTH uncontrolled (open by default or closed) and controlled open state, notifying the parent whenever the open state changes; configurable heading level for the trigger's heading wrapper; a native button trigger with correct ARIA disclosure wiring between trigger and panel. Consumers must never be able to pass `onClick` or `color` to the component — make those TypeScript errors, not just documentation. Style with a co-located CSS module (Accordion/Accordion.module.css) referencing only design-token custom properties. Also produce Accordion/Accordion.metadata.json that validates against the provided component.schema.json, and a behavioral a11y test Accordion/Accordion.a11y.test.tsx (Vitest + Testing Library + vitest-axe, axe's color-contrast rule disabled) asserting the trigger/panel ARIA state toggles.",
+  "gates": ["typecheck", "lint", "metadata:validate", "a11y:coverage"],
+  "outputHint": [
+    "Accordion/index.tsx",
+    "Accordion/Accordion.module.css",
+    "Accordion/Accordion.metadata.json",
+    "Accordion/Accordion.a11y.test.tsx"
+  ],
+  "contextMetadata": ["Icon", "Text"],
+  "includeSchema": true,
+  "requiredPatterns": [
+    { "file": "Accordion/index.tsx", "pattern": "onOpenChange", "reason": "canonical disclosure change-callback name in this system" },
+    { "file": "Accordion/index.tsx", "pattern": "Omit<", "reason": "narrowed native-attribute type enforcing forbidden props" }
+  ],
+  "forbiddenPatterns": [
+    { "file": "Accordion/index.tsx", "pattern": "\\bonToggle\\b|\\bonExpandedChange\\b|\\bonChange\\b", "reason": "non-canonical change-callback name for the disclosure axis" }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "component-cardvertical",
+  "kind": "component",
+  "brief": "Implement `CardVertical` for the UpSkill design system: a non-interactive display card for course content, exported from CardVertical/index.tsx. Requirements: an image on top (`src` + `alt`); a `category` label rendered as a small chip; a `title`; a `description`; a `duration` string preceded by a small clock Icon; and an arrow Icon aligned right in the card footer. Both icons must render in the card's secondary text color. All visible strings must render with the system's typography treatment. It is a pure display component — consumers must not be able to pass `onClick` or `color` (TypeScript errors). Style with a co-located CSS module (CardVertical/CardVertical.module.css) referencing only design-token custom properties for spacing, radius, and color. Also produce CardVertical/CardVertical.metadata.json that validates against the provided component.schema.json.",
+  "gates": ["typecheck", "lint", "metadata:validate", "a11y:coverage"],
+  "outputHint": [
+    "CardVertical/index.tsx",
+    "CardVertical/CardVertical.module.css",
+    "CardVertical/CardVertical.metadata.json"
+  ],
+  "contextMetadata": ["Icon", "Text", "Heading", "Chip", "Card"],
+  "includeSchema": true,
+  "requiredPatterns": [
+    { "file": "CardVertical/index.tsx", "pattern": "<Text", "reason": "visible string props must render through the Text component" },
+    { "file": "CardVertical/index.tsx", "pattern": "<Heading", "reason": "the title must render through the Heading component" },
+    { "file": "CardVertical/index.tsx", "pattern": "Omit<", "reason": "narrowed native-attribute type enforcing forbidden props" }
+  ],
+  "forbiddenPatterns": [
+    { "file": "CardVertical/index.tsx", "pattern": "onClick\\??:", "reason": "display component must not accept onClick" }
+  ]
+}

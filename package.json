@@ -35,6 +35,8 @@
     "tokens:contrast-check": "node scripts/token-contrast-check.js",
     "sense": "node scripts/sense.js",
     "patterns:generate": "node scripts/generate-pattern-schema.js",
+    "harness:run": "node scripts/pattern-accuracy-harness/run.js",
+    "harness:score": "node scripts/pattern-accuracy-harness/score.js",
     "sense:component": "node scripts/sense-component.js",
     "lint": "eslint packages/components/src",
     "metadata:validate": "node scripts/validate-metadata.js",
