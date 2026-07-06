@@ -1,7 +1,7 @@
 # ADR-002 — Three-Layer Token Model
 
 **Date:** 2026-06-11
-**Amended:** 2026-06-17
+**Amended:** 2026-06-17, 2026-07-06
 **Status:** `accepted`
 
 ## Context
@@ -84,3 +84,7 @@ Figma variables cannot represent **unitless values**. Line-heights are authored 
 These are **representational divergences, not drift.** They are excluded from the drift comparison in both Figma moments (`/figma-variable-audit` and `/figma-variable-push`) and are tagged or omitted in `figma-variables.json`, so a faithful "matches Figma" comparison is never the success criterion for them. Code remains authoritative for the unitless value; the Figma fixed value is a display approximation that never flows back into `primitives.json`. The running list of accepted divergences lives in the drift memory note (`figma-file-variable-drift.md`).
 
 This refines, not reverses, the mirror model: it names a class of tokens where a faithful mirror is structurally impossible, and fixes the rule that such tokens are out of scope for drift reconciliation.
+
+## Amendment (2026-07-06) — Brand layer
+
+The token model is now **four** layers: primitives → brand → theme → device. A brand layer sits between primitives and theme, owning per-brand color ramp mappings, font families, and border radius. See ADR-012 for the full decision, including why the brand layer is code-only and out of scope for the Figma mirror.
