@@ -167,7 +167,7 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [ ] Figma drift summary from `figma-variables.json`, with accepted representational divergences (e.g. unitless line-heights) labeled as expected — not flagged as drift.
 - [ ] Pending GitHub issues surfaced on the dashboard (read via `gh`/REST at build time into a committed or prebuild-fetched snapshot — not a live call from the browser).
 
-**Interactive token pipeline diagram** — Figma → token export → Style Dictionary build → CSS/JS outputs → components → (Airtable governance, GitHub Actions), reflecting this repo's actual stages and tools (reference shape only: `learn.thedesignsystem.guide`'s automated-token-workflow diagram):
+**Interactive token pipeline diagram** — Figma → token export → Style Dictionary build → CSS/JS outputs → components → (Airtable governance, GitHub Actions), reflecting this repo's actual stages and tools (reference shape only: `learn.thedesignsystem.guide`'s automated-token-workflow diagram). Full spec + delegable task breakdown (frozen-snapshot DAG; server/DB/WebSocket runner blueprint evaluated and rejected): `.claude/handoff/pipeline-dashboard.handoff.md`:
 - [ ] Ships as a standalone route.
 - [ ] Embedded in `/dashboard` as well.
 - [ ] MVP is a clear static diagram; interactivity (hover for stage detail, click-through to the relevant script/ADR) is a stretch goal, not a blocker.
