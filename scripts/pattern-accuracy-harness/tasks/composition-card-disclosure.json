@@ -1,0 +1,15 @@
+{
+  "id": "composition-card-disclosure",
+  "kind": "composition",
+  "brief": "Compose a RelatedCourses section component (RelatedCourses.tsx, named export) using ONLY components imported from '@upskill/components'. It renders inside an existing page (no main landmark), but it is itself a section landmark. Contents: a Heading; a grid of CardVerticals built from a 6-item data array, showing only the first 3 until expanded; a show-more Button in the ghost variant, labelled 'Show more', with a chevron-down icon after the label that must render in the button's own text color; and below the grid one AccordionItem titled 'Why these recommendations?' whose open state the section holds in React state. Spacing must come from the layout components' token-based props — no hand-written CSS, inline spacing styles, or media queries.",
+  "gates": ["typecheck", "lint"],
+  "outputHint": ["RelatedCourses.tsx"],
+  "contextMetadata": ["Box", "Stack", "Inline", "Heading", "Text", "Button", "Icon", "CardVertical", "Accordion"],
+  "includeSchema": false,
+  "requiredPatterns": [
+    { "file": "RelatedCourses.tsx", "pattern": "onOpenChange", "reason": "canonical disclosure change-callback name" }
+  ],
+  "forbiddenPatterns": [
+    { "file": "RelatedCourses.tsx", "pattern": "\\bonToggle\\b|\\bonExpandedChange\\b", "reason": "non-canonical disclosure callback names" }
+  ]
+}

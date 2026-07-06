@@ -1,0 +1,21 @@
+{
+  "id": "component-select",
+  "kind": "component",
+  "brief": "Implement `Select` for the UpSkill design system: a labelled dropdown for choosing exactly one option from a predefined list, exported from Select/index.tsx. Requirements: a required `label` (with an option to hide it visually while keeping it accessible); `options` as an array of { value, label }; optional placeholder and error message; supports BOTH uncontrolled (default value) and controlled selected value, notifying the parent whenever the selection changes; the trigger shows a chevron Icon that inherits the trigger's current text color; spread remaining native attributes onto the root element, but consumers must never be able to pass the native change handler — make that a TypeScript error. Style with a co-located CSS module (Select/Select.module.css) referencing only design-token custom properties. Also produce Select/Select.metadata.json that validates against the provided component.schema.json, and a behavioral a11y test Select/Select.a11y.test.tsx (Vitest + Testing Library + vitest-axe, axe's color-contrast rule disabled).",
+  "gates": ["typecheck", "lint", "metadata:validate", "a11y:coverage"],
+  "outputHint": [
+    "Select/index.tsx",
+    "Select/Select.module.css",
+    "Select/Select.metadata.json",
+    "Select/Select.a11y.test.tsx"
+  ],
+  "contextMetadata": ["Icon", "Text", "DropdownMenu", "TextField"],
+  "includeSchema": true,
+  "requiredPatterns": [
+    { "file": "Select/index.tsx", "pattern": "onValueChange", "reason": "canonical controlled-selection change-callback name in this system" },
+    { "file": "Select/index.tsx", "pattern": "Omit<", "reason": "narrowed native-attribute type excluding the native change handler" }
+  ],
+  "forbiddenPatterns": [
+    { "file": "Select/index.tsx", "pattern": "onChange\\??:", "reason": "public onChange prop declaration — the system's Select excludes it via Omit and exposes onValueChange" }
+  ]
+}

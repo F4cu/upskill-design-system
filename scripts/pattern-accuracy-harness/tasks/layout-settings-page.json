@@ -1,0 +1,13 @@
+{
+  "id": "layout-settings-page",
+  "kind": "layout",
+  "brief": "Generate a user-settings page layout (SettingsPage.tsx, default export) using ONLY components imported from '@upskill/components'. Structure: a single page containing (1) a 'Profile' area with a Heading, an Avatar, and two TextFields (display name, email); (2) a 'Preferences' area with a Select for interface language whose chosen value is held in React state, and three Checkboxes for email notification options, each held in React state; (3) a 'Danger zone' area with a short explanatory body sentence and an outlined destructive Button. Use proper HTML landmarks throughout. All visible copy must render through the system's typography components; spacing must come from the layout components' token-based props — do not hand-write CSS, inline spacing styles, or media queries.",
+  "gates": ["typecheck", "lint", "layout:validate"],
+  "outputHint": ["SettingsPage.tsx"],
+  "contextMetadata": ["Box", "Stack", "Inline", "Heading", "Text", "TextField", "Select", "Checkbox", "Avatar", "Button"],
+  "includeSchema": false,
+  "requiredPatterns": [
+    { "file": "SettingsPage.tsx", "pattern": "onValueChange", "reason": "canonical Select change-callback name — required to hold the language in state" }
+  ],
+  "forbiddenPatterns": []
+}

@@ -1,0 +1,667 @@
+{
+  "architecturalStyle": "flat-props: no compound components, no createContext, no static sub-component assignment; all components are plain named exports in packages/components/src/components/<Name>/index.tsx",
+  "drift": [
+    {
+      "components": [
+        "Accordion",
+        "Checkbox",
+        "DropdownMenu",
+        "Select",
+        "TextField"
+      ],
+      "detail": "Accordion uses `onOpenChange`, Checkbox uses `onChange (native)`, DropdownMenu uses `onSelect`, Select uses `onValueChange`, TextField uses `onChange (native)` — different names for the same state-changed axis.",
+      "issue": "prop-name-mismatch",
+      "pattern": "change-callback"
+    },
+    {
+      "components": [
+        "DropdownMenu",
+        "Select"
+      ],
+      "detail": "DropdownMenu uses `selectedValue`, Select uses `value` — different names for the selected-value prop.",
+      "issue": "state-prop-name-mismatch",
+      "pattern": "controlled-selection"
+    },
+    {
+      "components": [
+        "Accordion"
+      ],
+      "detail": "Accordion JSX uses [Icon, Text] but metadata composition.composedOf declares [Icon].",
+      "issue": "composition-metadata-mismatch",
+      "pattern": "disclosure"
+    },
+    {
+      "components": [
+        "AppHeader"
+      ],
+      "detail": "AppHeader JSX uses [Avatar, DropdownMenu, Icon, TextField] but metadata composition.composedOf declares [Avatar, Icon, Text, TextField].",
+      "issue": "composition-metadata-mismatch",
+      "pattern": "navigation"
+    },
+    {
+      "components": [
+        "Badge"
+      ],
+      "detail": "Badge JSX uses [Text] but metadata composition.composedOf declares [].",
+      "issue": "composition-metadata-mismatch",
+      "pattern": "static-display"
+    },
+    {
+      "components": [
+        "Breadcrumb"
+      ],
+      "detail": "Breadcrumb JSX uses [Icon] but metadata composition.composedOf declares [Icon, Text].",
+      "issue": "composition-metadata-mismatch",
+      "pattern": "navigation"
+    },
+    {
+      "components": [
+        "Select"
+      ],
+      "detail": "Select JSX uses [DropdownMenu, Icon] but metadata composition.composedOf declares [Icon].",
+      "issue": "composition-metadata-mismatch",
+      "pattern": "controlled-selection"
+    },
+    {
+      "components": [
+        "TextField"
+      ],
+      "detail": "TextField JSX uses [Icon] but metadata composition.composedOf declares [].",
+      "issue": "composition-metadata-mismatch",
+      "pattern": "form-field"
+    }
+  ],
+  "generatedFrom": "0d8eee427158cb723fac430f216c3c72bf0af8a9",
+  "patterns": {
+    "action-trigger": {
+      "architecturalStyle": "flat-props",
+      "description": "A stateless clickable control (button or anchor) firing a native event.",
+      "implementedBy": [
+        {
+          "component": "Button",
+          "composition": [
+            "Icon"
+          ],
+          "maturity": "beta",
+          "stage": "in review",
+          "systemSpecificNotes": [
+            "Uses a native <button> element. The disabled prop sets the HTML disabled attribute, which natively prevents click events and removes the element from the tab order.",
+            "aria-label (set on icon-only buttons via shape to provide an accessible name; flows through ...rest)",
+            "disabled (native HTML attribute via disabled prop, not aria-disabled)"
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-label": "{direction === 'left' ? 'Previous' : 'Next'}",
+              "element": "button"
+            }
+          ],
+          "component": "ButtonArrow",
+          "composition": [
+            "Icon"
+          ],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS.",
+            "aria-label — automatically set to 'Previous' or 'Next' from the direction prop; override via rest props for more specific context"
+          ]
+        },
+        {
+          "component": "TextLink",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "Renders a native <a> element. href is always required — omitting it removes the link from the tab order. Do not nest interactive children (buttons, inputs, other links) inside TextLink.",
+            "aria-label — use when the link text alone is ambiguous (e.g. 'Read more' repeated multiple times on a page)"
+          ]
+        }
+      ]
+    },
+    "content-stepper": {
+      "architecturalStyle": "hook",
+      "description": "Hook-managed step-through state for slider/carousel UIs; the caller owns the DOM contract.",
+      "implementedBy": [
+        {
+          "consumers": [
+            "apps/showcase/src/pages/CourseOverview.tsx",
+            "packages/components/src/stories/Carousel.stories.tsx"
+          ],
+          "hook": "useCarousel",
+          "params": [
+            "itemCount: number",
+            "visibleCount: number"
+          ],
+          "returns": [
+            "offset",
+            "canPrev",
+            "canNext",
+            "prev",
+            "next",
+            "reset"
+          ]
+        },
+        {
+          "consumers": [
+            "packages/components/src/stories/CourseSlider.stories.tsx"
+          ],
+          "hook": "useSlider",
+          "params": [
+            "total: number"
+          ],
+          "returns": [
+            "currentIndex",
+            "total",
+            "goNext",
+            "goPrev",
+            "isFirst",
+            "isLast"
+          ]
+        }
+      ]
+    },
+    "controlled-selection": {
+      "architecturalStyle": "flat-props",
+      "description": "A trigger or list managing a selected value among options (combobox/listbox/menu roles, aria-selected).",
+      "implementedBy": [
+        {
+          "ariaContract": [
+            {
+              "element": "div",
+              "id": "{id}",
+              "role": "{listRole}"
+            },
+            {
+              "aria-selected": "{listRole === 'listbox' ? item.value === selectedValue : undefined}",
+              "element": "div",
+              "role": "{listRole === 'listbox' ? 'option' : 'menuitem'}"
+            }
+          ],
+          "changeCallback": "onSelect",
+          "component": "DropdownMenu",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "state": {
+            "controlled": "always",
+            "props": [
+              "onSelect",
+              "selectedValue"
+            ]
+          },
+          "systemSpecificNotes": [
+            "role (panel: menu | listbox)",
+            "role (items: menuitem | option)",
+            "aria-selected (option items when listRole=listbox)"
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-controls": "{listboxId}",
+              "aria-describedby": "{error ? errorId : undefined}",
+              "aria-expanded": "{open}",
+              "aria-haspopup": "listbox",
+              "aria-invalid": "{error ? true : undefined}",
+              "aria-required": "{required}",
+              "element": "button",
+              "id": "{id}",
+              "role": "combobox"
+            },
+            {
+              "aria-hidden": "true",
+              "element": "span"
+            },
+            {
+              "aria-hidden": "true",
+              "element": "select"
+            },
+            {
+              "element": "span",
+              "id": "{errorId}",
+              "role": "alert"
+            }
+          ],
+          "changeCallback": "onValueChange",
+          "component": "Select",
+          "composition": [
+            "DropdownMenu",
+            "Icon"
+          ],
+          "idsFromUseId": [
+            "errorId",
+            "generatedId",
+            "id",
+            "listboxId"
+          ],
+          "maturity": "beta",
+          "stage": "in review",
+          "state": {
+            "controlled": "optional",
+            "props": [
+              "value",
+              "defaultValue",
+              "onValueChange"
+            ]
+          },
+          "systemSpecificNotes": [
+            "Implements the WAI-ARIA combobox-with-listbox-popup pattern, so focus management is part of the contract: when the dropdown opens, focus must move into the listbox to the selected option (or the first option when none is selected); when it closes via Escape, selection, or click-outside, focus returns to the trigger button. Options are reachable with Arrow Up/Down inside the open listbox, not Tab — listbox options use tabIndex=-1. An implementation that leaves focus on the trigger after opening, or makes options Tab-navigable, is incorrect.",
+            "aria-haspopup=\"listbox\" (declares the popup type — always present)",
+            "aria-expanded (true when dropdown is open, false when closed)",
+            "aria-controls (points to the listbox element id)",
+            "aria-describedby (points to error message element when error prop is set)",
+            "aria-invalid (set to true when error prop is set)",
+            "aria-required (mirrors the required prop; omitted when not set)"
+          ]
+        }
+      ]
+    },
+    "disclosure": {
+      "architecturalStyle": "flat-props",
+      "description": "A trigger toggling the visibility of an associated panel (aria-expanded + aria-controls, boolean open state).",
+      "implementedBy": [
+        {
+          "ariaContract": [
+            {
+              "aria-controls": "{panelId}",
+              "aria-expanded": "{isOpen}",
+              "element": "button",
+              "id": "{triggerId}"
+            },
+            {
+              "aria-hidden": "true",
+              "element": "Icon"
+            },
+            {
+              "aria-hidden": "{!isOpen ? true : undefined}",
+              "aria-labelledby": "{triggerId}",
+              "element": "div",
+              "id": "{panelId}",
+              "role": "region"
+            }
+          ],
+          "changeCallback": "onOpenChange",
+          "component": "Accordion",
+          "composition": [
+            "Icon",
+            "Text"
+          ],
+          "idsFromUseId": [
+            "panelId",
+            "triggerId"
+          ],
+          "maturity": "beta",
+          "stage": "in review",
+          "state": {
+            "controlled": "optional",
+            "props": [
+              "open",
+              "defaultOpen",
+              "onOpenChange"
+            ]
+          },
+          "systemSpecificNotes": [
+            "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly.",
+            "aria-expanded (true|false on the trigger button)",
+            "aria-controls (trigger → panel id) — the panel element must always be present in the DOM; use hidden={!isOpen} rather than conditional rendering so this id always resolves",
+            "aria-labelledby (panel → trigger id)",
+            "role='region' (on the panel)"
+          ]
+        }
+      ]
+    },
+    "form-field": {
+      "architecturalStyle": "flat-props",
+      "description": "A labeled native form control (label[htmlFor] + input/select), errors via role=alert.",
+      "implementedBy": [
+        {
+          "changeCallback": "onChange (native)",
+          "component": "Checkbox",
+          "composition": [],
+          "idsFromUseId": [
+            "generatedId",
+            "id"
+          ],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "aria-checked (managed natively by the browser)",
+            "aria-disabled (managed natively via disabled prop)"
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-describedby": "{error ? errorId : undefined}",
+              "aria-invalid": "{error ? true : undefined}",
+              "element": "input",
+              "id": "{id}"
+            },
+            {
+              "element": "span",
+              "id": "{errorId}",
+              "role": "alert"
+            }
+          ],
+          "changeCallback": "onChange (native)",
+          "component": "TextField",
+          "composition": [
+            "Icon"
+          ],
+          "idsFromUseId": [
+            "errorId",
+            "generatedId",
+            "id"
+          ],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "aria-describedby (points to error message element when error prop is set)",
+            "aria-invalid (set to true when error prop is set)"
+          ]
+        }
+      ]
+    },
+    "layout-primitive": {
+      "architecturalStyle": "flat-props",
+      "description": "A structural container with no interaction or ARIA surface of its own.",
+      "implementedBy": [
+        {
+          "component": "Box",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established"
+        },
+        {
+          "component": "Inline",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established"
+        },
+        {
+          "component": "ScrollArea",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "The native scrollbar is hidden visually but scroll behaviour is fully intact. Keyboard users can scroll via arrow keys once the container is focused. If the scroll region contains important content, consider adding tabindex=0 so keyboard users can reach and scroll it."
+          ]
+        },
+        {
+          "component": "Stack",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established"
+        }
+      ]
+    },
+    "navigation": {
+      "architecturalStyle": "flat-props",
+      "description": "A <nav> landmark containing links, with aria-current marking the active item.",
+      "implementedBy": [
+        {
+          "ariaContract": [
+            {
+              "aria-hidden": "true",
+              "element": "img"
+            },
+            {
+              "aria-label": "Main navigation",
+              "element": "nav"
+            },
+            {
+              "aria-current": "{item.active ? 'page' : undefined}",
+              "element": "a"
+            },
+            {
+              "aria-expanded": "{userMenuItems?.length ? menuOpen : undefined}",
+              "aria-haspopup": "{userMenuItems?.length ? 'menu' : undefined}",
+              "element": "button"
+            },
+            {
+              "aria-label": "Open menu",
+              "element": "button"
+            }
+          ],
+          "component": "AppHeader",
+          "composition": [
+            "Avatar",
+            "DropdownMenu",
+            "Icon",
+            "TextField"
+          ],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "aria-label=\"Main navigation\" on the <nav> element",
+            "aria-current=\"page\" on the active nav link"
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-label": "Breadcrumb",
+              "element": "nav"
+            },
+            {
+              "aria-hidden": "true",
+              "element": "Icon"
+            },
+            {
+              "aria-current": "{isLast ? 'page' : undefined}",
+              "element": "span"
+            }
+          ],
+          "component": "Breadcrumb",
+          "composition": [
+            "Icon"
+          ],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "aria-label=\"Breadcrumb\" on the <nav> element",
+            "aria-current=\"page\" on the last item"
+          ]
+        }
+      ]
+    },
+    "static-display": {
+      "architecturalStyle": "flat-props",
+      "description": "A presentational component rendering provided content, no managed state.",
+      "implementedBy": [
+        {
+          "component": "Avatar",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "alt (required — pass the person's full name, or empty string when adjacent text already identifies them)"
+          ]
+        },
+        {
+          "component": "Badge",
+          "composition": [
+            "Text"
+          ],
+          "maturity": "beta",
+          "stage": "in review",
+          "systemSpecificNotes": [
+            "Renders a plain <span> with visible text — no ARIA role needed; the label is read inline as text content. Not focusable and not interactive. If the badge conveys meaning beyond the adjacent content (e.g. a status not otherwise stated), make the label text explicit rather than relying on colour alone."
+          ]
+        },
+        {
+          "component": "Card",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "aria-label or aria-labelledby (recommended when multiple Cards appear on the same page so each region is distinguishable)"
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-hidden": "true",
+              "element": "span"
+            }
+          ],
+          "component": "CardHorizontal",
+          "composition": [
+            "Heading",
+            "Icon",
+            "Image",
+            "ProgressBar",
+            "Text"
+          ],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)"
+          ]
+        },
+        {
+          "component": "CardVertical",
+          "composition": [
+            "Heading",
+            "Icon",
+            "Image",
+            "ProgressBar",
+            "Text"
+          ],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "thumbnailAlt — pass a meaningful description of the course image, or empty string if the title already provides sufficient context."
+          ]
+        },
+        {
+          "component": "Divider",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established"
+        },
+        {
+          "component": "Heading",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "Always set as to the correct heading level for document outline. Size and as are deliberately decoupled so visual scale never forces a skip in heading levels."
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-hidden": "{label ? undefined : true}",
+              "aria-label": "{label}",
+              "element": "svg",
+              "role": "{label ? 'img' : undefined}"
+            }
+          ],
+          "component": "Icon",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "in review",
+          "systemSpecificNotes": [
+            "Icons are decorative by default (aria-hidden=true). When an Icon is the only content conveying meaning, pass the label prop to add aria-label and role=img.",
+            "aria-hidden (default true)",
+            "aria-label (when label prop provided)",
+            "role=img (when label prop provided)"
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-hidden": "true",
+              "element": "span"
+            }
+          ],
+          "component": "Image",
+          "composition": [
+            "Icon"
+          ],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "alt — required when src is provided; pass empty string if the surrounding context (e.g. card title) already describes the image."
+          ]
+        },
+        {
+          "component": "Text",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "Use the as prop to select a semantically meaningful element when needed (e.g. as=span for inline text, as=p for block paragraphs — p is the default)."
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-hidden": "true",
+              "element": "div"
+            }
+          ],
+          "component": "VideoFrame",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "VideoFrame itself is not interactive. The parent should handle click and keyboard events to initiate playback, using an appropriate role (e.g. button) on the wrapper.",
+            "alt — pass a meaningful description of the video content; the play overlay is aria-hidden"
+          ]
+        }
+      ]
+    },
+    "status-indicator": {
+      "architecturalStyle": "flat-props",
+      "description": "A read-only value display using ARIA value semantics.",
+      "implementedBy": [
+        {
+          "ariaContract": [
+            {
+              "aria-valuemax": "{100}",
+              "aria-valuemin": "{0}",
+              "aria-valuenow": "{clamped}",
+              "element": "div",
+              "role": "progressbar"
+            }
+          ],
+          "component": "ProgressBar",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "aria-valuenow (set to the clamped value)",
+            "aria-valuemin=0",
+            "aria-valuemax=100"
+          ]
+        }
+      ]
+    },
+    "toggle-button": {
+      "architecturalStyle": "flat-props",
+      "description": "A pressable button holding a boolean pressed state (aria-pressed).",
+      "implementedBy": [
+        {
+          "ariaContract": [
+            {
+              "aria-pressed": "{selected}",
+              "element": "button"
+            }
+          ],
+          "component": "Chip",
+          "composition": [],
+          "maturity": "beta",
+          "stage": "established",
+          "systemSpecificNotes": [
+            "Uses a native <button> element with aria-pressed. The caller is responsible for managing the selected state and grouping chips in a meaningful container (e.g. role=group with aria-label).",
+            "aria-pressed — reflects the selected state so screen readers announce active/inactive"
+          ]
+        }
+      ]
+    }
+  }
+}
