@@ -3,100 +3,100 @@
     "brand": {
       "1": {
         "$type": "color",
-        "$value": "{color.teal.1}"
+        "$value": "{color.cyan.1}"
       },
       "2": {
         "$type": "color",
-        "$value": "{color.teal.2}"
+        "$value": "{color.cyan.2}"
       },
       "3": {
         "$type": "color",
-        "$value": "{color.teal.3}"
+        "$value": "{color.cyan.3}"
       },
       "4": {
         "$type": "color",
-        "$value": "{color.teal.4}"
+        "$value": "{color.cyan.4}"
       },
       "5": {
         "$type": "color",
-        "$value": "{color.teal.5}"
+        "$value": "{color.cyan.5}"
       },
       "6": {
         "$type": "color",
-        "$value": "{color.teal.6}"
+        "$value": "{color.cyan.6}"
       },
       "7": {
         "$type": "color",
-        "$value": "{color.teal.7}"
+        "$value": "{color.cyan.7}"
       },
       "8": {
         "$type": "color",
-        "$value": "{color.teal.8}"
+        "$value": "{color.cyan.8}"
       },
       "9": {
         "$type": "color",
-        "$value": "{color.teal.9}"
+        "$value": "{color.cyan.9}"
       },
       "10": {
         "$type": "color",
-        "$value": "{color.teal.10}"
+        "$value": "{color.cyan.10}"
       },
       "11": {
         "$type": "color",
-        "$value": "{color.teal.11}"
+        "$value": "{color.cyan.11}"
       },
       "12": {
         "$type": "color",
-        "$value": "{color.teal.12}"
+        "$value": "{color.cyan.12}"
       },
       "dark": {
         "1": {
           "$type": "color",
-          "$value": "{color.teal.dark.1}"
+          "$value": "{color.cyan.dark.1}"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.teal.dark.2}"
+          "$value": "{color.cyan.dark.2}"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.teal.dark.3}"
+          "$value": "{color.cyan.dark.3}"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.teal.dark.4}"
+          "$value": "{color.cyan.dark.4}"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.teal.dark.5}"
+          "$value": "{color.cyan.dark.5}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.teal.dark.6}"
+          "$value": "{color.cyan.dark.6}"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.teal.dark.7}"
+          "$value": "{color.cyan.dark.7}"
         },
         "8": {
           "$type": "color",
-          "$value": "{color.teal.dark.8}"
+          "$value": "{color.cyan.dark.8}"
         },
         "9": {
           "$type": "color",
-          "$value": "{color.teal.dark.9}"
+          "$value": "{color.cyan.dark.9}"
         },
         "10": {
           "$type": "color",
-          "$value": "{color.teal.dark.10}"
+          "$value": "{color.cyan.dark.10}"
         },
         "11": {
           "$type": "color",
-          "$value": "{color.teal.dark.11}"
+          "$value": "{color.cyan.dark.11}"
         },
         "12": {
           "$type": "color",
-          "$value": "{color.teal.dark.12}"
+          "$value": "{color.cyan.dark.12}"
         }
       },
       "default": {
