@@ -219,3 +219,19 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [ ] Issue #23 — horizon's `border.selected` (pinned to shared step 9 across brands) falls under WCAG AA against dark `container.page`/`input` surfaces (waived; brands swap hues not steps, so this needs either a horizon-specific step exception decision or accepting the waiver long-term).
 
 **Exit condition (met for the build):** two brands render correctly in both themes via `data-brand`, shape and no-inlined/no-dangling gates pass, `tokens-check.yml` covers both brands, ADR-012 + CLAUDE.md document the layer. **Open:** three tracked issues (#21, #22, #23) from contrast/raw-ramp triage — none blocking, all filed for follow-up.
+
+---
+
+## Pivot — Cross-component pattern schema (Phase 14)
+
+> Per-component metadata captures each component's contract, but nothing captured the *cross-component* view: which components implement the same interaction pattern, the canonical prop shape, and where implementations drift. This pivot adds that aggregate as a frozen-snapshot file — deterministic AST + metadata scan, no retrieval, no embeddings, no service — and, before shipping any consumer, **measures** whether it actually improves generation with a before/after harness. The honest-outcome rule was pre-registered: no measured delta, no ship.
+
+## Phase 14 — Pattern Aggregation & Accuracy Harness *(done)*
+
+- [x] `scripts/generate-pattern-schema.js` (`npm run patterns:generate`) — deterministic scanner over component JSX + metadata + hooks; emits `.claude/component-patterns.json` (pattern buckets, per-pattern state props, ARIA contracts derived from the JSX itself, composition surfaces, and a `drift` array surfacing prop-name/composition inconsistencies). Added to the frozen-memory snapshot table in CLAUDE.md.
+- [x] `scripts/pattern-accuracy-harness/` — 7 pre-registered tasks × 2 arms (A: per-component metadata only; B: + the pattern file), generated via headless `claude -p` in a clean cwd, scored purely by the existing deterministic gates + a grep/AST trap checklist. Full-matrix result: overall 37 → 31 violations (16%), but split cleanly by kind — **composition 7 → 2, layout 9 → 5, component scaffolds 21 → 24 (regression)**. Results committed in `scripts/pattern-accuracy-harness/results.md`.
+- [x] **ADR-013** — decision gated on the harness: the pattern file is a consumer input for **`/layout-generation` only** (layout + composition briefs); explicitly **not** injected into `/component-scaffold`, where it measurably hurt. Revisiting the scaffold arm requires rerunning the harness. Durable content folded in from the scratch handoff file, which was deleted.
+- [x] CI staleness check in `components-check.yml` — regenerate + `git diff --exit-code` (ignoring the `generatedFrom` sha line) on every PR touching components; check-and-fail per the repo's CI convention.
+- [x] Producer-side wiring — `/add-component` (Stage 2) and `/review-component` (fix + PR) gates run `patterns:generate` and commit the refreshed file; a new `drift` entry introduced by a new component is treated as a Stage 1 fix (rename to the canonical prop), not shipped.
+
+**Exit condition (met):** the aggregate regenerates deterministically from committed sources; the harness ran the full matrix and the ship decision followed the measured delta (layout/composition consumer only); CI fails on a stale committed copy; both component workflows regenerate the file as part of their gates.
