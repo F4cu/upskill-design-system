@@ -55,9 +55,11 @@ The subagent's final message back to the main session is a short summary + the v
 
 Read `.claude/handoff/<Name>.review.json`. Apply every `high`/`medium` finding and any lint error; for `low` findings, apply or record why not. Re-run the gate:
 ```
-npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test
+npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
 ```
 If the gate fails after applying fixes, fix the failure and re-run before opening the PR.
+
+`patterns:generate` refreshes `.claude/component-patterns.json` (ADR-013); commit it with the component changes if it changed — `components-check.yml` fails the PR on a stale copy.
 
 **Branch behavior:**
 - **From `/add-component`** (new component): create branch `component/<kebab-name>` (e.g. `component/accordion`) off the current base, then commit all component files and open the PR.

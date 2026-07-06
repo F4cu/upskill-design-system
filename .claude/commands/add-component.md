@@ -35,9 +35,11 @@ Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, 
 ### Stage 2 · Gate (script — fail-fast)
 Run, in order:
 ```
-npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test
+npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
 ```
 If any step fails, go back to Stage 1, fix the cause the error names, and re-run the gate. Do not proceed until all pass.
+
+`patterns:generate` refreshes `.claude/component-patterns.json` (the cross-component pattern aggregate, ADR-013). The regenerated file **must be committed alongside the component** — `components-check.yml` regenerates and diffs it on every PR, so a stale committed copy fails CI. If the new component introduces a `drift` entry (e.g. a prop name that differs from the pattern's canonical `state.props`), treat that as a Stage 1 fix: rename the prop to match the pattern rather than shipping new drift.
 
 `a11y:coverage` (ADR-008) enforces the **Tier-2 behavioral a11y** rule: if the component is *interactive* — `component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a non-trivial keyboard contract (anything beyond plain Tab / native browser behaviour) — it **must** ship a co-located `<Name>.a11y.test.tsx` asserting the dynamic contract (state attributes toggling, focus, keyboard) plus an axe scan. Non-interactive components (display/landmark, e.g. Badge) need none — the gate is a no-op for them. Do **not** add a new interactive component to `scripts/a11y-backlog.json`; that ledger only waives pre-existing components pending backfill. Write the test in Stage 1 alongside the component, model it on `Button/Button.a11y.test.tsx`, and disable axe's `color-contrast` rule (jsdom can't judge it).
 
