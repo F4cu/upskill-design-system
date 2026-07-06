@@ -19,3 +19,4 @@
   - [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md)
   - [010 — Two-axis component lifecycle](decisions/010-component-lifecycle-two-axes.md)
   - [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md)
+  - [012 — Brand layer for multi-brand tokens](decisions/012-brand-layer-multi-brand.md)

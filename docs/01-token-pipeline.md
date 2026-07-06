@@ -2,18 +2,19 @@
 
 ## What it is
 
-Design tokens are the system's single source of design decisions — colors, spacing, typography, radii — authored as W3C DTCG JSON in `packages/tokens/src/`, resolved through a fixed three-layer model, and built by Style Dictionary into the CSS custom properties and JS/TS constants that components actually consume. Figma holds a mirror of these tokens as variables, but the committed JSON is the source of truth ([ADR-002](decisions/002-three-layer-token-model.md), 2026-06-17 amendment).
+Design tokens are the system's single source of design decisions — colors, spacing, typography, radii — authored as W3C DTCG JSON in `packages/tokens/src/`, resolved through a fixed four-layer model, and built by Style Dictionary into the CSS custom properties and JS/TS constants that components actually consume. Figma holds a mirror of these tokens as variables, but the committed JSON is the source of truth ([ADR-002](decisions/002-three-layer-token-model.md), 2026-06-17 amendment).
 
 ## Why it's built this way
 
-### Three layers, not one flat file
+### Four layers, not one flat file
 
-[ADR-002](decisions/002-three-layer-token-model.md) records the forcing constraints: a flat token file cannot simultaneously (1) hold raw exported values cleanly, (2) let the same semantic name resolve differently in light and dark mode, and (3) let spacing/typography differ per breakpoint. A two-layer model (primitives + semantic) handles color modes but "conflates responsive layout decisions with colour semantics." So the model is three ordered layers — later layers override earlier ones, and aliases may only point to earlier layers:
+[ADR-002](decisions/002-three-layer-token-model.md) records the forcing constraints: a flat token file cannot simultaneously (1) hold raw exported values cleanly, (2) let the same semantic name resolve differently in light and dark mode, and (3) let spacing/typography differ per breakpoint. A two-layer model (primitives + semantic) handles color modes but "conflates responsive layout decisions with colour semantics." So the model was originally three ordered layers; a fourth — brand — was inserted between primitives and theme once the system needed to support more than one brand identity ([ADR-012](decisions/012-brand-layer-multi-brand.md), 2026-07-06). Later layers override earlier ones, and aliases may only point to earlier layers:
 
 | Layer | Files | Responsibility |
 |---|---|---|
 | **Primitives** | `primitives.json` | Raw, context-free values. Single source of truth. Hand-edited via PR. |
-| **Theme** | `theme/light.json`, `theme/dark.json` | Semantic color aliases — maps intent (`color.background.brand`) to a primitive (`{color.terracotta.9}`). Switching theme files switches the entire color mode. |
+| **Brand** | `brands/<brand>.json` (`upskill`, `horizon`) | Per-brand color ramp mappings (`brand`/`accent`/`neutral`/`surface` slots), `font.family.*`, and literal `border-radius.*`. |
+| **Theme** | `theme/light.json`, `theme/dark.json` | Brand-agnostic semantic color aliases — maps intent (`color.background.brand`) to a brand slot or functional primitive. Switching theme files switches the entire color mode; switching a `data-brand` attribute switches the brand, independently.  |
 | **Device** | `device/desktop.json`, `device/tablet.json`, `device/mobile.json` | Responsive spacing, grid, typography per breakpoint. Desktop ≥ 1440px, tablet ≥ 768px, mobile < 768px. |
 
 ### Code is the source of truth — a reversal forced by plan limits
@@ -27,6 +28,12 @@ ADR-002 originally declared primitives Figma-owned ("never hand-edited"). The 20
 ### Representational divergence is not drift
 
 The second ADR-002 amendment (2026-06-22) covers a subtler case: Figma cannot store **unitless values**. Line-heights are authored in code as unitless ratios (`1`, `1.25`, `1.4`, `1.5`, `1.75`) so they adapt to any font size; Figma must hold them as fixed px values. This permanent difference is an accepted *representational divergence*, not drift: both Figma moments exclude it from their diffs, `figma-variables.json` tags or omits it, and Figma's fixed value never flows back into `primitives.json`.
+
+### One brand, then two
+
+For its first phase this was a single-brand system — theme files referenced primitive ramps directly (`{color.terracotta.9}`), so a second brand would have meant forking every theme file. [ADR-012](decisions/012-brand-layer-multi-brand.md) inserted the brand layer instead: theme files now reference brand slots (`{color.brand.9}`), and a brand file maps those slots to whichever hue it wants. `upskill` (the default) maps `brand → terracotta`, `accent → teal`, `neutral → sand`, `surface → gold`; the second brand, `horizon`, maps `brand → cyan`, `accent → amber`, `neutral`/`surface → grey`, with Playfair Display headlines and sharper radii. Runtime selection is a `data-brand` attribute, mirroring `data-theme`.
+
+Two rules keep this tractable for a one-maintainer system: **a brand slot needs a full light + dark ramp** (ruling out hues authored with only one, historically `cyan` — since patched to qualify, see below), and **brands swap hues, not steps** — a shared semantic like `border.selected` always sits at the same ramp step across every brand, so a brand that fails contrast at that step gets a different hue mapping or a tracked waiver, never a per-brand override of the shared step.
 
 ### Naming decisions with teeth
 
@@ -45,9 +52,9 @@ Every token carries `$type` and `$value`. Concrete values and aliases look like 
 { "$type": "color", "$value": "{color.terracotta.9}" }
 ```
 
-No `$extensions` blocks are ever committed — they are stripped when reconciling anything brought over from Figma. Each color hue (`terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`) has three sub-scales that must never be mixed on one token: `1–12` (light mode), `dark-1`–`dark-12` (dark mode), `alpha-1`–`alpha-12` (transparent variants).
+No `$extensions` blocks are ever committed — they are stripped when reconciling anything brought over from Figma. Each color hue (`terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`) has three sub-scales that must never be mixed on one token: `1–12` (light mode), `dark-1`–`dark-12` (dark mode), `alpha-1`–`alpha-12` (transparent variants). `cyan` originally shipped without a dark ramp; its light ramp was replaced and a dark ramp added (2026-07-06, a custom Radix-generated scale) specifically so it could qualify as a brand hue — every other hue's ramp is original.
 
-`npm run tokens:build` runs Style Dictionary with the custom transforms defined in `packages/tokens/style-dictionary.config.js`: px→rem, font-weight string→numeric, the (historical) `$root` rename, and a media-query combiner. The device-layer output strategy comes straight from ADR-002: desktop tokens emit to `:root` as the baseline, tablet and mobile override *the same custom property names* inside `@media` blocks — one CSS file, no per-breakpoint imports:
+`npm run tokens:build` runs Style Dictionary with the custom transforms defined in `packages/tokens/build.js`: px→rem, font-weight string→numeric, the (historical) `$root` rename, and a media-query combiner. Brand files build to `brand.<brand>.css`, and theme files build with `outputReferences: true` so every theme token emits as a `var()` chain against brand slots rather than a resolved value — one `theme.<mode>.css` serves every brand ([ADR-012](decisions/012-brand-layer-multi-brand.md)). The device-layer output strategy comes straight from ADR-002: desktop tokens emit to `:root` as the baseline, tablet and mobile override *the same custom property names* inside `@media` blocks — one CSS file, no per-breakpoint imports:
 
 ```css
 :root {
@@ -65,12 +72,13 @@ No `$extensions` blocks are ever committed — they are stripped when reconcilin
 
 ```mermaid
 flowchart LR
-    F[Figma variables<br/>downstream mirror] -.->|proposals only,<br/>via /figma-variable-audit| P
-    P[primitives.json] --> T[theme/light.json<br/>theme/dark.json]
+    F[Figma variables<br/>downstream mirror, default brand only] -.->|proposals only,<br/>via /figma-variable-audit| P
+    P[primitives.json] --> B[brands/upskill.json<br/>brands/horizon.json]
+    B --> T[theme/light.json<br/>theme/dark.json]
     P --> D[device/desktop · tablet · mobile]
     T --> SD[Style Dictionary build<br/>custom transforms]
     D --> SD
-    SD --> CSS[CSS custom properties<br/>:root + media blocks]
+    SD --> CSS[CSS custom properties<br/>:root + data-brand + media blocks]
     SD --> JS[JS/TS constants]
     CSS --> C[Components<br/>CSS Modules, var--token only]
     JS --> C
@@ -79,6 +87,6 @@ flowchart LR
 
 ## Related
 
-- ADRs: [002 — Three-layer token model](decisions/002-three-layer-token-model.md) (+ two amendments), [003 — `$root` convention (superseded)](decisions/003-root-token-convention.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md)
+- ADRs: [002 — Three-layer token model](decisions/002-three-layer-token-model.md) (+ two amendments), [003 — `$root` convention (superseded)](decisions/003-root-token-convention.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [012 — Brand layer](decisions/012-brand-layer-multi-brand.md)
 - Commands: `/tokens-author`, `/figma-variable-audit`, `/figma-variable-push` (all in `.claude/commands/`)
-- Config: `packages/tokens/style-dictionary.config.js` · Scripts: `npm run tokens:build`, `npm run tokens:usage`, `npm run tokens:diff` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Config: `packages/tokens/build.js` · Scripts: `npm run tokens:build`, `npm run tokens:usage`, `npm run tokens:diff`, `npm run tokens:contrast-check` — see the [npm scripts reference](07-npm-scripts-reference.md)
