@@ -1,0 +1,53 @@
+{
+  "capturedAt": "2026-07-07T12:40:44.649Z",
+  "workflows": {
+    "tokens-check": {
+      "conclusion": "success",
+      "updatedAt": "2026-07-07T09:55:14Z",
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/actions/runs/28857519475"
+    },
+    "components-check": {
+      "conclusion": "success",
+      "updatedAt": "2026-07-07T12:37:24Z",
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/actions/runs/28866616748"
+    },
+    "sync-tokens": {
+      "conclusion": "success",
+      "updatedAt": "2026-07-07T09:55:15Z",
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/actions/runs/28857519505"
+    }
+  },
+  "issues": [
+    {
+      "number": 29,
+      "title": ".claude/commands/figma-variable-push.md: drift diff needs value-based resolution + a confirmed-drift apply step",
+      "labels": [
+        "documentation",
+        "enhancement"
+      ],
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/issues/29"
+    },
+    {
+      "number": 28,
+      "title": "components: Select selectedLabel and error strings render raw, bypassing the <Text>/<Heading> typography rule",
+      "labels": [
+        "bug"
+      ],
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/issues/28"
+    },
+    {
+      "number": 26,
+      "title": "tokens: ProgressBar fill contrast fails WCAG 1.4.11 across all brand/theme combos",
+      "labels": [
+        "bug"
+      ],
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/issues/26"
+    },
+    {
+      "number": 24,
+      "title": "Design decision needed: background.button.default/hover use light ramp in dark theme",
+      "labels": [],
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/issues/24"
+    }
+  ]
+}

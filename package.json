@@ -30,6 +30,7 @@
     "airtable:sync:all": "npm run airtable:push:primitives && npm run airtable:push:semantic && npm run airtable:push:device && npm run airtable:sync:components",
     "airtable:setup": "node scripts/airtable-setup-governance.js",
     "airtable:pull:governance": "node scripts/airtable-pull.js",
+    "pipeline:status": "node scripts/pipeline-status.js",
     "tokens:usage": "node scripts/token-usage.js",
     "tokens:diff": "node scripts/token-diff.js",
     "tokens:contrast-check": "node scripts/token-contrast-check.js",

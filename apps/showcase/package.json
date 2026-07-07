@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/copy-pipeline-data.js",
     "dev": "vite",
+    "prebuild": "node scripts/copy-pipeline-data.js",
     "build": "tsc -p tsconfig.json && vite build",
     "preview": "vite preview"
   },

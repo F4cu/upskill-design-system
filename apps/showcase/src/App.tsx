@@ -3,6 +3,7 @@ import Homepage from './pages/Homepage'
 import CourseOverview from './pages/CourseOverview'
 import UserSettings from './pages/UserSettings'
 import Dashboard from './pages/Dashboard'
+import Pipeline from './pages/Pipeline'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Homepage /> },
@@ -10,4 +11,5 @@ export const router = createBrowserRouter([
   { path: '/showcase/course', element: <CourseOverview /> },
   { path: '/showcase/settings', element: <UserSettings /> },
   { path: '/dashboard', element: <Dashboard /> },
+  { path: '/pipeline', element: <Pipeline /> },
 ])

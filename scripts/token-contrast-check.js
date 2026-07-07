@@ -184,6 +184,18 @@ const PAIRS = [
   [I("feedback-error"), BG("feedback-error")],
   [I("feedback-success"), BG("feedback-success")],
   [I("feedback-warning"), BG("feedback-warning")],
+
+  // SplitChart (apps/showcase/src/pipeline/SplitChart.tsx, T5 dashboard
+  // chart primitive) — segment fills and legend swatches always render
+  // inside a Card, whose surface is background.container.elevated. These
+  // are graphical marks (WCAG 1.4.11, 3:1), not text, so background-rooted
+  // foregrounds get the "icon" role override to apply the 3:1 threshold.
+  [I("feedback-success"), BG("container-elevated")],
+  [I("feedback-warning"), BG("container-elevated")],
+  [I("feedback-error"), BG("container-elevated")],
+  [BG("brand"), BG("container-elevated"), "icon"],
+  [I("subtle"), BG("container-elevated")],
+  [BG("media-strong"), BG("container-elevated"), "icon"],
 ];
 
 function roleOf(varName) {

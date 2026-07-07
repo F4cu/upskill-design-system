@@ -1,0 +1,101 @@
+.splitChart {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-stack-sm);
+}
+
+.barWrap {
+  width: 100%;
+  height: 12px;
+  border-radius: var(--ds-border-radius-full);
+  overflow: hidden;
+}
+
+.barSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.donutWrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.donutSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.donutCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--ds-space-stack-xs);
+}
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-stack-xs);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-sm);
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  border-radius: var(--ds-border-radius-xs);
+}
+
+.toneSuccess {
+  fill: var(--ds-color-icon-feedback-success);
+  stroke: var(--ds-color-icon-feedback-success);
+  background-color: var(--ds-color-icon-feedback-success);
+}
+
+.toneWarning {
+  fill: var(--ds-color-icon-feedback-warning);
+  stroke: var(--ds-color-icon-feedback-warning);
+  background-color: var(--ds-color-icon-feedback-warning);
+}
+
+.toneDanger {
+  fill: var(--ds-color-icon-feedback-error);
+  stroke: var(--ds-color-icon-feedback-error);
+  background-color: var(--ds-color-icon-feedback-error);
+}
+
+.toneBrand {
+  fill: var(--ds-color-background-brand);
+  stroke: var(--ds-color-background-brand);
+  background-color: var(--ds-color-background-brand);
+}
+
+.toneNeutral {
+  fill: var(--ds-color-icon-subtle);
+  stroke: var(--ds-color-icon-subtle);
+  background-color: var(--ds-color-icon-subtle);
+}
+
+.toneNeutralFaint {
+  fill: var(--ds-color-background-media-strong);
+  stroke: var(--ds-color-background-media-strong);
+  background-color: var(--ds-color-background-media-strong);
+}

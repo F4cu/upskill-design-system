@@ -30,6 +30,16 @@ const FIXED_SET = new Set([
   'Fragment', 'StrictMode', 'Suspense',
 ])
 
+// App-internal composition primitives (ADR-009 question 3: single parent,
+// no other consumer in the fixed set → not a DS component, so they don't
+// belong in FIXED_SET, but they're sanctioned app code, not a grammar
+// violation). See .claude/handoff/pipeline-dashboard.handoff.md (T4's DAG
+// node renderer) and pipeline-dashboard-chart-spec.md (T5's SplitChart).
+const APP_INTERNAL_ELEMENTS = new Set([
+  'PipelineDag',  // apps/showcase/src/pipeline/PipelineDag.tsx
+  'SplitChart',   // apps/showcase/src/pipeline/SplitChart.tsx
+])
+
 // HTML intrinsic elements (lowercase) that are allowed when used directly
 // (distinct from the Box as= pattern). These are not checked against FIXED_SET.
 const HTML_INTRINSICS = new Set([
@@ -127,7 +137,7 @@ function validateFile(filePath) {
 
     // ── Fixed-set check ─────────────────────────────────────────────────────
     // Only check uppercase components (lowercase = HTML intrinsic, allowed)
-    if (/^[A-Z]/.test(rawName) && !FIXED_SET.has(rawName)) {
+    if (/^[A-Z]/.test(rawName) && !FIXED_SET.has(rawName) && !APP_INTERNAL_ELEMENTS.has(rawName)) {
       errors.push(
         `Line ${node.loc?.start.line}: <${rawName}> is not in the fixed 26-component set`
       )

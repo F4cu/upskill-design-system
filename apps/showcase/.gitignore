@@ -1,0 +1,4 @@
+# Copied at build time from committed frozen snapshot files by
+# scripts/copy-pipeline-data.js (npm predev/prebuild). Not a source of
+# truth — regenerated on every dev/build run, never hand-edited.
+src/data/

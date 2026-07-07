@@ -1,0 +1,144 @@
+/* App-internal styled elements for the pipeline DAG node/edge visuals.
+   ADR-009 question 3: single parent (PipelineDag), no other consumer in the
+   fixed set — this stays a molecule-internal CSS Module, not a DS component.
+   Only references built --ds-* custom properties, never raw values, so it
+   resolves correctly under both data-theme values. */
+
+.diagram {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(9.5rem, 1fr));
+  grid-template-rows: repeat(3, auto);
+  gap: var(--ds-space-inline-xl) var(--ds-space-inline-lg);
+  padding: var(--ds-space-inset-lg);
+  border-radius: var(--ds-border-radius-md);
+  background: var(--ds-color-background-container-default);
+  border: 1px solid var(--ds-color-border-subtle);
+  overflow-x: auto;
+}
+
+.edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.edge {
+  stroke: var(--ds-color-border-strong);
+  stroke-width: 1.5;
+}
+
+.arrowhead {
+  fill: var(--ds-color-border-strong);
+}
+
+.node {
+  position: relative;
+  z-index: 1;
+  text-align: left;
+  cursor: pointer;
+  background: var(--ds-color-background-container-elevated);
+  border: 1px solid var(--ds-color-border-default);
+  border-left: 3px solid var(--ds-color-border-default);
+  border-radius: var(--ds-border-radius-sm);
+  padding: var(--ds-space-inset-sm) var(--ds-space-inset-md);
+  min-width: 8.5rem;
+}
+
+.node:hover {
+  background: var(--ds-color-background-neutral-hover);
+}
+
+.node:focus-visible {
+  outline: 2px solid var(--ds-color-border-selected);
+  outline-offset: 2px;
+}
+
+.selected {
+  border-color: var(--ds-color-border-selected);
+  border-left-color: var(--ds-color-border-selected);
+}
+
+.kind-source,
+.kind-consumer {
+  border-left-color: var(--ds-color-border-brand);
+}
+
+.kind-build,
+.kind-output {
+  border-left-color: var(--ds-color-border-accent);
+}
+
+.kind-gate,
+.kind-governance {
+  border-left-color: var(--ds-color-border-strong);
+}
+
+.nodeLabel {
+  display: block;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-xs);
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusDot.success {
+  background: var(--ds-color-icon-feedback-success);
+}
+
+.statusDot.failure {
+  background: var(--ds-color-icon-feedback-error);
+}
+
+.statusDot.snapshot {
+  background: var(--ds-color-icon-subtle);
+}
+
+.chipRow {
+  margin-top: var(--ds-space-inline-xs);
+}
+
+.chip {
+  display: inline-block;
+  font-size: var(--ds-font-size-metadata);
+  line-height: var(--ds-font-line-height-tight);
+  color: var(--ds-color-text-interactive-default);
+  text-decoration: none;
+  border: 1px solid var(--ds-color-border-accent);
+  border-radius: var(--ds-border-radius-sm);
+  padding: 0 var(--ds-space-inset-xs);
+}
+
+.chip:hover {
+  color: var(--ds-color-text-interactive-hover);
+  text-decoration: underline;
+}
+
+.panel {
+  flex: 0 0 20rem;
+  align-self: flex-start;
+  position: sticky;
+  top: var(--ds-space-inset-lg);
+}
+
+.panelLink {
+  color: var(--ds-color-text-interactive-default);
+  text-decoration: underline;
+}
+
+.panelLink:hover {
+  color: var(--ds-color-text-interactive-hover);
+}
