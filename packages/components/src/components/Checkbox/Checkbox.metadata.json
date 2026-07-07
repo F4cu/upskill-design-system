@@ -126,7 +126,9 @@
     ]
   },
   "composition": {
-    "composedOf": [],
+    "composedOf": [
+      "Text"
+    ],
     "accepts": [],
     "containedBy": [
       "Box",

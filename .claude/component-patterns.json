@@ -24,14 +24,6 @@
     },
     {
       "components": [
-        "Accordion"
-      ],
-      "detail": "Accordion JSX uses [Icon, Text] but metadata composition.composedOf declares [Icon].",
-      "issue": "composition-metadata-mismatch",
-      "pattern": "disclosure"
-    },
-    {
-      "components": [
         "AppHeader"
       ],
       "detail": "AppHeader JSX uses [Avatar, DropdownMenu, Icon, TextField] but metadata composition.composedOf declares [Avatar, Icon, Text, TextField].",
@@ -53,25 +45,9 @@
       "detail": "Breadcrumb JSX uses [Icon] but metadata composition.composedOf declares [Icon, Text].",
       "issue": "composition-metadata-mismatch",
       "pattern": "navigation"
-    },
-    {
-      "components": [
-        "Select"
-      ],
-      "detail": "Select JSX uses [DropdownMenu, Icon] but metadata composition.composedOf declares [Icon].",
-      "issue": "composition-metadata-mismatch",
-      "pattern": "controlled-selection"
-    },
-    {
-      "components": [
-        "TextField"
-      ],
-      "detail": "TextField JSX uses [Icon] but metadata composition.composedOf declares [].",
-      "issue": "composition-metadata-mismatch",
-      "pattern": "form-field"
     }
   ],
-  "generatedFrom": "0d8eee427158cb723fac430f216c3c72bf0af8a9",
+  "generatedFrom": "1e84f0a1e7732ec588eb244d2e07dc6661adbb63",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -228,7 +204,8 @@
           "component": "Select",
           "composition": [
             "DropdownMenu",
-            "Icon"
+            "Icon",
+            "Text"
           ],
           "idsFromUseId": [
             "errorId",
@@ -319,7 +296,9 @@
         {
           "changeCallback": "onChange (native)",
           "component": "Checkbox",
-          "composition": [],
+          "composition": [
+            "Text"
+          ],
           "idsFromUseId": [
             "generatedId",
             "id"
@@ -348,7 +327,8 @@
           "changeCallback": "onChange (native)",
           "component": "TextField",
           "composition": [
-            "Icon"
+            "Icon",
+            "Text"
           ],
           "idsFromUseId": [
             "errorId",

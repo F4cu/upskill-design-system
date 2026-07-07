@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import type { InputHTMLAttributes } from 'react'
+import { Text } from '../Text'
 import styles from './Checkbox.module.css'
 
 export type CheckboxProps = {
@@ -13,7 +14,7 @@ export function Checkbox({ label, id: idProp, className, ...rest }: CheckboxProp
   return (
     <label htmlFor={id} className={[styles.root, className].filter(Boolean).join(' ')}>
       <input type="checkbox" id={id} className={styles.checkbox} {...rest} />
-      <span className={styles.label}>{label}</span>
+      <Text as="span" className={styles.label}>{label}</Text>
     </label>
   )
 }

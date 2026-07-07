@@ -151,7 +151,8 @@
   },
   "composition": {
     "composedOf": [
-      "Icon"
+      "Icon",
+      "Text"
     ],
     "accepts": [
       "*"

@@ -2,6 +2,7 @@ import { useId } from 'react'
 import type { InputHTMLAttributes } from 'react'
 import { Icon } from '../Icon'
 import type { IconName } from '../Icon'
+import { Text } from '../Text'
 import styles from './TextField.module.css'
 import utilStyles from '../../styles/utilities.module.css'
 
@@ -24,12 +25,13 @@ export function TextField({ label, hideLabel, error, size = 'default', shape = '
 
   return (
     <div className={[styles.root, className].filter(Boolean).join(' ')}>
-      <label
+      <Text
+        as="label"
         htmlFor={id}
         className={[utilStyles.label, hideLabel && utilStyles.visuallyHidden].filter(Boolean).join(' ')}
       >
         {label}
-      </label>
+      </Text>
       <div className={styles.inputWrapper}>
         {icon && (
           <span className={styles.iconSlot}>

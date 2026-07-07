@@ -144,6 +144,8 @@ function scanJsx(sf) {
 
       const attrs = {};
       let hasAriaOrRole = false;
+      let asValue;
+      let hasHtmlFor = false;
       for (const attr of node.attributes.properties) {
         if (!ts.isJsxAttribute(attr)) continue;
         const name = attr.name.getText(sf);
@@ -151,8 +153,12 @@ function scanJsx(sf) {
           attrs[name] = attrValueText(attr, sf);
           if (name !== "id") hasAriaOrRole = true;
         }
-        if (tag === "label" && name === "htmlFor") hasLabelFor = true;
+        if (name === "as") asValue = attrValueText(attr, sf);
+        if (name === "htmlFor") hasHtmlFor = true;
       }
+      // Labels render through <Text as="label" htmlFor> (CLAUDE.md typography
+      // rule), so a polymorphic as="label" counts the same as a native <label>.
+      if (hasHtmlFor && (tag === "label" || asValue === "label")) hasLabelFor = true;
       if (hasAriaOrRole) ariaNodes.push({ element: tag, ...attrs });
     }
     node.forEachChild(visit);

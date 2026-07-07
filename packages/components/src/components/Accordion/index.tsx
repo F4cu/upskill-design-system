@@ -57,7 +57,7 @@ export function AccordionItem({
           onClick={toggle}
         >
           <div className={styles.titleGroup}>
-            <span className={styles.title}>{title}</span>
+            <Text as="span" className={styles.title}>{title}</Text>
             {subtitle && <Text as="span" size="metadata" color="subtle">{subtitle}</Text>}
           </div>
           <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size="md" aria-hidden className={styles.chevron} />

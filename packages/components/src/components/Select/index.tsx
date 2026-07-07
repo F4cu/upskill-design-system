@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import type { HTMLAttributes, KeyboardEvent } from 'react'
 import { DropdownMenu } from '../DropdownMenu'
 import { Icon } from '../Icon'
+import { Text } from '../Text'
 import styles from './Select.module.css'
 import utilStyles from '../../styles/utilities.module.css'
 
@@ -97,12 +98,13 @@ export function Select({
 
   return (
     <div className={[styles.root, className].filter(Boolean).join(' ')} {...rest}>
-      <label
+      <Text
+        as="label"
         htmlFor={id}
         className={[utilStyles.label, hideLabel && utilStyles.visuallyHidden].filter(Boolean).join(' ')}
       >
         {label}
-      </label>
+      </Text>
 
       <div ref={wrapperRef} className={styles.wrapper}>
         <button

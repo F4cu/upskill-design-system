@@ -147,7 +147,9 @@
   },
   "composition": {
     "composedOf": [
-      "Icon"
+      "DropdownMenu",
+      "Icon",
+      "Text"
     ],
     "accepts": [],
     "containedBy": [

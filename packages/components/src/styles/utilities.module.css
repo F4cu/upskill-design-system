@@ -1,4 +1,7 @@
-.label {
+/* label.label (not .label): the label renders through <Text as="label">, whose
+   single-class .text/.body-default styles this must outrank regardless of
+   stylesheet order. */
+label.label {
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-label);
   font-weight: var(--ds-font-weight-bold);

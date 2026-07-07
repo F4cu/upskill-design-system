@@ -40,7 +40,10 @@
   gap: var(--ds-space-stack-xs);
 }
 
-.title {
+/* .trigger .title (not .title): the title renders through <Text as="span">, whose
+   single-class .text/.body-default styles this must outrank regardless of
+   stylesheet order. */
+.trigger .title {
   font-family: var(--ds-font-family-headline-default);
   font-size: var(--ds-font-size-title-small);
   font-weight: var(--ds-font-weight-bold);

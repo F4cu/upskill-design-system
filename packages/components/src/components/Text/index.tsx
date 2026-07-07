@@ -9,6 +9,7 @@ export type TextProps = {
   size?: TextSize
   color?: TextColor
   className?: string
+  htmlFor?: string
   style?: CSSProperties
   children?: React.ReactNode
 } & Omit<HTMLAttributes<HTMLElement>, 'style'>
