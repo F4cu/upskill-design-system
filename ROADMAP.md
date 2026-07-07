@@ -153,24 +153,18 @@ Composed example stories: Settings Form, Footer Highlights, Carousel, CourseSlid
 - [x] `apps/showcase` workspace scaffolded (Vite + React + TypeScript + `react-router`), added to root `workspaces`, depends on `@upskill/components`/`@upskill/tokens` via `workspace:*`, imports the built token CSS once at the app root.
 - [x] Routing stubbed for all four planned routes: `/`, `/showcase/homepage`, `/showcase/settings`, `/showcase/course`, `/dashboard`.
 - [x] Course Overview page (`/showcase/course`) — real, generated page composing `Accordion`/`Badge`/`ProgressBar`/`CardHorizontal`/`Button` ghost variant.
-- [ ] Homepage page (`/showcase/homepage`) — still a stub; generate from the Carousel / FooterHighlights / CardVertical composed stories.
+- [ ] Homepage page (`/showcase/homepage`) — still a stub; generate from the Carousel / FooterHighlights / CardVertical composed stories. Also carries the reserved learner-facing view (progress, KPIs, enrolled/recommended courses) rather than a separate page — composes existing components only and uses the **`horizon` brand**, deliberately demonstrating multi-brand rendering outside Storybook. Distinct from the Pipeline Health Dashboard below. Spec: `.claude/handoff/pipeline-dashboard.handoff.md` §"Scope note".
 - [ ] Settings page (`/showcase/settings`) — still a stub; generate from the SettingsForm composed story.
 - [ ] Cross-page navigation via `AppHeader` linking `/`, `/showcase/homepage`, `/showcase/settings`, `/showcase/course`.
 - [ ] Responsive + theme QA on all three showcase pages (desktop ≥1440 / tablet ≥768 / mobile <768, light + dark).
 - [ ] Root build chain extended to include the showcase app (`npm run build` currently stops at `@upskill/components`).
 - [ ] Vercel deployment config (`vercel.json` or documented project settings) — the developer runs the actual `vercel` login/deploy.
 
-**Health dashboard** (`/dashboard`) — currently a stub:
-- [ ] Deterministic build-time ingestion of the committed JSON (import or a prebuild copy step) — documented, no runtime API calls.
-- [ ] Component lifecycle view: both axes (Maturity `beta`/`ready`/`deprecated`; Implementation `established`/`in progress`/`in review`/`done`/`todo`), counts plus a per-component table, sourced from `.claude/component-pipeline.json`.
-- [ ] Token governance view: governed/active/deprecated counts and the deprecated-in-use migration backlog, sourced from `airtable-governance.json` + `token-usage.json`.
-- [ ] Figma drift summary from `figma-variables.json`, with accepted representational divergences (e.g. unitless line-heights) labeled as expected — not flagged as drift.
-- [ ] Pending GitHub issues surfaced on the dashboard (read via `gh`/REST at build time into a committed or prebuild-fetched snapshot — not a live call from the browser).
-
-**Interactive token pipeline diagram** — Figma → token export → Style Dictionary build → CSS/JS outputs → components → (Airtable governance, GitHub Actions), reflecting this repo's actual stages and tools (reference shape only: `learn.thedesignsystem.guide`'s automated-token-workflow diagram). Full spec + delegable task breakdown (frozen-snapshot DAG; server/DB/WebSocket runner blueprint evaluated and rejected): `.claude/handoff/pipeline-dashboard.handoff.md`:
-- [ ] Ships as a standalone route.
-- [ ] Embedded in `/dashboard` as well.
-- [ ] MVP is a clear static diagram; interactivity (hover for stage detail, click-through to the relevant script/ADR) is a stretch goal, not a blocker.
+**Pipeline Health Dashboard** (`/dashboard`, engineering/maintainer-facing — not the learner-facing page above) — currently a stub. Merges the former "Health dashboard" and "Interactive token pipeline diagram" checkboxes into one artifact per the evaluated-and-adapted plan (server/DB/WebSocket runner blueprint rejected — frozen-snapshot DAG instead). Full spec + delegable task breakdown (T1–T6): `.claude/handoff/pipeline-dashboard.handoff.md`:
+- [ ] **DAG hero** — the pipeline diagram (Figma → DTCG source → Style Dictionary build → CSS/JS outputs → components → consumers, plus CI-gate/Airtable/contrast side rails) as a fixed-layout static diagram (own components + inline SVG, no charting/flow library) at the top of `/dashboard`, and standalone at `/pipeline`. Progressive disclosure: collapsed by default, a toggle reveals which of the eight agentic moments touch each node. Statuses are last-known-at-snapshot, never live.
+- [ ] **Frozen-snapshot ingestion** — new `.claude/pipeline-status.json` (CI workflow conclusions + open GitHub issues, captured manually via `gh` pre-deploy) alongside the existing `component-pipeline.json` / `airtable-governance.json` / `token-usage.json` / `figma-variables.json`, pulled into `apps/showcase` at build time only (no runtime API calls).
+- [ ] **Dashboard views below the hero, in order:** component lifecycle (both axes, chart + table), token governance (deprecated-in-use backlog), Figma drift (real drift vs. expected representational divergence vs. in sync), open issues (plain list). One small app-internal chart primitive (stacked bar/donut) reused across the first three; no charting library.
+- [ ] QA gate: `layout:validate`, responsive + light/dark, keyboard-only pass over the DAG and its agentic-moment toggle.
 
 **`llms.txt`**:
 - [ ] Generated at the site root from real metadata (component prop types, variants, composition rules, `usage.antiPatterns`) and semantic token names, following the llms.txt convention (concise, link-structured, machine-readable) — not a knowledge graph.

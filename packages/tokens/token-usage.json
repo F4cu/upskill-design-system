@@ -6,7 +6,8 @@
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
-      "packages/components/src/components/Divider/Divider.module.css"
+      "packages/components/src/components/Divider/Divider.module.css",
+      "packages/components/src/tokens/tokenComponents.module.css"
     ],
     "--ds-space-inline-sm": [
       "packages/components/src/components/Accordion/Accordion.module.css",
@@ -357,7 +358,8 @@
       "packages/components/src/components/TextField/TextField.module.css"
     ],
     "--ds-color-background-brand": [
-      "packages/components/src/components/Checkbox/Checkbox.module.css"
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/tokens/tokenComponents.module.css"
     ],
     "--ds-font-weight-medium": [
       "packages/components/src/components/Chip/Chip.module.css",
@@ -387,17 +389,16 @@
     "--ds-font-size-display": [
       "packages/components/src/components/Heading/Heading.module.css"
     ],
-    "--ds-color-neutral-4": [
-      "packages/components/src/components/Image/Image.module.css",
-      "packages/components/src/tokens/tokenComponents.module.css"
+    "--ds-color-background-media-strong": [
+      "packages/components/src/components/Image/Image.module.css"
     ],
-    "--ds-color-neutral-2": [
+    "--ds-color-icon-media": [
       "packages/components/src/components/Image/Image.module.css"
     ],
     "--ds-space-inline-": [
       "packages/components/src/components/Inline/index.tsx"
     ],
-    "--ds-color-accent-8": [
+    "--ds-color-background-progress": [
       "packages/components/src/components/ProgressBar/ProgressBar.module.css"
     ],
     "--ds-color-icon-disabled": [
@@ -432,7 +433,7 @@
       "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/utilities.module.css"
     ],
-    "--ds-color-neutral-3": [
+    "--ds-color-background-media-default": [
       "packages/components/src/components/VideoFrame/VideoFrame.module.css"
     ],
     "--ds-color-text-accent-default": [
@@ -450,9 +451,6 @@
     ],
     "--ds-grid-columns": [
       "packages/components/src/styles/grid.css"
-    ],
-    "--ds-color-brand-9": [
-      "packages/components/src/tokens/tokenComponents.module.css"
     ]
   },
   "aliases": {
@@ -472,6 +470,12 @@
     "color.neutral.dark.3": [
       "packages/tokens/src/theme/dark.json"
     ],
+    "color.neutral.dark.4": [
+      "packages/tokens/src/theme/dark.json"
+    ],
+    "color.accent.dark.8": [
+      "packages/tokens/src/theme/dark.json"
+    ],
     "color.neutral.dark.2": [
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
@@ -479,7 +483,7 @@
     "color.neutral.dark.1": [
       "packages/tokens/src/theme/dark.json"
     ],
-    "color.terracotta.dark.5": [
+    "color.red.dark.5": [
       "packages/tokens/src/theme/dark.json"
     ],
     "color.teal.dark.5": [
@@ -531,7 +535,7 @@
     "color.neutral.dark.5": [
       "packages/tokens/src/theme/dark.json"
     ],
-    "color.terracotta.dark.11": [
+    "color.red.dark.11": [
       "packages/tokens/src/theme/dark.json"
     ],
     "color.amber.dark.11": [
@@ -549,6 +553,9 @@
     "color.neutral.dark.10": [
       "packages/tokens/src/theme/dark.json"
     ],
+    "color.brand.dark.8": [
+      "packages/tokens/src/theme/dark.json"
+    ],
     "color.accent.dark.9": [
       "packages/tokens/src/theme/dark.json"
     ],
@@ -560,7 +567,7 @@
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
-    "color.terracotta.dark.9": [
+    "color.red.dark.9": [
       "packages/tokens/src/theme/dark.json"
     ],
     "color.teal.dark.9": [
@@ -591,6 +598,12 @@
     "color.neutral.3": [
       "packages/tokens/src/theme/light.json"
     ],
+    "color.neutral.4": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.accent.8": [
+      "packages/tokens/src/theme/light.json"
+    ],
     "color.surface.2": [
       "packages/tokens/src/theme/light.json"
     ],
@@ -600,7 +613,7 @@
     "color.surface.1": [
       "packages/tokens/src/theme/light.json"
     ],
-    "color.terracotta.3": [
+    "color.red.3": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.teal.3": [
@@ -633,7 +646,7 @@
     "color.neutral.10": [
       "packages/tokens/src/theme/light.json"
     ],
-    "color.terracotta.12": [
+    "color.red.12": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.amber.11": [
@@ -651,7 +664,7 @@
     "color.accent.default": [
       "packages/tokens/src/theme/light.json"
     ],
-    "color.terracotta.9": [
+    "color.red.9": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.teal.9": [
