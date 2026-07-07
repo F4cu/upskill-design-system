@@ -129,7 +129,7 @@ export function Select({
           onClick={() => setOpen(prev => !prev)}
           onKeyDown={handleTriggerKeyDown}
         >
-          <span className={styles.triggerLabel}>{selectedLabel}</span>
+          <Text as="span" className={styles.triggerLabel}>{selectedLabel}</Text>
           <span className={styles.arrow} aria-hidden="true">
             <Icon
               name="chevron-down"
@@ -176,9 +176,9 @@ export function Select({
       </div>
 
       {error && (
-        <span id={errorId} className={styles.errorMessage} role="alert">
+        <Text as="span" id={errorId} className={styles.errorMessage} role="alert">
           {error}
-        </span>
+        </Text>
       )}
     </div>
   )

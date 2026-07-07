@@ -92,7 +92,10 @@
   z-index: 100;
 }
 
-.errorMessage {
+/* .root .errorMessage (not .errorMessage): the message renders through
+   <Text as="span">, whose single-class .text/.body-default styles this
+   must outrank regardless of stylesheet order. */
+.root .errorMessage {
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-body-small);
   line-height: var(--ds-font-line-height-relaxed);

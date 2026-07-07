@@ -1,8 +1,12 @@
-/* Token layers — imported before component CSS so tokens are available */
+/* Token layers — imported before component CSS so tokens are available.
+   Order is load-bearing: primitives → default brand → non-default brands
+   → device → theme.light → theme.dark (see CLAUDE.md "Four-layer model"). */
 @import '@upskill/tokens/css/primitives';
+@import '@upskill/tokens/css/brand.upskill';
+@import '@upskill/tokens/css/brand.horizon';
+@import '@upskill/tokens/css/device';
 @import '@upskill/tokens/css/theme.light';
 @import '@upskill/tokens/css/theme.dark';
-@import '@upskill/tokens/css/device';
 
 /* Component styles */
 @import '@upskill/components/styles';

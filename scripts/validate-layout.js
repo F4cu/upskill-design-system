@@ -22,7 +22,7 @@ const FIXED_SET = new Set([
   'TextField', 'Select', 'Checkbox', 'Card',
   'Avatar', 'AppHeader', 'Breadcrumb', 'Divider', 'ProgressBar', 'CardHorizontal',
   'CardVertical', 'Chip', 'VideoFrame', 'ButtonArrow', 'ScrollArea',
-  'Accordion', 'Badge',
+  'Accordion', 'Badge', 'TextLink',
   // Required sub-components exported alongside their parent
   'AccordionItem',      // child API of Accordion
   'DropdownMenu',       // used by AppHeader's user dropdown

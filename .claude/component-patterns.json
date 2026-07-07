@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "1e84f0a1e7732ec588eb244d2e07dc6661adbb63",
+  "generatedFrom": "c5efba4672539d34da16790f79a0ea8b3b30ff06",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -195,7 +195,7 @@
               "element": "select"
             },
             {
-              "element": "span",
+              "element": "Text",
               "id": "{errorId}",
               "role": "alert"
             }
@@ -319,7 +319,7 @@
               "id": "{id}"
             },
             {
-              "element": "span",
+              "element": "Text",
               "id": "{errorId}",
               "role": "alert"
             }

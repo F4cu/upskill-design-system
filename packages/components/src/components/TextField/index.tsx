@@ -53,9 +53,9 @@ export function TextField({ label, hideLabel, error, size = 'default', shape = '
         />
       </div>
       {error && (
-        <span id={errorId} className={styles.errorMessage} role="alert">
+        <Text as="span" id={errorId} className={styles.errorMessage} role="alert">
           {error}
-        </span>
+        </Text>
       )}
     </div>
   )
