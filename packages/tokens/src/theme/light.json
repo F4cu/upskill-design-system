@@ -62,7 +62,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.3}"
+          "$value": "{color.red.3}"
         },
         "success": {
           "$type": "color",
@@ -178,7 +178,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.12}"
+          "$value": "{color.red.12}"
         },
         "warning": {
           "$type": "color",
@@ -236,7 +236,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.9}"
+          "$value": "{color.red.9}"
         },
         "success": {
           "$type": "color",
@@ -286,7 +286,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.9}"
+          "$value": "{color.red.9}"
         },
         "success": {
           "$type": "color",

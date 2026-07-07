@@ -2,54 +2,6 @@
   {
     "brand": "upskill",
     "theme": "light",
-    "foreground": "--ds-color-text-selected",
-    "background": "--ds-color-background-neutral-subtlest",
-    "reason": "4.35:1, needs 4.5:1. Next primitive step (terracotta.12) overshoots to 10.6:1 and collides with text.feedback.error — needs a design decision, not a token tweak.",
-    "issue": 21
-  },
-  {
-    "brand": "upskill",
-    "theme": "light",
-    "foreground": "--ds-color-text-brand",
-    "background": "--ds-color-background-neutral-hover",
-    "reason": "4.35:1, needs 4.5:1. Same terracotta.12 collision as text.selected above.",
-    "issue": 21
-  },
-  {
-    "brand": "horizon",
-    "theme": "light",
-    "foreground": "--ds-color-text-selected",
-    "background": "--ds-color-background-neutral-subtlest",
-    "reason": "4.34:1, needs 4.5:1. Same shape as the upskill waiver above — cyan.12 (#1A3D48) overshoots the same way terracotta.12 does.",
-    "issue": 21
-  },
-  {
-    "brand": "horizon",
-    "theme": "light",
-    "foreground": "--ds-color-text-brand",
-    "background": "--ds-color-background-neutral-hover",
-    "reason": "4.34:1, needs 4.5:1. Same cyan.12 collision as text.selected above.",
-    "issue": 21
-  },
-  {
-    "brand": "horizon",
-    "theme": "dark",
-    "foreground": "--ds-color-border-selected",
-    "background": "--ds-color-background-container-page",
-    "reason": "2.92:1, needs 3.0:1. border.selected is pinned to shared step 9 across brands (brands swap hues, not steps); cyan.dark.9 falls just short against this dark surface.",
-    "issue": 23
-  },
-  {
-    "brand": "horizon",
-    "theme": "dark",
-    "foreground": "--ds-color-border-selected",
-    "background": "--ds-color-background-input",
-    "reason": "2.64:1, needs 3.0:1. Same cyan.dark.9-at-step-9 shortfall as the container-page pair above, worse here because background.input is darker.",
-    "issue": 23
-  },
-  {
-    "brand": "upskill",
-    "theme": "light",
     "foreground": "--ds-color-background-progress",
     "background": "--ds-color-background-neutral-subtle",
     "reason": "1.64:1, needs 3:1 (WCAG 1.4.11 graphical indicator). Pre-existing: the fill was raw accent-8 before issue #22 tokenized it as background.progress; the pairing only became checkable then. Raising the accent step changes the ProgressBar's visual weight — needs a design decision.",

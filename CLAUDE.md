@@ -37,7 +37,7 @@ Each hue has three sub-scales. Don't mix scales on the same token:
 - `dark-1` through `dark-12` — dark-mode scale
 - `alpha-1` through `alpha-12` — transparent variants of the mid-tone
 
-Current hues: `terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`. A brand's `color.brand`/`accent`/`neutral`/`surface` slots (see Four-layer model) each alias one of these hues — e.g. `upskill` maps `brand → terracotta`, `surface → gold`; `horizon` maps `brand → cyan`, `neutral`/`surface → grey`. Only hues with a full light + dark ramp are eligible for a brand slot. `cyan`'s light ramp was replaced and its `dark` ramp added (2026-07-06, via a custom Radix-generated scale) specifically to make it brand-eligible — every other hue's dark ramp is original.
+Current hues: `terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`, `red`. A brand's `color.brand`/`accent`/`neutral`/`surface` slots (see Four-layer model) each alias one of these hues — e.g. `upskill` maps `brand → terracotta`, `surface → gold`; `horizon` maps `brand → cyan`, `neutral`/`surface → grey`. Only hues with a full light + dark ramp are eligible for a brand slot. `cyan`'s light ramp was replaced and its `dark` ramp added (2026-07-06, via a custom Radix-generated scale) specifically to make it brand-eligible — every other hue's dark ramp is original.
 
 ### Line-height convention
 

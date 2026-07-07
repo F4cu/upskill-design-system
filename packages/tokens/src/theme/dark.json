@@ -62,7 +62,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.dark.5}"
+          "$value": "{color.red.dark.5}"
         },
         "success": {
           "$type": "color",
@@ -178,7 +178,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.dark.11}"
+          "$value": "{color.red.dark.11}"
         },
         "warning": {
           "$type": "color",
@@ -215,7 +215,7 @@
       },
       "selected": {
         "$type": "color",
-        "$value": "{color.brand.dark.9}"
+        "$value": "{color.brand.dark.8}"
       },
       "brand": {
         "$type": "color",
@@ -236,7 +236,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.dark.9}"
+          "$value": "{color.red.dark.9}"
         },
         "success": {
           "$type": "color",
@@ -286,7 +286,7 @@
       "feedback": {
         "error": {
           "$type": "color",
-          "$value": "{color.terracotta.dark.9}"
+          "$value": "{color.red.dark.9}"
         },
         "success": {
           "$type": "color",

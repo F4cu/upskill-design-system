@@ -1,7 +1,7 @@
 # ADR-002 — Three-Layer Token Model
 
 **Date:** 2026-06-11
-**Amended:** 2026-06-17, 2026-07-06
+**Amended:** 2026-06-17, 2026-07-06, 2026-07-07
 **Status:** `accepted`
 
 ## Context
@@ -88,3 +88,9 @@ This refines, not reverses, the mirror model: it names a class of tokens where a
 ## Amendment (2026-07-06) — Brand layer
 
 The token model is now **four** layers: primitives → brand → theme → device. A brand layer sits between primitives and theme, owning per-brand color ramp mappings, font families, and border radius. See ADR-012 for the full decision, including why the brand layer is code-only and out of scope for the Figma mirror.
+
+## Amendment (2026-07-07) — Primitive hue list adds `red` (dedicated feedback hue)
+
+The primitive color hue list grew to include a new `red` hue (light `1–12` + dark `1–12`, from the official Radix UI red scale), bringing the set to: terracotta, cyan, gold, teal, sand, grey, black, white, amber, **red**. `red` was added specifically to give `feedback.error` a dedicated hue that never collides with a brand accent, and it is deliberately not brand-eligible. The same pass darkened several step-11 values and regenerated cyan's light ramp to be monotonic.
+
+This does not change the layer model — it records that the primitive layer's hue set (governed by this ADR) expanded, and the new convention that a feedback semantic must not alias a brand-eligible hue. See **ADR-014** for the full decision, including the terracotta-luminance-matching ramp-regeneration method.
