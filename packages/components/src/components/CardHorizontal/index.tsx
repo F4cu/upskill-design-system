@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes } from 'react'
+import { Fragment, type CSSProperties, type HTMLAttributes } from 'react'
 import { Heading } from '../Heading'
 import { Icon } from '../Icon'
 import { Image } from '../Image'
@@ -60,10 +60,10 @@ export function CardHorizontal({
         {metaItems.length > 0 && (
           <div className={styles.meta}>
             {metaItems.map((item, i) => (
-              <>
-                {i > 0 && <span key={`dot-${i}`} className={styles.dot} aria-hidden />}
+              <Fragment key={i}>
+                {i > 0 && <span className={styles.dot} aria-hidden />}
                 {item}
-              </>
+              </Fragment>
             ))}
           </div>
         )}
