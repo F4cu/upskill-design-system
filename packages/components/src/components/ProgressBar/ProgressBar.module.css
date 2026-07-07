@@ -9,7 +9,7 @@
 .fill {
   height: 100%;
   width: var(--_fill, 0%);
-  background: var(--ds-color-accent-8);
+  background: var(--ds-color-background-progress);
   border-radius: var(--ds-border-radius-full);
   transition: width 0.2s ease;
 }

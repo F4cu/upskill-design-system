@@ -24,8 +24,15 @@ const validate = ajv.compile(schema);
 // Merge every source token file into one tree so metadata dot-paths can be
 // resolved against the tokens they claim to use. A node is a token when it
 // carries a $value; the metadata ref must land on one.
+// The brand layer holds the color slot ramps (color.brand/accent/neutral/surface)
+// and font.family.* — metadata may reference those, and every brand shares an
+// identical shape (build-time shape gate), so merging all brands is safe.
 const TOKEN_FILES = [
   "primitives.json",
+  ...fs
+    .readdirSync(path.join(TOKENS_SRC, "brands"))
+    .filter((f) => f.endsWith(".json"))
+    .map((f) => `brands/${f}`),
   "theme/light.json",
   "theme/dark.json",
   "device/desktop.json",

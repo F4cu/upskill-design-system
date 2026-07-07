@@ -168,6 +168,12 @@ const PAIRS = [
   // Badge — outline variant's border is the shared decorative border.default
   // (not checked — same reasoning as Button's outlined variant, above).
 
+  // ProgressBar — the fill is a meaningful graphical indicator (WCAG 1.4.11)
+  // rendered on the track. The media placeholder tokens
+  // (background.media.*, icon.media — Image, VideoFrame) are deliberately
+  // not paired: the icon is a decorative watermark on an empty surface.
+  [BG("progress"), BG("neutral-subtle"), "icon"],
+
   // Feedback tokens are not yet composed into a shipped component (no
   // Alert/Toast in the fixed set — see CLAUDE.md "Component scope"), but
   // they were part of this pass's fix and are meant to pair with their

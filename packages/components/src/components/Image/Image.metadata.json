@@ -80,8 +80,8 @@
   ],
   "tokens": {
     "color": [
-      "color.neutral.2",
-      "color.neutral.4"
+      "color.icon.media",
+      "color.background.media.strong"
     ],
     "spacing": [],
     "typography": [],

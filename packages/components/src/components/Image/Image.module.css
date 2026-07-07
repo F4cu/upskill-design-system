@@ -1,6 +1,6 @@
 .root {
   aspect-ratio: var(--_aspect-ratio, 1 / 1);
-  background: var(--ds-color-neutral-4);
+  background: var(--ds-color-background-media-strong);
   border-radius: var(--ds-border-radius-sm);
   overflow: hidden;
   position: relative;
@@ -20,7 +20,7 @@
   height: 100%;
   align-items: center;
   justify-content: center;
-  color: var(--ds-color-neutral-2);
+  color: var(--ds-color-icon-media);
 }
 
 .icon {

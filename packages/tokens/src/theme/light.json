@@ -27,6 +27,20 @@
         "$type": "color",
         "$value": "{color.neutral.3}"
       },
+      "media": {
+        "default": {
+          "$type": "color",
+          "$value": "{color.neutral.3}"
+        },
+        "strong": {
+          "$type": "color",
+          "$value": "{color.neutral.4}"
+        }
+      },
+      "progress": {
+        "$type": "color",
+        "$value": "{color.accent.8}"
+      },
       "container": {
         "page": {
           "$type": "color",
@@ -238,6 +252,10 @@
       "subtle": {
         "$type": "color",
         "$value": "{color.neutral.10}"
+      },
+      "media": {
+        "$type": "color",
+        "$value": "{color.neutral.2}"
       },
       "disabled": {
         "$type": "color",

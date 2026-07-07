@@ -58,7 +58,7 @@
   ],
   "tokens": {
     "color": [
-      "color.accent.8",
+      "color.background.progress",
       "color.background.neutral.subtle"
     ],
     "spacing": [],
