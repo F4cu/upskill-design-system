@@ -134,7 +134,7 @@ describe('AccordionItem — a11y behavior', () => {
     render(
       <Accordion>
         <AccordionItem title="Module 1" defaultOpen>
-          <a href="#">Lesson link</a>
+          <a href="/lessons/1">Lesson link</a>
         </AccordionItem>
         <AccordionItem title="Module 2">
           <p>Content</p>
