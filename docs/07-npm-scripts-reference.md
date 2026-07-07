@@ -36,6 +36,7 @@ Run `tokens:build` after any change to `packages/tokens/src/` and before committ
 |---|---|
 | `npm run storybook` | Start Storybook at `localhost:6006` — component dev environment and token showcase. |
 | `npm run storybook:build` | Static Storybook build (used in CI for the visual regression baseline). |
+| `npm run pipeline-dashboard` | Start the [Pipeline Health Dashboard](#showcase-app-data-ingestion) (`/dashboard`, `/pipeline`) at `localhost:5176`. |
 
 ---
 

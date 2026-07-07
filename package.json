@@ -31,6 +31,7 @@
     "airtable:setup": "node scripts/airtable-setup-governance.js",
     "airtable:pull:governance": "node scripts/airtable-pull.js",
     "pipeline:status": "node scripts/pipeline-status.js",
+    "pipeline-dashboard": "npm run dev -w @upskill/showcase -- --port 5176",
     "tokens:usage": "node scripts/token-usage.js",
     "tokens:diff": "node scripts/token-diff.js",
     "tokens:contrast-check": "node scripts/token-contrast-check.js",
