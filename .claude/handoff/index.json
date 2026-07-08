@@ -16,6 +16,14 @@
     "path": ".claude/handoff/2026-07-07-figma-variable-push-prep.handoff.md"
   },
   {
+    "name": "2026-07-08-agentic-moments-audit",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-07-08",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/2026-07-08-agentic-moments-audit.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
