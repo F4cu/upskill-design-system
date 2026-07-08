@@ -2,7 +2,7 @@
 
 ## Project purpose
 
-A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to eight defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
+A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to nine defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
 
 Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and exit conditions.
 
@@ -127,6 +127,8 @@ Commit directly to the current branch — do not create new branches unless expl
 
 **Exception — `/add-component` + `/review-component` loop:** `/review-component` always creates a branch named `component/<kebab-name>` (e.g. `component/accordion`) when invoked from the `/add-component` flow, then opens a PR against `main` for human review. Agent-generated component code must go through a PR — it should never land on `main` without a review step.
 
+**Exception — `/docs-sync`:** agent-rewritten docs also go through a PR, on a `docs-sync/<YYYY-MM-DD>` branch.
+
 ## Commands and skills
 
 `.claude/commands/` — prompt-only slash commands. Flat markdown files. All agentic moments live here.  
@@ -148,6 +150,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 | 6 | Add component (verified scaffold) | `/add-component` | The ad-hoc loop: sense → scaffold → gate → visual checkpoint → moment 7. Frozen snapshot is the only handoff. ADR-007. |
 | 7 | Review component (adversarial review + fix + PR) | `/review-component` | One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for moment 8. |
 | 8 | Extract learnings (metadata self-improvement) | `/extract-learnings` | Route each finding to its metadata section; fixes that land only in code rot — land them in metadata. `--all` proposes a CLAUDE.md addition (developer confirms). |
+| 9 | Docs sync (rewrite stale reference pages) | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is this developer-triggered moment, never CI. Rewrite only the stale sections; never touch prop tables or anything Autodocs/docgen owns. Opens a PR (`docs-sync/<date>` branch). |
 
 **For existing component reviews:** Use `/review-component <Name>` for a full adversarial pass (spawns one subagent, writes `.review.json` for the learning loop). Use `/code-review` directly on the diff for a lighter, in-session review with no subagent or handoff file.
 
@@ -245,7 +248,7 @@ Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-te
 
 ## Common tasks
 
-Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The eight developer-triggered commands are the "Agentic moments" above.
+Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The nine developer-triggered commands are the "Agentic moments" above.
 
 | Task | How |
 |---|---|
@@ -259,6 +262,7 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Back-fill metadata learnings after a review or bug-fix session | `/extract-learnings <Name>` (single) or `/extract-learnings --all` (batch) |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
 | Archive done/superseded handoffs, regenerate `handoff/index.json` | `npm run handoff:tidy` |
+| Rewrite `docs/NN-*.md` pages flagged stale by `npm run docs:check` | `/docs-sync` |
 | Run a11y checks (static + behavioral) | `npm run lint` (Tier 1, all) · `npm run a11y:coverage && npm run a11y:test` (Tier 2, interactive components — ADR-008) |
 | Generate a page or section layout | `/layout-generation` |
 | Audit Figma variables against committed tokens (drift check) | `/figma-variable-audit` |
