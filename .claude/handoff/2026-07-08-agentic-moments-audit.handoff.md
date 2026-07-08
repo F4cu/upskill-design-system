@@ -117,7 +117,7 @@ the question empirically instead of by argument.
 
 | Step | Effort | Depends on |
 |---|---|---|
-| 1. Frontmatter (model + allowed-tools) pass over 10 commands | ~1 session | — |
+| 1. Frontmatter (model + allowed-tools) pass over 10 commands — **done 2026-07-08** (incl. read-only `adversarial-reviewer` agent in `.claude/agents/`; main session now writes `.review.json`) | ~1 session | — |
 | 2. `docs-check.js` + frontmatter `sources:` in docs/*.md + CI | ~1 session | — |
 | 3. `/docs-sync` moment (moment 9) + CLAUDE.md index row | ~1 session | step 2 |
 | 4. `/extract-learnings` routing table extension + consolidation step | ~1 session | — |

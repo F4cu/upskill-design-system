@@ -1,5 +1,6 @@
 ---
 description: Audit Figma variables against the committed tokens (drift check) — diff Figma variables against code tokens and usage, report drift/renames/broken aliases/scale-mixing, then PR intended Figma changes into the cleaned committed tokens. Use before pulling Figma variable changes into the repo.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SlashCommand, Skill, ReadMcpResourceTool, mcp__claude_ai_Figma__get_variable_defs, mcp__claude_ai_Figma__get_design_context, mcp__claude_ai_Figma__get_metadata, mcp__claude_ai_Figma__use_figma
 ---
 
 # Figma variable audit

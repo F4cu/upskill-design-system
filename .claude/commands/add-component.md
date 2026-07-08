@@ -1,5 +1,6 @@
 ---
 description: Add a new component from the fixed set with built-in verification (sense → scaffold → deterministic gate → one adversarial reviewer → fix → PR). Sequential, at most two agents (ADR-007).
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Agent, SlashCommand, Skill, AskUserQuestion
 ---
 
 # Add component

@@ -1,5 +1,6 @@
 ---
 description: Scaffold a new component from the fixed set — generate its index.tsx, CSS module, stories, and metadata.json from the schema, an existing component as template, and Figma design context. Use when starting a component that does not yet exist in packages/components/src/.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_design_context, mcp__claude_ai_Figma__get_metadata, mcp__claude_ai_Figma__get_screenshot, mcp__claude_ai_Figma__get_variable_defs
 ---
 
 # Component scaffold

@@ -1,5 +1,7 @@
 ---
 description: Sync design tokens to Airtable or pull governance state back into the repo. Use when pushing primitives/semantic/device tokens to Airtable, or refreshing airtable-governance.json (status/owner/successor) before token deprecation work. Uses the committed scripts, never the Airtable MCP.
+model: haiku
+allowed-tools: Read, Bash(npm run airtable:*), Bash(npm run sense), Bash(npm run sense:*)
 ---
 
 Both directions are deterministic scripts with direct REST calls — never the

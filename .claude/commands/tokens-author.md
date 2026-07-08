@@ -1,5 +1,7 @@
 ---
 description: Author or change design tokens locally — add or edit a primitive token, add a semantic theme/device alias, or modify the Style Dictionary build/transforms, then rebuild and verify outputs. Use when editing primitives.json, theme/*.json, device/*.json, or style-dictionary.config.js.
+model: sonnet
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 Tokens are authored as code (ADR-002 amendment): the committed DTCG JSON in

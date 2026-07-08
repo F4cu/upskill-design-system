@@ -1,5 +1,6 @@
 ---
 description: Push committed tokens into Figma as variables (code → Figma) — diff the committed source against the Figma variable inventory and write only the clean-missing variables via the Figma plugin. Use when code tokens have moved ahead of Figma. Never deletes or overwrites Figma variables without confirmation.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SlashCommand, Skill, ReadMcpResourceTool, mcp__claude_ai_Figma__use_figma, mcp__claude_ai_Figma__get_variable_defs, mcp__claude_ai_Figma__whoami
 ---
 
 # Figma variable push (code → Figma)

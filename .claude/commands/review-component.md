@@ -1,5 +1,6 @@
 ---
 description: Review a component's implementation for correctness, accessibility contract (ARIA, keyboard, focus), and coverage gaps — applies findings, opens a PR, and writes .review.json + .run.json for /extract-learnings.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Agent
 ---
 
 # Review component
@@ -20,7 +21,7 @@ Spawns one adversarial reviewer subagent against the component diff, applies eve
 
 - **One subagent, no more.** The reviewer gets fresh context — it has never seen the scaffold or any earlier session reasoning. No parallel agents.
 - **Gate must pass before PR.** Apply fixes → re-run gate → only then open PR.
-- **Reviewer reports only.** The subagent writes findings and returns its verdict; it does not edit files.
+- **Reviewer reports only.** The subagent returns findings and its verdict; it cannot edit or write files — its agent definition (`.claude/agents/adversarial-reviewer.md`) grants only Read/Grep/Glob/Bash. The main session persists the findings to `.review.json`.
 - **Frozen handoff.** Pass the snapshot path to the subagent; no live API calls inside the review stage.
 
 ---
@@ -29,7 +30,7 @@ Spawns one adversarial reviewer subagent against the component diff, applies eve
 
 ### Stage 1 · Adversarial review (exactly one fresh subagent)
 
-Spawn **one** subagent (`general-purpose`) with fresh context. Pass it only:
+Spawn **one** `adversarial-reviewer` subagent (defined in `.claude/agents/adversarial-reviewer.md`; read-only tool set — Read/Grep/Glob/Bash, no Edit/Write) with fresh context. Pass it only:
 - The path to the component folder and the diff (`git diff` of the modified files)
 - The snapshot path (`.claude/handoff/runs/<Name>.snapshot.json`)
 - The instruction to run and report findings from:
@@ -38,7 +39,7 @@ Spawn **one** subagent (`general-purpose`) with fresh context. Pass it only:
   3. An a11y read of the component against its metadata `accessibility` block (role, aria, keyboard)
   4. **For interactive components only** (`component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab / native browser behaviour) — judge whether `<Name>.a11y.test.tsx` covers the contract: does it assert every `keyboardInteraction` declared in the metadata, the state attribute(s) that toggle (e.g. `aria-expanded`, `aria-pressed`, `aria-selected`), focus movement, and the WAI-ARIA APG pattern's semantics? The gate proves the test passes; the reviewer judges whether it tests the *right things*. Thin or contract-incomplete tests are a `changes-required` a11y finding. Skip entirely for display/landmark components (e.g. `Badge`, `Divider`).
 
-The subagent writes findings to `.claude/handoff/runs/<Name>.review.json`:
+The subagent returns its findings as JSON in its final message; the main session writes that JSON verbatim to `.claude/handoff/runs/<Name>.review.json`:
 ```json
 {
   "component": "<Name>",
@@ -49,7 +50,7 @@ The subagent writes findings to `.claude/handoff/runs/<Name>.review.json`:
   "verdict": "clean | changes-required"
 }
 ```
-The subagent's final message back to the main session is a short summary + the verdict. It does **not** edit files.
+The subagent's final message back to the main session is the findings JSON plus a short summary and the verdict. It **cannot** edit or write files — the main session persists the JSON before moving to Stage 2.
 
 ### Stage 2 · Fix + PR (main session)
 

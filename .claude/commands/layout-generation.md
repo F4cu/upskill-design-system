@@ -1,5 +1,6 @@
 ---
 description: Generate a page or section layout as a React tree using only library components and tokens, with each structural choice justified by component metadata relationships. Use when starting a new page or section from a one-paragraph brief, a Figma file URL, or both.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion, mcp__claude_ai_Figma__get_design_context, mcp__claude_ai_Figma__get_metadata, mcp__claude_ai_Figma__get_screenshot
 ---
 
 # Layout generation

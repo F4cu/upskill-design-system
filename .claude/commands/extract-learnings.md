@@ -1,5 +1,6 @@
 ---
 description: Turn review findings into permanent system knowledge — reads .review.json handoff files, routes each finding to the right section of the component's metadata schema (accessibility contract, composition rules, usage antiPatterns), drafts amendments, gates on metadata:validate, and opens a PR. Run after /review-component or after any session that fixes issues in an existing component.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Extract learnings
