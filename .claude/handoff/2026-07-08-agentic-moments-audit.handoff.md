@@ -121,13 +121,18 @@ the question empirically instead of by argument.
 | 2. `docs-check.js` + frontmatter `sources:` in docs/*.md + CI — **done 2026-07-08** (`npm run docs:check`, `docs-check.yml` on every PR with `fetch-depth: 0`, docsify front-matter plugin added so the YAML doesn't render) | ~1 session | — |
 | 3. `/docs-sync` moment (moment 9) + CLAUDE.md index row — **done 2026-07-08** (command committed to main `32b9c7a`; inaugural run over docs 00–06 + 08 delivered as PR #36 — real drift found in 00, 01, 03, 04, 06, 08; 02 and 05 clock-only) | ~1 session | step 2 |
 
-Step 2 caveat for step 3: the check's *first* real run (2026-07-08, pre-commit) flagged 8 of 9
-docs as stale — only `07-npm-scripts-reference.md` was current. Committing the frontmatter
-resets every doc's clock, so that signal is absorbed by the commit. The inaugural `/docs-sync`
-run should treat all of `00–06` and `08` as its work queue; known real drift: `00-start-here.md`
-still says the showcase deploys via Vercel (now GitHub Pages), and `06-agentic-moments.md`
-predates step 1's `model:`/`allowed-tools:` frontmatter + read-only reviewer agent.
-| 4. `/extract-learnings` routing table extension + consolidation step | ~1 session | — |
+Step 2 caveat for step 3 — resolved (2026-07-08, PR #36 merged): the check's *first* real run
+(2026-07-08, pre-commit) flagged 8 of 9 docs as stale — only `07-npm-scripts-reference.md` was
+current. Committing the frontmatter reset every doc's clock, so that signal was absorbed by the
+commit. The inaugural `/docs-sync` run treated `00–06` and `08` as its work queue and landed via
+PR #36 (`ab483ca`, merged `1656143`): real prose drift fixed in `00-start-here` (Vercel →
+GitHub Pages; eight → nine moments; eleven → fifteen ADRs; `Pipeline.tsx` link), `01-token-pipeline`
+(red hue / ADR-014), `03-accessibility` (brand-aware Tier-3 contrast check, current waiver
+example), `04-layout-grammar` (`component-patterns.json` input, ADR-013), `06-agentic-moments`
+(nine moments, docs-check gate, `model:`/`allowed-tools:` frontmatter, read-only reviewer agent),
+`08-glossary` (nine moments, deterministic gate, `runs/` snapshot path). `02-component-lifecycle`
+and `05-governance` were clock-only (no real drift found). No further action needed here.
+| 4. `/extract-learnings` routing table extension + consolidation step — **done 2026-07-08** (three routing rows added: layout/composition → composed component's `usage.patterns`/`antiPatterns`, token conventions → `/tokens-author` "Conventions", contrast misses → `PAIRS` in `token-contrast-check.js` — never waivers; new `--all` consolidation step proposes prune/move/keep for `/layout-generation`'s pattern section, confirm-before-write; explicit scope guard against process/tooling learnings; CLAUDE.md moment-8 row updated) | ~1 session | — |
 | 5. ADR: layout output review path; amend `/layout-generation` final step | small | — |
 | 6. Run-telemetry ledger in `handoff:tidy` | small | — |
 
