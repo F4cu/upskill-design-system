@@ -4,6 +4,7 @@ sources:
   - .claude/commands/layout-generation.md
   - packages/components/src/styles/grid.css
   - docs/decisions/011-layout-landmark-grammar.md
+  - docs/decisions/013-cross-component-pattern-schema.md
   - docs/decisions/004-layout-token-categories.md
   - docs/decisions/005-size-vs-space-primitives.md
   - docs/decisions/009-extend-vs-new-vs-internal.md
@@ -52,7 +53,7 @@ The validator enforces the load-bearing invariants without judgment: exactly one
 npm run layout:validate -- apps/showcase/src/pages/CourseOverview.tsx
 ```
 
-The `/layout-generation` command's default output target is a route page in `apps/showcase/src/pages/<Name>.tsx` (a `--story` mode retains the old Storybook format for component-level review), and every structural choice it makes must cite a metadata rule — the `composition.accepts`/`containedBy` and `usage.patterns` fields required by the [metadata schema](02-component-lifecycle.md). Whether a layout need justifies a new component at all goes through the [ADR-009](decisions/009-extend-vs-new-vs-internal.md) three-question test first.
+The `/layout-generation` command's default output target is a route page in `apps/showcase/src/pages/<Name>.tsx` (a `--story` mode retains the old Storybook format for component-level review), and every structural choice it makes must cite a metadata rule — the `composition.accepts`/`containedBy` and `usage.patterns` fields required by the [metadata schema](02-component-lifecycle.md). It also reads `.claude/component-patterns.json`, the cross-component pattern aggregate ([ADR-013](decisions/013-cross-component-pattern-schema.md)), to pick canonical pattern implementations and state/callback prop names — a consumer input for layout/composition work *only*, never injected into component scaffolds (the accuracy harness measured a regression there). Whether a layout need justifies a new component at all goes through the [ADR-009](decisions/009-extend-vs-new-vs-internal.md) three-question test first.
 
 No diagram here: the grammar table *is* the spatial mapping, and a flowchart would only restate it.
 

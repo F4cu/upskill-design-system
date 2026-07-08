@@ -7,6 +7,7 @@ sources:
   - docs/decisions/004-layout-token-categories.md
   - docs/decisions/005-size-vs-space-primitives.md
   - docs/decisions/012-brand-layer-multi-brand.md
+  - docs/decisions/014-feedback-hue-and-ramp-regeneration.md
   - .claude/commands/tokens-author.md
 ---
 # Token pipeline
@@ -63,7 +64,7 @@ Every token carries `$type` and `$value`. Concrete values and aliases look like 
 { "$type": "color", "$value": "{color.terracotta.9}" }
 ```
 
-No `$extensions` blocks are ever committed — they are stripped when reconciling anything brought over from Figma. Each color hue (`terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`) has three sub-scales that must never be mixed on one token: `1–12` (light mode), `dark-1`–`dark-12` (dark mode), `alpha-1`–`alpha-12` (transparent variants). `cyan` originally shipped without a dark ramp; its light ramp was replaced and a dark ramp added (2026-07-06, a custom Radix-generated scale) specifically so it could qualify as a brand hue — every other hue's ramp is original.
+No `$extensions` blocks are ever committed — they are stripped when reconciling anything brought over from Figma. Each color hue (`terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`, `red`) has three sub-scales that must never be mixed on one token: `1–12` (light mode), `dark-1`–`dark-12` (dark mode), `alpha-1`–`alpha-12` (transparent variants). `cyan` originally shipped without a dark ramp; its light ramp was replaced and a dark ramp added (2026-07-06, a custom Radix-generated scale) specifically so it could qualify as a brand hue — every other hue's ramp is original. The newest hue, `red` (2026-07-07, the official Radix red scale, light + dark ramps), exists for one reason: `feedback.error` needed a dedicated hue that is deliberately **not** brand-eligible, so an error state can never visually collide with a brand's accent (ADR-002 amendment; the full rationale, including the ramp-regeneration method, is [ADR-014](decisions/014-feedback-hue-and-ramp-regeneration.md)).
 
 `npm run tokens:build` runs Style Dictionary with the custom transforms defined in `packages/tokens/build.js`: px→rem, font-weight string→numeric, the (historical) `$root` rename, and a media-query combiner. Brand files build to `brand.<brand>.css`, and theme files build with `outputReferences: true` so every theme token emits as a `var()` chain against brand slots rather than a resolved value — one `theme.<mode>.css` serves every brand ([ADR-012](decisions/012-brand-layer-multi-brand.md)). The device-layer output strategy comes straight from ADR-002: desktop tokens emit to `:root` as the baseline, tablet and mobile override *the same custom property names* inside `@media` blocks — one CSS file, no per-breakpoint imports:
 

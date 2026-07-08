@@ -1,7 +1,9 @@
 ---
 sources:
   - .claude/commands/*.md
+  - .claude/agents/adversarial-reviewer.md
   - docs/decisions/007-verified-component-loop.md
+  - scripts/docs-check.js
   - scripts/sense.js
   - scripts/sense-component.js
 ---
@@ -9,7 +11,7 @@ sources:
 
 ## What it is
 
-Agent involvement in this system is limited to **eight developer-triggered moments**, each defined as a prompt file in `.claude/commands/`. Everything else — anything recurring, scheduled, or CI-bound — is a script or a GitHub Action calling REST APIs directly. This is the "lite agentic" charter: agents only do what a script can't, only when a developer asks, and always inside a bounded sequence that stops.
+Agent involvement in this system is limited to **nine developer-triggered moments**, each defined as a prompt file in `.claude/commands/`. Everything else — anything recurring, scheduled, or CI-bound — is a script or a GitHub Action calling REST APIs directly. This is the "lite agentic" charter: agents only do what a script can't, only when a developer asks, and always inside a bounded sequence that stops.
 
 ## Why it's built this way
 
@@ -19,7 +21,7 @@ ADR-007 documents this by contrast with a blueprint it evaluated and rejected ("
 
 One boundary is worth stating explicitly (from `CLAUDE.md`): a developer-triggered loop that runs a bounded sequence once and stops is allowed — it's a moment with stages. A *continuous* loop, scheduled agent run, or always-on watcher is not; the documented response to a request for one is to push back and propose a script, a GitHub Action, or an existing moment.
 
-## The eight moments
+## The nine moments
 
 Each command file in `.claude/commands/` holds the full inputs, steps, and success signals; `CLAUDE.md` holds the index and the invariant each moment must never violate:
 
@@ -33,6 +35,11 @@ Each command file in `.claude/commands/` holds the full inputs, steps, and succe
 | 6 | Add component (verified scaffold) | `/add-component` | The ad-hoc loop: sense → scaffold → gate → visual checkpoint → moment 7. Frozen snapshot is the only handoff. ADR-007. |
 | 7 | Review component (adversarial review + fix + PR) | `/review-component` | One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for moment 8. |
 | 8 | Extract learnings (metadata self-improvement) | `/extract-learnings` | Route each finding to its metadata section; fixes that land only in code rot — land them in metadata. `--all` proposes a CLAUDE.md addition (developer confirms). |
+| 9 | Docs sync (rewrite stale reference pages) | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is this developer-triggered moment, never CI. Rewrite only the stale sections; never touch prop tables or anything Autodocs/docgen owns. Opens a PR (`docs-sync/<date>` branch). |
+
+Moment 9 (added 2026-07-08) closes the self-documenting gap for this very site: each `docs/NN-*.md` page declares its load-bearing source files in `sources:` frontmatter, `scripts/docs-check.js` fails (locally and via `docs-check.yml` on every PR) when any source has a commit newer than the doc, and `/docs-sync` is the judgment layer that rewrites the stale sections — the same detection-is-a-script / rewriting-is-a-moment split as everywhere else in the charter.
+
+Since 2026-07-08 the charter is also *structurally enforced*, not just prose: every command file carries `model:` frontmatter (mechanical moments run on cheaper tiers; generative and review moments on the default model) and an `allowed-tools:` allowlist. A moment whose invariant says "no MCP" — `/token-deprecation-pass`, for example — now simply cannot reach the Airtable MCP; the CLAUDE.md MCP table stopped being a convention agents must remember and became a tool boundary.
 
 Two supporting rules from `CLAUDE.md`'s MCP table: never put an MCP call inside a GitHub Action or a loop over many records; and if a task could be done with a committed file, a script, or the `gh` CLI, do it that way even when an MCP tool is available. Airtable governance state in particular is always read from the committed `airtable-governance.json`, never live.
 
@@ -56,7 +63,7 @@ The flagship moment (6) is a bounded loop with stages, per ADR-007 — **sequent
 - **Stage 1 — Scaffold** (main session): reuses `/component-scaffold`, fed only the snapshot + schema + a template component.
 - **Stage 2 — Gate** (script): `metadata:validate && typecheck && build && a11y:coverage && a11y:test` (the a11y steps added by the ADR-007 amendment — see [Accessibility](03-accessibility.md)). Fail-fast: a failure bounces back to Stage 1 with the error.
 - **Stage 2b — Visual checkpoint** (human): go/no-go in Storybook, light and dark themes.
-- **Stage 3+ — Review + PR**: delegates to `/review-component`, which spawns the loop's *one* subagent — a fresh adversarial reviewer with independent context, whose findings land in `.claude/handoff/runs/<Name>.review.json`. The main session applies fixes, re-runs the gate, and opens a PR on a `component/<kebab-name>` branch. No agent-written code reaches `main` unreviewed — this is also the one exception to the repo's no-new-branches workflow.
+- **Stage 3+ — Review + PR**: delegates to `/review-component`, which spawns the loop's *one* subagent — a fresh adversarial reviewer with independent context. The reviewer is **read-only by construction**: it is a committed agent definition (`.claude/agents/adversarial-reviewer.md`) whose tool set is Read/Grep/Glob/Bash only — no Edit, no Write — so "reviewer reports, never fixes" is enforced by the tool boundary, not just the prompt. It returns structured findings, and the *main session* persists them to `.claude/handoff/runs/<Name>.review.json`, applies fixes, re-runs the gate, and opens a PR on a `component/<kebab-name>` branch. No agent-written code reaches `main` unreviewed — this is also one of the two exceptions to the repo's no-new-branches workflow (the other is moment 9's `docs-sync/<date>` branch, for the same reason: agent-rewritten content goes through a PR).
 - **Afterwards — `/extract-learnings`** (separate trigger) closes the loop: it routes each `.review.json` finding to the right metadata section (ARIA attributes → `accessibility.ariaAttributes`, keyboard → `accessibility.keyboardInteractions`, focus → `accessibility.notes`, consumer misuse → `usage.antiPatterns`, child/parent constraints → `composition.accepts`/`containedBy`), gates on `metadata:validate`, and writes `.learnings.json` — the "processed" marker `sense.js` reads to derive the `in review` stage. In `--all` mode it may *propose* (never auto-apply) a `CLAUDE.md` addition when a pattern repeats across components. Fixes that land only in code rot; landing them in metadata is what makes the system self-improving.
 
 ```mermaid
@@ -75,6 +82,6 @@ A full worked example of this loop running on a real component is documented in 
 ## Related
 
 - ADRs: [007 — Verified component loop](decisions/007-verified-component-loop.md) (+ amendment)
-- All ten command files in `.claude/commands/`: the eight moments above plus `/tokens-author` (token authoring — see [Token pipeline](01-token-pipeline.md)) and `/airtable-sync` (sync wrapper — see [Governance](05-governance.md))
+- All eleven command files in `.claude/commands/`: the nine moments above plus `/tokens-author` (token authoring — see [Token pipeline](01-token-pipeline.md)) and `/airtable-sync` (sync wrapper — see [Governance](05-governance.md)); the read-only reviewer agent definition in `.claude/agents/adversarial-reviewer.md`
 - `CLAUDE.md` sections: "Agentic moments", "MCP tools — when to use vs when to avoid", "Frozen-memory snapshots"
 - Scripts: `npm run sense`, `npm run sense:component` — see the [npm scripts reference](07-npm-scripts-reference.md)
