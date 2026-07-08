@@ -27,7 +27,7 @@ Where a page on this site describes something the showcase demonstrates live, it
 
 ## How to read this site
 
-Pages 01–06 each follow the same template:
+Pages 01–06 and 09 each follow the same template:
 
 1. **What it is** — plain description
 2. **Why it's built this way** — the real constraint or trade-off, cited from the ADR that records it
@@ -45,5 +45,6 @@ The suggested reading order is the page order — tokens first, because everythi
 - [06 — Agentic moments](06-agentic-moments.md) — the lite-agentic charter, the nine moments, and the verified `/add-component` loop
 - [07 — npm scripts reference](07-npm-scripts-reference.md) — every npm script, grouped by purpose
 - [08 — Glossary](08-glossary.md) — terms explained for a non-developer collaborator
+- [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`CLAUDE.md` → rules → commands → snapshots → handoffs) and the CI gates that keep it honest
 
 The fifteen architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.

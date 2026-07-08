@@ -7,6 +7,7 @@
 - [06 — Agentic moments](06-agentic-moments.md)
 - [07 — npm scripts reference](07-npm-scripts-reference.md)
 - [08 — Glossary](08-glossary.md)
+- [09 — Context engineering](09-context-engineering.md)
 - Decision records
   - [001 — Component metadata schema](decisions/001-component-metadata-schema.md)
   - [002 — Three-layer token model](decisions/002-three-layer-token-model.md)
