@@ -34,7 +34,7 @@ Requiring behavioral tests for every component would "write near-empty tests for
 
 jsdom cannot judge layout or color, so three things stay out of Tier 2's scope: color contrast, visible focus rings, and real assistive-technology behavior (NVDA/VoiceOver) — those remain visual review plus Storybook's `addon-a11y` panel, and axe's `color-contrast` rule is disabled in the tests.
 
-The 2026-07-02 amendment closed the contrast gap from a different direction. A manual audit (issue #20) found 12 failing pairs in the light theme and 6 in dark shipping silently — including a primary Button label at **3.70:1** against the 4.5:1 requirement. Since contrast is pure math over resolved colors, it doesn't need a browser at all: `scripts/token-contrast-check.js` computes WCAG relative-luminance ratios against the built `dist/css/theme.{light,dark}.css`, wired into `tokens-check.yml` on every PR touching token source.
+The 2026-07-02 amendment closed the contrast gap from a different direction. A manual audit (issue #20) found 12 failing pairs in the light theme and 6 in dark shipping silently — including a primary Button label at **3.70:1** against the 4.5:1 requirement. Since contrast is pure math over resolved colors, it doesn't need a browser at all: `scripts/token-contrast-check.js` computes WCAG relative-luminance ratios against the built theme CSS, wired into `tokens-check.yml` on every PR touching token source. Since the brand layer landed it is brand-aware: it discovers every `dist/css/brand.*.css` and resolves each pair against `theme.{light,dark}.css` per brand, so every brand × theme combination is checked.
 
 The checked pairs are **hand-curated**, grouped by component with the rendering context documented inline — *not* auto-derived from CSS co-occurrence. That derivation was tried and rejected: mutually exclusive state variants (Button default/disabled/outlined) get cross-multiplied into pairs that never actually render together, producing dozens of false failures.
 
@@ -51,8 +51,8 @@ npm run tokens:contrast-check # Tier 3 — WCAG contrast math over built theme C
 
 New Tier 2 tests are modelled on `packages/components/src/Button/Button.a11y.test.tsx`. Two shrinking ledgers keep known debt visible instead of silently waived:
 
-- `scripts/a11y-backlog.json` — pre-existing interactive components pending test backfill. New interactive components **cannot** be added to it, and stale entries fail the check.
-- `scripts/token-contrast-waivers.json` — tracked contrast failures (e.g. `text.selected`/`text.brand` at ~4.35:1 on hover/selected overlays, linked to issue #21), same shrinking-ledger convention.
+- `scripts/a11y-backlog.json` — pre-existing interactive components pending test backfill. New interactive components **cannot** be added to it, and stale entries fail the check. The backfill is complete: the ledger is currently empty, exactly as a shrinking ledger should end up.
+- `scripts/token-contrast-waivers.json` — tracked contrast failures (e.g. the ProgressBar fill `background.progress` on `background.neutral.subtle` at ~1.6–2.8:1 against the 3:1 non-text requirement, across brand/theme combinations, linked to issue #22), same shrinking-ledger convention.
 
 Tier 2 is also wired into the verified component loop: the [ADR-007](decisions/007-verified-component-loop.md) amendment adds `a11y:coverage && a11y:test` to the loop's deterministic gate, and the adversarial reviewer judges coverage *completeness* — every metadata `keyboardInteraction`, every toggling state attribute, focus behavior, and APG semantics — not just whether the existing tests pass. See [Agentic moments](06-agentic-moments.md).
 

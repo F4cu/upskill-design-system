@@ -1,6 +1,7 @@
 ---
 sources:
   - .claude/commands/*.md
+  - .claude/agents/adversarial-reviewer.md
   - scripts/sense.js
   - packages/components/component.schema.json
   - docs/decisions/007-verified-component-loop.md
@@ -169,16 +170,16 @@ The smallest chunk of text a language model processes as a single unit. A token 
 ## Agentic loops
 
 **Agentic moment**
-One of the eight defined scenarios in this repo where invoking Claude with external tool access is worth the cost. Each moment is developer-triggered, has a clear input and output, and maps to a slash command. The eight are: `/figma-variable-audit`, `/token-deprecation-pass`, `/component-scaffold`, `/layout-generation`, `/figma-variable-push`, `/add-component`, `/review-component`, and `/extract-learnings`. Everything outside these moments is a script or a GitHub Action — not an agent.
+One of the nine defined scenarios in this repo where invoking Claude with external tool access is worth the cost. Each moment is developer-triggered, has a clear input and output, and maps to a slash command. The nine are: `/figma-variable-audit`, `/token-deprecation-pass`, `/component-scaffold`, `/layout-generation`, `/figma-variable-push`, `/add-component`, `/review-component`, `/extract-learnings`, and `/docs-sync`. Everything outside these moments is a script or a GitHub Action — not an agent.
 
 **Context window**
-The amount of information an AI can hold and reason over at once — think of it as working memory. It has a hard limit. This is why this repo uses frozen snapshots: instead of streaming raw Figma or Airtable data into an agent mid-task, the relevant information is pre-written to a small file (`STATUS_QUO.md`, `handoff/<Name>.snapshot.json`) that the agent reads. Less data in context means more room for reasoning, and cheaper, faster runs.
+The amount of information an AI can hold and reason over at once — think of it as working memory. It has a hard limit. This is why this repo uses frozen snapshots: instead of streaming raw Figma or Airtable data into an agent mid-task, the relevant information is pre-written to a small file (`STATUS_QUO.md`, `.claude/handoff/runs/<Name>.snapshot.json`) that the agent reads. Less data in context means more room for reasoning, and cheaper, faster runs.
 
 **Deterministic gate**
-A fixed set of automated checks that must pass before agent-written code is allowed to proceed to human review. In this repo the gate is: `npm run metadata:validate` + `npm run typecheck` + `npm run build`. "Deterministic" means the result is always the same for the same input — no judgment involved, just pass or fail. If the gate fails, the loop bounces back to the scaffold stage rather than pushing broken code forward.
+A fixed set of automated checks that must pass before agent-written code is allowed to proceed to human review. In this repo the gate is: `npm run metadata:validate` + `npm run typecheck` + `npm run build` + `npm run a11y:coverage` + `npm run a11y:test` + `npm run patterns:generate`. "Deterministic" means the result is always the same for the same input — no judgment involved, just pass or fail. If the gate fails, the loop bounces back to the scaffold stage rather than pushing broken code forward.
 
 **Frozen snapshot**
-A committed file that captures the state of an external system at a point in time, so agents can read it without making a live API call. In this repo: `airtable-governance.json` (Airtable state), `token-usage.json` (repo scan), `figma-variables.json` (Figma variables), and `.claude/STATUS_QUO.md` (aggregate of all three). Regenerated manually before a loop run with `npm run sense`. Frozen snapshots keep agents fast, cheap, and immune to rate limits during a task.
+A committed file that captures the state of an external system at a point in time, so agents can read it without making a live API call. In this repo: `airtable-governance.json` (Airtable state), `token-usage.json` (repo scan), `figma-variables.json` (Figma variables), `.claude/component-signoff.json` (human sign-off pulled from Airtable), `.claude/component-pipeline.json` (per-component pipeline stage), and `.claude/STATUS_QUO.md` (aggregate of the above). Regenerated manually before a loop run with `npm run sense`. Frozen snapshots keep agents fast, cheap, and immune to rate limits during a task.
 
 **MCP (Model Context Protocol)**
 A protocol that connects Claude to external tools — Figma, Airtable, GitHub, Notion — so it can read and write to them during a conversation. MCP tools appear as capabilities Claude can call, like `get_design_context` (Figma) or `list_records` (Airtable). In this repo, MCP is reserved for one-off, developer-present tasks — never for recurring scripts or CI, because MCP calls are interactive and not scriptable.
@@ -190,7 +191,7 @@ The main Claude session that coordinates a multi-stage agentic loop. In `/add-co
 The instruction given to an AI to tell it what to do. The slash commands in `.claude/commands/` are prompts — they describe the inputs, the steps, the constraints, and the expected output for each agentic moment. Prompt wording matters: a vague prompt produces vague output; a prompt that names specific files and rules produces consistent, verifiable results.
 
 **Subagent**
-A fresh Claude session spawned by the orchestrator for one specific stage that benefits from having no prior context. In `/review-component` (called by `/add-component` or standalone), exactly one subagent runs the adversarial code review — it has never seen the scaffold, so it can spot issues the orchestrator might have rationalized away. After it finishes, control returns to the orchestrator. This repo's rule is at most two agents per loop (orchestrator + one subagent) to avoid draining the usage window.
+A fresh Claude session spawned by the orchestrator for one specific stage that benefits from having no prior context. In `/review-component` (called by `/add-component` or standalone), exactly one subagent runs the adversarial code review — it has never seen the scaffold, so it can spot issues the orchestrator might have rationalized away. It is also read-only by construction (its agent definition grants no file-editing tools): it reports findings, and the orchestrator writes them to `.review.json` and applies any fixes. After it finishes, control returns to the orchestrator. This repo's rule is at most two agents per loop (orchestrator + one subagent) to avoid draining the usage window.
 
 **Tool call**
 When an AI invokes a specific capability during a task — reading a file, running a shell command, calling a Figma MCP function, writing to disk. Each tool call is discrete and visible in the session transcript. In this repo's agentic moments, tool calls to external services (Figma MCP, Airtable MCP) are kept to a minimum and always happen with the developer present.
