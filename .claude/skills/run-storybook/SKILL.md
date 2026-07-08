@@ -84,8 +84,10 @@ Screenshots land in `.claude/skills/run-upskill-design-system/shots/`
 | `list [filter]` | list story ids, optionally filtered by substring |
 | `shot <id> [--theme dark] [--out f.png]` | full-page screenshot of a story; prints console errors too |
 | `errors <id> [--theme dark]` | launch the story, print only its console/page errors |
+| `route <path> [--theme dark] [--selector css] [--out f.png] [--base url] [--viewport WxH]` | screenshot an arbitrary page of a running app dev server (not a Storybook story) — e.g. `apps/showcase` routes like `/dashboard` that have no story entry. `--base` defaults to `http://localhost:5183`; `--selector` scopes the shot to one element instead of the full page |
 
 Override the server URL with `STORYBOOK_URL` (default `http://localhost:6006`).
+`route` ignores `STORYBOOK_URL` — pass `--base` for its target server instead.
 
 Stop the server when done:
 

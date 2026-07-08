@@ -24,7 +24,7 @@ When a review catches a mistake — a wrong ARIA contract, a missing keyboard in
 Back-filling a learning into the metadata means: the next scaffold, the next layout, and the next review all know about it. The fix becomes a guardrail, not just a one-time correction.
 
 **This command is the second step of a two-step loop:**
-1. `/review-component <Name>` — finds problems, writes structured findings to `.claude/handoff/<Name>.review.json`
+1. `/review-component <Name>` — finds problems, writes structured findings to `.claude/handoff/runs/<Name>.review.json`
 2. `/extract-learnings <Name>` — reads those findings, routes each to the right metadata section, opens a PR
 
 Running only step 1 fixes the code. Running both steps fixes the system.
@@ -50,8 +50,8 @@ Not every finding is the same kind of lesson. A finding about a wrong ARIA attri
 ## Inputs (read all before starting — no live API calls)
 
 For each component being processed:
-- `.claude/handoff/<Name>.review.json` — structured findings from the adversarial review (severity, issue, fix per entry); written by `/review-component`
-- `.claude/handoff/<Name>.run.json` — `reviewerCaughtBeyondGate[]` and `manualRescues[]` (what scripts couldn't catch); written by `/add-component`
+- `.claude/handoff/runs/<Name>.review.json` — structured findings from the adversarial review (severity, issue, fix per entry); written by `/review-component`
+- `.claude/handoff/runs/<Name>.run.json` — `reviewerCaughtBeyondGate[]` and `manualRescues[]` (what scripts couldn't catch); written by `/add-component`
 - `packages/components/src/components/<Name>/<Name>.metadata.json` — the current metadata to amend
 - `packages/components/component.schema.json` — schema (to validate amendments and know which fields exist)
 
@@ -106,7 +106,7 @@ Run `npm run metadata:validate`. If it fails, fix the offending amendment and re
 
 ### 6. Done marker
 
-After the gate passes and before opening the PR, write `.claude/handoff/<Name>.learnings.json` for each processed component:
+After the gate passes and before opening the PR, write `.claude/handoff/runs/<Name>.learnings.json` for each processed component:
 ```json
 {
   "component": "<Name>",

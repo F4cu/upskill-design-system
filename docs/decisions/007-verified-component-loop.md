@@ -36,10 +36,10 @@ Options considered for how to run the loop:
 
 `/component-loop <Name>` runs bounded stages:
 
-1. **Sense** (script, no AI) — `npm run sense:component <Name>` writes `.claude/handoff/<Name>.snapshot.json` from the committed frozen-memory files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`). No live API call.
+1. **Sense** (script, no AI) — `npm run sense:component <Name>` writes `.claude/handoff/runs/<Name>.snapshot.json` from the committed frozen-memory files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`). No live API call.
 2. **Scaffold** (main session) — reuses the `/component-scaffold` moment, fed only the snapshot + schema + a template component.
 3. **Gate** (script) — `npm run metadata:validate && npm run typecheck && npm run build`; fail-fast bounces back to stage 2 with the error.
-4. **Adversarial review** (one spawned subagent) — fresh, independent context running `/code-review` + lint + a11y; findings written to `.claude/handoff/<Name>.review.json`.
+4. **Adversarial review** (one spawned subagent) — fresh, independent context running `/code-review` + lint + a11y; findings written to `.claude/handoff/runs/<Name>.review.json`.
 5. **Fix + PR** (main session) — apply findings, re-run the gate, open the PR. No agent-written code reaches `main` unreviewed.
 
 Binding rules:

@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-07-07T11:22:13.753Z**
+Generated: **2026-07-08T09:15:43.260Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -25,19 +25,8 @@ None. No deprecated token has a live reference. ✅
 
 - **27 total** — Maturity: 27 beta
 - By type: container (6) · display (13) · input (3) · interactive (5)
-- Implementation: 0 done · 5 in review · 0 in progress · 0 todo · 22 established (pre-loop)
-- Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
-
-### In review — awaiting human sign-off
-
-Gate, adversarial review, and learnings back-fill all green. Promote to `done`
-in Airtable (Implementation column) after the visual check in Storybook.
-
-- `Accordion` — maturity `beta` · reviewed 2026-06-23 · learnings back-filled
-- `Badge` — maturity `beta` · reviewed 2026-07-01 · learnings back-filled
-- `Button` — maturity `beta` · reviewed 2026-07-01 · learnings back-filled
-- `Icon` — maturity `beta` · reviewed 2026-07-01 · learnings back-filled
-- `Select` — maturity `beta` · reviewed 2026-06-25 · learnings back-filled
+- Implementation: 0 done · 0 in review · 0 in progress · 0 todo · 27 established (pre-loop)
+- Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
 
 ### Established — review backlog
 
@@ -46,7 +35,7 @@ through an adversarial review. Not active work — candidates to harden with
 `/review-component <Name>` when there's time. Running one moves the
 component into the loop automatically.
 
-`AppHeader` · `Avatar` · `Box` · `Breadcrumb` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Heading` · `Image` · `Inline` · `ProgressBar` · `ScrollArea` · `Stack` · `Text` · `TextField` · `TextLink` · `VideoFrame`
+`Accordion` · `AppHeader` · `Avatar` · `Badge` · `Box` · `Breadcrumb` · `Button` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Heading` · `Icon` · `Image` · `Inline` · `ProgressBar` · `ScrollArea` · `Select` · `Stack` · `Text` · `TextField` · `TextLink` · `VideoFrame`
 
 ### Beta (not production-ready)
 
@@ -90,9 +79,9 @@ None. All review findings have been back-filled. ✅
 
 ## Figma drift
 
-- Snapshot captured: **2026-06-22** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **15 day(s)**
-- Variables mirrored: **416** (Primitives 252 · Theme 104 · Device 60)
+- Snapshot captured: **2026-07-07** (interactive Figma MCP — not script-regenerable, ADR-002)
+- Age: **1 day(s)**
+- Variables mirrored: **454** (Primitives 288 · Theme 106 · Device 60)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 
 This is a frozen mirror, not a live drift comparison. Run `/figma-variable-audit` to diff it against committed tokens.

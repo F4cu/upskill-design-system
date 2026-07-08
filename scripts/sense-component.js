@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Pure aggregation (no AI, no live API calls): narrows the frozen-memory baseline
-// to a single component, written to .claude/handoff/<Name>.snapshot.json — the
+// to a single component, written to .claude/handoff/runs/<Name>.snapshot.json — the
 // frozen context the component loop's scaffold stage reads instead of calling
 // Airtable or Figma live (ADR-007, Phase 9 stage 0).
 //
@@ -24,7 +24,7 @@ const USAGE_PATH      = path.resolve(ROOT, "packages/tokens/token-usage.json");
 const FIGMA_PATH      = path.resolve(ROOT, "packages/tokens/figma-variables.json");
 const COMPONENTS_DIR  = path.resolve(ROOT, "packages/components/src/components");
 const SCHEMA_PATH     = path.resolve(ROOT, "packages/components/component.schema.json");
-const HANDOFF_DIR     = path.resolve(ROOT, ".claude/handoff");
+const HANDOFF_DIR     = path.resolve(ROOT, ".claude/handoff/runs");
 
 const STALE_AFTER_DAYS = 30;
 

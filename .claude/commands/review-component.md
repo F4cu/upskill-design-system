@@ -14,7 +14,7 @@ description: Review a component's implementation for correctness, accessibility 
 
 ## What this does
 
-Spawns one adversarial reviewer subagent against the component diff, applies every `high`/`medium` finding in the main session, re-runs the deterministic gate, then opens a PR. Produces `.claude/handoff/<Name>.review.json` — the structured findings file that `/extract-learnings` reads to back-fill metadata.
+Spawns one adversarial reviewer subagent against the component diff, applies every `high`/`medium` finding in the main session, re-runs the deterministic gate, then opens a PR. Produces `.claude/handoff/runs/<Name>.review.json` — the structured findings file that `/extract-learnings` reads to back-fill metadata.
 
 ## Binding rules
 
@@ -31,14 +31,14 @@ Spawns one adversarial reviewer subagent against the component diff, applies eve
 
 Spawn **one** subagent (`general-purpose`) with fresh context. Pass it only:
 - The path to the component folder and the diff (`git diff` of the modified files)
-- The snapshot path (`.claude/handoff/<Name>.snapshot.json`)
+- The snapshot path (`.claude/handoff/runs/<Name>.snapshot.json`)
 - The instruction to run and report findings from:
   1. `/code-review` on the diff (correctness + reuse/simplification)
   2. `npm run lint -- packages/components/src/components/<Name>` (ESLint + jsx-a11y Tier-1 static rules)
   3. An a11y read of the component against its metadata `accessibility` block (role, aria, keyboard)
   4. **For interactive components only** (`component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab / native browser behaviour) — judge whether `<Name>.a11y.test.tsx` covers the contract: does it assert every `keyboardInteraction` declared in the metadata, the state attribute(s) that toggle (e.g. `aria-expanded`, `aria-pressed`, `aria-selected`), focus movement, and the WAI-ARIA APG pattern's semantics? The gate proves the test passes; the reviewer judges whether it tests the *right things*. Thin or contract-incomplete tests are a `changes-required` a11y finding. Skip entirely for display/landmark components (e.g. `Badge`, `Divider`).
 
-The subagent writes findings to `.claude/handoff/<Name>.review.json`:
+The subagent writes findings to `.claude/handoff/runs/<Name>.review.json`:
 ```json
 {
   "component": "<Name>",
@@ -53,7 +53,7 @@ The subagent's final message back to the main session is a short summary + the v
 
 ### Stage 2 · Fix + PR (main session)
 
-Read `.claude/handoff/<Name>.review.json`. Apply every `high`/`medium` finding and any lint error; for `low` findings, apply or record why not. Re-run the gate:
+Read `.claude/handoff/runs/<Name>.review.json`. Apply every `high`/`medium` finding and any lint error; for `low` findings, apply or record why not. Re-run the gate:
 ```
 npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
 ```
@@ -71,7 +71,7 @@ Do **not** commit directly to `main`. Component changes must go through a PR.
 
 ### Stage 3 · Per-run log
 
-Append a record to `.claude/handoff/<Name>.run.json`:
+Append a record to `.claude/handoff/runs/<Name>.run.json`:
 ```json
 {
   "component": "<Name>",

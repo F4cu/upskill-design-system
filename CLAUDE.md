@@ -101,9 +101,11 @@ Moments and loops read the system's status quo from **committed files, never liv
 
 **Component lifecycle has two axes** (ADR-010): **Maturity** (`beta`/`ready`/`deprecated`, the metadata `component.status`, pushed code → Airtable) and **Implementation** (`established`/`in progress`/`in review`/`done`/`todo`, the pipeline stage). `sense.js` *derives* `in progress`/`in review`/`established` from handoff artifacts (`in review` = `.review.json` + `.learnings.json` both present; a lone snapshot = `established`, pre-loop); `done`/`todo` are **human-set in Airtable**, pulled into `component-signoff.json`, and win over the derived stage. The push never overwrites an Airtable `done` ("don't downgrade done" guard). The two axes live in separate Airtable columns so a pushed value and a human value never collide.
 
-Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/<Name>.snapshot.json` by `npm run sense:component <Name>`. `figma-variables.json` tags or omits **representational divergences** — unitless tokens Figma can't store faithfully (line-heights) — so the audit diff doesn't flag them every run.
+Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/runs/<Name>.snapshot.json` by `npm run sense:component <Name>`. `figma-variables.json` tags or omits **representational divergences** — unitless tokens Figma can't store faithfully (line-heights) — so the audit diff doesn't flag them every run.
 
 `component-patterns.json` is consumed by `/layout-generation` **only** — the before/after accuracy harness measured a clear improvement for layout/composition generation but a regression for component scaffolds, so it must not be injected into `/component-scaffold` (ADR-013). `components-check.yml` enforces staleness: regenerate-and-diff on every PR touching components.
+
+**Handoff artifacts** (ADR-015). Markdown handoffs in `.claude/handoff/` are committed and carry 3-line frontmatter (`status: active|done|superseded`, `created:`, `completed:`), named `YYYY-MM-DD-slug.handoff.md`. Per-run component-loop JSON (`<Name>.{snapshot,review,run,learnings}.json`) lives under the gitignored `.claude/handoff/runs/` instead — regenerable via `npm run sense:component <Name>`, consumed by `/review-component` and `/extract-learnings`. Run `npm run handoff:tidy` to archive `done`/`superseded` handoffs into `handoff/archive/` and regenerate `handoff/index.json`; read that index, never glob the directory — it fails loudly if a handoff is missing frontmatter.
 
 ## MCP tools — when to use vs when to avoid
 
@@ -153,7 +155,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 
 **On-demand loop guardrails** (apply to moment 6 and any future loop):
 - **Sequential, ≤2 agents.** Orchestrate in the main session; spawn at most one fresh subagent — the adversarial reviewer, where independent context is the whole point. No parallel worker swarm: on Claude Pro the scarce resource is the rolling usage window, and parallel agents drain it N× at once and trip rate limits.
-- **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot (`STATUS_QUO.md`, `.claude/handoff/<Name>.snapshot.json`) — never stream raw data between stages or let a stage make its own live API call.
+- **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot (`STATUS_QUO.md`, `.claude/handoff/runs/<Name>.snapshot.json`) — never stream raw data between stages or let a stage make its own live API call.
 - **Deterministic work stays a script.** Sensing, validation, typecheck, build are `npm` scripts, not agent steps. Agents only do what a script can't.
 - **Fail-fast.** If the gate fails, bounce back to the scaffold stage with the error rather than pushing forward.
 - **No agent code reaches `main` unreviewed.** Generated code clears the deterministic gate and the adversarial review before a human PR opens.
@@ -256,6 +258,7 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Light in-session review without a subagent or handoff file | `/code-review` on the diff + `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test` |
 | Back-fill metadata learnings after a review or bug-fix session | `/extract-learnings <Name>` (single) or `/extract-learnings --all` (batch) |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
+| Archive done/superseded handoffs, regenerate `handoff/index.json` | `npm run handoff:tidy` |
 | Run a11y checks (static + behavioral) | `npm run lint` (Tier 1, all) · `npm run a11y:coverage && npm run a11y:test` (Tier 2, interactive components — ADR-008) |
 | Generate a page or section layout | `/layout-generation` |
 | Audit Figma variables against committed tokens (drift check) | `/figma-variable-audit` |

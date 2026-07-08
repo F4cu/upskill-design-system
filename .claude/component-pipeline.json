@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-07-03T09:34:24.676Z",
+  "generatedAt": "2026-07-08T09:15:43.260Z",
   "components": [
     {
       "name": "Accordion",
       "type": "interactive",
       "maturity": "beta",
-      "implementation": "in review",
+      "implementation": "established",
       "signedOff": false,
-      "reviewedAt": "2026-06-23T11:30:00.000Z",
-      "learningsBackfilled": true
+      "reviewedAt": null,
+      "learningsBackfilled": false
     },
     {
       "name": "AppHeader",
@@ -32,10 +32,10 @@
       "name": "Badge",
       "type": "display",
       "maturity": "beta",
-      "implementation": "in review",
+      "implementation": "established",
       "signedOff": false,
-      "reviewedAt": "2026-07-01T12:00:00.000Z",
-      "learningsBackfilled": true
+      "reviewedAt": null,
+      "learningsBackfilled": false
     },
     {
       "name": "Box",
@@ -59,10 +59,10 @@
       "name": "Button",
       "type": "interactive",
       "maturity": "beta",
-      "implementation": "in review",
+      "implementation": "established",
       "signedOff": false,
-      "reviewedAt": "2026-07-01T15:10:05.000Z",
-      "learningsBackfilled": true
+      "reviewedAt": null,
+      "learningsBackfilled": false
     },
     {
       "name": "ButtonArrow",
@@ -149,10 +149,10 @@
       "name": "Icon",
       "type": "display",
       "maturity": "beta",
-      "implementation": "in review",
+      "implementation": "established",
       "signedOff": false,
-      "reviewedAt": "2026-07-01T15:22:28Z",
-      "learningsBackfilled": true
+      "reviewedAt": null,
+      "learningsBackfilled": false
     },
     {
       "name": "Image",
@@ -194,10 +194,10 @@
       "name": "Select",
       "type": "input",
       "maturity": "beta",
-      "implementation": "in review",
+      "implementation": "established",
       "signedOff": false,
-      "reviewedAt": "2026-06-25T00:00:00.000Z",
-      "learningsBackfilled": true
+      "reviewedAt": null,
+      "learningsBackfilled": false
     },
     {
       "name": "Stack",

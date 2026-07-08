@@ -25,7 +25,7 @@ const GOVERNANCE_PATH  = path.resolve(ROOT, "packages/tokens/airtable-governance
 const USAGE_PATH       = path.resolve(ROOT, "packages/tokens/token-usage.json");
 const FIGMA_PATH       = path.resolve(ROOT, "packages/tokens/figma-variables.json");
 const COMPONENTS_DIR   = path.resolve(ROOT, "packages/components/src/components");
-const HANDOFF_DIR      = path.resolve(ROOT, ".claude/handoff");
+const HANDOFF_DIR      = path.resolve(ROOT, ".claude/handoff/runs");
 const OUTPUT_PATH      = path.resolve(ROOT, ".claude/STATUS_QUO.md");
 const PIPELINE_PATH    = path.resolve(ROOT, ".claude/component-pipeline.json");
 const SIGNOFF_PATH     = path.resolve(ROOT, ".claude/component-signoff.json");
@@ -276,7 +276,7 @@ function componentSection(pipeline) {
     `- **${pipeline.length} total** — Maturity: ${statusLine}`,
     `- By type: ${typeLine}`,
     `- Implementation: ${implLine}`,
-    `- Source: \`packages/components/src/components/*/\*.metadata.json\` + \`.claude/handoff/\` + \`.claude/component-signoff.json\` (human \`done\`/\`todo\` from Airtable)`,
+    `- Source: \`packages/components/src/components/*/\*.metadata.json\` + \`.claude/handoff/runs/\` + \`.claude/component-signoff.json\` (human \`done\`/\`todo\` from Airtable)`,
     "",
   ];
 

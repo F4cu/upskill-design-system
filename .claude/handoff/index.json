@@ -1,0 +1,82 @@
+[
+  {
+    "name": "2026-07-02-case-study-refresh",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-07-02",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/2026-07-02-case-study-refresh.handoff.md"
+  },
+  {
+    "name": "2026-07-07-figma-variable-push-prep",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-07-07",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/2026-07-07-figma-variable-push-prep.handoff.md"
+  },
+  {
+    "name": "2026-07-03-multi-brand-refactor",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-07-03",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/archive/2026-07-03-multi-brand-refactor.handoff.md"
+  },
+  {
+    "name": "2026-07-07-claude-dir-reorg",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-07-07",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/archive/2026-07-07-claude-dir-reorg.handoff.md"
+  },
+  {
+    "name": "docsify-docs-site",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-07-02",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/archive/docsify-docs-site.handoff.md"
+  },
+  {
+    "name": "pipeline-dashboard-chart-spec",
+    "kind": "spec",
+    "status": "done",
+    "created": "2026-07-07",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/archive/pipeline-dashboard-chart-spec.md"
+  },
+  {
+    "name": "pipeline-dashboard",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-07-07",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/archive/pipeline-dashboard.handoff.md"
+  },
+  {
+    "name": "system-case-study-draft",
+    "kind": "spec",
+    "status": "done",
+    "created": "2026-07-02",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/archive/system-case-study-draft.md"
+  },
+  {
+    "name": "system-case-study",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-07-02",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/archive/system-case-study.handoff.md"
+  },
+  {
+    "name": "token-contrast-fixes",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-07-07",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/archive/token-contrast-fixes.handoff.md"
+  }
+]

@@ -45,11 +45,11 @@ Moments read the system's status quo from **committed files, never live APIs** �
 
 The flagship moment (6) is a bounded loop with stages, per ADR-007 — **sequential, at most two agents, frozen-file handoffs only**:
 
-- **Stage 0 — Sense** (script, no AI): `npm run sense:component <Name>` writes `.claude/handoff/<Name>.snapshot.json` from the committed frozen-memory files. No live API call.
+- **Stage 0 — Sense** (script, no AI): `npm run sense:component <Name>` writes `.claude/handoff/runs/<Name>.snapshot.json` from the committed frozen-memory files. No live API call.
 - **Stage 1 — Scaffold** (main session): reuses `/component-scaffold`, fed only the snapshot + schema + a template component.
 - **Stage 2 — Gate** (script): `metadata:validate && typecheck && build && a11y:coverage && a11y:test` (the a11y steps added by the ADR-007 amendment — see [Accessibility](03-accessibility.md)). Fail-fast: a failure bounces back to Stage 1 with the error.
 - **Stage 2b — Visual checkpoint** (human): go/no-go in Storybook, light and dark themes.
-- **Stage 3+ — Review + PR**: delegates to `/review-component`, which spawns the loop's *one* subagent — a fresh adversarial reviewer with independent context, whose findings land in `.claude/handoff/<Name>.review.json`. The main session applies fixes, re-runs the gate, and opens a PR on a `component/<kebab-name>` branch. No agent-written code reaches `main` unreviewed — this is also the one exception to the repo's no-new-branches workflow.
+- **Stage 3+ — Review + PR**: delegates to `/review-component`, which spawns the loop's *one* subagent — a fresh adversarial reviewer with independent context, whose findings land in `.claude/handoff/runs/<Name>.review.json`. The main session applies fixes, re-runs the gate, and opens a PR on a `component/<kebab-name>` branch. No agent-written code reaches `main` unreviewed — this is also the one exception to the repo's no-new-branches workflow.
 - **Afterwards — `/extract-learnings`** (separate trigger) closes the loop: it routes each `.review.json` finding to the right metadata section (ARIA attributes → `accessibility.ariaAttributes`, keyboard → `accessibility.keyboardInteractions`, focus → `accessibility.notes`, consumer misuse → `usage.antiPatterns`, child/parent constraints → `composition.accepts`/`containedBy`), gates on `metadata:validate`, and writes `.learnings.json` — the "processed" marker `sense.js` reads to derive the `in review` stage. In `--all` mode it may *propose* (never auto-apply) a `CLAUDE.md` addition when a pattern repeats across components. Fixes that land only in code rot; landing them in metadata is what makes the system self-improving.
 
 ```mermaid

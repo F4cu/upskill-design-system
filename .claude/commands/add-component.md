@@ -13,7 +13,7 @@ This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps `/compone
 ## Binding rules (from ADR-007 — do not violate)
 
 - **Sequential, ≤2 agents.** Main session + one reviewer subagent. No parallel agents, ever.
-- **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot — `.claude/STATUS_QUO.md`, `.claude/handoff/<Name>.snapshot.json`, `.claude/handoff/<Name>.review.json`. No stage makes its own live API call; no streaming raw data between stages.
+- **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot — `.claude/STATUS_QUO.md`, `.claude/handoff/runs/<Name>.snapshot.json`, `.claude/handoff/runs/<Name>.review.json`. No stage makes its own live API call; no streaming raw data between stages.
 - **Deterministic work stays a script.** Sensing, validation, typecheck, build, lint are `npm`/CLI commands, not agent steps. The agent only does what a script can't (scaffold, judge, fix).
 - **Fail-fast.** If the gate fails, bounce back to the scaffold stage with the exact error — do not push forward.
 - **No agent code reaches `main` unreviewed.** Generated code must clear the gate *and* the adversarial review before the human PR opens.
@@ -22,7 +22,7 @@ This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps `/compone
 ## Stages
 
 ### Stage 0 · Sense (script — no AI)
-Run `npm run sense:component <Name>`. This writes `.claude/handoff/<Name>.snapshot.json` from the committed frozen-memory files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) — the frozen context every later stage reads. No live API call.
+Run `npm run sense:component <Name>`. This writes `.claude/handoff/runs/<Name>.snapshot.json` from the committed frozen-memory files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) — the frozen context every later stage reads. No live API call.
 
 If the Figma snapshot is reported absent or stale (`figma.snapshot.stale: true`) and the component has a Figma node, tell the developer and offer to refresh via `/figma-variable-audit` before continuing. Do not silently rely on stale drift state.
 

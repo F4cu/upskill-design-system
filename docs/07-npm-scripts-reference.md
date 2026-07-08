@@ -78,7 +78,7 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 | Command | What it does |
 |---|---|
 | `npm run sense` | Aggregate the committed mirror files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`. Regenerate before a loop run. |
-| `npm run sense:component` | Narrow the baseline to one component → `.claude/handoff/<Name>.snapshot.json`. Usage: `npm run sense:component -- <Name>`. |
+| `npm run sense:component` | Narrow the baseline to one component → `.claude/handoff/runs/<Name>.snapshot.json`. Usage: `npm run sense:component -- <Name>`. |
 
 ---
 

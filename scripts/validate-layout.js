@@ -33,7 +33,7 @@ const FIXED_SET = new Set([
 // App-internal composition primitives (ADR-009 question 3: single parent,
 // no other consumer in the fixed set → not a DS component, so they don't
 // belong in FIXED_SET, but they're sanctioned app code, not a grammar
-// violation). See .claude/handoff/pipeline-dashboard.handoff.md (T4's DAG
+// violation). See .claude/handoff/archive/pipeline-dashboard.handoff.md (T4's DAG
 // node renderer) and pipeline-dashboard-chart-spec.md (T5's SplitChart).
 const APP_INTERNAL_ELEMENTS = new Set([
   'PipelineDag',  // apps/showcase/src/pipeline/PipelineDag.tsx

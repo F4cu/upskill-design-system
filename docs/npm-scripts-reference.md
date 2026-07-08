@@ -69,7 +69,7 @@ The "frozen-memory" files agents and CI read instead of hitting live APIs. All p
 | Command | What it does |
 |---|---|
 | `npm run sense` | Aggregate the committed mirror files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`. Regenerate before a loop run. |
-| `npm run sense:component` | Narrow the baseline to one component → `.claude/handoff/<Name>.snapshot.json`. Usage: `npm run sense:component -- <Name>`. |
+| `npm run sense:component` | Narrow the baseline to one component → `.claude/handoff/runs/<Name>.snapshot.json`. Usage: `npm run sense:component -- <Name>`. |
 | `npm run pipeline:status` | Capture CI workflow status (`tokens-check`, `components-check`, `sync-tokens` — latest run on `main`) and open issues via `gh api` → `.claude/pipeline-status.json`. Requires the `gh` CLI already authenticated. Run manually before deploy — never in a loop, never at app runtime. |
 
 ---

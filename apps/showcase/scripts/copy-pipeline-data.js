@@ -3,7 +3,7 @@
 // Vite/tsc rootDir scoped to apps/showcase (no reaching outside the app root)
 // while guaranteeing zero runtime fetches to GitHub/Airtable/Figma — the
 // dashboard only ever reads what was already committed to git at build time.
-// See .claude/handoff/pipeline-dashboard.handoff.md (T2) and CLAUDE.md's
+// See .claude/handoff/archive/pipeline-dashboard.handoff.md (T2) and CLAUDE.md's
 // "Frozen-memory snapshots" section.
 //
 // src/data/ is gitignored: it is a build artifact of copying already-committed
