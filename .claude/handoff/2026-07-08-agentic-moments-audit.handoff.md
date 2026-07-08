@@ -119,7 +119,7 @@ the question empirically instead of by argument.
 |---|---|---|
 | 1. Frontmatter (model + allowed-tools) pass over 10 commands — **done 2026-07-08** (incl. read-only `adversarial-reviewer` agent in `.claude/agents/`; main session now writes `.review.json`) | ~1 session | — |
 | 2. `docs-check.js` + frontmatter `sources:` in docs/*.md + CI — **done 2026-07-08** (`npm run docs:check`, `docs-check.yml` on every PR with `fetch-depth: 0`, docsify front-matter plugin added so the YAML doesn't render) | ~1 session | — |
-| 3. `/docs-sync` moment (moment 9) + CLAUDE.md index row | ~1 session | step 2 |
+| 3. `/docs-sync` moment (moment 9) + CLAUDE.md index row — **done 2026-07-08** (command committed to main `32b9c7a`; inaugural run over docs 00–06 + 08 delivered as PR #36 — real drift found in 00, 01, 03, 04, 06, 08; 02 and 05 clock-only) | ~1 session | step 2 |
 
 Step 2 caveat for step 3: the check's *first* real run (2026-07-08, pre-commit) flagged 8 of 9
 docs as stale — only `07-npm-scripts-reference.md` was current. Committing the frontmatter
