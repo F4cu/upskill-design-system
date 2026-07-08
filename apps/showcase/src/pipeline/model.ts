@@ -1,3 +1,5 @@
+import { AIRTABLE_TABLES } from './airtable'
+
 export type PipelineNodeKind =
   | 'source'
   | 'build'
@@ -37,14 +39,6 @@ export interface PipelineEdge {
   from: string
   to: string
 }
-
-const AIRTABLE_BASE = 'https://airtable.com/appBfY2arkReKQNit'
-const AIRTABLE_TABLES = {
-  primitives: `${AIRTABLE_BASE}/tblAl09uImcO1VPeb`,
-  semantic: `${AIRTABLE_BASE}/tblxMSyL7EFIXltqX`,
-  device: `${AIRTABLE_BASE}/tblQvDDo0EZoiYrdf`,
-  components: `${AIRTABLE_BASE}/tblT79kVwnCZJdlQE`,
-} as const
 
 export const pipelineNodes: PipelineNode[] = [
   {

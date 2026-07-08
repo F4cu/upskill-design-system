@@ -15,6 +15,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { readJson, rel, usagesFor, daysBetween } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -28,30 +29,8 @@ const HANDOFF_DIR     = path.resolve(ROOT, ".claude/handoff/runs");
 
 const STALE_AFTER_DAYS = 30;
 
-function readJson(p) {
-  return JSON.parse(fs.readFileSync(p, "utf8"));
-}
-
-function rel(absPath) {
-  return path.relative(ROOT, absPath);
-}
-
-// dot-path token → SD CSS custom property, e.g. color.terracotta.9 → --ds-color-terracotta-9
-function dotPathToCssVar(dotPath) {
-  return "--ds-" + dotPath.replace(/\./g, "-");
-}
-
 function usageCountFor(dotPath, usage) {
-  const files = new Set();
-  for (const f of usage.aliases?.[dotPath] ?? []) files.add(f);
-  for (const f of usage.css?.[dotPathToCssVar(dotPath)] ?? []) files.add(f);
-  return files.size;
-}
-
-function daysBetween(isoDate, now) {
-  const then = new Date(isoDate);
-  if (Number.isNaN(then.getTime())) return null;
-  return Math.floor((now - then) / 86_400_000);
+  return usagesFor(dotPath, usage).length;
 }
 
 // Governance keys live under either section; absent = active by convention (see airtable-pull.js).

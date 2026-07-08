@@ -17,6 +17,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { readJson, rel, usagesFor, daysBetween } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -39,14 +40,6 @@ const HUMAN_OWNED_IMPL = new Set(["done", "todo"]);
 
 const STALE_AFTER_DAYS = 30;
 
-function readJson(p) {
-  return JSON.parse(fs.readFileSync(p, "utf8"));
-}
-
-function rel(absPath) {
-  return path.relative(ROOT, absPath);
-}
-
 // Write only when the content changed apart from its embedded timestamp. The
 // timestamp records when the system state last changed, not when sense last ran,
 // so re-running with no real change must leave the file (and its timestamp)
@@ -60,25 +53,6 @@ function writeIfChanged(filePath, content, normalize) {
   }
   fs.writeFileSync(filePath, content);
   return true;
-}
-
-// dot-path token → SD CSS custom property, e.g. color.terracotta.9 → --ds-color-terracotta-9
-function dotPathToCssVar(dotPath) {
-  return "--ds-" + dotPath.replace(/\./g, "-");
-}
-
-// Every file that references a token, across both usage maps.
-function usagesFor(dotPath, usage) {
-  const files = new Set();
-  for (const f of usage.aliases?.[dotPath] ?? []) files.add(f);
-  for (const f of usage.css?.[dotPathToCssVar(dotPath)] ?? []) files.add(f);
-  return [...files];
-}
-
-function daysBetween(isoDate, now) {
-  const then = new Date(isoDate);
-  if (Number.isNaN(then.getTime())) return null;
-  return Math.floor((now - then) / 86_400_000);
 }
 
 function governanceSection(governance, usage) {

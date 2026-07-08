@@ -4,16 +4,17 @@ import "./load-env.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { AIRTABLE_BASE_ID, AIRTABLE_TABLE_IDS, airtableTableUrl } from "./airtable-ids.js";
+import { flattenDTCG, airtableListAllPages } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID ?? "appBfY2arkReKQNit";
 
-const PRIMITIVES_TABLE = "tblAl09uImcO1VPeb";
-const SEMANTIC_TABLE = "tblxMSyL7EFIXltqX";
-const DEVICE_TABLE = "tblQvDDo0EZoiYrdf";
-const COMPONENTS_TABLE = "tblT79kVwnCZJdlQE";
+const PRIMITIVES_TABLE = AIRTABLE_TABLE_IDS.primitives;
+const SEMANTIC_TABLE = AIRTABLE_TABLE_IDS.semantic;
+const DEVICE_TABLE = AIRTABLE_TABLE_IDS.device;
+const COMPONENTS_TABLE = AIRTABLE_TABLE_IDS.components;
 
 // Implementation values a human owns in Airtable — code never overwrites these
 // and never orphan-deletes a row holding one. See ADR-010.
@@ -61,9 +62,7 @@ function validateEnv() {
   if (!AIRTABLE_API_KEY) throw new Error("Missing env var: AIRTABLE_API_KEY");
 }
 
-function tableUrl(tableName) {
-  return `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}`;
-}
+const tableUrl = airtableTableUrl;
 
 function airtableHeaders() {
   return {
@@ -98,21 +97,12 @@ function resolveAlias(alias, themeTokens, primitiveTokens, depth = 0) {
 
 // --- Primitive tokens ---
 
-function flattenPrimitives(node, prefix = "") {
-  const records = [];
-  for (const [key, val] of Object.entries(node)) {
-    const tokenPath = prefix ? `${prefix}.${key}` : key;
-    if (val.$type && val.$value !== undefined) {
-      records.push({
-        path: tokenPath,
-        value: String(val.$value),
-        group: tokenPath.split(".")[0],
-      });
-    } else if (typeof val === "object" && val !== null) {
-      records.push(...flattenPrimitives(val, tokenPath));
-    }
-  }
-  return records;
+function flattenPrimitives(node) {
+  return flattenDTCG(node, (tokenPath, val) => ({
+    path: tokenPath,
+    value: String(val.$value),
+    group: tokenPath.split(".")[0],
+  }));
 }
 
 // --- Semantic tokens ---
@@ -186,17 +176,8 @@ function cleanDevice(tokens) {
   return cleaned;
 }
 
-function flattenDevice(node, prefix = "") {
-  const records = [];
-  for (const [key, val] of Object.entries(node)) {
-    const tokenPath = prefix ? `${prefix}.${key}` : key;
-    if (val.$type && val.$value !== undefined) {
-      records.push({ path: tokenPath, alias: String(val.$value) });
-    } else if (typeof val === "object" && val !== null) {
-      records.push(...flattenDevice(val, tokenPath));
-    }
-  }
-  return records;
+function flattenDevice(node) {
+  return flattenDTCG(node, (tokenPath, val) => ({ path: tokenPath, alias: String(val.$value) }));
 }
 
 function buildDeviceMap(tokens) {
@@ -209,19 +190,13 @@ function buildDeviceMap(tokens) {
 
 async function listAllRecords(tableName, keyField) {
   const records = [];
-  let offset;
-  do {
-    const url = new URL(tableUrl(tableName));
-    url.searchParams.set("fields[]", keyField);
-    if (offset) url.searchParams.set("offset", offset);
-    const res = await fetch(url, { headers: airtableHeaders() });
-    if (!res.ok) return records;
-    const data = await res.json();
-    for (const r of data.records ?? []) {
-      records.push({ id: r.id, key: r.fields[keyField] ?? "" });
-    }
-    offset = data.offset;
-  } while (offset);
+  await airtableListAllPages(tableUrl(tableName), airtableHeaders(), {
+    fields: [keyField],
+    onError: "stop",
+    onPage: (page) => {
+      for (const r of page) records.push({ id: r.id, key: r.fields[keyField] ?? "" });
+    },
+  });
   return records;
 }
 
@@ -311,22 +286,17 @@ function readComponents() {
 // states. Maps Name → Implementation (only records that have one set).
 async function fetchExistingImpl() {
   const map = {};
-  let offset;
-  do {
-    const url = new URL(tableUrl(COMPONENTS_TABLE));
-    url.searchParams.append("fields[]", COMPONENT_FIELDS.name);
-    url.searchParams.append("fields[]", COMPONENT_FIELDS.implementation);
-    if (offset) url.searchParams.set("offset", offset);
-    const res = await fetch(url, { headers: airtableHeaders() });
-    if (!res.ok) return map;
-    const data = await res.json();
-    for (const r of data.records ?? []) {
-      const name = r.fields[COMPONENT_FIELDS.name];
-      const impl = r.fields[COMPONENT_FIELDS.implementation];
-      if (name && impl) map[name] = impl;
-    }
-    offset = data.offset;
-  } while (offset);
+  await airtableListAllPages(tableUrl(COMPONENTS_TABLE), airtableHeaders(), {
+    fields: [COMPONENT_FIELDS.name, COMPONENT_FIELDS.implementation],
+    onError: "stop",
+    onPage: (page) => {
+      for (const r of page) {
+        const name = r.fields[COMPONENT_FIELDS.name];
+        const impl = r.fields[COMPONENT_FIELDS.implementation];
+        if (name && impl) map[name] = impl;
+      }
+    },
+  });
   return map;
 }
 

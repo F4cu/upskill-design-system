@@ -7,9 +7,9 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { ROOT, rel } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.resolve(__dirname, "..");
 const OUTPUT_PATH = path.resolve(ROOT, "packages/tokens/token-usage.json");
 
 const CSS_SCAN_DIRS  = [path.resolve(ROOT, "packages/components/src")];
@@ -32,36 +32,17 @@ function walkFiles(dir, exts) {
   return out;
 }
 
-function rel(absPath) {
-  return path.relative(ROOT, absPath);
-}
-
-function buildCssMap(files) {
+// Scans `files` for matches of `re` (whose first capture group is the token),
+// mapping each token to the deduped list of files referencing it. Shared by the
+// CSS var() scan and the {alias} scan below — they differ only in the regex.
+function buildTokenMap(files, re) {
   const map = {};
   for (const file of files) {
     const content = fs.readFileSync(file, "utf8");
-    const re = /var\((--ds-[\w-]+)/g;
-    let match;
-    while ((match = re.exec(content)) !== null) {
+    const r = rel(file);
+    for (const match of content.matchAll(re)) {
       const token = match[1];
       (map[token] ??= []);
-      const r = rel(file);
-      if (!map[token].includes(r)) map[token].push(r);
-    }
-  }
-  return map;
-}
-
-function buildAliasMap(files) {
-  const map = {};
-  for (const file of files) {
-    const content = fs.readFileSync(file, "utf8");
-    const re = /\{([\w][\w.-]*)\}/g;
-    let match;
-    while ((match = re.exec(content)) !== null) {
-      const token = match[1];
-      (map[token] ??= []);
-      const r = rel(file);
       if (!map[token].includes(r)) map[token].push(r);
     }
   }
@@ -72,8 +53,8 @@ function main() {
   const cssFiles   = CSS_SCAN_DIRS.flatMap((d) => walkFiles(d, CSS_EXTS));
   const aliasFiles = ALIAS_SCAN_DIRS.flatMap((d) => walkFiles(d, JSON_EXTS));
 
-  const css     = buildCssMap(cssFiles);
-  const aliases = buildAliasMap(aliasFiles);
+  const css     = buildTokenMap(cssFiles, /var\((--ds-[\w-]+)/g);
+  const aliases = buildTokenMap(aliasFiles, /\{([\w][\w.-]*)\}/g);
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify({ css, aliases }, null, 2) + "\n");
 

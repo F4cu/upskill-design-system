@@ -3,11 +3,11 @@
 // Safe to re-run — skips fields that already exist.
 
 import "./load-env.js";
+import { AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAMES } from "./airtable-ids.js";
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID ?? "appBfY2arkReKQNit";
 
-const TARGET_TABLE_NAMES = ["Primitive tokens", "Semantic tokens"];
+const TARGET_TABLE_NAMES = [AIRTABLE_TABLE_NAMES.primitives, AIRTABLE_TABLE_NAMES.semantic];
 
 const GOVERNANCE_FIELDS = [
   {

@@ -7,11 +7,12 @@ import "./load-env.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAMES, airtableTableUrl } from "./airtable-ids.js";
+import { airtableListAllPages } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID ?? "appBfY2arkReKQNit";
 const OUTPUT_PATH = path.resolve(__dirname, "../packages/tokens/airtable-governance.json");
 const GOVERNANCE_COMMENT =
   "Frozen mirror of the Airtable governance layer (status/owner/successor/notes per token). " +
@@ -20,22 +21,20 @@ const GOVERNANCE_COMMENT =
 const SIGNOFF_PATH = path.resolve(__dirname, "../.claude/component-signoff.json");
 
 const TABLES = {
-  primitives: { name: "Primitive tokens", keyField: "Primitives" },
-  semantic:   { name: "Semantic tokens",  keyField: "Token name" },
+  primitives: { name: AIRTABLE_TABLE_NAMES.primitives, keyField: "Primitives" },
+  semantic:   { name: AIRTABLE_TABLE_NAMES.semantic,  keyField: "Token name" },
 };
 
 const GOV_FIELDS = ["Status", "Owner", "Successor", "Notes"];
 
-const COMPONENTS_TABLE = "Components";
+const COMPONENTS_TABLE = AIRTABLE_TABLE_NAMES.components;
 // Human-owned Implementation values are the only ones pulled back: `done` (the
 // sign-off) and `todo` (a planned/backlog component). The loop stages
 // (in progress / in review) are derived by sense.js, not pulled — pulling them
 // would be circular.
 const HUMAN_OWNED_IMPL = new Set(["done", "todo"]);
 
-function tableUrl(tableName) {
-  return `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}`;
-}
+const tableUrl = airtableTableUrl;
 
 function headers() {
   return { Authorization: `Bearer ${AIRTABLE_API_KEY}` };
@@ -47,31 +46,22 @@ function validateEnv() {
 
 async function pullGovernance(tableName, keyField) {
   const records = {};
-  let offset;
-
-  do {
-    const url = new URL(tableUrl(tableName));
-    for (const f of [keyField, ...GOV_FIELDS]) url.searchParams.append("fields[]", f);
-    url.searchParams.set("filterByFormula", "NOT({Status} = '')");
-    if (offset) url.searchParams.set("offset", offset);
-
-    const res = await fetch(url.toString(), { headers: headers() });
-    if (!res.ok) throw new Error(`Airtable list failed on "${tableName}": ${res.status} ${await res.text()}`);
-    const data = await res.json();
-
-    for (const record of data.records ?? []) {
-      const key = record.fields[keyField];
-      if (!key) continue;
-      records[key] = {
-        status:    record.fields["Status"]    ?? null,
-        owner:     record.fields["Owner"]     ?? null,
-        successor: record.fields["Successor"] ?? null,
-        notes:     record.fields["Notes"]     ?? null,
-      };
-    }
-    offset = data.offset;
-  } while (offset);
-
+  await airtableListAllPages(tableUrl(tableName), headers(), {
+    fields: [keyField, ...GOV_FIELDS],
+    filterByFormula: "NOT({Status} = '')",
+    onPage: (page) => {
+      for (const record of page) {
+        const key = record.fields[keyField];
+        if (!key) continue;
+        records[key] = {
+          status:    record.fields["Status"]    ?? null,
+          owner:     record.fields["Owner"]     ?? null,
+          successor: record.fields["Successor"] ?? null,
+          notes:     record.fields["Notes"]     ?? null,
+        };
+      }
+    },
+  });
   return records;
 }
 
@@ -79,27 +69,17 @@ async function pullGovernance(tableName, keyField) {
 // Loop-derived stages are ignored so the value never round-trips through code.
 async function pullComponentSignoff() {
   const signoff = {};
-  let offset;
-
-  do {
-    const url = new URL(tableUrl(COMPONENTS_TABLE));
-    url.searchParams.append("fields[]", "Name");
-    url.searchParams.append("fields[]", "Implementation");
-    url.searchParams.set("filterByFormula", "NOT({Implementation} = '')");
-    if (offset) url.searchParams.set("offset", offset);
-
-    const res = await fetch(url.toString(), { headers: headers() });
-    if (!res.ok) throw new Error(`Airtable list failed on "${COMPONENTS_TABLE}": ${res.status} ${await res.text()}`);
-    const data = await res.json();
-
-    for (const record of data.records ?? []) {
-      const name = record.fields["Name"];
-      const impl = record.fields["Implementation"];
-      if (name && HUMAN_OWNED_IMPL.has(impl)) signoff[name] = impl;
-    }
-    offset = data.offset;
-  } while (offset);
-
+  await airtableListAllPages(tableUrl(COMPONENTS_TABLE), headers(), {
+    fields: ["Name", "Implementation"],
+    filterByFormula: "NOT({Implementation} = '')",
+    onPage: (page) => {
+      for (const record of page) {
+        const name = record.fields["Name"];
+        const impl = record.fields["Implementation"];
+        if (name && HUMAN_OWNED_IMPL.has(impl)) signoff[name] = impl;
+      }
+    },
+  });
   return signoff;
 }
 

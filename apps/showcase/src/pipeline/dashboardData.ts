@@ -4,13 +4,9 @@ import tokenUsage from '../data/token-usage.json'
 import figmaVariables from '../data/figma-variables.json'
 import pipelineStatus from '../data/pipeline-status.json'
 import type { SplitDatum } from './SplitChart'
+import { AIRTABLE_TABLES } from './airtable'
 
-const AIRTABLE_BASE = 'https://airtable.com/appBfY2arkReKQNit'
-export const AIRTABLE_TABLES = {
-  primitives: `${AIRTABLE_BASE}/tblAl09uImcO1VPeb`,
-  semantic: `${AIRTABLE_BASE}/tblxMSyL7EFIXltqX`,
-  components: `${AIRTABLE_BASE}/tblT79kVwnCZJdlQE`,
-} as const
+export { AIRTABLE_TABLES }
 
 // ── Component lifecycle ─────────────────────────────────────────────────────
 
