@@ -156,7 +156,7 @@ function scanJsx(sf) {
         if (name === "as") asValue = attrValueText(attr, sf);
         if (name === "htmlFor") hasHtmlFor = true;
       }
-      // Labels render through <Text as="label" htmlFor> (CLAUDE.md typography
+      // Labels render through <Text as="label" htmlFor> (.claude/rules/components.md typography
       // rule), so a polymorphic as="label" counts the same as a native <label>.
       if (hasHtmlFor && (tag === "label" || asValue === "label")) hasLabelFor = true;
       if (hasAriaOrRole) ariaNodes.push({ element: tag, ...attrs });

@@ -24,3 +24,6 @@ jobs:
 
       - name: Docs staleness check
         run: node scripts/docs-check.js
+
+      - name: CLAUDE.md context-budget check
+        run: node scripts/claude-md-check.js

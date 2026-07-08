@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 
 **Trigger:** Developer, when starting a new component from the fixed set.
 
-**Fixed component set:** `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card` (Phase 4); `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal` (Phase 5b); `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea` (Phase 5c); `Accordion`, `Badge` (Phase 5d). Do not scaffold anything outside this list.
+**Fixed component set:** the canonical list lives in CLAUDE.md → "Component scope" (single source — do not copy it here). Do not scaffold anything outside that list.
 
 **When to use:** Quick exploration or interactive Figma-driven scaffolding when you have a Figma node URL and want files without running the full loop. For a component going to `main`, use `/add-component` instead — it wraps this step in a gate and adversarial review. Running scaffold alone means agent-written code reaches human review unverified.
 

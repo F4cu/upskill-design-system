@@ -4,7 +4,22 @@
 
 A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to nine defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
 
-Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and exit conditions.
+Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and integration/phase status detail.
+
+## Where knowledge lives (read before adding to this file)
+
+This file loads into every session. Its budget is **≤200 lines and ≤20KB**, enforced by `npm run claudemd:check` in CI (ADR-017). Before adding anything here, route it to the narrowest surface that is visible when it matters:
+
+| Knowledge | Home |
+|---|---|
+| Only matters when touching component code | `.claude/rules/components.md` (path-scoped: `packages/components/**`) |
+| Only matters when touching token source/build | `.claude/rules/tokens.md` (path-scoped: `packages/tokens/**`) |
+| A procedure or multi-step workflow | The relevant command in `.claude/commands/` |
+| Rationale, history, dated amendments, alternatives | The ADR |
+| Human-facing reference or tutorial | `docs/` |
+| Something that must happen every single time | A script or CI gate, never prose |
+
+This file keeps only cross-cutting invariants, indexes that point elsewhere, and policies that apply to any session. Litmus test per line: would removing it cause a mistake in *most* sessions? If not, it lives elsewhere. The same test applies to each rules file against its path scope.
 
 ## Token architecture
 
@@ -21,93 +36,43 @@ Tokens resolve in this fixed order — later layers override earlier ones:
 
 Breakpoints: desktop ≥ 1440px, tablet ≥ 768px, mobile < 768px. Runtime brand selection is a `data-brand` attribute, mirroring `data-theme`; import order in `tokens.css` (primitives → default brand → non-default brands → device → theme.light → theme.dark) is load-bearing for cascade correctness at equal specificity — see ADR-012.
 
-### Token format (W3C DTCG)
+Format is W3C DTCG (`$type`/`$value`, curly-brace aliases, never commit `$extensions`). Scales, naming conventions, line-height convention, and build detail: `.claude/rules/tokens.md`. Authoring procedure: `/tokens-author`.
 
-Every token uses `$type` and `$value`. Aliases use curly-brace syntax. No `$extensions` — strip them on export.
+## Style Dictionary build
 
-```json
-{ "$type": "color", "$value": "#D15D50" }          // concrete value
-{ "$type": "color", "$value": "{color.terracotta.9}" }  // alias
-```
-
-### Primitive color scales
-
-Each hue has three sub-scales. Don't mix scales on the same token:
-- `1–12` — light-mode scale (backgrounds → text)
-- `dark-1` through `dark-12` — dark-mode scale
-- `alpha-1` through `alpha-12` — transparent variants of the mid-tone
-
-Current hues: `terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`, `red`. A brand's `color.brand`/`accent`/`neutral`/`surface` slots (see Four-layer model) each alias one of these hues — e.g. `upskill` maps `brand → terracotta`, `surface → gold`; `horizon` maps `brand → cyan`, `neutral`/`surface → grey`. Only hues with a full light + dark ramp are eligible for a brand slot. `cyan`'s light ramp was replaced and its `dark` ramp added (2026-07-06, via a custom Radix-generated scale) specifically to make it brand-eligible — every other hue's dark ramp is original.
-
-### Line-height convention
-
-Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never use fixed px values — the ratio adapts to any font size automatically. Figma cannot store unitless variables, so these are entered there as fixed values and are an accepted code↔Figma divergence, not drift (see Figma sync → representational constraints).
-
-## Style Dictionary build (built)
-
-`npm run tokens:build` transforms DTCG source into CSS custom properties (dimensions in `rem`; desktop device tokens in `:root`, tablet/mobile in `@media` blocks) and JS/TS constants. Config and custom transforms (px→rem, font-weight string→numeric, `$root` rename, media-query combiner) live in `packages/tokens/build.js`.
-
-Each `brands/<brand>.json` builds to its own `brand.<brand>.css` (`data-brand` selector; the default brand also matches `:root`). Theme files build with `outputReferences: true` against `include: [primitives, default-brand]`, so every theme token emits as a `var()` chain rather than a resolved value — one `theme.<mode>.css` serves every brand. Because that `include` + filter combination triggers Style Dictionary's "filtered out token references" warning by design, brand and theme build instances run with `warnings: 'warn'` (primitives/device/JS instances keep `warnings: 'error'`); two post-build gates compensate — a **shape gate** (every brand's flattened token-path set must match the default brand's) and a **no-inlined/no-dangling gate** (theme CSS must contain only resolvable `var()` references, never a leaked default-brand value). See ADR-012.
-
-**Invariant:** components only ever consume the built output, never source JSON. The authoring and rebuild procedure — including when a transform change needs an ADR — is `/tokens-author`.
+`npm run tokens:build` transforms DTCG source into CSS custom properties and JS/TS constants (`packages/tokens/build.js`). **Invariant:** components only ever consume the built output, never source JSON. Brand/theme build mechanics and post-build gates: `.claude/rules/tokens.md` and ADR-012.
 
 ## Figma sync
 
 **Vocabulary:** A **token** is a committed DTCG JSON value in `packages/tokens/src/` (source of truth, code-side). A **variable** is the downstream representation of a token inside a Figma collection.
 
-**The committed DTCG JSON in `packages/tokens/src/` is the source of truth, not Figma** (ADR-002 amendment, 2026-06-17). Code-first is forced by plan limits: the Variables REST API and Code Connect are Enterprise/Org-only, and Token Studio's free GitHub sync is single-file while this architecture is deliberately multi-file. Figma is a downstream mirror and design-exploration surface; the only automatable sync direction available is code→Figma (interactive, via the Figma plugin/MCP).
+**The committed DTCG JSON is the source of truth, not Figma** (ADR-002 amendment). Code-first is forced by plan limits: the Variables REST API and Code Connect are Enterprise/Org-only, so the only automatable sync direction is code→Figma (interactive, via the Figma plugin/MCP). Figma is a downstream mirror and design-exploration surface; a value invented in Figma is a proposal until it lands in `primitives.json` via PR. Before pulling Figma changes into committed tokens, run `/figma-variable-audit` as a drift check — never overwrite primitives without diffing against current usage.
 
-Tokens are authored and changed in the JSON via PR — `primitives.json` is hand-editable like the theme and device layers. A value invented in Figma is a proposal until it lands in `primitives.json`.
+**Representational divergences are not drift.** Figma cannot store unitless values, so line-heights (unitless ratios in code) always differ in Figma. The audit and push moments exclude them; the running list of accepted divergences lives in the drift memory note (`figma-file-variable-drift.md`). See ADR-002.
 
-When reconciling values brought over from Figma, the cleanup step still applies:
-- Strips `$extensions` blocks entirely
-- Converts Figma sRGB component objects → hex strings
-- Preserves alias references in `{path.to.token}` format
-
-Do not commit `$extensions` to source. Before pulling Figma changes into committed tokens, run `/figma-variable-audit` (see "Agentic moments") as a drift check — never overwrite primitives without diffing against current usage.
-
-**Figma representational constraints.** Figma variables cannot store **unitless values**. Line-heights are authored in code as unitless ratios (`1.5`); Figma must hold them as fixed values, so these tokens *always* differ between code and Figma. This is an expected **representational divergence, not drift**: the audit and push moments exclude it, and `figma-variables.json` tags or omits it so the diff never flags it. Code stays authoritative for the unitless value; Figma's fixed value is a display approximation that never flows back into `primitives.json`. The running list of accepted divergences lives in the drift memory note (`figma-file-variable-drift.md`). See ADR-002 (2026-06-22 amendment).
-
-**Figma-to-code translation rules** (direct gap-name mapping, no undesigned wrappers) apply when Figma MCP output drives code generation. They live where they are used — `/component-scaffold` and `/layout-generation`.
-
-**The brand layer is not mirrored to Figma.** `/figma-variable-audit` and `/figma-variable-push` operate on the single default brand only — representing multiple brand "modes" in Figma would need the same Enterprise-gated Variables API this section already works around. This is scoped out deliberately, not a gap; see ADR-012's Deferred section.
-
-## Integrations
-
-| Tool | Role | Status |
-|---|---|---|
-| **Style Dictionary** | Build system: DTCG JSON → CSS custom properties, JS/TS constants. Custom transforms for rem, font-weight, `$root`, media queries. | Built |
-| **Storybook** | Component documentation, token showcase (MDX stories: colors, spacing, typography, radii), light/dark via `addon-themes` + `data-theme`. | Built |
-| **GitHub Actions** | Token build check on PR (`tokens-check.yml`); Airtable sync on merge to main (`sync-tokens.yml`). | Built |
-| **Airtable sync (code → Airtable)** | `scripts/airtable-sync.js` upserts primitives/semantic/device tokens to three tables via REST. One-directional. Runs in CI on merge. | Built |
-| **Airtable governance (Airtable → code)** | Per token: `status` (`active`\|`deprecated`) / `owner` / `successor` (dot-path, e.g. `color.terracotta.9`; nullable) / `notes`, pulled to `airtable-governance.json`. Per component: `Implementation` = human `done`/`todo` sign-off, pulled to `.claude/component-signoff.json` (ADR-010). Both via `scripts/airtable-pull.js` (`npm run airtable:pull:governance`). Run manually before deprecation/sign-off work until Phase 6 automates it. | Planned (Phase 2) |
-| **Figma → code flow** | Code is source of truth; Figma is a downstream mirror. Token audit reconciles drift before pulling Figma changes into committed tokens; Code Connect mappings for components. | Planned (Phases 4, 7) |
-| **PR token diff comment, changelog** | Deterministic scripts in Actions. | Planned (Phase 6) |
-| **Component metadata** | JSON schema + example file exist; consumed by agentic moments. | Schema built; consumers planned |
+**The brand layer is not mirrored to Figma.** `/figma-variable-audit` and `/figma-variable-push` operate on the single default brand only — deliberately scoped out, not a gap (ADR-012, Deferred).
 
 ## Frozen-memory snapshots
 
 Moments and loops read the system's status quo from **committed files, never live APIs** — this shields agents from rate limits and keeps each agent's context small. Read-not-call artifacts:
 
-| File | Source | Captured by | Status |
-|---|---|---|---|
-| `airtable-governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) | Built |
-| `token-usage.json` | Repo scan (`var(--ds-*)` CSS refs + `{alias}` refs) | `scripts/token-usage.js` | Built |
-| `figma-variables.json` | Figma variables | `/figma-variable-audit` via Figma MCP (Plugin API) | Built |
-| `.claude/component-signoff.json` | Airtable (`Implementation` = human `done`/`todo`) | `scripts/airtable-pull.js` (REST) | Built |
-| `.claude/component-pipeline.json` | Component metadata + handoff artifacts + sign-off | `scripts/sense.js` (`npm run sense`) | Built |
-| `.claude/component-patterns.json` | Cross-component pattern aggregate: pattern buckets, ARIA contracts, prop-name drift (deterministic AST + metadata scan) | `scripts/generate-pattern-schema.js` (`npm run patterns:generate`) | Built |
-| `.claude/STATUS_QUO.md` | Aggregate of the above | `scripts/sense.js` (`npm run sense`) | Built |
+| File | Source | Captured by |
+|---|---|---|
+| `airtable-governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) |
+| `token-usage.json` | Repo scan (`var(--ds-*)` CSS refs + `{alias}` refs) | `scripts/token-usage.js` |
+| `figma-variables.json` | Figma variables (REST API is Enterprise-gated, so captured interactively, not by script) | `/figma-variable-audit` via Figma MCP |
+| `.claude/component-signoff.json` | Airtable (`Implementation` = human `done`/`todo`) | `scripts/airtable-pull.js` (REST) |
+| `.claude/component-pipeline.json` | Component metadata + handoff artifacts + sign-off | `scripts/sense.js` (`npm run sense`) |
+| `.claude/component-patterns.json` | Cross-component pattern aggregate (deterministic AST + metadata scan) | `scripts/generate-pattern-schema.js` |
+| `.claude/STATUS_QUO.md` | Aggregate of the above | `scripts/sense.js` (`npm run sense`) |
 
-**Component lifecycle has two axes** (ADR-010): **Maturity** (`beta`/`ready`/`deprecated`, the metadata `component.status`, pushed code → Airtable) and **Implementation** (`established`/`in progress`/`in review`/`done`/`todo`, the pipeline stage). `sense.js` *derives* `in progress`/`in review`/`established` from handoff artifacts (`in review` = `.review.json` + `.learnings.json` both present; a lone snapshot = `established`, pre-loop); `done`/`todo` are **human-set in Airtable**, pulled into `component-signoff.json`, and win over the derived stage. The push never overwrites an Airtable `done` ("don't downgrade done" guard). The two axes live in separate Airtable columns so a pushed value and a human value never collide.
+Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/runs/<Name>.snapshot.json` by `npm run sense:component <Name>`.
 
-Figma's snapshot is captured **interactively via the MCP, not pulled by a script**, because the Variables REST API is Enterprise-gated (ADR-002 amendment) — the same wall as Code Connect. Code stays the source of truth; the snapshot is a drift-detection mirror, not an ingestion source. Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/runs/<Name>.snapshot.json` by `npm run sense:component <Name>`. `figma-variables.json` tags or omits **representational divergences** — unitless tokens Figma can't store faithfully (line-heights) — so the audit diff doesn't flag them every run.
+**Component lifecycle has two axes** (ADR-010): **Maturity** (`component.status`, pushed code → Airtable) and **Implementation** (pipeline stage; `done`/`todo` are human-set in Airtable and win over the derived stage; the push never overwrites an Airtable `done`). The two live in separate Airtable columns so a pushed value and a human value never collide.
 
-`component-patterns.json` is consumed by `/layout-generation` **only** — the before/after accuracy harness measured a clear improvement for layout/composition generation but a regression for component scaffolds, so it must not be injected into `/component-scaffold` (ADR-013). `components-check.yml` enforces staleness: regenerate-and-diff on every PR touching components.
+`component-patterns.json` is consumed by `/layout-generation` **only** — measured improvement there, measured regression in `/component-scaffold`, so never inject it into scaffolds (ADR-013). `components-check.yml` enforces staleness on every PR touching components.
 
-**Handoff artifacts** (ADR-015). Markdown handoffs in `.claude/handoff/` are committed and carry 3-line frontmatter (`status: active|done|superseded`, `created:`, `completed:`), named `YYYY-MM-DD-slug.handoff.md`. Per-run component-loop JSON (`<Name>.{snapshot,review,run,learnings}.json`) lives under the gitignored `.claude/handoff/runs/` instead — regenerable via `npm run sense:component <Name>`, consumed by `/review-component` and `/extract-learnings`. Run `npm run handoff:tidy` to archive `done`/`superseded` handoffs into `handoff/archive/` and regenerate `handoff/index.json`; read that index, never glob the directory — it fails loudly if a handoff is missing frontmatter.
-
-`npm run handoff:tidy` also promotes each `<Name>.run.json` record it finds into a committed, append-only ledger, `.claude/handoff/run-ledger.json` (deduped by `component`+`ranAt`) — since `runs/` itself is gitignored, this is the only place `/review-component`'s per-run telemetry (gate pass/fail, `reviewerCaughtBeyondGate` count, `manualRescues` count) survives past the run. Read it to answer empirically whether the adversarial-review stage is earning its cost, rather than arguing from a handful of remembered runs.
+**Handoff artifacts** (ADR-015). Markdown handoffs in `.claude/handoff/` are committed, named `YYYY-MM-DD-slug.handoff.md`, with 3-line frontmatter (`status: active|done|superseded`, `created:`, `completed:`). Per-run component-loop JSON (`<Name>.{snapshot,review,run,learnings}.json`) lives under the gitignored `.claude/handoff/runs/`, regenerable via `npm run sense:component <Name>`. `npm run handoff:tidy` archives `done`/`superseded` handoffs, regenerates `handoff/index.json` (read that index, never glob the directory), and promotes each `<Name>.run.json` into the committed append-only ledger `.claude/handoff/run-ledger.json` — the only place per-run review telemetry survives; read it to judge empirically whether the adversarial-review stage earns its cost.
 
 ## MCP tools — when to use vs when to avoid
 
@@ -115,174 +80,117 @@ General rule: MCP calls are for **interactive, one-off tasks with the developer 
 
 | MCP | Use it for | Do NOT use it for |
 |---|---|---|
-| **Figma** | (1) Reading variables/design context during `/figma-variable-audit` (drift check). (2) Code Connect mapping and design context when scaffolding a component. (3) Writing variables into Figma during `/figma-variable-push` (`use_figma` Plugin API) when code is ahead of Figma. | Treating Figma as the token source — tokens are authored as code (ADR-002 amendment). Bulk-reading many nodes. |
-| **Airtable** | (1) One-off schema changes (adding governance fields). (2) Ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state in tasks — read the committed `airtable-governance.json` instead. Bulk record operations. |
-| **GitHub** | Rarely — cross-repo searches the `gh` CLI handles awkwardly. | Everything else. Prefer `gh` CLI for PRs, issues, API calls; it's already authenticated and scriptable. |
-| **Google Drive** | Fetching a spec or brief the user explicitly links. | Anything recurring; storing or syncing project docs. |
-| **Notion** | Fetching planning notes the user explicitly links. | A documentation target — docs live in Storybook (components) and Airtable (tokens). |
+| **Figma** | Reading variables/design context in `/figma-variable-audit`; design context when scaffolding; writing variables in `/figma-variable-push`. | Treating Figma as the token source (ADR-002). Bulk-reading many nodes. |
+| **Airtable** | One-off schema changes; ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state — read the committed `airtable-governance.json`. Bulk record operations. |
+| **GitHub** | Rarely — cross-repo searches the `gh` CLI handles awkwardly. | Everything else; prefer `gh` CLI. |
+| **Google Drive / Notion** | Fetching a spec or planning note the user explicitly links. | Anything recurring; a docs target — docs live in Storybook (components) and Airtable (tokens). |
 
 If a task could be done with a committed file, a script, or the `gh` CLI, do it that way even when an MCP tool is available.
 
 ## Git workflow
 
-Commit directly to the current branch — do not create new branches unless explicitly asked. This is a solo project; branch management is the developer's responsibility.
+Commit directly to the current branch — do not create new branches unless explicitly asked. This is a solo project. Exceptions (agent-generated output always goes through a PR, never straight to `main`):
 
-**Exception — `/add-component` + `/review-component` loop:** `/review-component` always creates a branch named `component/<kebab-name>` (e.g. `component/accordion`) when invoked from the `/add-component` flow, then opens a PR against `main` for human review. Agent-generated component code must go through a PR — it should never land on `main` without a review step.
-
-**Exception — `/docs-sync`:** agent-rewritten docs also go through a PR, on a `docs-sync/<YYYY-MM-DD>` branch.
-
-**Exception — `/layout-generation`:** generated layout output also goes through a PR, on a `layout/<kebab-name>` branch, reviewed in-session with `/code-review` by default (an adversarial-reviewer subagent pass is opt-in for full route pages) — see ADR-016.
+- `/review-component` (also inside `/add-component`): branch `component/<kebab-name>`, PR against `main`.
+- `/docs-sync`: branch `docs-sync/<YYYY-MM-DD>`, PR.
+- `/layout-generation`: branch `layout/<kebab-name>`, PR, reviewed in-session with `/code-review` by default (adversarial subagent opt-in for full route pages) — ADR-016.
 
 ## Commands and skills
 
-`.claude/commands/` — prompt-only slash commands. Flat markdown files. All agentic moments live here.  
-`.claude/skills/` — slash commands with companion code. One directory per command. Only `run-storybook` lives here because it ships `driver.mjs`.
-
-Note: Claude Code's naming is the inverse of plain English intuition — "skills" are the ones with code, "commands" are the prompts.
+`.claude/commands/` — prompt-only slash commands; all agentic moments live here. `.claude/skills/` — slash commands with companion code; only `run-storybook` (ships `driver.mjs`). Note: Claude Code's naming is the inverse of intuition — "skills" are the ones with code, "commands" are the prompts.
 
 ## Agentic moments
 
-The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered, defined as prompts in `.claude/commands/` — the full inputs, steps, and success signals live there; this is the index and the load-bearing invariants. Everything else is a script or a GitHub Action.
+The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered; full inputs, steps, and success signals live in each command file — this is the index and the load-bearing invariants. Everything else is a script or a GitHub Action.
 
 | # | Moment | Command | Invariant that must survive |
 |---|---|---|---|
-| 1 | Figma variable audit (drift check) | `/figma-variable-audit` | Never overwrite primitives without diffing against usage; capture the read into `figma-variables.json`; exclude representational divergences from the drift report. |
+| 1 | Figma variable audit (drift check) | `/figma-variable-audit` | Never overwrite primitives without a usage diff; capture the read into `figma-variables.json`; exclude representational divergences. |
 | 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the Airtable `successor`; read `airtable-governance.json`, no MCP. |
 | 3 | Component scaffold | `/component-scaffold` | Read schema + template + Figma context; produce the four component files. |
 | 4 | Layout generation | `/layout-generation` | Only fixed-set components and tokens; every structural choice cites a metadata rule. |
-| 5 | Figma variable push (code → Figma) | `/figma-variable-push` | Write only clean-missing variables; never delete or overwrite Figma variables without explicit confirmation. |
-| 6 | Add component (verified scaffold) | `/add-component` | The ad-hoc loop: sense → scaffold → gate → visual checkpoint → moment 7. Frozen snapshot is the only handoff. ADR-007. |
-| 7 | Review component (adversarial review + fix + PR) | `/review-component` | One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for moment 8. |
-| 8 | Extract learnings (metadata self-improvement) | `/extract-learnings` | Route each finding to its durable home — component metadata first; token conventions → `/tokens-author`, contrast misses → the curated `PAIRS` list; scope stays component/layout/token contracts. `--all` proposes CLAUDE.md additions and `/layout-generation` pattern-section pruning (developer confirms both). |
-| 9 | Docs sync (rewrite stale reference pages) | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is this developer-triggered moment, never CI. Rewrite only the stale sections; never touch prop tables or anything Autodocs/docgen owns. Opens a PR (`docs-sync/<date>` branch). |
+| 5 | Figma variable push (code → Figma) | `/figma-variable-push` | Write only clean-missing variables; never delete or overwrite without explicit confirmation. |
+| 6 | Add component (verified scaffold) | `/add-component` | Sense → scaffold → gate → visual checkpoint → moment 7. Frozen snapshot is the only handoff. ADR-007. |
+| 7 | Review component | `/review-component` | One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for moment 8. |
+| 8 | Extract learnings | `/extract-learnings` | Route each finding to its durable home — component metadata first; token conventions → `/tokens-author`; contrast misses → the curated `PAIRS` list. `--all` proposals require developer confirmation. |
+| 9 | Docs sync | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is developer-triggered, never CI. Rewrite only stale sections; never touch Autodocs/docgen-owned content. PR on `docs-sync/<date>`. |
 
-**For existing component reviews:** Use `/review-component <Name>` for a full adversarial pass (spawns one subagent, writes `.review.json` for the learning loop). Use `/code-review` directly on the diff for a lighter, in-session review with no subagent or handoff file.
+**For existing component reviews:** `/review-component <Name>` for a full adversarial pass; `/code-review` on the diff for a lighter in-session review with no subagent or handoff file.
 
-**Ad-hoc loops vs continuous loops.** A developer-triggered loop that runs a bounded sequence once and stops (moment 6) is allowed — it is a moment with stages, nothing more. A *continuous* loop, scheduled agent run, or always-on watcher is not: if asked for one, push back and propose a script, a GitHub Action, or one of these moments instead.
+**Ad-hoc loops vs continuous loops.** A developer-triggered loop that runs a bounded sequence once and stops (moment 6) is allowed. A *continuous* loop, scheduled agent run, or always-on watcher is not: push back and propose a script, a GitHub Action, or one of these moments instead.
 
-**On-demand loop guardrails** (apply to moment 6 and any future loop):
-- **Sequential, ≤2 agents.** Orchestrate in the main session; spawn at most one fresh subagent — the adversarial reviewer, where independent context is the whole point. No parallel worker swarm: on Claude Pro the scarce resource is the rolling usage window, and parallel agents drain it N× at once and trip rate limits.
-- **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot (`STATUS_QUO.md`, `.claude/handoff/runs/<Name>.snapshot.json`) — never stream raw data between stages or let a stage make its own live API call.
-- **Deterministic work stays a script.** Sensing, validation, typecheck, build are `npm` scripts, not agent steps. Agents only do what a script can't.
-- **Fail-fast.** If the gate fails, bounce back to the scaffold stage with the error rather than pushing forward.
-- **No agent code reaches `main` unreviewed.** Generated code clears the deterministic gate and the adversarial review before a human PR opens.
-
-## Storybook
-
-Storybook lives in `packages/components` — it is the documentation layer for coded components, not a separate package. Installed: React + Vite framework, `@storybook/addon-themes` toggling `data-theme` (activates `theme/light` vs `theme/dark` token sets), a custom brand toolbar (global `brand`, toggling `data-brand` — `@storybook/addon-themes` only supports one `withThemeByDataAttribute` instance, so brand switching is a separate `globalTypes` + decorator in `.storybook/preview.ts`), MDX token showcase stories (colors by hue, spacing, typography, radii). Pending: `storybook-design-token` wired to SD CSS output, visual regression baseline (Chromatic or equivalent).
-
-### Purpose in this system
-
-- **Component development environment** — isolated rendering during build
-- **Living documentation** — stories are the canonical usage examples, not a README
-- **Token visualization** — the MDX showcase stories make tokens visible and reviewable in the browser
-- **Visual regression baseline** — screenshots per story for CI diffing (planned)
-
-### Story conventions
-
-- One story file per component: `ComponentName.stories.tsx` co-located with the component
-- Always export a `Default` story; add named variants for meaningful states (not every prop permutation)
-- Use `args` + `argTypes` so controls work — no hard-coded prop values in stories
-- Dark mode must switch the `data-theme` attribute that activates `theme/dark.json` tokens, not just Storybook's background
+**On-demand loop guardrails** (moment 6 and any future loop):
+- **Sequential, ≤2 agents.** Spawn at most one fresh subagent (the adversarial reviewer). No parallel swarm: on Claude Pro the scarce resource is the rolling usage window; parallel agents drain it N× and trip rate limits.
+- **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot — never stream raw data between stages or make live API calls mid-loop.
+- **Deterministic work stays a script.** Sensing, validation, typecheck, build are `npm` scripts. Agents only do what a script can't.
+- **Fail-fast.** If the gate fails, bounce back to the scaffold stage with the error.
+- **No agent code reaches `main` unreviewed.** Deterministic gate + adversarial review before a human PR opens.
 
 ## Layout grammar
 
-Every page follows a fixed hierarchy mapping Figma structure to HTML landmarks (rationale in ADR-011). The full grammar table — Page/Header/Section/Container/Column/Footer → sanctioned code and landmark — lives in `/layout-generation`, which applies it as its first pass. Enforce deterministically with `npm run layout:validate <file>`.
+Every page follows a fixed hierarchy mapping Figma structure to HTML landmarks (ADR-011). The full grammar table lives in `/layout-generation`; enforce deterministically with `npm run layout:validate <file>`.
 
 Load-bearing invariants for **any** layout file (hand-edited or generated):
 - Exactly one `<Box as="main">` per route; every `<Box as="section">` has an accessible name (`aria-labelledby` → its `Heading`); every extra `<nav>` has a unique `aria-label`.
-- **Inline styles** (replaces the blanket "no inline styles"): allowed only for `.container`/`.grid` classNames and `style={{ flex: '1 0 0' }}` / `minWidth` / `maxWidth`. Forbidden: raw color (use `<Text color=…>` / `<Heading>`), raw token values outside `var()`, arbitrary CSS that belongs in a component's CSS Module.
+- **Inline styles:** allowed only for `.container`/`.grid` classNames and `style={{ flex: '1 0 0' }}` / `minWidth` / `maxWidth`. Forbidden: raw color (use `<Text color=…>` / `<Heading>`), raw token values outside `var()`, arbitrary CSS that belongs in a CSS Module.
 - Rely on device tokens for responsive spacing/typography; reflow via `.grid` or `Inline wrap`. Never hand-write `@media` in layout files.
 
 ## Coding conventions
-
-### Token JSON
-- Keys use `kebab-case` for multi-word names (`border-radius`, `font-size`, `line-height`)
-- Numeric scale steps use plain numbers as string keys (`"1"` through `"12"`, `"100"` through `"800"`)
-- No trailing commas (strict JSON)
-- Aliases always prefer the deepest available primitive path (`{color.terracotta.9}` not `{color.terracotta}`)
-
-### CSS Modules (components package)
-- One `.module.css` file per component, co-located with the component
-- Only reference SD-output custom properties (`var(--token-name)`) — never raw values
-- Class names use `camelCase` inside the module (e.g. `.primaryButton`)
-- No global styles in component modules — globals (reset, base typography, grid) live in `packages/components/src/styles/`
 
 ### JavaScript / TypeScript (components package, scripts)
 - No comments unless the why is non-obvious
 - No defensive error handling for internal paths — only validate at external boundaries (Figma API responses, Airtable webhooks)
 - Prefer explicit over clever
 
-### Component implementation rules (scaffold and layout generation)
-- **Typography:** Any string prop that renders as visible UI text (title, subtitle, label, description, and similar) must be passed through `<Text>` or `<Heading>` — never rendered as a raw string, `<span>`, or `<p>`. Use `as` on the typography component to adjust the semantic element when needed. The exact `size` and `color` values are component-specific — read the component's `usage.antiPatterns` in its metadata for the correct values.
-- **Icon color:** `<Icon>` inherits its color via `currentColor`. Never set a color prop or inline style directly on `<Icon>`. Apply the semantic color token on the ancestor element that owns the color context. The specific token is documented in the composing component's `usage.antiPatterns`.
-- **Component-specific rules:** Before generating a component's JSX, read its `usage.antiPatterns` — they capture both usage mistakes and implementation constraints (e.g. which library component to use for a prop, which token to apply to a specific element).
-- **Type-enforced anti-patterns:** When a component's metadata documents a hard constraint (e.g. "never pass onClick", "never set color directly"), the prop type must make the violation a TypeScript error, not just a documented anti-pattern — narrow the spread native-attributes type (e.g. `Omit<HTMLAttributes<...>, 'onClick' | 'color' | ...>`) to exclude the attributes the component already owns or forbids, rather than only excluding `children`.
-
 ### File naming
 - Token source files: lowercase, no spaces (`primitives.json`, `light.json`)
 - Scripts: `kebab-case.js` or `.ts`
 - Components: `PascalCase/index.tsx` with co-located styles
 
+Token JSON conventions: `.claude/rules/tokens.md`. CSS Modules, component implementation rules, story conventions, metadata model, and a11y tiers: `.claude/rules/components.md`.
+
 ### Component scope
+
+Canonical list — `/component-scaffold` and `/layout-generation` defer to this section.
 Core set (Phases 4–5): `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`.
 Phase 5b additions (User Settings page): `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`.
 Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`.
-Phase 5d additions (Course Overview page): `Accordion`, `Badge`; `Button` gains a `ghost` variant (no background, link text color — replaces the standalone ShowMoreLink pattern); `useSlider` hook (content-stepper state for fade-in step-through UIs, no component).
+Phase 5d additions (Course Overview page): `Accordion`, `Badge`; `Button` gains a `ghost` variant (no background, link text color); `useSlider` hook (content-stepper state, no component).
 Do not add components outside these lists without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
 
-Before proposing a new component file, apply the three-question test from ADR-009: (1) same semantic role → add a prop/variant to the existing component; (2) different role despite similar shape → new component; (3) single parent, no other consumer in the fixed set → molecule-internal styled element in the parent's CSS Module. Visual similarity alone is not a reason to create a new component or to merge two that differ in role.
+Before proposing a new component file, apply the three-question test from ADR-009: (1) same semantic role → add a prop/variant to the existing component; (2) different role despite similar shape → new component; (3) single parent, no other consumer in the fixed set → molecule-internal styled element in the parent's CSS Module. Visual similarity alone is not a reason to create or merge components.
 
 ## Architectural decisions (ADRs)
 
-Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-template.md`). These are the load-bearing rationale a future contributor or agent needs to build and reuse components correctly — read the relevant ADR before changing the thing it governs.
+Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-template.md`). Read the relevant ADR before changing the thing it governs.
 
-**When to record one (do this as part of the change, not later):**
-- A change to a contract other code or tooling depends on — the metadata schema (ADR-001), the token architecture (ADR-002), build transforms, the `space`/`size` split (ADR-005).
-- A new convention agents must follow to generate or reuse correctly (e.g. how variant axes are modelled, how semantic aliases are named).
-- A reversal or material refinement of an earlier decision.
-- A choice between real alternatives where the reasoning won't be obvious from the code later.
+**Record one** (as part of the change, not later) for: a change to a contract other code or tooling depends on; a new convention agents must follow to generate or reuse correctly; a reversal or material refinement of an earlier decision; a choice between real alternatives where the reasoning won't be obvious later. **Not** for routine work that follows an existing pattern. Keep the set small.
 
-**When NOT to:** routine work that follows an existing pattern — adding a component, token, or story; fixing a bug; renaming for clarity. If the decision is already explained by an existing ADR, don't duplicate it. Keep the set small; this is a lite-agentic system.
-
-**How:**
-- *New decision* → copy `000-template.md` to the next number, fill Context / Decision / Consequences, set `Status: accepted`. Link related ADRs by number.
-- *Refining an existing decision* → amend that ADR in place: bump its `Amended:` date and append a dated `## Amendment (YYYY-MM-DD) — <summary>` section rather than rewriting history (see ADR-001 for the pattern). Reserve a new ADR with `superseded by ADR-XXX` for a full reversal.
-- If a decision changes how components are built, reflect the rule in the relevant CLAUDE.md section too — the ADR holds the *why*, CLAUDE.md holds the *what to do*.
+**How:** new decision → copy the template to the next number, fill Context / Decision / Consequences, `Status: accepted`. Refinement → amend the existing ADR in place (bump `Amended:`, append a dated `## Amendment` section — see ADR-001); reserve a new `superseded by` ADR for a full reversal. The ADR holds the *why*; the *what to do* goes to the narrowest visible surface per "Where knowledge lives" — usually a path-scoped rule or command, CLAUDE.md only when cross-cutting.
 
 ## Common tasks
 
-Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The detailed procedure lives in the skill (in `.claude/skills/` or `.claude/commands/`) so it loads only when relevant; this table is the index. The nine developer-triggered commands are the "Agentic moments" above.
+Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The nine developer-triggered commands are the "Agentic moments" above.
 
 | Task | How |
 |---|---|
-| Add/change a primitive token, add a semantic alias, or modify the SD build | `/tokens-author` |
-| Add a brand | Copy an existing `brands/*.json`, remap its `brand`/`accent`/`neutral`/`surface` slots to hues with a full light+dark ramp, set `font.family.*` and literal `border-radius.*`. Add the package export, a `tokens-check.yml` file-existence entry, and a Storybook toolbar item. Run `npm run tokens:build && npm run tokens:contrast-check` — waive any shared-step failure with a tracked issue, never a per-brand theme override (ADR-012). |
+| Add/change a primitive token, semantic alias, or the SD build | `/tokens-author` |
+| Add a brand | Checklist in `.claude/rules/tokens.md` (ADR-012) |
 | Push tokens to Airtable, or pull governance state | `/airtable-sync` |
 | Scaffold a new component from the fixed set | `/component-scaffold` |
-| Run the verified component loop for a new component (sense → scaffold → adversarial review → PR) | `/add-component` |
-| Review an existing component after changes (adversarial subagent, writes `.review.json`) | `/review-component <Name>` |
-| Light in-session review without a subagent or handoff file | `/code-review` on the diff + `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test` |
-| Back-fill metadata learnings after a review or bug-fix session | `/extract-learnings <Name>` (single) or `/extract-learnings --all` (batch) |
+| Verified component loop (sense → scaffold → review → PR) | `/add-component` |
+| Review an existing component after changes | `/review-component <Name>` |
+| Light in-session review, no subagent | `/code-review` on the diff + `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test` |
+| Back-fill metadata learnings after a review/bug-fix session | `/extract-learnings <Name>` or `/extract-learnings --all` |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
-| Archive done/superseded handoffs, regenerate `handoff/index.json` | `npm run handoff:tidy` |
-| Rewrite `docs/NN-*.md` pages flagged stale by `npm run docs:check` | `/docs-sync` |
-| Run a11y checks (static + behavioral) | `npm run lint` (Tier 1, all) · `npm run a11y:coverage && npm run a11y:test` (Tier 2, interactive components — ADR-008) |
+| Archive done/superseded handoffs, regenerate index | `npm run handoff:tidy` |
+| Rewrite stale `docs/NN-*.md` pages | `/docs-sync` (detection: `npm run docs:check`) |
+| Run a11y checks | `npm run lint` (Tier 1) · `npm run a11y:coverage && npm run a11y:test` (Tier 2 — ADR-008) |
 | Generate a page or section layout | `/layout-generation` |
-| Audit Figma variables against committed tokens (drift check) | `/figma-variable-audit` |
-| Push committed tokens into Figma as variables (code → Figma) | `/figma-variable-push` |
-| Migrate deprecated token usages to their successors | `/token-deprecation-pass` |
+| Audit Figma variables against committed tokens | `/figma-variable-audit` |
+| Push committed tokens into Figma as variables | `/figma-variable-push` |
+| Migrate deprecated token usages to successors | `/token-deprecation-pass` |
 | Build, run, or screenshot Storybook | `/run-storybook` |
-| Add a story to an existing component | Follow "Storybook → Story conventions" above |
-| Add a GitHub Action | Workflow YAML in `.github/workflows/`. Actions call scripts and REST directly — never MCP, never Claude. Judgment-needing work belongs in an agentic moment instead. |
-| Record or amend an ADR | Follow "Architectural decisions (ADRs)" above |
-
-### Component metadata model (reference)
-
-This convention is shared by `/component-scaffold`, `/layout-generation`, and metadata validation, so it stays here rather than in one skill. `*.metadata.json` is validated against `component.schema.json` by `scripts/validate-metadata.js`. Variants are modelled as **named axes**: `variants` is an object keyed by axis name (`variant`, `size`, `shape`, …), each axis holding `{ options, default, purpose }`. A component with a single visual axis uses one key named `variant`; `default` may be `null` for an axis that is off unless set (e.g. Button `shape`). `tokens` keys are fixed: `color`, `spacing`, `typography`, `borderRadius`, `other`. `component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`, `component.status` ∈ `beta|ready|deprecated`. `composition.accepts`/`containedBy` and `usage.patterns` are required for layout generation.
-
-After scaffolding or editing a component, `npm run metadata:validate`, `npm run typecheck`, `npm run build`, `npm run a11y:coverage`, and `npm run a11y:test` must all pass with no manual changes, and it must render in both light and dark themes in Storybook (`components-check.yml` runs these on every PR). Following the pattern needs no ADR; a deviation — a new variant-axis convention, a token category the schema lacks, or a change to the schema itself — requires recording or amending an ADR before merging.
-
-**Two-tier a11y (ADR-008), plus a third token-level check (ADR-008 amendment).** Tier 1 is static `jsx-a11y` lint (`npm run lint`), default for all components. Tier 2 is a **behavioral** a11y test — a co-located `<Name>.a11y.test.tsx` (Vitest + Testing Library + `vitest-axe`, jsdom) asserting the dynamic ARIA contract (state attributes toggling, focus, keyboard) plus an axe scan — required **only for interactive components**. `scripts/a11y-coverage.js` derives interactivity from metadata (`component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab / native scroll) and fails if an interactive component lacks its test. Non-interactive components (display/landmark, e.g. `Badge`, `Divider`) need none. Model new tests on `Button/Button.a11y.test.tsx`; disable axe's `color-contrast` rule (jsdom can't judge layout/colour). `scripts/a11y-backlog.json` is a shrinking ledger waiving pre-existing interactive components pending backfill; never add a new component to it.
-
-The color-contrast gap that leaves open (jsdom can't compute it, so it stayed manual/visual) is now covered separately and automatically: `npm run tokens:contrast-check` (`scripts/token-contrast-check.js`) computes WCAG relative-luminance contrast ratios against the **built** `dist/css/theme.{light,dark}.css`, for a hand-curated set of foreground/background pairs reflecting how components actually render (not every token combination that could theoretically occur — see the file's header comment for why an automated CSS-co-occurrence derivation was tried and rejected). Wired into `tokens-check.yml` on every PR touching token source. Add the resulting pair here when a component changes what text/icon/border color renders against what background. Known, tracked failures live in `scripts/token-contrast-waivers.json` (same shrinking-ledger convention as the a11y backlog) rather than being silently dropped or silently forced through a token change.
+| Add a story to an existing component | Story conventions in `.claude/rules/components.md` |
+| Add a GitHub Action | Workflow YAML in `.github/workflows/`. Actions call scripts and REST directly — never MCP, never Claude. |
+| Record or amend an ADR | "Architectural decisions (ADRs)" above |

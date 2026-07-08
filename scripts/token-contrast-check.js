@@ -15,7 +15,7 @@
 // When adding or changing a component that sets a text/icon/border color
 // (in its .module.css or inline), add the resulting foreground/background
 // combination here — this is the convention that keeps a new component from
-// shipping an unchecked pair (see CLAUDE.md "Two-tier a11y (ADR-008)").
+// shipping an unchecked pair (see .claude/rules/components.md "Two-tier a11y").
 //
 // Thresholds follow WCAG 2.1: 4.5:1 for text, 3:1 for icons and UI-component
 // borders (1.4.11 non-text contrast). Some tokens carry a role override
