@@ -1,6 +1,7 @@
 ---
 sources:
   - .claude/commands/*.md
+  - .claude/rules/*.md
   - .claude/agents/adversarial-reviewer.md
   - scripts/sense.js
   - packages/components/component.schema.json
@@ -197,6 +198,9 @@ The smallest chunk of text a language model processes as a single unit. A token 
 **Agentic moment**
 One of the nine defined scenarios in this repo where invoking Claude with external tool access is worth the cost. Each moment is developer-triggered, has a clear input and output, and maps to a slash command. The nine are: `/figma-variable-audit`, `/token-deprecation-pass`, `/component-scaffold`, `/layout-generation`, `/figma-variable-push`, `/add-component`, `/review-component`, `/extract-learnings`, and `/docs-sync`. Everything outside these moments is a script or a GitHub Action — not an agent.
 
+**CLAUDE.md**
+The project instruction file Claude Code loads into every session — the one document an agent is guaranteed to have read before doing anything. Because it competes for context-window space with the actual task, every line has a recurring cost, paid on every session forever. This repo caps it at 200 lines / 20KB, enforced in CI by `npm run claudemd:check` (ADR-017), and keeps only cross-cutting invariants and indexes that point elsewhere — anything package-specific lives in a path-scoped rule instead. See also Context window, Rules (path-scoped).
+
 **Context window**
 The amount of information an AI can hold and reason over at once — think of it as working memory. It has a hard limit. This is why this repo uses frozen snapshots: instead of streaming raw Figma or Airtable data into an agent mid-task, the relevant information is pre-written to a small file (`STATUS_QUO.md`, `.claude/handoff/runs/<Name>.snapshot.json`) that the agent reads. Less data in context means more room for reasoning, and cheaper, faster runs.
 
@@ -215,8 +219,17 @@ A protocol that connects Claude to external tools — Figma, Airtable, GitHub, N
 **Orchestrator**
 The main Claude session that coordinates a multi-stage agentic loop. In `/add-component`, the orchestrator runs Stages 0–2b (sense, scaffold, gate, visual checkpoint), then delegates to `/review-component` which spawns the one adversarial subagent. It decides when to move forward, when to bounce back, and when to open the PR. Having one orchestrator keeps the loop sequential and predictable.
 
+**Progressive disclosure**
+Giving an agent only the instructions relevant to the task at hand, and loading everything else on demand instead of all up front. This repo's instruction surfaces form a ladder: `CLAUDE.md` (always loaded — cross-cutting invariants only) → path-scoped rules (loaded when a matching file is touched) → slash commands and skills (loaded when invoked) → frozen snapshots (read when a moment needs external state). Each rung defers cost until the knowledge is actually needed, which keeps every session's context small and its instructions followable. See also Context window, Context Rot, Rules (path-scoped).
+
 **Prompt**
 The instruction given to an AI to tell it what to do. The slash commands in `.claude/commands/` are prompts — they describe the inputs, the steps, the constraints, and the expected output for each agentic moment. Prompt wording matters: a vague prompt produces vague output; a prompt that names specific files and rules produces consistent, verifiable results.
+
+**Rules (path-scoped)**
+Markdown instruction files in `.claude/rules/`, each with `paths:` frontmatter listing glob patterns; Claude Code loads a rule into context only when the session touches a file matching its patterns. This repo keeps two: `components.md` (`packages/components/**`) and `tokens.md` (`packages/tokens/**`) — so component implementation rules cost nothing in a token-authoring session, and vice versa. A rule *without* `paths:` loads into every session, silently defeating the point, which is why `npm run claudemd:check` fails on one. See also CLAUDE.md, Progressive disclosure, Frontmatter.
+
+**Slash command / skill**
+A prompt file invoked by typing `/name` in a Claude Code session, loaded into context only at that moment. In this repo, `.claude/commands/` holds prompt-only commands (all nine agentic moments live there) and `.claude/skills/` holds commands that ship companion code (only `/run-storybook`, which ships `driver.mjs`). Claude Code's naming is the inverse of plain-English intuition — "skills" are the ones with code, "commands" are the prompts. On-demand loading is what lets each moment carry its full procedure without every session paying for it. See also Prompt, Agentic moment, Progressive disclosure.
 
 **Subagent**
 A fresh Claude session spawned by the orchestrator for one specific stage that benefits from having no prior context. In `/review-component` (called by `/add-component` or standalone), exactly one subagent runs the adversarial code review — it has never seen the scaffold, so it can spot issues the orchestrator might have rationalized away. It is also read-only by construction (its agent definition grants no file-editing tools): it reports findings, and the orchestrator writes them to `.review.json` and applies any fixes. After it finishes, control returns to the orchestrator. This repo's rule is at most two agents per loop (orchestrator + one subagent) to avoid draining the usage window. See also Adversarial Review.
