@@ -3,6 +3,7 @@ sources:
   - packages/components/component.schema.json
   - scripts/validate-metadata.js
   - scripts/sense.js
+  - scripts/lib.js
   - docs/decisions/001-component-metadata-schema.md
   - docs/decisions/006-carousel-hook-not-component.md
   - docs/decisions/009-extend-vs-new-vs-internal.md
