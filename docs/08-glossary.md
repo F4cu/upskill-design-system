@@ -13,7 +13,7 @@ Terms that come up in design system and developer conversations, explained for a
 
 ---
 
-## Component architecture
+## Design System Fundamentals
 
 **Atom**
 The smallest, most self-contained component in the system — one that doesn't depend on other components to function. `Button`, `Text`, `Icon`, and `Chip` are atoms. They can be used anywhere and composed into larger things. Contrast with molecule.
@@ -30,9 +30,6 @@ Two things are coupled when one depends on the other — changing or using one a
 **Hook (Claude Code)**
 A shell command that runs automatically when Claude does something — for example, "run the linter after every file edit." Configured in `.claude/settings.json`. Unrelated to React hooks despite sharing the name.
 
-**Hook (React)**
-A function that packages reusable state or behavior so multiple components can share it. In React, hooks always start with `use` by convention (`useCarousel`, `useSlider`, `useState`). They are not components — they have no visual output. Instead, you plug them *into* a component to give it behavior. In this repo, `useCarousel` tracks which card is currently active; the planned `useSlider` will track which step is visible in a step-through UI.
-
 **Layout component**
 A component whose only job is to control how its children are arranged in space — it has no visual style of its own. `Box`, `Stack`, and `Inline` are layout components. They set spacing, direction, and alignment via tokens but render no color, border, or background. Contrast with content component.
 
@@ -48,14 +45,8 @@ Two things are orthogonal when they are fully independent — using or changing 
 **Props and variants**
 Props are the inputs you pass to a component to control its appearance or behavior — similar to settings or options. For example, `<Button size="lg" disabled>Save</Button>` passes a `size` prop and a `disabled` prop. A **variant** is a specific type of prop that switches between named visual styles: `<Button variant="primary">` vs `<Button variant="secondary">`. In this repo's metadata, variants are modelled as named axes — each axis (like `variant` or `size`) lists its options, its default, and the purpose of each option. This is how the scaffold and layout tools know what combinations a component supports.
 
-**Ref / forwardRef**
-A ref is a way for a parent component to get a direct handle on a child's underlying HTML element — for example, to call `scrollBy()` on a `ScrollArea` div, or to move focus to a `TextField` programmatically. `forwardRef` is the React pattern that allows a component to pass that handle through to its caller. You'll see `forwardRef` in component source code when the component needs to expose its DOM element. As a non-developer, the main thing to know is: if a component supports ref, it can be controlled programmatically by its parent, not just through props.
-
 **Scaffold**
 To generate the skeleton files for a new component — the `index.tsx`, CSS module, stories file, and `metadata.json` — from a template, before any real logic is written. Scaffolding creates the structure; the developer (or agent) fills in the details afterward. In this repo the `/component-scaffold` command does this.
-
-**Spread props (`...rest`)**
-A pattern where a component forwards any props it doesn't explicitly handle down to the underlying HTML element. In code it looks like `{...rest}`. For example, `ScrollArea` accepts `orientation` as its own prop, but if you also pass `aria-label="Course list"` or `style={{ height: 300 }}`, those pass straight through to the `div` because of `...rest`. It keeps components flexible without having to list every possible HTML attribute explicitly.
 
 **State (component)**
 The different conditions a component can be in that change its appearance or behavior. Common states: `default`, `hover` (cursor is over it), `focused` (selected via keyboard), `disabled` (not interactive), `loading`, `error`. States are defined in each component's `metadata.json` and are distinct from React state (the internal data a component holds) — though the two are related: a component uses React state to track which visual state it is currently in.
@@ -65,15 +56,26 @@ A component (or element) whose only purpose is to surround something else — to
 
 ---
 
-## Trees
-
-A **tree** is a data structure where each item (called a node) has exactly one parent, except for the root at the top. Browsers, React, Git, and assistive technologies each maintain their own tree representation of a page or project — the same HTML can give rise to four distinct trees simultaneously.
-
-**Accessibility tree**
-A parallel representation of the page that the browser builds alongside the DOM and exposes to screen readers and other assistive technologies. It contains only semantically meaningful nodes — not bare layout divs — and labels each one with a role, a name, a state, and any relevant properties. ARIA attributes modify the accessibility tree without changing the visual DOM. In this repo, every interactive component (`Button`, `TextField`, `Select`, `DropdownMenu`, etc.) must have correct roles and states so that a screen reader gives the user an accurate picture of the UI — verified by the behavioral a11y tests (`*.a11y.test.tsx`).
+## React concepts
 
 **Component tree (React)**
 The nested hierarchy of React components in an application. The root component sits at the top; it renders child components, each of which may render further children, forming a tree. Props and data flow downward from parent to child; events bubble upward. In this repo, a layout like `ScrollArea > Inline > CardVertical` is a fragment of a component tree, and the `/layout-generation` command produces a React component tree for a page — each structural choice annotated by the metadata rule that justified it.
+
+**Hook (React)**
+A function that packages reusable state or behavior so multiple components can share it. In React, hooks always start with `use` by convention (`useCarousel`, `useSlider`, `useState`). They are not components — they have no visual output. Instead, you plug them *into* a component to give it behavior. In this repo, `useCarousel` tracks which card is currently active; the planned `useSlider` will track which step is visible in a step-through UI.
+
+**Ref / forwardRef**
+A ref is a way for a parent component to get a direct handle on a child's underlying HTML element — for example, to call `scrollBy()` on a `ScrollArea` div, or to move focus to a `TextField` programmatically. `forwardRef` is the React pattern that allows a component to pass that handle through to its caller. You'll see `forwardRef` in component source code when the component needs to expose its DOM element. As a non-developer, the main thing to know is: if a component supports ref, it can be controlled programmatically by its parent, not just through props.
+
+**Spread props (`...rest`)**
+A pattern where a component forwards any props it doesn't explicitly handle down to the underlying HTML element. In code it looks like `{...rest}`. For example, `ScrollArea` accepts `orientation` as its own prop, but if you also pass `aria-label="Course list"` or `style={{ height: 300 }}`, those pass straight through to the `div` because of `...rest`. It keeps components flexible without having to list every possible HTML attribute explicitly.
+
+---
+
+## Browser fundamentals
+
+**Accessibility tree**
+A parallel representation of the page that the browser builds alongside the DOM and exposes to screen readers and other assistive technologies. It contains only semantically meaningful nodes — not bare layout divs — and labels each one with a role, a name, a state, and any relevant properties. ARIA attributes modify the accessibility tree without changing the visual DOM. In this repo, every interactive component (`Button`, `TextField`, `Select`, `DropdownMenu`, etc.) must have correct roles and states so that a screen reader gives the user an accurate picture of the UI — verified by the behavioral a11y tests (`*.a11y.test.tsx`).
 
 **DOM tree**
 The browser's internal representation of an HTML page as a hierarchy of nodes — document at the root, then `<html>`, then `<head>` and `<body>`, then every element nested inside. "Tree" refers to the branching parent-child structure: each element is a node contained inside exactly one parent. JavaScript and React both read and modify the DOM tree to update what is displayed on screen. React does this indirectly, via a virtual DOM it maintains in memory before syncing changes to the real one.
@@ -81,8 +83,11 @@ The browser's internal representation of an HTML page as a hierarchy of nodes �
 **Render tree**
 The combined result of the DOM tree and the CSS rules, used by the browser to decide what actually appears on screen. Unlike the DOM, the render tree excludes invisible elements (`display: none`) and includes computed styles for every visible node. After building the render tree, the browser runs a **layout** step (calculating each element's size and position) and a **paint** step (drawing pixels). In a design system, the tokens that set sizes, spacing, and colors feed into this pipeline — changing a token propagates through the render tree and repaints every element that used it.
 
-**Working tree (Git)**
-The files on disk in your project folder that you can see and edit — distinct from Git's stored history. When you open a file and make changes, you are working in the working tree. `git status` compares your working tree against the last committed snapshot and reports what has changed. In Claude Code, the term appears when multiple simultaneous copies of a branch are needed: `git worktree` creates an additional working tree at a different folder path so two branches can be checked out at once without cloning the whole repo again.
+---
+
+## Trees
+
+A **tree** is a data structure where each item (called a node) has exactly one parent, except for the root at the top. Browsers, React, Git, and assistive technologies each maintain their own tree representation of a page or project. The browser's two — the DOM tree and the render tree — plus the accessibility tree assistive technology reads, are covered in Browser fundamentals; React's component tree is covered in React concepts; Git's working tree is covered in Git & Development Workflow. The same HTML can give rise to all of them simultaneously — this section exists as a pointer because that's a useful thing to know as one fact, even though each individual tree's full definition belongs to a different topic above.
 
 ---
 
@@ -106,6 +111,9 @@ A named design decision stored as data — a color, a spacing size, a font size,
 ---
 
 ## Design tokens — pipeline
+
+**Build**
+The step that turns source files into the artifacts a system actually runs on. In this repo, `npm run tokens:build` is a build: Style Dictionary reads the token JSON source and produces the CSS custom properties and JS constants components consume. See also Style Dictionary.
 
 **CSS custom property**
 The output format that the browser reads, produced by the Style Dictionary build. Looks like `--ds-color-action-primary`. Components reference these in their stylesheets via `var(--ds-color-action-primary)`. You never write these by hand — they are generated from the token JSON files.
@@ -131,7 +139,7 @@ The replacement token for a deprecated one. Stored as a dot-path in Airtable (e.
 
 ---
 
-## APIs
+## APIs & Integrations
 
 **API (Application Programming Interface)**
 A defined contract that lets two systems talk to each other. One system makes a request; the other responds with data or confirms an action. In this repo, Airtable, GitHub, and Figma all expose APIs — scripts call them to sync tokens, open pull requests, or read variable definitions without anyone opening a browser.
@@ -150,6 +158,22 @@ The style of API used by Airtable and GitHub in this repo. "REST" describes a se
 
 **Upsert**
 A portmanteau of "update" and "insert." An upsert tells an API or database: if a record with this identifier already exists, update it; if it doesn't exist, create it. You use it when syncing data where you don't know upfront whether a record is new or pre-existing — it handles both cases in one operation without needing a prior lookup. In this repo, `scripts/airtable-sync.js` calls Airtable's upsert endpoint when pushing tokens, so it doesn't need to first check whether a token row already exists. The alternatives are a plain **insert** (creates a new record, fails or errors if one already exists) or a plain **update** (modifies an existing record, does nothing if it doesn't exist). Some APIs also offer **replace** (delete then insert), which overwrites the whole record rather than merging changes.
+
+---
+
+## Git & Development Workflow
+
+**Diff**
+The set of line-level differences between two versions of a file — additions and removals shown together, so a reviewer can see exactly what changed without re-reading the whole file. `git diff` shows this for uncommitted changes; a GitHub pull request shows it as red/green line highlighting for review.
+
+**Frontmatter**
+A block of key-value metadata at the very top of a markdown file, delimited by triple dashes (`---`). This handoff file's own frontmatter (`status`, `created`, `completed`) is an example — it lets `npm run handoff:tidy` know whether the file is still active without parsing the prose below it. This page's `sources:` block is another: it lists the files `docs:check` watches to decide whether this page has gone stale.
+
+**Pull request**
+A request to merge one branch's commits into another, opened so the change can be reviewed before it lands. In this repo, agent-generated work always goes through a PR rather than committing straight to `main` — `/review-component` opens one on a `component/<kebab-name>` branch, `/docs-sync` on a `docs-sync/<date>` branch — so a human reviews agent output before it becomes the default branch's history.
+
+**Working tree (Git)**
+The files on disk in your project folder that you can see and edit — distinct from Git's stored history. When you open a file and make changes, you are working in the working tree. `git status` compares your working tree against the last committed snapshot and reports what has changed. In Claude Code, the term appears when multiple simultaneous copies of a branch are needed: `git worktree` creates an additional working tree at a different folder path so two branches can be checked out at once without cloning the whole repo again.
 
 ---
 
@@ -182,6 +206,9 @@ A fixed set of automated checks that must pass before agent-written code is allo
 **Frozen snapshot**
 A committed file that captures the state of an external system at a point in time, so agents can read it without making a live API call. In this repo: `airtable-governance.json` (Airtable state), `token-usage.json` (repo scan), `figma-variables.json` (Figma variables), `.claude/component-signoff.json` (human sign-off pulled from Airtable), `.claude/component-pipeline.json` (per-component pipeline stage), and `.claude/STATUS_QUO.md` (aggregate of the above). Regenerated manually before a loop run with `npm run sense`. Frozen snapshots keep agents fast, cheap, and immune to rate limits during a task.
 
+**Handoff**
+A committed file that formally transfers context and state from one stage of a loop — or one session — to the next, so work can resume without re-deriving what already happened. In this repo, markdown handoffs live in `.claude/handoff/` with a 3-line frontmatter block (`status`, `created`, `completed`) per ADR-015; per-run component-loop JSON handoffs live under the gitignored `.claude/handoff/runs/`, regenerable via `npm run sense:component <Name>`. See also Frontmatter.
+
 **MCP (Model Context Protocol)**
 A protocol that connects Claude to external tools — Figma, Airtable, GitHub, Notion — so it can read and write to them during a conversation. MCP tools appear as capabilities Claude can call, like `get_design_context` (Figma) or `list_records` (Airtable). In this repo, MCP is reserved for one-off, developer-present tasks — never for recurring scripts or CI, because MCP calls are interactive and not scriptable.
 
@@ -192,7 +219,65 @@ The main Claude session that coordinates a multi-stage agentic loop. In `/add-co
 The instruction given to an AI to tell it what to do. The slash commands in `.claude/commands/` are prompts — they describe the inputs, the steps, the constraints, and the expected output for each agentic moment. Prompt wording matters: a vague prompt produces vague output; a prompt that names specific files and rules produces consistent, verifiable results.
 
 **Subagent**
-A fresh Claude session spawned by the orchestrator for one specific stage that benefits from having no prior context. In `/review-component` (called by `/add-component` or standalone), exactly one subagent runs the adversarial code review — it has never seen the scaffold, so it can spot issues the orchestrator might have rationalized away. It is also read-only by construction (its agent definition grants no file-editing tools): it reports findings, and the orchestrator writes them to `.review.json` and applies any fixes. After it finishes, control returns to the orchestrator. This repo's rule is at most two agents per loop (orchestrator + one subagent) to avoid draining the usage window.
+A fresh Claude session spawned by the orchestrator for one specific stage that benefits from having no prior context. In `/review-component` (called by `/add-component` or standalone), exactly one subagent runs the adversarial code review — it has never seen the scaffold, so it can spot issues the orchestrator might have rationalized away. It is also read-only by construction (its agent definition grants no file-editing tools): it reports findings, and the orchestrator writes them to `.review.json` and applies any fixes. After it finishes, control returns to the orchestrator. This repo's rule is at most two agents per loop (orchestrator + one subagent) to avoid draining the usage window. See also Adversarial Review.
 
 **Tool call**
 When an AI invokes a specific capability during a task — reading a file, running a shell command, calling a Figma MCP function, writing to disk. Each tool call is discrete and visible in the session transcript. In this repo's agentic moments, tool calls to external services (Figma MCP, Airtable MCP) are kept to a minimum and always happen with the developer present.
+
+---
+
+## AI Evaluation & Reliability
+
+**Adversarial Review**
+A review process — human or AI — that deliberately adopts a skeptical, fault-finding stance instead of a collaborative one, on the theory that someone trying to break something finds different problems than someone trying to help it succeed. In this repo, `/review-component` spawns exactly one fresh subagent for this purpose. See also Subagent.
+
+**Assertions**
+The explicit pass/fail checks a test or evaluation makes against an output. A **deterministic assertion** checks something exact and mechanical — a file exists, a class name equals `btn-large`, `npm run typecheck` exits 0. An **LLM-assisted assertion** instead asks a model to judge something fuzzier, like whether generated copy matches a tone-of-voice guideline. This repo's deterministic gate is built entirely from deterministic assertions — see Deterministic gate.
+
+**Context Rot**
+The gradual loss of focus and accuracy an AI model shows over a long, single conversation, as earlier turns — including stale errors or abandoned approaches — crowd out the instructions that actually matter. It's part of why this repo keeps agentic moments short and bounded rather than running one long open-ended session, and why frozen snapshots feed an agent only the current state rather than the history that produced it.
+
+**Deterministic vs. Probabilistic**
+A distinction between operations that always produce the same output for the same input (deterministic) and ones that vary run to run (probabilistic). `npm run typecheck` is deterministic — same code, same result, always. Asking Claude to draft a component summary is probabilistic — the wording will differ slightly each time even from an identical prompt. This repo's deterministic gate exists specifically to keep the parts that can be deterministic out of an agent's hands.
+
+**Evaluation Harness**
+An automated framework for measuring how well a model, prompt, or pipeline performs against a fixed set of test cases, rather than judging quality by spot-checking a few examples. This repo doesn't yet have one; the closest analogue is the deterministic gate plus the adversarial-reviewer pass, which check code correctness rather than prompt quality.
+
+**Few-Shot Prompting**
+Showing a model a small number of worked examples of the exact input/output shape you want, instead of only describing the rule in prose. In this repo, `/component-scaffold` points at an existing component as a template — effectively a one-shot example the agent pattern-matches against when generating the next one.
+
+**Golden Dataset**
+A small, deliberately curated set of the hardest or most representative test cases a system must handle correctly before a change ships — the benchmark, not just a sample. This repo doesn't maintain one currently; a plausible future one would be a fixed set of tricky layout briefs that `/layout-generation` must keep producing correctly.
+
+**Ground Truth**
+The verified-correct reference an output is checked against. A hand-checked `metadata.json` file that `npm run metadata:validate` runs against functions as ground truth for "is this schema-valid" — though correctness of the content itself still needs human review.
+
+**Hallucination**
+When a model states something confidently and fluently that is factually wrong or unsupported by the context it was given — inventing a file path, a prop name, or a token that doesn't exist. It's a specific risk this repo's frozen snapshots and adversarial review both guard against: giving an agent the real committed state to read, then having a second, skeptical pass check the output against that same state. See also Adversarial Review.
+
+**Invariant**
+A condition that must remain true no matter what else changes. The "Invariant that must survive" column in CLAUDE.md's agentic-moments table names one per moment — for example, `/figma-variable-audit` must never overwrite primitives without diffing against usage first. An invariant is a promise the system makes about itself, not a one-time check.
+
+**Ledger**
+An append-only record of events, kept specifically so nothing already recorded is ever edited or deleted — only added to. `.claude/handoff/run-ledger.json` is a ledger: every `/review-component` run's gate result and reviewer findings get appended to it, deduped by component and timestamp, so the history of runs survives even though the per-run JSON files themselves are gitignored.
+
+**Linting**
+Automated static analysis that flags structural or stylistic problems in source code without running it — a missing `alt` attribute, a raw hex color where a token should be used. `npm run lint` runs `jsx-a11y` lint in this repo (Tier 1 of the two-tier accessibility check); it catches a category of mistake before any test or build step does.
+
+**Overfitting**
+When a system becomes so tuned to the exact cases it was tested or trained against that it stops generalizing to new, slightly different inputs. A prompt tuned until it nails one layout brief perfectly but breaks on any brief phrased differently is overfit to that one example.
+
+**RAG (Retrieval-Augmented Generation)**
+Supplying a model with relevant, up-to-date material from an external source at the moment it answers, rather than relying only on what it learned during training. Every agentic moment in this repo is a form of RAG: `/component-scaffold` reads the component schema and an existing component before generating a new one, so it works from the repo's actual current rules instead of a guess.
+
+**Regression Testing**
+Re-running an existing test suite after a change to confirm the change didn't break something that used to work. This repo's `components-check.yml` does this on every PR touching components — the a11y, typecheck, and build steps all rerun regardless of which file changed, to catch a side effect the diff didn't obviously touch.
+
+**Synthetic Data Generation**
+Programmatically generating artificial data that mimics real data's shape, for testing without needing real records. This repo doesn't currently generate synthetic data; the closest need would be fabricating sample Airtable rows to test `scripts/airtable-pull.js` without touching the real base.
+
+**Temperature**
+A model setting that trades determinism for variety — low temperature produces the most likely, most consistent output; high temperature allows more varied, less predictable phrasing. Every agentic moment in this repo wants low-temperature behavior: writing a component or migrating a token usage should be as repeatable as possible, not creative.
+
+**Waiver**
+An explicit, tracked exemption that lets something bypass a rule temporarily instead of either fixing it immediately or silently ignoring it. This repo keeps two: `scripts/a11y-backlog.json` waives pre-existing interactive components that lack a behavioral a11y test, and `scripts/token-contrast-waivers.json` waives known, tracked contrast failures. Both are meant to shrink over time, never to grow.
