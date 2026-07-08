@@ -248,8 +248,18 @@ npm run layout:validate apps/showcase/src/pages/<Name>.tsx
 
 The validator checks landmark structure (one `<main>`, named sections, labelled navs), fixed-set usage, and the inline-style reconciliation rules. Fix any violations before declaring the layout done.
 
+### Review path (ADR-016)
+
+Generated layout code does not land on `main` unreviewed, same invariant as component scaffolds — but the review tier is cheaper by default:
+
+- **Default:** once validation and typecheck pass, commit the new/changed file(s) to a feature branch (e.g. `layout/<kebab-name>`) and open a PR against `main` with `gh`. The developer runs in-session `/code-review` on the diff before merging — no subagent, no handoff file.
+- **Opt-in, full route pages only:** if the developer asks for a deeper check (not for `--story` fragments), spawn the same read-only `adversarial-reviewer` subagent used by `/review-component` (`.claude/agents/adversarial-reviewer.md`), passing it the diff and this file's grammar/constraints sections in place of a component snapshot. Persist its findings the same way `/review-component` does, but there is no `.review.json`/`.run.json` pair to write here — this is a one-off check, not a tracked loop stage.
+
+Do not commit layout output directly to `main`.
+
 ## Success signal
 
 - `npm run layout:validate` exits 0.
 - The JSX builds without errors (`npm run typecheck`).
 - The page renders in `apps/showcase` via `npm run dev -w @upskill/showcase` at desktop (≥1440px), tablet (≥768px), and mobile (<768px) in both light and dark themes with **zero manual restructuring** after generation. If restructuring was needed, fix the grammar or metadata before scaling up — the skill's success signal is no-touch generation.
+- The output is committed to a feature branch with a PR open against `main` (ADR-016).

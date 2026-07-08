@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-07-08
-completed: null
+completed: 2026-07-08
 ---
 
 # Agentic moments audit — recommended plan of action (2026-07-08)
@@ -133,8 +133,8 @@ example), `04-layout-grammar` (`component-patterns.json` input, ADR-013), `06-ag
 `08-glossary` (nine moments, deterministic gate, `runs/` snapshot path). `02-component-lifecycle`
 and `05-governance` were clock-only (no real drift found). No further action needed here.
 | 4. `/extract-learnings` routing table extension + consolidation step — **done 2026-07-08** (three routing rows added: layout/composition → composed component's `usage.patterns`/`antiPatterns`, token conventions → `/tokens-author` "Conventions", contrast misses → `PAIRS` in `token-contrast-check.js` — never waivers; new `--all` consolidation step proposes prune/move/keep for `/layout-generation`'s pattern section, confirm-before-write; explicit scope guard against process/tooling learnings; CLAUDE.md moment-8 row updated) | ~1 session | — |
-| 5. ADR: layout output review path; amend `/layout-generation` final step | small | — |
-| 6. Run-telemetry ledger in `handoff:tidy` | small | — |
+| 5. ADR: layout output review path; amend `/layout-generation` final step — **done 2026-07-08** (ADR-016 recorded: default path is feature-branch PR + in-session `/code-review`, no subagent; opt-in adversarial-reviewer pass for full route pages reuses `/review-component`'s read-only agent shape, no `.review.json`/`.run.json` since it's a one-off not a tracked loop stage; `/layout-generation`'s final step and success signal updated; CLAUDE.md git workflow exception list updated) | small | — |
+| 6. Run-telemetry ledger in `handoff:tidy` — **done 2026-07-08** (`scripts/handoff-tidy.js` now promotes every `<Name>.run.json` record under gitignored `runs/` into a committed, deduped `.claude/handoff/run-ledger.json` — component, ranAt, gate pass/fail, `reviewerCaughtBeyondGate` count, `manualRescues` count; verified with a synthetic run record, dedupe confirmed on re-run; CLAUDE.md's handoff-artifacts section documents it) | small | — |
 
 Research notes (with sources/URLs) from the Sonnet research pass are not committed; the
 load-bearing citations are inlined above. Key ones: Anthropic "How we built our multi-agent

@@ -14,6 +14,7 @@ const ROOT = path.resolve(__dirname, "..");
 const HANDOFF_DIR = path.resolve(ROOT, ".claude/handoff");
 const ARCHIVE_DIR = path.join(HANDOFF_DIR, "archive");
 const RUNS_DIR = path.join(HANDOFF_DIR, "runs");
+const LEDGER_PATH = path.join(HANDOFF_DIR, "run-ledger.json");
 
 const ARCHIVABLE_STATUSES = new Set(["done", "superseded"]);
 
@@ -51,6 +52,46 @@ function kindFor(filePath) {
 
 function mtimeIso(filePath) {
   return fs.statSync(filePath).mtime.toISOString().slice(0, 10);
+}
+
+// .run.json is gitignored (per-run scratch state under runs/); this promotes each
+// record into a committed, append-only ledger so /review-component's ROI question
+// ("is the adversarial stage earning its cost") has surviving evidence across runs.
+function updateRunLedger() {
+  const existing = fs.existsSync(LEDGER_PATH)
+    ? JSON.parse(fs.readFileSync(LEDGER_PATH, "utf8"))
+    : [];
+  const seen = new Set(existing.map((e) => `${e.component}@${e.ranAt}`));
+
+  const added = [];
+  for (const name of fs.existsSync(RUNS_DIR) ? fs.readdirSync(RUNS_DIR) : []) {
+    if (!name.endsWith(".run.json")) continue;
+    const filePath = path.join(RUNS_DIR, name);
+    const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    const records = Array.isArray(raw) ? raw : [raw];
+
+    for (const r of records) {
+      const key = `${r.component}@${r.ranAt}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const entry = {
+        component: r.component,
+        ranAt: r.ranAt,
+        gate: r.gate ?? { passes: 0, failures: 0 },
+        contextIsolationHeld: r.contextIsolationHeld ?? null,
+        reviewerFindingsBeyondGateCount: (r.reviewerCaughtBeyondGate ?? []).length,
+        manualRescuesCount: (r.manualRescues ?? []).length,
+      };
+      existing.push(entry);
+      added.push(entry);
+    }
+  }
+
+  if (added.length === 0) return;
+
+  existing.sort((a, b) => (a.ranAt < b.ranAt ? -1 : a.ranAt > b.ranAt ? 1 : 0));
+  fs.writeFileSync(LEDGER_PATH, JSON.stringify(existing, null, 2) + "\n");
+  console.log(`Appended ${added.length} record(s) to ${rel(LEDGER_PATH)}`);
 }
 
 function main() {
@@ -116,6 +157,8 @@ function main() {
   const indexPath = path.join(HANDOFF_DIR, "index.json");
   fs.writeFileSync(indexPath, JSON.stringify(entries, null, 2) + "\n");
   console.log(`Wrote ${rel(indexPath)} (${entries.length} entries)`);
+
+  updateRunLedger();
 }
 
 main();

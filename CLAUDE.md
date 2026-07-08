@@ -107,6 +107,8 @@ Figma's snapshot is captured **interactively via the MCP, not pulled by a script
 
 **Handoff artifacts** (ADR-015). Markdown handoffs in `.claude/handoff/` are committed and carry 3-line frontmatter (`status: active|done|superseded`, `created:`, `completed:`), named `YYYY-MM-DD-slug.handoff.md`. Per-run component-loop JSON (`<Name>.{snapshot,review,run,learnings}.json`) lives under the gitignored `.claude/handoff/runs/` instead — regenerable via `npm run sense:component <Name>`, consumed by `/review-component` and `/extract-learnings`. Run `npm run handoff:tidy` to archive `done`/`superseded` handoffs into `handoff/archive/` and regenerate `handoff/index.json`; read that index, never glob the directory — it fails loudly if a handoff is missing frontmatter.
 
+`npm run handoff:tidy` also promotes each `<Name>.run.json` record it finds into a committed, append-only ledger, `.claude/handoff/run-ledger.json` (deduped by `component`+`ranAt`) — since `runs/` itself is gitignored, this is the only place `/review-component`'s per-run telemetry (gate pass/fail, `reviewerCaughtBeyondGate` count, `manualRescues` count) survives past the run. Read it to answer empirically whether the adversarial-review stage is earning its cost, rather than arguing from a handful of remembered runs.
+
 ## MCP tools — when to use vs when to avoid
 
 General rule: MCP calls are for **interactive, one-off tasks with the developer present**. Anything recurring, scheduled, or CI-bound uses a script with direct REST calls. Never put an MCP call inside a GitHub Action or a loop over many records.
@@ -128,6 +130,8 @@ Commit directly to the current branch — do not create new branches unless expl
 **Exception — `/add-component` + `/review-component` loop:** `/review-component` always creates a branch named `component/<kebab-name>` (e.g. `component/accordion`) when invoked from the `/add-component` flow, then opens a PR against `main` for human review. Agent-generated component code must go through a PR — it should never land on `main` without a review step.
 
 **Exception — `/docs-sync`:** agent-rewritten docs also go through a PR, on a `docs-sync/<YYYY-MM-DD>` branch.
+
+**Exception — `/layout-generation`:** generated layout output also goes through a PR, on a `layout/<kebab-name>` branch, reviewed in-session with `/code-review` by default (an adversarial-reviewer subagent pass is opt-in for full route pages) — see ADR-016.
 
 ## Commands and skills
 

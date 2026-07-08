@@ -24,6 +24,14 @@
     "path": ".claude/handoff/2026-07-08-agentic-moments-audit.handoff.md"
   },
   {
+    "name": "2026-07-08-glossary-refactor",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-07-08",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/2026-07-08-glossary-refactor.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
