@@ -41,6 +41,7 @@
     "harness:score": "node scripts/pattern-accuracy-harness/score.js",
     "sense:component": "node scripts/sense-component.js",
     "handoff:tidy": "node scripts/handoff-tidy.js",
+    "docs:check": "node scripts/docs-check.js",
     "lint": "eslint packages/components/src",
     "metadata:validate": "node scripts/validate-metadata.js",
     "layout:validate": "node scripts/validate-layout.js",

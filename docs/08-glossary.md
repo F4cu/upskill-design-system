@@ -1,3 +1,10 @@
+---
+sources:
+  - .claude/commands/*.md
+  - scripts/sense.js
+  - packages/components/component.schema.json
+  - docs/decisions/007-verified-component-loop.md
+---
 # Glossary
 
 Terms that come up in design system and developer conversations, explained for a non-developer collaborator. Terms are grouped by topic; each group maps loosely to one of this site's pages — [component architecture](02-component-lifecycle.md), [design tokens](01-token-pipeline.md), [governance](05-governance.md), and [agentic loops](06-agentic-moments.md).

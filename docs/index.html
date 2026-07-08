@@ -68,6 +68,8 @@
     mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
+  <!-- Strips the YAML `sources:` frontmatter (docs-check staleness gate) from rendered pages -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/front-matter.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
 </body>

@@ -1,3 +1,13 @@
+---
+sources:
+  - scripts/a11y-coverage.js
+  - scripts/token-contrast-check.js
+  - scripts/a11y-backlog.json
+  - scripts/token-contrast-waivers.json
+  - docs/decisions/008-behavioral-a11y-tier.md
+  - docs/decisions/007-verified-component-loop.md
+  - .github/workflows/tokens-check.yml
+---
 # Accessibility
 
 ## What it is

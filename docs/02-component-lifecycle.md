@@ -1,3 +1,13 @@
+---
+sources:
+  - packages/components/component.schema.json
+  - scripts/validate-metadata.js
+  - scripts/sense.js
+  - docs/decisions/001-component-metadata-schema.md
+  - docs/decisions/006-carousel-hook-not-component.md
+  - docs/decisions/009-extend-vs-new-vs-internal.md
+  - docs/decisions/010-component-lifecycle-two-axes.md
+---
 # Component lifecycle
 
 ## What it is

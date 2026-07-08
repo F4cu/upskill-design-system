@@ -1,3 +1,13 @@
+---
+sources:
+  - scripts/validate-layout.js
+  - .claude/commands/layout-generation.md
+  - packages/components/src/styles/grid.css
+  - docs/decisions/011-layout-landmark-grammar.md
+  - docs/decisions/004-layout-token-categories.md
+  - docs/decisions/005-size-vs-space-primitives.md
+  - docs/decisions/009-extend-vs-new-vs-internal.md
+---
 # Layout grammar
 
 ## What it is

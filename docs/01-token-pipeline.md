@@ -1,3 +1,14 @@
+---
+sources:
+  - packages/tokens/src/**
+  - packages/tokens/build.js
+  - docs/decisions/002-three-layer-token-model.md
+  - docs/decisions/003-root-token-convention.md
+  - docs/decisions/004-layout-token-categories.md
+  - docs/decisions/005-size-vs-space-primitives.md
+  - docs/decisions/012-brand-layer-multi-brand.md
+  - .claude/commands/tokens-author.md
+---
 # Token pipeline
 
 ## What it is

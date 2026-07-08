@@ -1,3 +1,9 @@
+---
+sources:
+  - docs/decisions/*.md
+  - .claude/commands/*.md
+  - ROADMAP.md
+---
 # Start here
 
 UpSkill is a learning-first, **lite agentic** design system for a small SaaS product. "Lite" is a deliberate constraint, not an apology: a fixed, small component set (layout primitives, typography, `Button`, form inputs, `Card`, and the page-specific additions listed per phase), and economic maintenance — recurring automation is plain scripts and GitHub Actions calling REST APIs directly, MCP tools are reserved for one-off interactive tasks, and agent involvement is limited to eight defined moments. The premise stated in `CLAUDE.md` is that **one person must be able to maintain the whole system**, and every architectural choice documented on this site traces back to that.

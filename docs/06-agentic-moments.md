@@ -1,3 +1,10 @@
+---
+sources:
+  - .claude/commands/*.md
+  - docs/decisions/007-verified-component-loop.md
+  - scripts/sense.js
+  - scripts/sense-component.js
+---
 # Agentic moments
 
 ## What it is

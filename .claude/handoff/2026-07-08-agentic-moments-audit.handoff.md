@@ -118,8 +118,15 @@ the question empirically instead of by argument.
 | Step | Effort | Depends on |
 |---|---|---|
 | 1. Frontmatter (model + allowed-tools) pass over 10 commands — **done 2026-07-08** (incl. read-only `adversarial-reviewer` agent in `.claude/agents/`; main session now writes `.review.json`) | ~1 session | — |
-| 2. `docs-check.js` + frontmatter `sources:` in docs/*.md + CI | ~1 session | — |
+| 2. `docs-check.js` + frontmatter `sources:` in docs/*.md + CI — **done 2026-07-08** (`npm run docs:check`, `docs-check.yml` on every PR with `fetch-depth: 0`, docsify front-matter plugin added so the YAML doesn't render) | ~1 session | — |
 | 3. `/docs-sync` moment (moment 9) + CLAUDE.md index row | ~1 session | step 2 |
+
+Step 2 caveat for step 3: the check's *first* real run (2026-07-08, pre-commit) flagged 8 of 9
+docs as stale — only `07-npm-scripts-reference.md` was current. Committing the frontmatter
+resets every doc's clock, so that signal is absorbed by the commit. The inaugural `/docs-sync`
+run should treat all of `00–06` and `08` as its work queue; known real drift: `00-start-here.md`
+still says the showcase deploys via Vercel (now GitHub Pages), and `06-agentic-moments.md`
+predates step 1's `model:`/`allowed-tools:` frontmatter + read-only reviewer agent.
 | 4. `/extract-learnings` routing table extension + consolidation step | ~1 session | — |
 | 5. ADR: layout output review path; amend `/layout-generation` final step | small | — |
 | 6. Run-telemetry ledger in `handoff:tidy` | small | — |

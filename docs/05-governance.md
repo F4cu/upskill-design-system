@@ -1,3 +1,14 @@
+---
+sources:
+  - scripts/airtable-sync.js
+  - scripts/airtable-pull.js
+  - .github/workflows/sync-tokens.yml
+  - docs/decisions/002-three-layer-token-model.md
+  - docs/decisions/003-root-token-convention.md
+  - docs/decisions/010-component-lifecycle-two-axes.md
+  - .claude/commands/airtable-sync.md
+  - .claude/commands/token-deprecation-pass.md
+---
 # Governance
 
 ## What it is

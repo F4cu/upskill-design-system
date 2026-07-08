@@ -1,0 +1,26 @@
+name: Docs staleness check
+
+# Runs on every PR (no path filter): any changed file could be a declared
+# source of a docs page, and the check itself costs seconds.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  docs-check:
+    name: Docs sources newer than docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history — the check compares last-commit timestamps per file
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Docs staleness check
+        run: node scripts/docs-check.js
