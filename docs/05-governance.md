@@ -2,6 +2,8 @@
 sources:
   - scripts/airtable-sync.js
   - scripts/airtable-pull.js
+  - scripts/airtable-ids.js
+  - scripts/lib.js
   - .github/workflows/sync-tokens.yml
   - docs/decisions/002-three-layer-token-model.md
   - docs/decisions/003-root-token-convention.md

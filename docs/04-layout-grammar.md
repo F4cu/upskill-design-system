@@ -5,6 +5,7 @@ sources:
   - packages/components/src/styles/grid.css
   - docs/decisions/011-layout-landmark-grammar.md
   - docs/decisions/013-cross-component-pattern-schema.md
+  - docs/decisions/016-layout-output-review-path.md
   - docs/decisions/004-layout-token-categories.md
   - docs/decisions/005-size-vs-space-primitives.md
   - docs/decisions/009-extend-vs-new-vs-internal.md
@@ -55,11 +56,13 @@ npm run layout:validate -- apps/showcase/src/pages/CourseOverview.tsx
 
 The `/layout-generation` command's default output target is a route page in `apps/showcase/src/pages/<Name>.tsx` (a `--story` mode retains the old Storybook format for component-level review), and every structural choice it makes must cite a metadata rule — the `composition.accepts`/`containedBy` and `usage.patterns` fields required by the [metadata schema](02-component-lifecycle.md). It also reads `.claude/component-patterns.json`, the cross-component pattern aggregate ([ADR-013](decisions/013-cross-component-pattern-schema.md)), to pick canonical pattern implementations and state/callback prop names — a consumer input for layout/composition work *only*, never injected into component scaffolds (the accuracy harness measured a regression there). Whether a layout need justifies a new component at all goes through the [ADR-009](decisions/009-extend-vs-new-vs-internal.md) three-question test first.
 
+Generated layout code never lands on `main` directly ([ADR-016](decisions/016-layout-output-review-path.md)): once validation and typecheck pass, it goes to a `layout/<kebab-name>` branch with a PR, reviewed in-session with `/code-review` by default — the same no-unreviewed-agent-code invariant as component scaffolds, at a cheaper review tier. A deeper pass by the read-only adversarial-reviewer subagent is opt-in, for full route pages only (never `--story` fragments).
+
 No diagram here: the grammar table *is* the spatial mapping, and a flowchart would only restate it.
 
 ## Related
 
-- ADRs: [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md)
+- ADRs: [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [016 — Layout output review path](decisions/016-layout-output-review-path.md)
 - Commands: `/layout-generation` (in `.claude/commands/`)
 - Scripts: `scripts/validate-layout.js` via `npm run layout:validate` — see the [npm scripts reference](07-npm-scripts-reference.md)
 - Live examples: the four pages in `apps/showcase/src/pages/` — see [Start here](00-start-here.md)
