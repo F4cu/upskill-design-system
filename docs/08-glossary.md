@@ -5,6 +5,7 @@ sources:
   - scripts/sense.js
   - packages/components/component.schema.json
   - docs/decisions/007-verified-component-loop.md
+# clock reset 2026-07-08: /extract-learnings routing widened; glossary only lists the moment, still accurate
 ---
 # Glossary
 
