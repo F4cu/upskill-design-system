@@ -240,6 +240,38 @@
     "path": ".claude/handoff/runs/Checkbox.snapshot.json"
   },
   {
+    "name": "Chip.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Chip.learnings.json"
+  },
+  {
+    "name": "Chip.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Chip.review.json"
+  },
+  {
+    "name": "Chip.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Chip.run.json"
+  },
+  {
+    "name": "Chip.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Chip.snapshot.json"
+  },
+  {
     "name": "Divider.snapshot",
     "kind": "run",
     "status": "in-flight",
