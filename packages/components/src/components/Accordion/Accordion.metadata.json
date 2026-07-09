@@ -145,7 +145,7 @@
       },
       {
         "key": "Tab",
-        "action": "Moves focus sequentially through any focusable content within an open panel, then to the next accordion trigger"
+        "action": "Moves focus sequentially through any focusable content within an open panel, then to the next accordion trigger. Focusable descendants inside a collapsed panel are skipped — the panel's inert DOM property is set while closed, so Tab cannot land on them even though they remain in the DOM for aria-controls."
       }
     ]
   },
