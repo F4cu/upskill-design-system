@@ -13,7 +13,7 @@ sources:
 
 ## What it is
 
-Every component in `packages/components/src/` ships four co-located files — `index.tsx`, a CSS Module, a stories file, and `ComponentName.metadata.json` — and moves through a lifecycle tracked on **two independent axes**: maturity (is it production-ready?) and implementation (where is it in the build-review-learn pipeline?). The metadata file is the machine-readable contract that the agentic tooling reads; the two-axis lifecycle is how code-derived state and human sign-off coexist without overwriting each other.
+Every component in `packages/components/src/` ships four co-located files — `index.tsx`, a CSS Module (a stylesheet scoped to just that component), a stories file (its Storybook examples), and `ComponentName.metadata.json` — and moves through a lifecycle tracked on **two independent axes**: maturity (is it production-ready?) and implementation (where is it in the build-review-learn pipeline?). The metadata file is the machine-readable contract that the agentic tooling reads; the two-axis lifecycle is how code-derived state and human sign-off coexist without overwriting each other.
 
 ## Why it's built this way
 
@@ -23,7 +23,7 @@ Every component in `packages/components/src/` ships four co-located files — `i
 
 The schema was synthesized from three sources (giorris.dev's `usage`/`variants`/`antiPatterns` base, hvpandya.com's `tokens` list, the LLM Component Schema Standard's `generativeRules`) and deliberately *excludes* some of what those sources include: `anatomy` lives in Storybook instead; `aiHints`/`generativeRules` were distributed into `usage.keywords`, `usage.when`, and composition/layout fields rather than kept as a monolithic block.
 
-The 2026-06-17 amendment tightened it after a foundation review found 7 of 11 metadata files failed the schema: `variants` became a map of **named axes** (each axis holding `{ options, default, purpose }`), one taxonomy was enforced (`component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`), and validation moved into CI (`scripts/validate-metadata.js`, ajv draft 2020-12, run in `components-check.yml`).
+The 2026-06-17 amendment tightened it after a foundation review found 7 of 11 metadata files failed the schema: `variants` became a map of **named axes** (each axis holding `{ options, default, purpose }`), one taxonomy was enforced (`component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`), and validation moved into CI (`scripts/validate-metadata.js`, ajv — the JSON-schema validator library — draft 2020-12, run in `components-check.yml`).
 
 ### Two axes, because one field kept lying
 

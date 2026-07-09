@@ -16,6 +16,14 @@
     "path": ".claude/handoff/2026-07-07-figma-variable-push-prep.handoff.md"
   },
   {
+    "name": "2026-07-09-docs-scribe-agent",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/2026-07-09-docs-scribe-agent.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
@@ -94,5 +102,13 @@
     "created": "2026-07-07",
     "updated": "2026-07-08",
     "path": ".claude/handoff/archive/token-contrast-fixes.handoff.md"
+  },
+  {
+    "name": "Button.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-08",
+    "updated": "2026-07-08",
+    "path": ".claude/handoff/runs/Button.snapshot.json"
   }
 ]

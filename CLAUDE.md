@@ -113,7 +113,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 | 6 | Add component (verified scaffold) | `/add-component` | Sense → scaffold → gate → visual checkpoint → moment 7. Frozen snapshot is the only handoff. ADR-007. |
 | 7 | Review component | `/review-component` | One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for moment 8. |
 | 8 | Extract learnings | `/extract-learnings` | Route each finding to its durable home — component metadata first; token conventions → `/tokens-author`; contrast misses → the curated `PAIRS` list. `--all` proposals require developer confirmation. |
-| 9 | Docs sync | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is developer-triggered, never CI. Rewrite only stale sections; never touch Autodocs/docgen-owned content. PR on `docs-sync/<date>`. |
+| 9 | Docs sync | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is developer-triggered, never CI. Rewrite only stale sections; never touch Autodocs/docgen-owned content. One read-only `docs-scribe` subagent reviews rewritten sections before the PR (ADR-018). PR on `docs-sync/<date>`. |
 
 **For existing component reviews:** `/review-component <Name>` for a full adversarial pass; `/code-review` on the diff for a lighter in-session review with no subagent or handoff file.
 

@@ -66,7 +66,7 @@ Run `tokens:build` after any change to `packages/tokens/src/` and before committ
 
 ## Airtable sync
 
-Airtable is the [governance layer](05-governance.md) — it holds ownership, status, and successor fields per token and per component. These commands are one-directional and namespaced by destination. Within the namespace: **`push:*`** upserts the current snapshot as-is; **`sync:*`** refreshes the snapshot first, then pushes.
+Airtable is the [governance layer](05-governance.md) — it holds ownership, status, and successor fields per token and per component. These commands are one-directional and namespaced by destination. Within the namespace: **`push:*`** [upserts](08-glossary.md) the current snapshot as-is; **`sync:*`** refreshes the snapshot first, then pushes.
 
 | Command | What it does | When it runs |
 |---|---|---|
@@ -92,7 +92,7 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 | `npm run sense` | Aggregate the committed mirror files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`. | You type it before any agent loop run; it also runs inside `component:refresh` and `airtable:sync:components`, and CI runs it on `main` as part of `sync-tokens.yml`. |
 | `npm run sense:component` | Narrow the baseline to one component → `.claude/handoff/runs/<Name>.snapshot.json`. Usage: `npm run sense:component -- <Name>`. | You type it (or `/add-component` does) at the start of a per-component loop run. |
 | `npm run pipeline:status` | Capture CI workflow status + open issues from GitHub → `.claude/pipeline-status.json` (via the `gh` CLI). One of the five files the [showcase dashboard](#showcase-app-data-ingestion) reads. | You type it before deploying the showcase, or whenever the dashboard's CI/issues panel looks out of date. Never runs automatically. |
-| `npm run patterns:generate` | Deterministic AST + metadata scan of all components → `.claude/component-patterns.json`, the cross-component pattern aggregate consumed by `/layout-generation` (ADR-013). | You type it after changing a component's structure or ARIA wiring; CI regenerates it on every component PR and fails if the committed file is stale. |
+| `npm run patterns:generate` | Deterministic AST (abstract syntax tree — a parsed representation of the component source code's structure) + metadata scan of all components → `.claude/component-patterns.json`, the cross-component pattern aggregate consumed by `/layout-generation` (ADR-013). | You type it after changing a component's structure or ARIA wiring; CI regenerates it on every component PR and fails if the committed file is stale. |
 
 ---
 

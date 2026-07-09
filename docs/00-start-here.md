@@ -6,9 +6,9 @@ sources:
 ---
 # Start here
 
-UpSkill is a learning-first, **lite agentic** design system for a small SaaS product. "Lite" is a deliberate constraint, not an apology: a fixed, small component set (layout primitives, typography, `Button`, form inputs, `Card`, and the page-specific additions listed per phase), and economic maintenance — recurring automation is plain scripts and GitHub Actions calling REST APIs directly, MCP tools are reserved for one-off interactive tasks, and agent involvement is limited to nine defined moments. The premise stated in `CLAUDE.md` is that **one person must be able to maintain the whole system**, and every architectural choice documented on this site traces back to that.
+UpSkill is a learning-first, **lite agentic** design system for a small SaaS product. "Lite" is a deliberate constraint, not an apology: a fixed, small component set (layout primitives, typography, `Button`, form inputs, `Card`, and the page-specific additions listed per phase), and economic maintenance — recurring automation is plain scripts and GitHub Actions calling REST APIs directly, [MCP](08-glossary.md) tools are reserved for one-off interactive tasks, and agent involvement is limited to [nine defined moments](06-agentic-moments.md). The premise stated in `CLAUDE.md` is that **one person must be able to maintain the whole system**, and every architectural choice documented on this site traces back to that.
 
-The pipeline in one sentence: design tokens are authored as committed DTCG JSON, built by Style Dictionary into CSS custom properties and JS/TS constants, consumed by coded React components, governed through Airtable, automated through GitHub Actions — with Figma as a downstream mirror rather than the source of truth.
+The pipeline in one sentence: [design tokens](08-glossary.md) are authored as committed DTCG JSON, built by [Style Dictionary](08-glossary.md) into [CSS custom properties](08-glossary.md) and JS/TS constants, consumed by coded React components, governed through Airtable, automated through GitHub Actions — with Figma as a downstream mirror rather than the source of truth. In plain terms: design decisions live as data in this repo, a build step turns them into the values components use, Airtable tracks their status, and Figma reflects them without defining them.
 
 ## The two documentation surfaces
 
@@ -37,7 +37,7 @@ Pages 01–06 and 09 each follow the same template:
 
 The suggested reading order is the page order — tokens first, because everything downstream consumes them:
 
-- [01 — Token pipeline](01-token-pipeline.md) — the three-layer model, the Style Dictionary build, and why code (not Figma) is the source of truth
+- [01 — Token pipeline](01-token-pipeline.md) — the four-layer model, the Style Dictionary build, and why code (not Figma) is the source of truth
 - [02 — Component lifecycle](02-component-lifecycle.md) — the metadata schema, the two-axis lifecycle, and the tests for when a new component is justified
 - [03 — Accessibility](03-accessibility.md) — the three-tier a11y contract and the jsdom trade-off
 - [04 — Layout grammar](04-layout-grammar.md) — the fixed Figma-level → HTML-landmark mapping
@@ -47,4 +47,4 @@ The suggested reading order is the page order — tokens first, because everythi
 - [08 — Glossary](08-glossary.md) — terms explained for a non-developer collaborator
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`CLAUDE.md` → rules → commands → snapshots → handoffs) and the CI gates that keep it honest
 
-The fifteen architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
+The eighteen architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
