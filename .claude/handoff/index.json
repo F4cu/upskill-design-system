@@ -144,6 +144,30 @@
     "path": ".claude/handoff/runs/Button.snapshot.json"
   },
   {
+    "name": "Heading.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Heading.review.json"
+  },
+  {
+    "name": "Heading.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Heading.run.json"
+  },
+  {
+    "name": "Heading.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Heading.snapshot.json"
+  },
+  {
     "name": "Inline.review",
     "kind": "run",
     "status": "in-flight",
