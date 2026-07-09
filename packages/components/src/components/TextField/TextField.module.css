@@ -59,6 +59,10 @@
   border-color: var(--ds-color-border-selected);
 }
 
+.input.hasError:focus {
+  border-color: var(--ds-color-border-feedback-error);
+}
+
 .input:disabled {
   border-color: var(--ds-color-border-disabled);
   color: var(--ds-color-text-disabled);
