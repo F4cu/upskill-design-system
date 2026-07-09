@@ -70,26 +70,26 @@ Ordered simplest-first (layout primitives → typography → display atoms → m
 
 ## Checklist
 
-- [ ] Box
-- [ ] Stack
-- [ ] Inline
-- [ ] Text
-- [ ] Heading
-- [ ] **← Checkpoint 1** (see "Mid-batch evaluation checkpoints")
-- [ ] Divider
-- [ ] Icon
-- [ ] Image
-- [ ] Avatar
-- [ ] Badge
-- [ ] ProgressBar
-- [ ] Card
+- [x] Box (PR #43)
+- [x] Stack (PR #44)
+- [x] Inline (PR #45)
+- [x] Text (PR #46)
+- [x] Heading (PR #47)
+- [x] **← Checkpoint 1** — downgrade decision recorded below (see "Progress notes")
+- [ ] Divider — lighter path (`/code-review` + gate)
+- [ ] Icon — lighter path
+- [ ] Image — lighter path
+- [ ] Avatar — lighter path
+- [ ] Badge — lighter path
+- [ ] ProgressBar — lighter path
+- [ ] Card — lighter path
 - [ ] **← Checkpoint 2**
-- [ ] CardHorizontal
-- [ ] CardVertical
-- [ ] VideoFrame
-- [ ] ScrollArea
-- [ ] Breadcrumb
-- [ ] AppHeader
+- [ ] CardHorizontal — lighter path
+- [ ] CardVertical — lighter path
+- [ ] VideoFrame — lighter path
+- [ ] ScrollArea — lighter path
+- [ ] Breadcrumb — lighter path
+- [ ] AppHeader — lighter path
 
 ---
 
@@ -167,6 +167,28 @@ At the two checkpoint markers (after Heading, after Card), read `.claude/handoff
 If the adversarial reviewer has caught nothing beyond the deterministic gate across the checkpoint window, **downgrade the remaining Batch 1 components** to the lighter path — `/code-review` on the diff plus the gate (`npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test`) — and record the decision and the ledger evidence in a progress note in this handoff. If the reviewer is earning its cost, continue as planned and note that too.
 
 This is the deliberate learning experiment of this batch: an eval-lite pass using existing telemetry, no new machinery. Batch 2 (interactive components) always gets the full adversarial review regardless of this checkpoint's outcome.
+
+---
+
+# Progress notes
+
+## Checkpoint 1 (after Heading) — 2026-07-09
+
+Ledger evidence (`.claude/handoff/run-ledger.json`, 5 entries — Box, Stack, Inline, Text, Heading):
+
+| Component | reviewerFindingsBeyondGateCount | manualRescuesCount | gate failures |
+|---|---|---|---|
+| Box | 0 | 0 | 0 |
+| Stack | 0 | 0 | 0 |
+| Inline | 0 | 0 | 0 |
+| Text | 1 | 0 | 0 |
+| Heading | 0 | 0 | 0 |
+
+4/5 components had `reviewerCaughtBeyondGate` empty. The one exception (Text) was a genuine but low-severity finding (`htmlFor` not scoped to `as="label"`) — the same class of polymorphic-`as` typing gap the reviewer had already flagged as an accepted trade-off on Box/Stack/Inline. Zero manual rescues, zero gate bounce-backs across all five runs; every review this far has been a fresh audit of unchanged code (no diff — first-ever review of established components), not a review of new changes.
+
+**Decision: downgrade the remaining Batch 1 components to the lighter path** (`/code-review` on the current implementation + the deterministic gate: `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test`), per the handoff's checkpoint rule. The adversarial subagent is not earning its cost for this component family: it is consistently confirming clean, token-compliant, lint-clean code and surfacing only the same one or two low-severity, non-blocking typing observations already known and accepted across the layout/typography primitives. A lighter in-session pass is sufficient to catch anything in that same class for the remaining 13 Batch 1 components (Divider, Icon, Image, Avatar, Badge, ProgressBar, Card, CardHorizontal, CardVertical, VideoFrame, ScrollArea, Breadcrumb, AppHeader).
+
+Batch 2 (interactive components) is unaffected by this decision and always gets the full adversarial review regardless of this checkpoint's outcome.
 
 ---
 
