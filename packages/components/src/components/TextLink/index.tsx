@@ -5,8 +5,9 @@ export type TextLinkSize = 'body-default' | 'body-small' | 'metadata' | 'label'
 
 export type TextLinkProps = {
   size?: TextLinkSize
+  href: string
   children: React.ReactNode
-} & AnchorHTMLAttributes<HTMLAnchorElement>
+} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'style'>
 
 export function TextLink({ size = 'body-default', children, className, ...rest }: TextLinkProps) {
   return (

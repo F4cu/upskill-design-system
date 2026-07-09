@@ -10,7 +10,7 @@ describe('TextLink — a11y behavior', () => {
     expect(screen.getByRole('link', { name: 'About us' })).toBeInTheDocument()
   })
 
-  it('is keyboard-focusable and follows the href on Enter', async () => {
+  it('is keyboard-focusable via Tab', async () => {
     const user = userEvent.setup()
     render(<TextLink href="/about">About us</TextLink>)
 
@@ -20,8 +20,11 @@ describe('TextLink — a11y behavior', () => {
 
   it('is removed from the tab order when href is absent', async () => {
     const user = userEvent.setup()
-    // An <a> without href is not focusable — keyboard contract in metadata:
-    // "omitting href removes the link from the tab order"
+    // href is a required prop (TypeScript enforces it at the call site), but an <a>
+    // rendered without one at runtime — e.g. from untyped JS — still must degrade
+    // gracefully per the documented keyboard contract: "omitting href removes the
+    // link from the tab order."
+    // @ts-expect-error — intentionally omitting the required href to test the native fallback
     const { container } = render(<TextLink>No href</TextLink>)
     const anchor = container.querySelector('a')!
 
