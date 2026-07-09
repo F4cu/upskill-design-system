@@ -76,11 +76,11 @@ Ordered simplest-first (layout primitives → typography → display atoms → m
 - [x] Text (PR #46)
 - [x] Heading (PR #47)
 - [x] **← Checkpoint 1** — downgrade decision recorded below (see "Progress notes")
-- [ ] Divider — lighter path (`/code-review` + gate)
-- [ ] Icon — lighter path
-- [ ] Image — lighter path
-- [ ] Avatar — lighter path
-- [ ] Badge — lighter path
+- [x] Divider — lighter path (`/code-review` + gate)
+- [x] Icon — lighter path
+- [x] Image — lighter path
+- [x] Avatar — lighter path
+- [x] Badge — lighter path
 - [ ] ProgressBar — lighter path
 - [ ] Card — lighter path
 - [ ] **← Checkpoint 2**
@@ -189,6 +189,17 @@ Ledger evidence (`.claude/handoff/run-ledger.json`, 5 entries — Box, Stack, In
 **Decision: downgrade the remaining Batch 1 components to the lighter path** (`/code-review` on the current implementation + the deterministic gate: `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test`), per the handoff's checkpoint rule. The adversarial subagent is not earning its cost for this component family: it is consistently confirming clean, token-compliant, lint-clean code and surfacing only the same one or two low-severity, non-blocking typing observations already known and accepted across the layout/typography primitives. A lighter in-session pass is sufficient to catch anything in that same class for the remaining 13 Batch 1 components (Divider, Icon, Image, Avatar, Badge, ProgressBar, Card, CardHorizontal, CardVertical, VideoFrame, ScrollArea, Breadcrumb, AppHeader).
 
 Batch 2 (interactive components) is unaffected by this decision and always gets the full adversarial review regardless of this checkpoint's outcome.
+
+## Lighter-path reviews 1-5 (Divider, Icon, Image, Avatar, Badge) — 2026-07-09
+
+Manual in-session review (no subagent) of each component's implementation, metadata, and CSS module, followed by the full gate (`metadata:validate`, `typecheck`, `build`, `a11y:coverage`, `a11y:test` — all passing throughout, run once after the batch since no code changed).
+
+No code changes required for any of the five. Findings, all pre-existing and already documented in metadata (no new issues surfaced):
+
+- **Icon**, **Badge**: the spread-props-can-override-intended-behavior typing gap (same class flagged on Box/Stack/Inline/Text) is already called out explicitly in each component's `usage.antiPatterns` — an accepted trade-off, not a new finding.
+- **Divider**, **Image**, **Avatar**: no issues. CSS modules reference only `var(--ds-*)` tokens; metadata accurately reflects implementation.
+
+Unlike the full `/review-component` path, this lighter path produces no `.review.json`/`.run.json` and is not promoted into `run-ledger.json` — it isn't one of the git-workflow's PR-required exceptions (no code changed, nothing to branch/PR for), so the only record is this note plus the checklist above.
 
 ---
 
