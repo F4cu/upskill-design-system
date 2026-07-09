@@ -1,0 +1,228 @@
+---
+status: active
+created: 2026-07-09
+completed: null
+---
+
+# Established Component Review Backlog — Handoff
+
+# Objective
+
+Clear the review backlog for all **established** components before continuing with the public showcase (Phase 11).
+
+`npm run sense` (`STATUS_QUO.md`, 2026-07-08) currently reports:
+
+- 27 components have **Established implementation maturity**
+- All are stable and documented
+- None have completed the `/review-component` adversarial review process
+
+The public showcase is about to begin consuming these components on real pages. The goal is to clear the review backlog first so the showcase is built on fully reviewed components.
+
+This handoff only covers **Batch 1**.
+
+---
+
+# Background
+
+`/review-component <ComponentName>` is intentionally designed as a **single-component workflow**.
+
+Each review creates:
+
+- one adversarial review
+- one `component/<kebab-name>` branch
+- one PR
+
+After the PR is merged, the next component review should begin.
+
+This sequential workflow is important because multiple reviews update shared files (particularly `component-patterns.json`). Merging each PR before starting the next avoids stale-copy conflicts and keeps `components-check.yml` passing.
+
+**Sequential is the validated design, not a limitation.** Anthropic's multi-agent guidance flags tasks with shared mutable state as a poor fit for parallel sessions/worktrees, and multi-agent runs cost roughly 4× the tokens — justified only for breadth-first independent work. Do not parallelize this batch.
+
+---
+
+# Batching Strategy
+
+The 27 established components have been divided according to the amount of adversarial review required.
+
+Per `.claude/commands/review-component.md`, the deep accessibility contract review (keyboard interaction validation, ARIA state verification, WAI-ARIA APG compliance) is only required for:
+
+- interactive components
+- input components
+- components with custom keyboard contracts
+
+Display/container components only receive the lighter review.
+
+### Components with keyboard metadata but **no custom contract**
+
+These still belong in Batch 1 because their interactions are native browser behavior:
+
+- AppHeader
+- Breadcrumb
+- ScrollArea
+
+---
+
+# Batch 1 — Standard Review (18 components)
+
+These components do **not** require deep keyboard/ARIA contract validation.
+
+Ordered simplest-first (layout primitives → typography → display atoms → molecules) so the early runs calibrate the checkpoint data before the costlier components.
+
+## Checklist
+
+- [ ] Box
+- [ ] Stack
+- [ ] Inline
+- [ ] Text
+- [ ] Heading
+- [ ] **← Checkpoint 1** (see "Mid-batch evaluation checkpoints")
+- [ ] Divider
+- [ ] Icon
+- [ ] Image
+- [ ] Avatar
+- [ ] Badge
+- [ ] ProgressBar
+- [ ] Card
+- [ ] **← Checkpoint 2**
+- [ ] CardHorizontal
+- [ ] CardVertical
+- [ ] VideoFrame
+- [ ] ScrollArea
+- [ ] Breadcrumb
+- [ ] AppHeader
+
+---
+
+# Batch 2 — Deep Accessibility Review (Out of Scope)
+
+These components require additional validation of:
+
+- keyboard interactions
+- stateful ARIA behavior
+- WAI-ARIA Authoring Practices compliance
+
+Batch 2 is **not** part of this handoff and should be completed in a future session.
+
+Components:
+
+- Accordion
+- Button
+- ButtonArrow
+- Checkbox
+- Chip
+- DropdownMenu
+- Select
+- TextField
+- TextLink
+
+---
+
+# Execution Process (Batch 1)
+
+## Session cadence
+
+Run **3–5 component reviews per sitting, then stop**. Start each component (or at most a small group) in a **fresh session** — long batch sessions accumulate context and degrade review quality, and the rolling 5-hour usage window naturally paces the batch. Ending at a merged-PR milestone means any session can pick up cleanly from this checklist.
+
+## Per-component loop
+
+For each component, in order:
+
+1. Regenerate the frozen snapshot the reviewer subagent reads:
+
+   ```
+   npm run sense:component <ComponentName>
+   ```
+
+2. Run:
+
+   ```
+   /review-component <ComponentName>
+   ```
+
+3. Confirm:
+
+   - review completed
+   - quality gates passed
+   - PR opened successfully
+
+4. Merge the PR before beginning the next component review.
+
+   This ensures shared files such as `component-patterns.json` remain current and prevents stale branch conflicts.
+
+5. After the merge, run `/extract-learnings <ComponentName>` while `.claude/handoff/runs/<ComponentName>.review.json` is fresh. This back-fills the findings into component metadata — skipping it leaves the system with no memory of what the review found. (If budget-constrained, this may be deferred to the next checkpoint, but no later: `runs/` is gitignored and regenerable context is not the same as findings.)
+
+6. Run `npm run handoff:tidy` to promote `<ComponentName>.run.json` into the committed `run-ledger.json`. This is the **only** step that makes per-run review telemetry durable — without it the batch produces no evidence for the checkpoints below.
+
+7. Mark the component complete in the checklist above.
+
+Repeat until all 18 Batch 1 components have been reviewed and merged.
+
+## Mid-batch evaluation checkpoints
+
+At the two checkpoint markers (after Heading, after Card), read `.claude/handoff/run-ledger.json` for the batch's entries and ask:
+
+- Is `reviewerCaughtBeyondGate` consistently **empty** for the display/container components reviewed so far?
+- Were there `manualRescues` or gate bounce-backs?
+
+If the adversarial reviewer has caught nothing beyond the deterministic gate across the checkpoint window, **downgrade the remaining Batch 1 components** to the lighter path — `/code-review` on the diff plus the gate (`npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test`) — and record the decision and the ledger evidence in a progress note in this handoff. If the reviewer is earning its cost, continue as planned and note that too.
+
+This is the deliberate learning experiment of this batch: an eval-lite pass using existing telemetry, no new machinery. Batch 2 (interactive components) always gets the full adversarial review regardless of this checkpoint's outcome.
+
+---
+
+# After Batch 1 Completes
+
+Run:
+
+```bash
+npm run sense
+```
+
+This should regenerate:
+
+- `STATUS_QUO.md`
+- `.claude/component-pipeline.json`
+
+Then:
+
+- verify the Batch 1 components no longer appear under the **Established — review backlog**
+- update this handoff checklist
+- keep the handoff **Status: active**, since Batch 2 remains outstanding
+- add a short progress note describing what remains and the outcome of the checkpoint decision
+
+---
+
+# Verification
+
+Each merged component PR should have passed:
+
+- validate
+- typecheck
+- build
+- a11y:coverage
+- a11y checks
+- Stage 2 validation performed by `/review-component`
+
+After every merge:
+
+- `components-check.yml` should continue passing
+- no stale `component-patterns.json` conflicts should exist
+
+After the full Batch 1 completes:
+
+- `npm run sense` should report the 18 Batch 1 components with implementation maturity beyond the "Established review backlog"
+- `run-ledger.json` should contain one entry per reviewed component (18 total, or fewer plus a recorded downgrade decision from a checkpoint)
+- `/extract-learnings` has been run for every component reviewed via the full adversarial path
+- Only the 9 Batch 2 components should remain pending adversarial review
+
+---
+
+# Exit Condition
+
+This handoff is complete when:
+
+- all 18 Batch 1 components have been reviewed (full or checkpoint-downgraded path, with the decision recorded)
+- all PRs have been merged
+- `npm run sense` has been regenerated
+- Batch 1 components no longer appear in the **Established review backlog**
+- this handoff remains **active**, documenting that only the Batch 2 review set remains

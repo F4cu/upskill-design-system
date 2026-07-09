@@ -16,6 +16,14 @@
     "path": ".claude/handoff/2026-07-07-figma-variable-push-prep.handoff.md"
   },
   {
+    "name": "2026-07-09-component-review",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/2026-07-09-component-review.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
