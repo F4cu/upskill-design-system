@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "452e668daa6572e2cc6a02cbd2a4aeb9f5f5d465",
+  "generatedFrom": "4980868ff813a1aea9eecf843aeb75c1ec25c44f",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -78,7 +78,7 @@
             "Icon"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS.",
             "aria-label — automatically set to 'Previous' or 'Next' from the direction prop; override via rest props for more specific context"
@@ -88,7 +88,7 @@
           "component": "TextLink",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "Renders a native <a> element. href is always required — omitting it removes the link from the tab order. Do not nest interactive children (buttons, inputs, other links) inside TextLink.",
             "aria-label — use when the link text alone is ambiguous (e.g. 'Read more' repeated multiple times on a page)"
@@ -159,7 +159,7 @@
           "component": "DropdownMenu",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "state": {
             "controlled": "always",
             "props": [
@@ -270,7 +270,7 @@
             "triggerId"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "state": {
             "controlled": "optional",
             "props": [
@@ -304,7 +304,7 @@
             "id"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "aria-checked (managed natively by the browser)",
             "aria-disabled (managed natively via disabled prop)"
@@ -336,7 +336,7 @@
             "id"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "aria-describedby (points to error message element when error prop is set)",
             "aria-invalid (set to true when error prop is set)"
@@ -656,7 +656,7 @@
           "component": "Chip",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "Uses a native <button> element with aria-pressed. The caller is responsible for managing the selected state and grouping chips in a meaningful container (e.g. role=group with aria-label).",
             "aria-pressed — reflects the selected state so screen readers announce active/inactive"

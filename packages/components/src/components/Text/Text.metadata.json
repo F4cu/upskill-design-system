@@ -39,6 +39,11 @@
         "scenario": "Wrapping Text in another Text",
         "reason": "Text is a leaf node. Nesting creates redundant markup.",
         "alternative": "Place both Text elements inside a Stack or Inline"
+      },
+      {
+        "scenario": "Passing htmlFor without as=\"label\"",
+        "reason": "htmlFor is declared on TextProps but not destructured out, so it always falls into ...rest and is spread onto whatever element as renders — nothing restricts it to label, so it can render an invalid for attribute on a non-label element.",
+        "alternative": "Only pass htmlFor when as=\"label\"; for any other element, omit it."
       }
     ]
   },
