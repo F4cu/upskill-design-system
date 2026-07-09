@@ -50,6 +50,7 @@ export function CardHorizontal({
 
   return (
     <div
+      role="article"
       className={[styles.card, styles[variant], className].filter(Boolean).join(' ')}
       {...rest}
     >

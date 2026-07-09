@@ -65,11 +65,11 @@
       {
         "scenario": "Conditionally rendering the panel element (e.g. {isOpen && <div>}) instead of always mounting it",
         "reason": "aria-controls on the trigger must point to an element that is always in the DOM. Unmounting the panel when closed means the target id does not exist in the collapsed state, breaking the ARIA association for screen readers such as NVDA + Firefox.",
-        "alternative": "Always render the panel div and control visibility with the hidden HTML attribute: <div id={panelId} role='region' aria-labelledby={triggerId} hidden={!isOpen}>."
+        "alternative": "Always render the panel div. The native hidden attribute cannot be used directly because it forces display:none, which would break the height-transition animation — instead pair aria-hidden={!isOpen} with the panel element's inert DOM property (set imperatively via a ref, since @types/react 18 doesn't expose inert as a JSX prop) so focusable descendants inside a collapsed panel cannot be tabbed into or clicked while it is visually collapsing."
       },
       {
         "scenario": "Passing both the open prop (controlled) and defaultOpen prop simultaneously to AccordionItem",
-        "reason": "The component cannot resolve two competing sources of truth. The controlled open prop silently wins but defaultOpen is ignored without warning, leading to unexpected initial state.",
+        "reason": "The component cannot resolve two competing sources of truth. The controlled open prop silently wins over defaultOpen; a DEV-only console.warn is emitted, but the initial state discrepancy still occurs at runtime.",
         "alternative": "Use open + onOpenChange for fully controlled mode, or defaultOpen alone for uncontrolled mode. Never supply both."
       },
       {
@@ -155,7 +155,7 @@
       "Text"
     ],
     "accepts": [
-      "*"
+      "AccordionItem"
     ],
     "containedBy": [
       "Box",

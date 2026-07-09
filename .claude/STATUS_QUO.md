@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-07-08T09:15:43.260Z**
+Generated: **2026-07-09T13:48:40.922Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -25,8 +25,18 @@ None. No deprecated token has a live reference. ✅
 
 - **27 total** — Maturity: 27 beta
 - By type: container (6) · display (13) · input (3) · interactive (5)
-- Implementation: 0 done · 0 in review · 0 in progress · 0 todo · 27 established (pre-loop)
+- Implementation: 0 done · 0 in review · 5 in progress · 0 todo · 22 established (pre-loop)
 - Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
+
+### In progress — loop not yet closed
+
+Reviewed with learnings pending, or a run logged without a completed review.
+
+- `Box` — maturity `beta` · `/extract-learnings` pending
+- `Heading` — maturity `beta` · `/extract-learnings` pending
+- `Inline` — maturity `beta` · `/extract-learnings` pending
+- `Stack` — maturity `beta` · `/extract-learnings` pending
+- `Text` — maturity `beta` · `/extract-learnings` pending
 
 ### Established — review backlog
 
@@ -35,7 +45,7 @@ through an adversarial review. Not active work — candidates to harden with
 `/review-component <Name>` when there's time. Running one moves the
 component into the loop automatically.
 
-`Accordion` · `AppHeader` · `Avatar` · `Badge` · `Box` · `Breadcrumb` · `Button` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Heading` · `Icon` · `Image` · `Inline` · `ProgressBar` · `ScrollArea` · `Select` · `Stack` · `Text` · `TextField` · `TextLink` · `VideoFrame`
+`Accordion` · `AppHeader` · `Avatar` · `Badge` · `Breadcrumb` · `Button` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Icon` · `Image` · `ProgressBar` · `ScrollArea` · `Select` · `TextField` · `TextLink` · `VideoFrame`
 
 ### Beta (not production-ready)
 
@@ -69,7 +79,14 @@ component into the loop automatically.
 
 ## Pending extract-learnings
 
-None. All review findings have been back-filled. ✅
+**5** component(s) reviewed but learnings not yet back-filled into metadata.
+Run `/extract-learnings --all` to process all at once, or `/extract-learnings <Name>` individually.
+
+- `Box` — reviewed 2026-07-09 → `/extract-learnings Box`
+- `Heading` — reviewed 2026-07-09 → `/extract-learnings Heading`
+- `Inline` — reviewed 2026-07-09 → `/extract-learnings Inline`
+- `Stack` — reviewed 2026-07-09 → `/extract-learnings Stack`
+- `Text` — reviewed 2026-07-09 → `/extract-learnings Text`
 
 ## Token usage
 
@@ -80,7 +97,7 @@ None. All review findings have been back-filled. ✅
 ## Figma drift
 
 - Snapshot captured: **2026-07-07** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **1 day(s)**
+- Age: **2 day(s)**
 - Variables mirrored: **454** (Primitives 288 · Theme 106 · Device 60)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 
