@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "c5efba4672539d34da16790f79a0ea8b3b30ff06",
+  "generatedFrom": "163474005d33142f90bb849e5d5e295459b3d740",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -59,7 +59,7 @@
             "Icon"
           ],
           "maturity": "beta",
-          "stage": "in review",
+          "stage": "established",
           "systemSpecificNotes": [
             "Uses a native <button> element. The disabled prop sets the HTML disabled attribute, which natively prevents click events and removes the element from the tab order.",
             "aria-label (set on icon-only buttons via shape to provide an accessible name; flows through ...rest)",
@@ -214,7 +214,7 @@
             "listboxId"
           ],
           "maturity": "beta",
-          "stage": "in review",
+          "stage": "established",
           "state": {
             "controlled": "optional",
             "props": [
@@ -270,7 +270,7 @@
             "triggerId"
           ],
           "maturity": "beta",
-          "stage": "in review",
+          "stage": "established",
           "state": {
             "controlled": "optional",
             "props": [
@@ -466,7 +466,7 @@
             "Text"
           ],
           "maturity": "beta",
-          "stage": "in review",
+          "stage": "established",
           "systemSpecificNotes": [
             "Renders a plain <span> with visible text — no ARIA role needed; the label is read inline as text content. Not focusable and not interactive. If the badge conveys meaning beyond the adjacent content (e.g. a status not otherwise stated), make the label text explicit rather than relying on colour alone."
           ]
@@ -543,7 +543,7 @@
           "component": "Icon",
           "composition": [],
           "maturity": "beta",
-          "stage": "in review",
+          "stage": "established",
           "systemSpecificNotes": [
             "Icons are decorative by default (aria-hidden=true). When an Icon is the only content conveying meaning, pass the label prop to add aria-label and role=img.",
             "aria-hidden (default true)",
