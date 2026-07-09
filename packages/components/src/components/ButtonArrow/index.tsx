@@ -19,7 +19,7 @@ export function ButtonArrow({ direction, className, ...rest }: ButtonArrowProps)
       <Icon
         name={direction === 'left' ? 'chevron-left' : 'chevron-right'}
         size="md"
-        style={{ transform: direction === 'left' ? 'translateX(-1px)' : 'translateX(1px)' }}
+        className={direction === 'left' ? styles.iconLeft : styles.iconRight}
       />
     </button>
   )

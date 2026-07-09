@@ -54,6 +54,11 @@ describe('ButtonArrow — a11y behavior', () => {
     expect(onClick).not.toHaveBeenCalled()
   })
 
+  it('hides the chevron icon from the accessible name (icon SVG is aria-hidden)', () => {
+    const { container } = render(<ButtonArrow direction="left" />)
+    expect(container.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+  })
+
   it('has no axe violations for both directions', async () => {
     const { container } = render(
       <>

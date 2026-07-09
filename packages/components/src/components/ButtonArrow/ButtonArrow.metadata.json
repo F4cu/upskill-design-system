@@ -50,7 +50,7 @@
         "left",
         "right"
       ],
-      "default": "right",
+      "default": null,
       "purpose": {
         "left": "Chevron-left icon. Navigates to the previous item. Set disabled when at the start of the sequence.",
         "right": "Chevron-right icon. Navigates to the next item. Set disabled when at the end of the sequence."
