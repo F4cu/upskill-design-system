@@ -63,7 +63,7 @@ A component (or element) whose only purpose is to surround something else — to
 The nested hierarchy of React components in an application. The root component sits at the top; it renders child components, each of which may render further children, forming a tree. Props and data flow downward from parent to child; events bubble upward. In this repo, a layout like `ScrollArea > Inline > CardVertical` is a fragment of a component tree, and the `/layout-generation` command produces a React component tree for a page — each structural choice annotated by the metadata rule that justified it.
 
 **Hook (React)**
-A function that packages reusable state or behavior so multiple components can share it. In React, hooks always start with `use` by convention (`useCarousel`, `useSlider`, `useState`). They are not components — they have no visual output. Instead, you plug them *into* a component to give it behavior. In this repo, `useCarousel` tracks which card is currently active; the planned `useSlider` will track which step is visible in a step-through UI.
+A function that packages reusable state or behavior so multiple components can share it. In React, hooks always start with `use` by convention (`useCarousel`, `useSlider`, `useState`). They are not components — they have no visual output. Instead, you plug them *into* a component to give it behavior. In this repo, `useCarousel` tracks which card is currently active; `useSlider` tracks which step is visible in a step-through UI.
 
 **Ref / forwardRef**
 A ref is a way for a parent component to get a direct handle on a child's underlying HTML element — for example, to call `scrollBy()` on a `ScrollArea` div, or to move focus to a `TextField` programmatically. `forwardRef` is the React pattern that allows a component to pass that handle through to its caller. You'll see `forwardRef` in component source code when the component needs to expose its DOM element. As a non-developer, the main thing to know is: if a component supports ref, it can be controlled programmatically by its parent, not just through props.
@@ -123,7 +123,7 @@ The output format that the browser reads, produced by the Style Dictionary build
 The build tool that converts the token JSON source files into CSS custom properties and JS constants. Running `npm run tokens:build` triggers Style Dictionary. It applies transforms (such as px → rem) and produces the files that components actually consume.
 
 **Transform**
-A conversion step applied by Style Dictionary during the build. Examples in this repo: converting pixel values to `rem` units, converting font-weight strings like `"Bold"` to their numeric equivalent (`700`), and wrapping device tokens in `@media` blocks. Transforms are configured in `style-dictionary.config.js`.
+A conversion step applied by Style Dictionary during the build. Examples in this repo: converting pixel values to `rem` units, converting font-weight strings like `"Bold"` to their numeric equivalent (`700`), and wrapping device tokens in `@media` blocks. Transforms are configured in `packages/tokens/build.js`.
 
 ---
 
@@ -146,7 +146,10 @@ The replacement token for a deprecated one. Stored as a dot-path in Airtable (e.
 A defined contract that lets two systems talk to each other. One system makes a request; the other responds with data or confirms an action. In this repo, Airtable, GitHub, and Figma all expose APIs — scripts call them to sync tokens, open pull requests, or read variable definitions without anyone opening a browser.
 
 **API key / authentication**
-A secret credential that proves to an external service that you are allowed to call it. In this repo, the Airtable API key is stored in a `.env` file locally and as a CI secret in GitHub Actions — never committed to the repo. Without it, the sync scripts are rejected by Airtable's servers.
+A secret credential that proves to an external service that you are allowed to call it. In this repo, the Airtable API key is stored in a `.env` file locally and as a [CI](08-glossary.md) secret in GitHub Actions — never committed to the repo. Without it, the sync scripts are rejected by Airtable's servers.
+
+**CI (Continuous Integration)**
+Automation that runs checks on every change pushed to the repository, before the change is allowed to merge — so nobody has to remember to run them. A local npm script like `npm run docs:check` runs only when you invoke it; CI runs the same script automatically as a merge gate. In this repo, GitHub Actions workflows such as `docs-check.yml` and `components-check.yml` run on every pull request, so a stale doc or a stale component snapshot blocks the merge instead of slipping through.
 
 **Endpoint**
 A specific URL on an API that performs one action. For example, Airtable has separate endpoints for reading records, creating records, and updating records. `scripts/airtable-sync.js` calls the "upsert records" endpoint; `scripts/airtable-pull.js` calls the "list records" endpoint. An API is the whole contract; an endpoint is one door into it.
@@ -168,7 +171,7 @@ A portmanteau of "update" and "insert." An upsert tells an API or database: if a
 The set of line-level differences between two versions of a file — additions and removals shown together, so a reviewer can see exactly what changed without re-reading the whole file. `git diff` shows this for uncommitted changes; a GitHub pull request shows it as red/green line highlighting for review.
 
 **Frontmatter**
-A block of key-value metadata at the very top of a markdown file, delimited by triple dashes (`---`). This handoff file's own frontmatter (`status`, `created`, `completed`) is an example — it lets `npm run handoff:tidy` know whether the file is still active without parsing the prose below it. This page's `sources:` block is another: it lists the files `docs:check` watches to decide whether this page has gone stale.
+A block of key-value metadata at the very top of a markdown file, delimited by triple dashes (`---`). The handoff files in `.claude/handoff/` carry a frontmatter block (`status`, `created`, `completed`) — it lets `npm run handoff:tidy` know whether a handoff is still active without parsing the prose below it. This page's `sources:` block is another example: it lists the files `docs:check` watches to decide whether this page has gone stale.
 
 **Pull request**
 A request to merge one branch's commits into another, opened so the change can be reviewed before it lands. In this repo, agent-generated work always goes through a PR rather than committing straight to `main` — `/review-component` opens one on a `component/<kebab-name>` branch, `/docs-sync` on a `docs-sync/<date>` branch — so a human reviews agent output before it becomes the default branch's history.
@@ -208,7 +211,10 @@ The amount of information an AI can hold and reason over at once — think of it
 A fixed set of automated checks that must pass before agent-written code is allowed to proceed to human review. In this repo the gate is: `npm run metadata:validate` + `npm run typecheck` + `npm run build` + `npm run a11y:coverage` + `npm run a11y:test` + `npm run patterns:generate`. "Deterministic" means the result is always the same for the same input — no judgment involved, just pass or fail. If the gate fails, the loop bounces back to the scaffold stage rather than pushing broken code forward.
 
 **Frozen snapshot**
-A committed file that captures the state of an external system at a point in time, so agents can read it without making a live API call. In this repo: `airtable-governance.json` (Airtable state), `token-usage.json` (repo scan), `figma-variables.json` (Figma variables), `.claude/component-signoff.json` (human sign-off pulled from Airtable), `.claude/component-pipeline.json` (per-component pipeline stage), and `.claude/STATUS_QUO.md` (aggregate of the above). Regenerated manually before a loop run with `npm run sense`. Frozen snapshots keep agents fast, cheap, and immune to rate limits during a task.
+A committed file that captures the state of an external system at a point in time, so agents can read it without making a live API call. In this repo: `airtable-governance.json` (Airtable state), `token-usage.json` (repo scan), `figma-variables.json` (Figma variables), `.claude/component-signoff.json` (human sign-off pulled from Airtable), `.claude/component-pipeline.json` (per-component pipeline stage), `.claude/component-patterns.json` (cross-component pattern aggregate), and `.claude/STATUS_QUO.md` (aggregate of the above). Regenerated manually before a loop run with `npm run sense`. Frozen snapshots keep agents fast, cheap, and immune to rate limits during a task.
+
+**Glob pattern**
+A wildcard file-path pattern that matches many files at once instead of naming one exactly. `packages/tokens/**` means "every file under `packages/tokens/`, at any depth"; contrast with an exact path like `packages/tokens/src/primitives.json`, which matches only that single file. In this repo, path-scoped rules declare when they load using glob patterns in their `paths:` frontmatter. See also Rules (path-scoped).
 
 **Handoff**
 A committed file that formally transfers context and state from one stage of a loop — or one session — to the next, so work can resume without re-deriving what already happened. In this repo, markdown handoffs live in `.claude/handoff/` with a 3-line frontmatter block (`status`, `created`, `completed`) per ADR-015; per-run component-loop JSON handoffs live under the gitignored `.claude/handoff/runs/`, regenerable via `npm run sense:component <Name>`. See also Frontmatter.
@@ -226,7 +232,7 @@ Giving an agent only the instructions relevant to the task at hand, and loading 
 The instruction given to an AI to tell it what to do. The slash commands in `.claude/commands/` are prompts — they describe the inputs, the steps, the constraints, and the expected output for each agentic moment. Prompt wording matters: a vague prompt produces vague output; a prompt that names specific files and rules produces consistent, verifiable results.
 
 **Rules (path-scoped)**
-Markdown instruction files in `.claude/rules/`, each with `paths:` frontmatter listing glob patterns; Claude Code loads a rule into context only when the session touches a file matching its patterns. This repo keeps two: `components.md` (`packages/components/**`) and `tokens.md` (`packages/tokens/**`) — so component implementation rules cost nothing in a token-authoring session, and vice versa. A rule *without* `paths:` loads into every session, silently defeating the point, which is why `npm run claudemd:check` fails on one. See also CLAUDE.md, Progressive disclosure, Frontmatter.
+Markdown instruction files in `.claude/rules/`, each with `paths:` frontmatter listing [glob patterns](08-glossary.md); Claude Code loads a rule into context only when the session touches a file matching its patterns. This repo keeps two: `components.md` (`packages/components/**`) and `tokens.md` (`packages/tokens/**`) — so component implementation rules cost nothing in a token-authoring session, and vice versa. A rule *without* `paths:` loads into every session, silently defeating the point, which is why `npm run claudemd:check` fails on one. See also CLAUDE.md, Progressive disclosure, Frontmatter.
 
 **Slash command / skill**
 A prompt file invoked by typing `/name` in a Claude Code session, loaded into context only at that moment. In this repo, `.claude/commands/` holds prompt-only commands (all nine agentic moments live there) and `.claude/skills/` holds commands that ship companion code (only `/run-storybook`, which ships `driver.mjs`). Claude Code's naming is the inverse of plain-English intuition — "skills" are the ones with code, "commands" are the prompts. On-demand loading is what lets each moment carry its full procedure without every session paying for it. See also Prompt, Agentic moment, Progressive disclosure.
@@ -275,7 +281,7 @@ A condition that must remain true no matter what else changes. The "Invariant th
 An append-only record of events, kept specifically so nothing already recorded is ever edited or deleted — only added to. `.claude/handoff/run-ledger.json` is a ledger: every `/review-component` run's gate result and reviewer findings get appended to it, deduped by component and timestamp, so the history of runs survives even though the per-run JSON files themselves are gitignored.
 
 **Linting**
-Automated static analysis that flags structural or stylistic problems in source code without running it — a missing `alt` attribute, a raw hex color where a token should be used. `npm run lint` runs `jsx-a11y` lint in this repo (Tier 1 of the two-tier accessibility check); it catches a category of mistake before any test or build step does.
+Automated static analysis that flags structural or stylistic problems in source code without running it — a missing `alt` attribute, a raw hex color where a token should be used. `npm run lint` runs `jsx-a11y` lint in this repo (Tier 1 of the three-tier accessibility check); it catches a category of mistake before any test or build step does.
 
 **Overfitting**
 When a system becomes so tuned to the exact cases it was tested or trained against that it stops generalizing to new, slightly different inputs. A prompt tuned until it nails one layout brief perfectly but breaks on any brief phrased differently is overfit to that one example.

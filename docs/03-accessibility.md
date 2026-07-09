@@ -14,9 +14,9 @@ sources:
 
 Accessibility verification runs in three tiers, each deterministic and CI-gated ([ADR-008](decisions/008-behavioral-a11y-tier.md), amended 2026-07-02):
 
-1. **Tier 1 — static lint, all components.** `npm run lint` runs ESLint + `eslint-plugin-jsx-a11y` over `packages/components/src`.
-2. **Tier 2 — behavioral tests, interactive components only.** A co-located `<Name>.a11y.test.tsx` (Vitest + Testing Library + `vitest-axe`, jsdom) asserting the dynamic ARIA contract — state attributes toggling, focus, keyboard — plus an axe scan.
-3. **Tier 3 — token-level contrast math.** `npm run tokens:contrast-check` computes WCAG relative-luminance contrast ratios against the *built* theme CSS.
+1. **Tier 1 — static lint, all components.** Every component's markup is checked for accessibility mistakes visible without ever rendering it — missing labels, invalid roles (`npm run lint`, which runs ESLint + `eslint-plugin-jsx-a11y` over `packages/components/src`).
+2. **Tier 2 — behavioral tests, interactive components only.** Each interactive component gets tests proving it actually works the way a keyboard or screen-reader user experiences it — state attributes toggling, focus, keyboard — plus a scan with axe (the industry-standard automated accessibility rule checker). These assertions of the dynamic ARIA contract live in a co-located `<Name>.a11y.test.tsx` (Vitest + Testing Library + `vitest-axe`, jsdom).
+3. **Tier 3 — token-level contrast math.** Every curated text-on-background color pairing is verified to meet WCAG's minimum contrast ratios (`npm run tokens:contrast-check`, which computes WCAG relative-luminance contrast ratios against the *built* theme CSS).
 
 ## Why it's built this way
 
@@ -32,7 +32,7 @@ Requiring behavioral tests for every component would "write near-empty tests for
 
 ### The jsdom trade-off, accepted and then partially closed
 
-jsdom cannot judge layout or color, so three things stay out of Tier 2's scope: color contrast, visible focus rings, and real assistive-technology behavior (NVDA/VoiceOver) — those remain visual review plus Storybook's `addon-a11y` panel, and axe's `color-contrast` rule is disabled in the tests.
+jsdom is a simulated browser environment that runs inside Node — it builds the DOM and accessibility structure of a page without rendering any pixels, which is why it's fast but can't judge layout or color. Because of that, three things stay out of Tier 2's scope: color contrast, visible focus rings, and real assistive-technology behavior (NVDA/VoiceOver) — those remain visual review plus Storybook's `addon-a11y` panel, and axe's `color-contrast` rule is disabled in the tests.
 
 The 2026-07-02 amendment closed the contrast gap from a different direction. A manual audit (issue #20) found 12 failing pairs in the light theme and 6 in dark shipping silently — including a primary Button label at **3.70:1** against the 4.5:1 requirement. Since contrast is pure math over resolved colors, it doesn't need a browser at all: `scripts/token-contrast-check.js` computes WCAG relative-luminance ratios against the built theme CSS, wired into `tokens-check.yml` on every PR touching token source. Since the brand layer landed it is brand-aware: it discovers every `dist/css/brand.*.css` and resolves each pair against `theme.{light,dark}.css` per brand, so every brand × theme combination is checked.
 

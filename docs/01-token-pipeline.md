@@ -14,7 +14,7 @@ sources:
 
 ## What it is
 
-Design tokens are the system's single source of design decisions — colors, spacing, typography, radii — authored as W3C DTCG JSON in `packages/tokens/src/`, resolved through a fixed four-layer model, and built by Style Dictionary into the CSS custom properties and JS/TS constants that components actually consume. Figma holds a mirror of these tokens as variables, but the committed JSON is the source of truth ([ADR-002](decisions/002-three-layer-token-model.md), 2026-06-17 amendment).
+Design [tokens](08-glossary.md) are the system's single source of design decisions — colors, spacing, typography, radii. They are authored as W3C DTCG JSON in `packages/tokens/src/` and resolved through a fixed four-layer model. A [Style Dictionary](08-glossary.md) build then turns them into the [CSS custom properties](08-glossary.md) and JS/TS constants that components actually consume. Figma holds a mirror of these tokens as variables, but the committed JSON is the source of truth ([ADR-002](decisions/002-three-layer-token-model.md), 2026-06-17 amendment).
 
 ## Why it's built this way
 
@@ -45,14 +45,14 @@ The second ADR-002 amendment (2026-06-22) covers a subtler case: Figma cannot st
 
 For its first phase this was a single-brand system — theme files referenced primitive ramps directly (`{color.terracotta.9}`), so a second brand would have meant forking every theme file. [ADR-012](decisions/012-brand-layer-multi-brand.md) inserted the brand layer instead: theme files now reference brand slots (`{color.brand.9}`), and a brand file maps those slots to whichever hue it wants. `upskill` (the default) maps `brand → terracotta`, `accent → teal`, `neutral → sand`, `surface → gold`; the second brand, `horizon`, maps `brand → cyan`, `accent → amber`, `neutral`/`surface → grey`, with Playfair Display headlines and sharper radii. Runtime selection is a `data-brand` attribute, mirroring `data-theme`.
 
-Two rules keep this tractable for a one-maintainer system: **a brand slot needs a full light + dark ramp** (ruling out hues authored with only one, historically `cyan` — since patched to qualify, see below), and **brands swap hues, not steps** — a shared semantic like `border.selected` always sits at the same ramp step across every brand, so a brand that fails contrast at that step gets a different hue mapping or a tracked waiver, never a per-brand override of the shared step.
+Two rules keep this tractable for a one-maintainer system: **a brand slot needs a full light + dark ramp** (a ramp is the glossary's [Scale](08-glossary.md) — a hue's numbered 1–12 lightness sequence; this rules out hues authored with only one, historically `cyan` — since patched to qualify, see below), and **brands swap hues, not steps** — a shared semantic like `border.selected` always sits at the same ramp step across every brand, so a brand that fails contrast at that step gets a different hue mapping or a tracked waiver, never a per-brand override of the shared step.
 
 ### Naming decisions with teeth
 
 Three further ADRs pin down naming so token names encode *intent*, not just numbers:
 
 - **[ADR-003](decisions/003-root-token-convention.md)** (superseded 2026-06-14) — the group-default naming debate. `$root` was originally chosen, then fully reversed to `.default` once research confirmed the W3C DTCG community and tooling ecosystem (Tokens Studio, Style Dictionary) converge on `.default`; `$root` required a custom preprocessor and produced meaningless `-root` suffixes in CSS output. The ADR is kept with a supersession note rather than deleted — see [Governance](05-governance.md) for why that matters.
-- **[ADR-004](decisions/004-layout-token-categories.md)** — `space.*` answers "how much space goes here *inside a component*?" (inset/stack/inline, the Nathan Curtis spacing model); `grid.*` answers "how is the *page grid* structured at this breakpoint?" (margin/gutter/columns/screen-size) and is consumed by exactly one place, the `.container` utility class. Cross-use is forbidden even when the pixel values coincide.
+- **[ADR-004](decisions/004-layout-token-categories.md)** — `space.*` answers "how much space goes here *inside a component*?" (inset/stack/inline, the Nathan Curtis spacing model — inset is padding inside an element, stack is vertical gaps between stacked elements, inline is horizontal gaps in a row); `grid.*` answers "how is the *page grid* structured at this breakpoint?" (margin/gutter/columns/screen-size) and is consumed by exactly one place, the `.container` utility class. Cross-use is forbidden even when the pixel values coincide.
 - **[ADR-005](decisions/005-size-vs-space-primitives.md)** — `space.*` is for empty space (gap, padding, margin); `size.*` is for filled elements (icon, avatar, control dimensions). Same 4px base unit, different intent: `size.300 = 24px` and `space.300 = 24px` are the same raw value describing different things. T-shirt names (`sm`/`md`/`lg`) live only at the semantic layer, mapped per component — `icon.size.sm` and `avatar.size.sm` are both "small" but resolve to different primitives.
 
 ## How it works, concretely
