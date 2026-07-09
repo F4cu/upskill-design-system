@@ -44,6 +44,8 @@ export function AppHeader({
 }: AppHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const userRef = useRef<HTMLDivElement>(null)
+  const userButtonRef = useRef<HTMLButtonElement>(null)
+  const prevMenuOpenRef = useRef(false)
 
   useEffect(() => {
     if (!menuOpen) return
@@ -54,6 +56,19 @@ export function AppHeader({
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
+  }, [menuOpen])
+
+  useEffect(() => {
+    if (menuOpen && userRef.current) {
+      userRef.current.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
+    }
+  }, [menuOpen])
+
+  useEffect(() => {
+    if (prevMenuOpenRef.current && !menuOpen) {
+      userButtonRef.current?.focus()
+    }
+    prevMenuOpenRef.current = menuOpen
   }, [menuOpen])
 
   function handleUserClick() {
@@ -112,13 +127,16 @@ export function AppHeader({
           {(userAvatarSrc || userName) && (
             <div ref={userRef} className={styles.userWrapper}>
               <button
+                ref={userButtonRef}
                 type="button"
                 className={styles.userButton}
                 onClick={handleUserClick}
                 aria-haspopup={userMenuItems?.length ? 'menu' : undefined}
                 aria-expanded={userMenuItems?.length ? menuOpen : undefined}
               >
-                {userAvatarSrc && <Avatar src={userAvatarSrc} alt={userName ?? 'User'} size="sm" />}
+                {userAvatarSrc && (
+                  <Avatar src={userAvatarSrc} alt={userName ? '' : 'User'} size="sm" />
+                )}
                 {userName && <span className={styles.navLabel}>{userName}</span>}
                 <Icon
                   name="chevron-down"

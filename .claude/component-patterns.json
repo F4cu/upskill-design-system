@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "0ddf7066ad9b12b118700e3c70941c3bdcf3c3bd",
+  "generatedFrom": "324da5ad0408e737aada32b180a29aef04bfd599",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -416,7 +416,8 @@
           "stage": "established",
           "systemSpecificNotes": [
             "aria-label=\"Main navigation\" on the <nav> element",
-            "aria-current=\"page\" on the active nav link"
+            "aria-current=\"page\" on the active nav link",
+            "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)"
           ]
         },
         {
