@@ -1,0 +1,48 @@
+# Benefits, framed per audience
+
+*Case-study source draft — narrative voice, for `docs/system-case-study.html`. Not yet linked from the docsify sidebar.*
+
+## Why one benefits list isn't enough
+
+A single bullet list of "what this system gets you" flattens three very different readers into one. A maintainer cares whether the system stays cheap and predictable to run alone. A developer consuming the components cares whether the contract is trustworthy without having to read the implementation. A reviewer — human or the adversarial subagent standing in for one — cares whether a violation is *catchable*, not just documented. The same architectural choice buys different things for each of them, and the case study is more convincing if it says so explicitly instead of asserting one generic "benefits" section.
+
+## For the maintainer — this system has to run alone
+
+Everything here is filtered through one constraint stated in `CLAUDE.md`'s first line: "one person must be able to maintain the whole system." Every benefit below is really an answer to "what does a solo maintainer stop having to hold in their head?"
+
+- **Bounded, predictable spend.** The lite-agentic charter (nine developer-triggered moments, never a continuous watcher) means agent usage is something the maintainer decides to spend, not something running in the background accumulating cost or risk while they're not looking. ADR-007's sequential, ≤2-agent loop keeps a single run inside one usage window rather than a fan-out that could rate-limit mid-task.
+- **A context budget that's enforced, not just advised.** `CLAUDE.md` is capped at 200 lines / 20KB by `npm run claudemd:check` in CI (ADR-017) — a real gate, not a reminder to "keep it short." Everything else routes to the narrowest surface that's visible when it matters: a path-scoped rule, a command file, a frozen snapshot. The maintainer never has to manually notice the always-loaded file creeping toward unreadable; a script notices for them.
+- **Frozen-memory snapshots instead of live API dependence.** Airtable governance, Figma variables, token usage, and cross-component patterns are all read from committed files, regenerated on demand (`npm run sense`, `airtable:pull:governance`, `/figma-variable-audit`). A solo maintainer isn't juggling four APIs' rate limits and auth tokens every time an agent needs context — the state is captured once, cheaply, and reused.
+- **Decisions that don't have to be re-litigated.** ADRs are amended in place or superseded, never silently rewritten — so six months from now, "why did we reverse the Figma-owned-primitives decision" has an answer in the repo, not in the maintainer's memory.
+- **Deterministic gates absorb the boring 90%.** Metadata validation, typecheck, build, three tiers of accessibility checking, token contrast math — all `npm run` scripts, all CI-wired. The maintainer's actual judgment calls are reserved for the ~10% that's genuinely ambiguous: does this component's ARIA contract actually match its keyboard behavior, does this layout choice cite a real metadata relationship. Everything checkable by a rule already has been, by the time a human looks at it.
+
+## For the developer / consumer of the components
+
+This is the audience that never touches `.claude/` at all — someone building a page with `Button`, `Card`, `TextField` — and their trust in the system rests on contracts holding without them having to verify the implementation each time.
+
+- **Components only ever consume built tokens, never source JSON.** A developer using `var(--ds-color-brand-9)` in a CSS Module gets brand-switching and theme-switching for free, without knowing the four-layer resolution happened underneath. The invariant is a chokepoint, not a convention — there's no path where a component reaches past the built CSS to a raw primitive.
+- **A fixed, small component set means the surface to learn is genuinely finite.** The canonical list in `CLAUDE.md` (core set + three phase additions) is a real ceiling, enforced by the three-question test (ADR-009) before anything new is added: same role → add a variant; different role → new component only if it clears the bar; single-parent, no reuse → stays an internal styled element, not a new export. A consumer never has to guess whether there are five different "card-like" components with subtly different APIs.
+- **Metadata is a machine-checkable contract, not documentation that rots.** Every component ships a `.metadata.json` validated against a schema in CI — `usage.antiPatterns`, `composition.accepts`/`containedBy`, `accessibility.ariaAttributes`/`keyboardInteractions` are real, checked facts, not prose a developer has to trust is still accurate. When a review finds a gap, `/extract-learnings` routes the fix into this file specifically so the next consumer (human or agent) reads the corrected contract, not the stale one.
+- **Accessibility is layered so different failure modes get different, appropriate tools.** Static lint (Tier 1) catches markup mistakes with zero runtime cost; behavioral tests (Tier 2, jsdom + `vitest-axe`) prove the *dynamic* contract — that `aria-expanded` actually flips, that focus actually moves — for the components where that matters, without paying browser-test cost on 18 components that don't need it; token-level contrast math (Tier 3) checks every curated text/background pairing against WCAG ratios on every PR that touches token source. A consumer building a page inherits all three without doing anything.
+
+## For the reviewer — human, or the adversarial subagent standing in for one
+
+The review stage is where "agent-written code reaching production" becomes a real risk, and the system's benefits here are specifically about making that risk checkable rather than trusted.
+
+- **A fresh, independent context is structurally guaranteed, not just requested.** The adversarial reviewer is a spawned subagent that starts cold — it reads only the diff and a frozen snapshot, with no memory of the reasoning that produced the code it's reviewing. That's not a prompt asking for skepticism; it's the actual absence of the motivated context the main session accumulated while building the thing.
+- **The reviewer cannot fix what it finds — by tool boundary, not by instruction.** `adversarial-reviewer.md` and `docs-scribe.md` both expose Read/Grep/Glob(/Bash) only, no `Edit`, no `Write`. "Reviewer reports, main session decides" isn't a rule someone has to remember to follow under time pressure; the subagent literally cannot write a file.
+- **Every review leaves a durable, typed trail.** Findings land in `.review.json`; `/extract-learnings` routes each one to its permanent home — a metadata field, a token convention, the curated contrast-pairs list — so a finding fixed once doesn't have to be rediscovered by the next reviewer. The append-only `run-ledger.json` keeps per-run telemetry specifically so the cost/value of the adversarial stage itself can eventually be judged from data, not defended by assertion.
+- **No agent-written code reaches `main` without a human PR in between.** The three exceptions to this repo's otherwise-commit-directly-to-main workflow are exactly the three places agent output exists: `/review-component`, `/docs-sync`, `/layout-generation`. That's a deliberate, narrow carve-out — the default is trust-and-commit; the exception is "an agent touched this, so a PR is mandatory," and it's scoped to precisely the surfaces where that's true.
+
+## The throughline
+
+Read the three lists together and the same underlying design shows up from three angles: **push every decision that can be made once, by a rule, into a script or a schema — and reserve human and agent judgment for the specific gap that's left.** The maintainer benefits because that gap is small enough to hold in their head. The consumer benefits because the contract they depend on is checked, not merely written down. The reviewer benefits because what reaches them has already survived everything a script could catch, so their judgment is spent on the part that actually needed it.
+
+## Sources for this section
+
+- `CLAUDE.md` — full document (context budget, MCP table, agentic moments, coding conventions)
+- `docs/decisions/017-claude-md-context-budget.md`
+- `docs/02-component-lifecycle.md`, `docs/decisions/001-component-metadata-schema.md`, `docs/decisions/009-extend-vs-new-vs-internal.md`
+- `docs/03-accessibility.md`, `docs/decisions/008-behavioral-a11y-tier.md`
+- `docs/decisions/007-verified-component-loop.md`, `docs/decisions/015-handoff-artifact-lifecycle.md`
+- `.claude/agents/adversarial-reviewer.md`, `.claude/agents/docs-scribe.md`
