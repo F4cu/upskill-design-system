@@ -112,6 +112,30 @@
     "path": ".claude/handoff/archive/token-contrast-fixes.handoff.md"
   },
   {
+    "name": "Box.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Box.review.json"
+  },
+  {
+    "name": "Box.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Box.run.json"
+  },
+  {
+    "name": "Box.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Box.snapshot.json"
+  },
+  {
     "name": "Button.snapshot",
     "kind": "run",
     "status": "in-flight",

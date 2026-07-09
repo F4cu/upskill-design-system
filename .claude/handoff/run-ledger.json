@@ -1,0 +1,14 @@
+[
+  {
+    "component": "Box",
+    "ranAt": "2026-07-09T13:35:00Z",
+    "gate": {
+      "passes": 5,
+      "failures": 0,
+      "failureReasons": []
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 0,
+    "manualRescuesCount": 0
+  }
+]
