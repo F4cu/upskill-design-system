@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-07-09
-completed: null
+completed: 2026-07-09
 ---
 
 # Handoff — Add the docs-scribe agent (read-only content-design critic for /docs-sync)
