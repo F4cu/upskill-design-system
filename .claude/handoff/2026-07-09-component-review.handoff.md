@@ -110,12 +110,12 @@ Batch 2 is **not** part of this handoff and should be completed in a future sess
 - [x] ButtonArrow — full `/review-component` pass: PR #50 (`component/button-arrow-review`, adversarial pass, verdict `changes-required`, fixed an undeliverable metadata default plus a hardcoded-style and a thin-test finding). extract-learnings found nothing left to back-fill — all three findings were already resolved directly in PR #50 — so no PR was opened for that step (empty diff), per the same no-PR convention as Batch 1's lighter path.
 - [x] Checkbox — full `/review-component` pass run against established, unmodified code. Verdict `clean`: two low-severity notes (no forwardRef, consistent with sibling TextField; CSS `:has()` browser-support), both marked no-action-needed by the reviewer. `extract-learnings` found nothing to route (both findings are consistent codebase conventions, not contract deviations) — no PR opened for either step, per the no-PR-on-empty-diff convention. `run.json` promoted into `run-ledger.json`.
 - [x] Chip — full `/review-component` pass: PR #51 (`component/chip-review`, adversarial pass, verdict `changes-required`, fixed a missing disabled-state a11y test assertion and a story that diverged from the component's own documented `filter-bar` pattern; one low-severity className-merge-order note left as-is). `extract-learnings` found nothing to route — both findings were already correctly documented in metadata, the review just brought the code/test/story into line with the existing contract — so no PR for that step, per the no-PR-on-empty-diff convention.
-- [ ] DropdownMenu — no review evidence found, only a Tier-2 a11y test PR (#8) from initial build. Still pending.
+- [x] DropdownMenu — full `/review-component` pass: PR #52 (`component/dropdown-menu-review`, adversarial pass, verdict `changes-required`, fixed a real focus-management bug — AppHeader's user menu never returned focus to its trigger button on close — plus a WAI-ARIA APG divergence where `listRole=menu` had no Arrow key navigation, plus a `component.type` metadata/implementation mismatch). Added `AppHeader.a11y.test.tsx` (didn't exist — the gap that let the focus-return bug ship), which also surfaced and fixed a redundant Avatar alt-text axe violation. All metadata amendments were made directly in PR #52; `extract-learnings` found nothing further to route.
 - [x] Select — fully reviewed: PR #11 (`component/select`, fixed keyboard contract: arrow nav, focus management, metadata gaps) + PR #12 (extract-learnings). Verified via `gh pr list` 2026-07-09.
 - [ ] TextField — no review evidence found, only a Tier-2 a11y test PR (#7) from initial build. Still pending.
 - [ ] TextLink — no review evidence found at all (component added later, PR 34a6835/3e7bbed). Still pending.
 
-Remaining pending: DropdownMenu, TextField, TextLink (3 components).
+Remaining pending: TextField, TextLink (2 components).
 
 ---
 
