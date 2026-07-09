@@ -1,6 +1,6 @@
 ---
 description: Rewrite stale docs/ reference pages flagged by the docs-check staleness gate — read each flagged doc plus the sources that changed since it was last committed, rewrite only the stale sections, and open a PR. Use when npm run docs:check (or docs-check.yml in CI) fails.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
 ---
 
 # Docs sync
@@ -21,7 +21,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 2. Classify each doc: **real drift** (the doc now states something the sources contradict, or omits something load-bearing the sources added) vs **clock-only staleness** (the source change doesn't affect anything the doc says). Clock-only docs need no prose change — any commit touching the doc resets the gate, so note them in the output and leave the text alone (the sync PR's commit resets them).
 3. For real drift, rewrite **only the stale sections**. Preserve the doc's voice, structure, and cross-links; do not restructure or pad. If the doc cites a file, script, or command, verify the citation still resolves.
 4. Update the doc's `sources:` frontmatter if the rewrite makes it depend on a source it didn't declare (or drops one it no longer describes). Every entry must match at least one tracked file — the check errors on dangling patterns.
-5. Create a branch `docs-sync/<YYYY-MM-DD>`, commit, and open a PR against `main`. After committing, run `npm run docs:check` on the branch and confirm it passes (the gate compares committed history, so it can only go green post-commit).
+5. **Scribe review** (skip when nothing was rewritten — clock-only runs go straight to the PR): spawn one `docs-scribe` subagent (`.claude/agents/docs-scribe.md`, ADR-018), passing it the list of rewritten sections (`docs/NN-page.md#section`). It returns findings JSON judging first-read comprehension for the three stakeholder audiences (PM, product designer, engineer) against the glossary term canon. Apply the findings you accept — link or define terms, split dense sentences, surface buried leads — rejecting any that would change technical meaning; after applying, re-verify that every citation still resolves. `glossary-gap` findings are never applied directly: list them in the PR description as glossary proposals.
+6. Create a branch `docs-sync/<YYYY-MM-DD>`, commit, and open a PR against `main`. After committing, run `npm run docs:check` on the branch and confirm it passes (the gate compares committed history, so it can only go green post-commit).
 
 ## Invariants (must survive any edit to this file)
 
@@ -29,6 +30,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 - **Rewriting never runs in CI.** `docs-check.yml` detects; this developer-triggered moment rewrites. If asked to automate the rewrite, push back per the continuous-loop rule in CLAUDE.md.
 - **No MCP, no live API calls.** Everything needed is in the repo and its git history.
 - **Rewrite only what drifted.** A stale flag is not a license to rewrite the page.
+- **At most one subagent per run — the `docs-scribe` critic.** It reports; the main session edits. It reviews only the rewritten sections, and its suggestions never remove a technical term or change technical meaning (ADR-018).
 
 ## Output
 
@@ -41,6 +43,11 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Sources frontmatter changes
 [doc]: added/removed [pattern]
+
+## Scribe findings
+Applied: [doc#section] — [type] — [what changed]
+Rejected: [doc#section] — [type] — [why: precision risk / out of scope]
+Glossary proposals (not applied): [term] — [where it recurs]
 ```
 
 ## Success signal
