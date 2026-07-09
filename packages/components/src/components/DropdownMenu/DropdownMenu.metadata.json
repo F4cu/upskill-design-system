@@ -2,7 +2,7 @@
   "component": {
     "name": "DropdownMenu",
     "category": "atom",
-    "type": "display",
+    "type": "interactive",
     "status": "beta",
     "description": "A floating panel of selectable items. Shared dropdown primitive used by AppHeader (user menu) and Select (custom listbox). Supports both menu and listbox ARIA roles.",
     "figmaNodeId": "155:6261"
@@ -44,6 +44,11 @@
         "scenario": "Rendering DropdownMenu outside a position:relative container",
         "reason": "The panel is absolutely positioned and will be offset incorrectly without a positioned ancestor.",
         "alternative": "Always wrap the trigger and DropdownMenu in a position:relative container."
+      },
+      {
+        "scenario": "Composing DropdownMenu without handling initial item focus and trigger focus-return",
+        "reason": "All items are tabIndex=-1 by design (single roving focus target, not one Tab stop per item). DropdownMenu does not render its own trigger, so it cannot own focus management — the composing component must programmatically focus the first/selected item when the panel opens and return focus to the trigger when it closes (via onClose), or keyboard/screen-reader users cannot reach the menu or lose their place when it closes.",
+        "alternative": "Mirror Select/index.tsx's pattern: a ref to the trigger element, an effect that focuses the first or selected item when the panel opens, and a prevOpenRef-style effect that refocuses the trigger when open transitions from true to false."
       }
     ]
   },
@@ -112,8 +117,8 @@
         "action": "Selects the focused item"
       },
       {
-        "key": "Tab",
-        "action": "Moves focus between items (tabIndex=0 on each item)"
+        "key": "ArrowUp / ArrowDown",
+        "action": "Moves focus between items (single roving focus target — all items are tabIndex=-1; the owning component is responsible for programmatically focusing an item when the panel opens, matching the WAI-ARIA APG menu/listbox pattern)"
       }
     ]
   },

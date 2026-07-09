@@ -7,9 +7,12 @@ import { DropdownMenu } from './index'
 // Tier-2 behavioral a11y (ADR-008). Asserts the dynamic ARIA contract from
 // DropdownMenu.metadata.json that static jsx-a11y lint can't see: the panel
 // exposes role=menu|listbox via listRole; items get menuitem|option; option
-// items carry aria-selected reflecting selectedValue; items are focusable
-// (tabIndex=0); and Enter/Space on a focused item fires onSelect. Escape/focus
-// return is owner-controlled (onClose) and not asserted as component-owned UI.
+// items carry aria-selected reflecting selectedValue; items use a single
+// roving focus target (tabIndex=-1, moved via Arrow keys, not one Tab stop
+// per item); and Enter/Space on a focused item fires onSelect. Initial item
+// focus and trigger focus-return on close are owner-controlled (the
+// component doesn't render its own trigger) and asserted in each consumer's
+// own a11y test (see Select.a11y.test.tsx, AppHeader.a11y.test.tsx).
 
 const items = [
   { value: 'a', label: 'Alpha' },
@@ -47,11 +50,11 @@ describe('DropdownMenu — a11y behavior', () => {
     expect(screen.getByRole('option', { name: 'Gamma', selected: false })).toBeInTheDocument()
   })
 
-  it('makes every item focusable (tabIndex=0) in menu mode', () => {
+  it('makes every item a single roving focus target (tabIndex=-1) in menu mode', () => {
     render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} onClose={vi.fn()} />)
 
     for (const item of screen.getAllByRole('menuitem')) {
-      expect(item).toHaveAttribute('tabindex', '0')
+      expect(item).toHaveAttribute('tabindex', '-1')
     }
   })
 
@@ -84,6 +87,25 @@ describe('DropdownMenu — a11y behavior', () => {
     )
 
     const [alpha, beta, gamma] = screen.getAllByRole('option')
+
+    alpha.focus()
+    expect(alpha).toHaveFocus()
+
+    await user.keyboard('{ArrowDown}')
+    expect(beta).toHaveFocus()
+
+    await user.keyboard('{ArrowDown}')
+    expect(gamma).toHaveFocus()
+
+    await user.keyboard('{ArrowUp}')
+    expect(beta).toHaveFocus()
+  })
+
+  it('ArrowDown / ArrowUp navigate focus between items in menu mode (WAI-ARIA APG menu pattern)', async () => {
+    const user = userEvent.setup()
+    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} onClose={vi.fn()} />)
+
+    const [alpha, beta, gamma] = screen.getAllByRole('menuitem')
 
     alpha.focus()
     expect(alpha).toHaveFocus()

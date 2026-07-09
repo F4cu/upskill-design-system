@@ -77,12 +77,21 @@
     "role": "banner",
     "ariaAttributes": [
       "aria-label=\"Main navigation\" on the <nav> element",
-      "aria-current=\"page\" on the active nav link"
+      "aria-current=\"page\" on the active nav link",
+      "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)"
     ],
     "keyboardInteractions": [
       {
         "key": "Tab",
         "action": "Cycle focus through nav links and the user button"
+      },
+      {
+        "key": "Enter / Space",
+        "action": "Activates the user button, opening the DropdownMenu (listRole=menu) and moving focus to its first menuitem"
+      },
+      {
+        "key": "Escape",
+        "action": "Closes the user DropdownMenu and returns focus to the user button"
       }
     ]
   },

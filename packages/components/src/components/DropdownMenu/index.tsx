@@ -40,16 +40,14 @@ export function DropdownMenu({
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       onSelect(value)
-    } else if (listRole === 'listbox') {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        const options = panelRef.current?.querySelectorAll<HTMLElement>('[role="option"]')
-        options?.[index + 1]?.focus()
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        const options = panelRef.current?.querySelectorAll<HTMLElement>('[role="option"]')
-        options?.[index - 1]?.focus()
-      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      const options = panelRef.current?.querySelectorAll<HTMLElement>('[role="option"], [role="menuitem"]')
+      options?.[index + 1]?.focus()
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      const options = panelRef.current?.querySelectorAll<HTMLElement>('[role="option"], [role="menuitem"]')
+      options?.[index - 1]?.focus()
     }
   }
 
@@ -72,7 +70,7 @@ export function DropdownMenu({
           ]
             .filter(Boolean)
             .join(' ')}
-          tabIndex={listRole === 'listbox' ? -1 : 0}
+          tabIndex={-1}
           onClick={() => onSelect(item.value)}
           onKeyDown={e => handleItemKeyDown(e, index, item.value)}
         >
