@@ -16,6 +16,8 @@ export function Card({
   className,
   style,
   children,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
   ...rest
 }: CardProps) {
   const cssVars = {
@@ -25,6 +27,9 @@ export function Card({
 
   return (
     <div
+      role={ariaLabel || ariaLabelledBy ? 'region' : undefined}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
       className={[styles.card, styles[variant], className].filter(Boolean).join(' ')}
       style={cssVars}
       {...rest}

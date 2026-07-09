@@ -40,7 +40,7 @@ export function CardVertical({
         aspectRatio={size === 'lg' ? '4/5' : '3/2'}
         className={styles.thumbnail}
       />
-      {progress !== undefined && <ProgressBar value={progress} />}
+      {progress !== undefined && <ProgressBar value={progress} label={`${title} progress`} />}
       <div className={styles.content}>
         <Heading as="h3" size="headline-serif" className={styles.title}>{title}</Heading>
         {(duration || certified) && (

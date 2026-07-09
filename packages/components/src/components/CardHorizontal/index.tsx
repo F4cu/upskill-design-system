@@ -56,7 +56,7 @@ export function CardHorizontal({
       <Image src={thumbnailSrc} alt={thumbnailAlt} aspectRatio="1/1" className={styles.thumbnail} />
       <div className={styles.content}>
         <Heading as="h3" size="title-small" className={styles.title} style={titleStyle}>{title}</Heading>
-        {progress !== undefined && <ProgressBar value={progress} />}
+        {progress !== undefined && <ProgressBar value={progress} label={`${title} progress`} />}
         {metaItems.length > 0 && (
           <div className={styles.meta}>
             {metaItems.map((item, i) => (

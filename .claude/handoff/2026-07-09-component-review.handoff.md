@@ -81,8 +81,8 @@ Ordered simplest-first (layout primitives → typography → display atoms → m
 - [x] Image — lighter path
 - [x] Avatar — lighter path
 - [x] Badge — lighter path
-- [ ] ProgressBar — lighter path
-- [ ] Card — lighter path
+- [x] ProgressBar — lighter path
+- [x] Card — lighter path
 - [ ] **← Checkpoint 2**
 - [ ] CardHorizontal — lighter path
 - [ ] CardVertical — lighter path
@@ -200,6 +200,15 @@ No code changes required for any of the five. Findings, all pre-existing and alr
 - **Divider**, **Image**, **Avatar**: no issues. CSS modules reference only `var(--ds-*)` tokens; metadata accurately reflects implementation.
 
 Unlike the full `/review-component` path, this lighter path produces no `.review.json`/`.run.json` and is not promoted into `run-ledger.json` — it isn't one of the git-workflow's PR-required exceptions (no code changed, nothing to branch/PR for), so the only record is this note plus the checklist above.
+
+## Lighter-path reviews 6-7 (ProgressBar, Card) — 2026-07-09
+
+Manual review surfaced two real accessibility findings, both fixed in this pass (unlike the first five, actual code changed, so gate + lint were rerun and passed):
+
+- **ProgressBar**: `role="progressbar"` had no accessible name (no `aria-label`/`aria-labelledby`), and neither consumer (`CardHorizontal`, `CardVertical`) supplied one — a screen reader would announce "N%, progress bar" with no indication of what's progressing. Added an optional `label` prop (defaults to `"Progress"`, mirroring `Icon`'s `label` pattern) and updated both consumers to pass `` `${title} progress` ``. Metadata updated to document the prop and the reason to always pass it when more than one ProgressBar can appear on a page.
+- **Card**: metadata documented `accessibility.role: "region"`, but the implementation never set `role="region"` on the div — a bare `<div>` has no implicit role, so the documented landmark behavior never actually happened regardless of whether a caller passed `aria-label`. Fixed by conditionally setting `role="region"` only when `aria-label`/`aria-labelledby` is passed (same conditional-role pattern `Icon` already uses for `role="img"`) — an unlabeled region role would just add landmark noise. Metadata updated to describe the actual (conditional) behavior instead of the previously-aspirational one.
+
+Gate (`metadata:validate`, `typecheck`, `build`, `a11y:coverage`, `a11y:test`) and `lint` all pass after the fixes.
 
 ---
 

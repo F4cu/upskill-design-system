@@ -3,9 +3,10 @@ import styles from './ProgressBar.module.css'
 
 export type ProgressBarProps = {
   value: number
+  label?: string
 } & HTMLAttributes<HTMLDivElement>
 
-export function ProgressBar({ value, className, style, ...rest }: ProgressBarProps) {
+export function ProgressBar({ value, label = 'Progress', className, style, ...rest }: ProgressBarProps) {
   const clamped = Math.min(100, Math.max(0, value))
 
   const cssVars = {
@@ -19,6 +20,7 @@ export function ProgressBar({ value, className, style, ...rest }: ProgressBarPro
       aria-valuenow={clamped}
       aria-valuemin={0}
       aria-valuemax={100}
+      aria-label={label}
       className={[styles.track, className].filter(Boolean).join(' ')}
       style={cssVars}
       {...rest}

@@ -36,6 +36,11 @@
         "scenario": "Passing values outside 0–100",
         "reason": "Values are clamped internally, but the intent is lost; callers should normalise their own data.",
         "alternative": "Normalise the progress value to a 0–100 percentage before passing it."
+      },
+      {
+        "scenario": "Omitting the label prop when more than one ProgressBar can appear on a page (e.g. a list of course cards)",
+        "reason": "role=\"progressbar\" defaults aria-label to the generic \"Progress\", so screen reader users can't tell which item a given bar belongs to without also relying on nearby text.",
+        "alternative": "Pass label describing what is progressing, e.g. `${title} progress` — see CardHorizontal/CardVertical."
       }
     ]
   },
@@ -73,7 +78,8 @@
     "ariaAttributes": [
       "aria-valuenow (set to the clamped value)",
       "aria-valuemin=0",
-      "aria-valuemax=100"
+      "aria-valuemax=100",
+      "aria-label (from the label prop, defaults to \"Progress\")"
     ],
     "keyboardInteractions": []
   },

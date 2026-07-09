@@ -107,9 +107,9 @@
     "other": []
   },
   "accessibility": {
-    "role": "region",
+    "role": "region when aria-label or aria-labelledby is passed; no role otherwise",
     "ariaAttributes": [
-      "aria-label or aria-labelledby (recommended when multiple Cards appear on the same page so each region is distinguishable)"
+      "aria-label or aria-labelledby (sets role=\"region\" as a side effect — omit both if the Card doesn't need to be a distinguishable landmark, since an unlabeled region role adds landmark noise)"
     ],
     "keyboardInteractions": []
   },
