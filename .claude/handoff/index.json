@@ -142,5 +142,29 @@
     "created": "2026-07-08",
     "updated": "2026-07-08",
     "path": ".claude/handoff/runs/Button.snapshot.json"
+  },
+  {
+    "name": "Stack.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Stack.review.json"
+  },
+  {
+    "name": "Stack.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Stack.run.json"
+  },
+  {
+    "name": "Stack.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Stack.snapshot.json"
   }
 ]
