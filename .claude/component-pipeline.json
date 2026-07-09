@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T09:15:43.260Z",
+  "generatedAt": "2026-07-09T13:48:40.922Z",
   "components": [
     {
       "name": "Accordion",
@@ -41,9 +41,9 @@
       "name": "Box",
       "type": "container",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in progress",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T13:30:00Z",
       "learningsBackfilled": false
     },
     {
@@ -140,9 +140,9 @@
       "name": "Heading",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in progress",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T14:00:00Z",
       "learningsBackfilled": false
     },
     {
@@ -167,9 +167,9 @@
       "name": "Inline",
       "type": "container",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in progress",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
       "learningsBackfilled": false
     },
     {
@@ -203,18 +203,18 @@
       "name": "Stack",
       "type": "container",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in progress",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
       "learningsBackfilled": false
     },
     {
       "name": "Text",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in progress",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
       "learningsBackfilled": false
     },
     {

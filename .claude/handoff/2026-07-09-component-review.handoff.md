@@ -84,12 +84,12 @@ Ordered simplest-first (layout primitives → typography → display atoms → m
 - [x] ProgressBar — lighter path
 - [x] Card — lighter path
 - [x] **← Checkpoint 2** — no new decision needed (see "Progress notes"); continuing lighter path
-- [ ] CardHorizontal — lighter path
-- [ ] CardVertical — lighter path
-- [ ] VideoFrame — lighter path
-- [ ] ScrollArea — lighter path
-- [ ] Breadcrumb — lighter path
-- [ ] AppHeader — lighter path
+- [x] CardHorizontal — lighter path
+- [x] CardVertical — lighter path
+- [x] VideoFrame — lighter path
+- [x] ScrollArea — lighter path
+- [x] Breadcrumb — lighter path
+- [x] AppHeader — lighter path
 
 ---
 
@@ -216,6 +216,28 @@ Checkpoint 2's rule reads `run-ledger.json` to decide adversarial-vs-lighter for
 
 Worth noting: the lighter path is not rubber-stamping. It caught two genuine accessibility bugs (ProgressBar's missing accessible name, Card's undocumented-vs-actual role mismatch) that the deterministic gate alone would not have caught, since jsdom a11y tests aren't required for these non-interactive/display components (ADR-008). This is better evidence for the lighter path's value than Checkpoint 1's ledger data alone.
 
+## Lighter-path reviews 8-13 (CardHorizontal, CardVertical, VideoFrame, ScrollArea, Breadcrumb, AppHeader) — 2026-07-09, Batch 1 complete
+
+Manual in-session review of each component's implementation, metadata, CSS module, and stories.
+
+- **CardHorizontal**, **CardVertical**: same documented-vs-actual role mismatch as Card (Checkpoint 2) — both metadata files document `accessibility.role: "article"` but neither implementation set `role="article"` on the root div. Fixed both (unconditional `role="article"`, unlike Card's conditional `role="region"` — `article` doesn't require an accessible name the way `region` does, and both components always receive a required `title` prop). Gate (`metadata:validate`, `typecheck`, `build`, `a11y:coverage`, `a11y:test`) and `lint` rerun after the fix, all passing.
+- **VideoFrame**: no issues. Metadata's `role: "img"` refers to the inner native `<img alt=...>`, which already carries that semantics correctly; the play-button overlay is `aria-hidden`. No role belongs on the wrapper div.
+- **ScrollArea**: no code issue. Metadata already documents scroll-region keyboard-focusability as consumer-dependent ("if the scroll region contains important content, consider adding tabindex=0") and the component allows a consumer to pass `tabIndex` via the spread native-attributes prop — correctly left as a per-usage decision, not a component defect.
+- **Breadcrumb**: no issues. Implementation matches metadata exactly (`nav aria-label="Breadcrumb"`, `aria-current="page"` on the last item, chevrons `aria-hidden`).
+- **AppHeader**: found a real functional gap, not just an accessibility label mismatch — the mobile hamburger button (visible only below 768px, when nav links/search/user menu are all CSS-hidden) has no `onClick` handler and no mobile menu implementation. On mobile there is currently no way to reach navigation, search, or the user menu. Raised this to the user; **decision: leave functionality as-is for this batch** (building a real mobile drawer is new feature work, out of scope for the lighter-path review pattern used across this batch) — no code change made. This is a known, undocumented gap worth a follow-up (not filed as a GitHub issue per the user's explicit choice this round; worth flagging again if AppHeader comes up in the showcase work, since Phase 11 pages will exercise mobile viewports).
+
+Batch 1 (18/18 components) is now complete: 5 full adversarial reviews (Box, Stack, Inline, Text, Heading) + 13 lighter-path reviews (Divider, Icon, Image, Avatar, Badge, ProgressBar, Card, CardHorizontal, CardVertical, VideoFrame, ScrollArea, Breadcrumb, AppHeader).
+
+## `npm run sense` regenerated — 2026-07-09, known tooling/handoff mismatch
+
+Ran `npm run sense` per "After Batch 1 Completes." `STATUS_QUO.md`'s "Established — review backlog" section still lists all 13 lighter-path-reviewed Batch 1 components (Card, CardHorizontal, CardVertical, Avatar, Badge, Divider, Icon, Image, ProgressBar, ScrollArea, VideoFrame, Breadcrumb, AppHeader) alongside the genuinely-unreviewed Batch 2 set.
+
+Root cause (`scripts/sense.js`, `deriveImplementationStage`): a component is classified `established` purely by the *absence* of a `.claude/handoff/runs/<Name>.run.json`. That file is written only by the full `/review-component` adversarial path (moment 7). The lighter path used for this batch was deliberately designed to skip branch/PR/`.review.json`/`.run.json` when no code changes (see "Lighter-path reviews 1-5" note) — and even for the two components where code *did* change (ProgressBar, Card, and now CardHorizontal/CardVertical), the lighter path never writes a `.run.json` because it isn't run through `/review-component`. So this exit condition, as literally written in the handoff's "After Batch 1 Completes" and "Exit Condition" sections, is **not achievable** by the lighter path as built — it was written assuming every Batch 1 component would go through the full adversarial path, before Checkpoint 1's downgrade decision.
+
+This is a documentation gap, not a review-quality gap: the 13 components were genuinely reviewed (see notes above), just not through the artifact-producing path `sense.js` inspects. Not fixing `sense.js` or fabricating run.json files as part of this handoff — that's a tooling change with its own tradeoffs (e.g. would need a lighter-path-specific evidence format) better suited to its own decision, not a rider on finishing this batch. Flagging here so a future session doesn't misread the "Established — review backlog" list as "still needs review" for these 13.
+
+Batch 1 is functionally done. Remaining `STATUS_QUO.md` backlog entries that are **not** actually pending: Avatar, Badge, Divider, Icon, Image, ProgressBar, Card, CardHorizontal, CardVertical, VideoFrame, ScrollArea, Breadcrumb, AppHeader. Remaining entries that **are** genuinely pending: the 9 Batch 2 components (Accordion, Button, ButtonArrow, Checkbox, Chip, DropdownMenu, Select, TextField, TextLink) — out of scope for this handoff, per "Batch 2 — Deep Accessibility Review (Out of Scope)".
+
 ---
 
 # After Batch 1 Completes
@@ -269,8 +291,10 @@ After the full Batch 1 completes:
 
 This handoff is complete when:
 
-- all 18 Batch 1 components have been reviewed (full or checkpoint-downgraded path, with the decision recorded)
-- all PRs have been merged
-- `npm run sense` has been regenerated
-- Batch 1 components no longer appear in the **Established review backlog**
+- all 18 Batch 1 components have been reviewed (full or checkpoint-downgraded path, with the decision recorded) — **done, 2026-07-09**
+- all PRs have been merged — **done** (5 full-review PRs; lighter-path fixes committed directly per the git-workflow exception list, no branch/PR required since they aren't one of the listed agentic moments)
+- `npm run sense` has been regenerated — **done**
+- Batch 1 components no longer appear in the **Established review backlog** — **not achieved, and not achievable as the tooling is built**; see the "known tooling/handoff mismatch" progress note above. The 13 lighter-path components remain listed there because `sense.js` only clears that status via a `/review-component`-produced `run.json`. Treat this bullet as superseded by that note, not as unfinished batch work.
 - this handoff remains **active**, documenting that only the Batch 2 review set remains
+
+**Batch 1 is complete as of 2026-07-09.** Only the 9 Batch 2 components (deep accessibility review) remain outstanding for this handoff.
