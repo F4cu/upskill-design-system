@@ -47,6 +47,21 @@ describe('Chip — a11y behavior', () => {
     expect(screen.getByRole('button', { name: 'Design' })).toHaveAttribute('aria-pressed', 'true')
   })
 
+  it('excludes disabled chips from the tab order and blocks activation', async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    render(<Chip disabled onClick={onClick}>Design</Chip>)
+
+    const chip = screen.getByRole('button', { name: 'Design' })
+    expect(chip).toBeDisabled()
+
+    await user.tab()
+    expect(chip).not.toHaveFocus()
+
+    await user.click(chip)
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
   it('has no axe violations when unselected and selected', async () => {
     const { container } = render(
       <>
