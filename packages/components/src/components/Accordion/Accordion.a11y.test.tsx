@@ -155,6 +155,40 @@ describe('AccordionItem — a11y behavior', () => {
     expect(screen.getByRole('button', { name: /Module 2/i })).toHaveFocus()
   })
 
+  it('sets the panel inert while collapsed so focusable content cannot be tabbed into or clicked', async () => {
+    // jsdom + @testing-library/user-event 14's tab() simulation does not
+    // implement the `inert` attribute's focus-prevention semantics (it isn't
+    // in FOCUSABLE_SELECTOR), so a live Tab-based assertion would pass or
+    // fail independent of whether `inert` is actually applied. Assert the
+    // DOM property directly instead — that's the real contract this fixes.
+    const user = userEvent.setup()
+    render(
+      <AccordionItem title="Module 1">
+        <a href="/lessons/1">Lesson link</a>
+      </AccordionItem>,
+    )
+
+    const panel = screen.getByRole('region', { hidden: true })
+    expect(panel.inert).toBe(true)
+
+    await user.click(screen.getByRole('button', { name: /Module 1/i }))
+    expect(panel.inert).toBe(false)
+  })
+
+  it('has no axe violations with a focusable descendant in a collapsed panel', async () => {
+    const { container } = render(
+      <Accordion>
+        <AccordionItem title="Module 1">
+          <a href="/lessons/1">Lesson link</a>
+        </AccordionItem>
+      </Accordion>,
+    )
+
+    expect(
+      await axe(container, { rules: { 'color-contrast': { enabled: false } } }),
+    ).toHaveNoViolations()
+  })
+
   it('has no axe violations in collapsed and expanded states', async () => {
     const user = userEvent.setup()
     const { container } = render(

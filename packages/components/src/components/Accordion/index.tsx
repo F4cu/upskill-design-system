@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Icon } from '../Icon'
 import { Text } from '../Text'
@@ -35,6 +35,15 @@ export function AccordionItem({
 
   const triggerId = useId()
   const panelId = useId()
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  // React's HTMLAttributes typings (@types/react 18) don't include `inert` yet,
+  // even though it's a real DOM property — set it directly so focusable
+  // descendants can't be tabbed into or clicked while the panel is collapsed,
+  // without forcing display:none (which would break the height transition).
+  useLayoutEffect(() => {
+    if (panelRef.current) panelRef.current.inert = !isOpen
+  }, [isOpen])
 
   const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 
@@ -68,6 +77,7 @@ export function AccordionItem({
       >
         <div className={styles.panelInner}>
           <div
+            ref={panelRef}
             id={panelId}
             role="region"
             aria-labelledby={triggerId}
