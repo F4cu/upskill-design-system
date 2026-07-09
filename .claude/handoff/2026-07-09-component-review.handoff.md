@@ -105,7 +105,7 @@ Batch 2 is **not** part of this handoff and should be completed in a future sess
 
 ## Checklist
 
-- [ ] Accordion — retro metadata back-fill exists (PR #10, `retro/accordion`) but no actual `/review-component` adversarial pass was ever run (no `component/accordion-review` branch/PR, no `.review.json`/`.run.json`). Decision 2026-07-09: run the full pass now rather than accept the retro as sufficient (Accordion has a custom keyboard/ARIA contract). **Do this one next.**
+- [x] Accordion — full `/review-component` pass run: PR #48 (`component/accordion-review`, adversarial pass, verdict `changes-required`, fixed a real WCAG bug — collapsed panels left focusable descendants Tab-reachable — plus a metadata self-contradiction) + PR #49 (extract-learnings, back-filled the keyboard contract). See "Progress notes" below for the `.run.json` gap found and fixed while closing this out.
 - [x] Button — fully reviewed: PR #16 (`component/button-review`, adversarial pass, fixed form-submit default + hardcoded line-height) + PR #18 (extract-learnings, back-filled Button metadata). Verified via `gh pr list` 2026-07-09.
 - [ ] ButtonArrow — no review evidence found, only a Tier-2 a11y test PR (#4) from initial build. Still pending.
 - [ ] Checkbox — no review evidence found, only a Tier-2 a11y test PR (#5) from initial build. Still pending.
@@ -115,7 +115,7 @@ Batch 2 is **not** part of this handoff and should be completed in a future sess
 - [ ] TextField — no review evidence found, only a Tier-2 a11y test PR (#7) from initial build. Still pending.
 - [ ] TextLink — no review evidence found at all (component added later, PR 34a6835/3e7bbed). Still pending.
 
-Remaining pending: Accordion, ButtonArrow, Checkbox, Chip, DropdownMenu, TextField, TextLink (7 components).
+Remaining pending: ButtonArrow, Checkbox, Chip, DropdownMenu, TextField, TextLink (6 components).
 
 ---
 
@@ -239,6 +239,14 @@ Root cause (`scripts/sense.js`, `deriveImplementationStage`): a component is cla
 This is a documentation gap, not a review-quality gap: the 13 components were genuinely reviewed (see notes above), just not through the artifact-producing path `sense.js` inspects. Not fixing `sense.js` or fabricating run.json files as part of this handoff — that's a tooling change with its own tradeoffs (e.g. would need a lighter-path-specific evidence format) better suited to its own decision, not a rider on finishing this batch. Flagging here so a future session doesn't misread the "Established — review backlog" list as "still needs review" for these 13.
 
 Batch 1 is functionally done. Remaining `STATUS_QUO.md` backlog entries that are **not** actually pending: Avatar, Badge, Divider, Icon, Image, ProgressBar, Card, CardHorizontal, CardVertical, VideoFrame, ScrollArea, Breadcrumb, AppHeader. Remaining entries that **are** genuinely pending: the 9 Batch 2 components (Accordion, Button, ButtonArrow, Checkbox, Chip, DropdownMenu, Select, TextField, TextLink) — out of scope for this handoff, per "Batch 2 — Deep Accessibility Review (Out of Scope)".
+
+## Accordion — first Batch 2 component reviewed — 2026-07-09
+
+Full `/review-component` pass. Verdict `changes-required`. The adversarial reviewer found a real WCAG bug — collapsed `AccordionItem` panels hid content only via `aria-hidden` + CSS, never the native technique the component's own metadata already prescribed, so a focusable descendant inside a closed panel stayed Tab-reachable and clickable. Fixed by setting the panel's `inert` DOM property via a ref + `useLayoutEffect` keyed on `isOpen` (native `hidden` wasn't usable directly — it forces `display:none`, which would break the height-transition animation). Also fixed a metadata self-contradiction (`composition.accepts: ["*"]` vs. an anti-pattern requiring `AccordionItem`-only children) and stale anti-pattern wording about the `defaultOpen` warning. All in PR #48 (`component/accordion-review`).
+
+`/extract-learnings Accordion` (PR #49) back-filled the one finding not already fixed directly in the review commit: the `Tab` keyboard-interaction entry now documents that collapsed-panel content is unreachable because of `inert`. Two low-severity code-style findings (repeated class-merge idiom, no dev-time guard for the children anti-pattern) had no metadata target and were recorded as skipped in the PR description.
+
+**Tooling gap found and fixed while closing this out:** the `/review-component` run for Accordion never wrote `.claude/handoff/runs/Accordion.run.json`, even though `review-component.md` specifies it should (alongside `.review.json`). `Accordion.review.json` was written correctly. This is a gap in that specific run, not a repeat of the lighter-path-by-design gap noted for Batch 1 — Accordion went through the full adversarial path, which is supposed to always produce a `run.json`. Reconstructed `Accordion.run.json` from the review findings in `Accordion.review.json` and PR #48's actual diff (4 `reviewerCaughtBeyondGate` entries, 0 manual rescues, gate passing 5/5) and ran `npm run handoff:tidy` to promote it into `run-ledger.json`, so the run-ledger now has a real (if reconstructed) entry for Accordion. Not investigating the root cause of the missing write in this session — flagging here in case it recurs on the next Batch 2 component; if it does, that's a `/review-component` command bug worth fixing rather than reconstructing by hand a second time.
 
 ---
 
