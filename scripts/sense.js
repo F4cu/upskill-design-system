@@ -156,11 +156,22 @@ function handoffArtifact(name, ext) {
 // review-component → extract-learnings loop, derived purely from its committed
 // handoff artifacts (never a live call):
 //
-//   in review   — loop fully closed: adversarial review ran AND learnings were
-//                 back-filled. Everything an agent/script can verify is green;
+//   in review   — loop fully closed. Two ways to get here:
+//                 (a) full path: adversarial review ran AND learnings were
+//                     back-filled, or
+//                 (b) lighter path (`.review.json` with `"path": "lighter"`):
+//                     the CLAUDE.md "light in-session review, no subagent"
+//                     option — `/code-review` + the gate, findings fixed
+//                     inline in the same pass. There is no separate
+//                     extract-learnings step for this path, so a `.review.json`
+//                     alone closes the loop; it never needs a `.learnings.json`.
+//                 Either way, everything an agent/script can verify is green;
 //                 awaiting the human visual check + `done` sign-off.
-//   in progress — loop started but not closed: reviewed with learnings still
-//                 pending, or a run logged without a completed review.
+//   in progress — loop started but not closed: a *full-path* review ran but
+//                 `/extract-learnings` hasn't back-filled its findings yet
+//                 (the common case), or — rarer, and generally a tooling gap
+//                 worth investigating — a `.run.json` was logged with no
+//                 matching `.review.json` at all.
 //   null        — pre-loop ("established"): never entered the formal loop.
 //                 A lone snapshot is just a context cache and does not count.
 //
@@ -182,6 +193,7 @@ function deriveImplementation(name, signoff) {
   const review = handoffArtifact(name, "review");
   const learnings = handoffArtifact(name, "learnings");
   const run = handoffArtifact(name, "run");
+  if (review?.path === "lighter") return "in review";
   if (review && learnings) return "in review";
   if (review || run) return "in progress";
   return "established"; // pre-loop: predates the add-component loop, no artifacts
@@ -205,6 +217,7 @@ function buildComponentPipeline() {
         implementation: deriveImplementation(c.name, signoff),
         signedOff: HUMAN_OWNED_IMPL.has(signoff[c.name]),
         reviewedAt: review?.reviewedAt ?? null,
+        reviewPath: review?.path ?? "full",
         learningsBackfilled: handoffArtifact(c.name, "learnings") !== null,
       }];
     });
@@ -270,16 +283,21 @@ function componentSection(pipeline) {
     );
     for (const c of byImpl["in review"]) {
       const when = c.reviewedAt ? `reviewed ${c.reviewedAt.slice(0, 10)}` : "review date unknown";
-      out.push(`- \`${c.name}\` — maturity \`${c.maturity}\` · ${when} · learnings back-filled`);
+      const via = c.reviewPath === "lighter" ? "lighter-path review (no learnings step needed)" : "learnings back-filled";
+      out.push(`- \`${c.name}\` — maturity \`${c.maturity}\` · ${when} · ${via}`);
     }
     out.push("");
   }
 
   if (byImpl["in progress"].length) {
     out.push(
-      "### In progress — loop not yet closed",
+      "### In progress — review done, learnings not yet back-filled",
       "",
-      "Reviewed with learnings pending, or a run logged without a completed review.",
+      "A full-path adversarial review (`/review-component`) ran and closed, but",
+      "`/extract-learnings` hasn't routed its findings into metadata yet — that's",
+      "the near-universal case here. The rarer case is a `.run.json` logged with",
+      "no matching `.review.json` at all, which usually signals a tooling gap",
+      "worth investigating rather than a normal in-flight review.",
       "",
     );
     for (const c of byImpl["in progress"]) {

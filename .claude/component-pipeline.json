@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-09T14:55:48.669Z",
+  "generatedAt": "2026-07-09T15:27:16.218Z",
   "components": [
     {
       "name": "Accordion",
@@ -8,51 +8,57 @@
       "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "full",
       "learningsBackfilled": true
     },
     {
       "name": "AppHeader",
       "type": "container",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
       "name": "Avatar",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
       "name": "Badge",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
       "name": "Box",
       "type": "container",
       "maturity": "beta",
-      "implementation": "in progress",
+      "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T13:30:00Z",
-      "learningsBackfilled": false
+      "reviewPath": "full",
+      "learningsBackfilled": true
     },
     {
       "name": "Breadcrumb",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
@@ -62,6 +68,7 @@
       "implementation": "established",
       "signedOff": false,
       "reviewedAt": null,
+      "reviewPath": "full",
       "learningsBackfilled": false
     },
     {
@@ -71,33 +78,37 @@
       "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T14:11:31Z",
+      "reviewPath": "full",
       "learningsBackfilled": true
     },
     {
       "name": "Card",
       "type": "container",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
       "name": "CardHorizontal",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
       "name": "CardVertical",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
@@ -107,6 +118,7 @@
       "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T14:25:42Z",
+      "reviewPath": "full",
       "learningsBackfilled": true
     },
     {
@@ -116,15 +128,17 @@
       "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "full",
       "learningsBackfilled": true
     },
     {
       "name": "Divider",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
@@ -134,60 +148,67 @@
       "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T14:35:39Z",
+      "reviewPath": "full",
       "learningsBackfilled": true
     },
     {
       "name": "Heading",
       "type": "display",
       "maturity": "beta",
-      "implementation": "in progress",
+      "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T14:00:00Z",
-      "learningsBackfilled": false
+      "reviewPath": "full",
+      "learningsBackfilled": true
     },
     {
       "name": "Icon",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
       "name": "Image",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
       "name": "Inline",
       "type": "container",
       "maturity": "beta",
-      "implementation": "in progress",
+      "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T00:00:00Z",
-      "learningsBackfilled": false
+      "reviewPath": "full",
+      "learningsBackfilled": true
     },
     {
       "name": "ProgressBar",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
       "name": "ScrollArea",
       "type": "container",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     },
     {
@@ -197,25 +218,28 @@
       "implementation": "established",
       "signedOff": false,
       "reviewedAt": null,
+      "reviewPath": "full",
       "learningsBackfilled": false
     },
     {
       "name": "Stack",
       "type": "container",
       "maturity": "beta",
-      "implementation": "in progress",
+      "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T00:00:00Z",
-      "learningsBackfilled": false
+      "reviewPath": "full",
+      "learningsBackfilled": true
     },
     {
       "name": "Text",
       "type": "display",
       "maturity": "beta",
-      "implementation": "in progress",
+      "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T00:00:00Z",
-      "learningsBackfilled": false
+      "reviewPath": "full",
+      "learningsBackfilled": true
     },
     {
       "name": "TextField",
@@ -224,6 +248,7 @@
       "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "full",
       "learningsBackfilled": true
     },
     {
@@ -233,15 +258,17 @@
       "implementation": "in review",
       "signedOff": false,
       "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "full",
       "learningsBackfilled": true
     },
     {
       "name": "VideoFrame",
       "type": "display",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewPath": "lighter",
       "learningsBackfilled": false
     }
   ]
