@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-07-09T13:48:40.922Z**
+Generated: **2026-07-09T14:55:48.669Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -24,9 +24,22 @@ None. No deprecated token has a live reference. ✅
 ## Components
 
 - **27 total** — Maturity: 27 beta
-- By type: container (6) · display (13) · input (3) · interactive (5)
-- Implementation: 0 done · 0 in review · 5 in progress · 0 todo · 22 established (pre-loop)
+- By type: container (6) · display (12) · input (3) · interactive (6)
+- Implementation: 0 done · 7 in review · 5 in progress · 0 todo · 15 established (pre-loop)
 - Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
+
+### In review — awaiting human sign-off
+
+Gate, adversarial review, and learnings back-fill all green. Promote to `done`
+in Airtable (Implementation column) after the visual check in Storybook.
+
+- `Accordion` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
+- `ButtonArrow` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
+- `Checkbox` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
+- `Chip` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
+- `DropdownMenu` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
+- `TextField` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
+- `TextLink` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
 
 ### In progress — loop not yet closed
 
@@ -45,7 +58,7 @@ through an adversarial review. Not active work — candidates to harden with
 `/review-component <Name>` when there's time. Running one moves the
 component into the loop automatically.
 
-`Accordion` · `AppHeader` · `Avatar` · `Badge` · `Breadcrumb` · `Button` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Icon` · `Image` · `ProgressBar` · `ScrollArea` · `Select` · `TextField` · `TextLink` · `VideoFrame`
+`AppHeader` · `Avatar` · `Badge` · `Breadcrumb` · `Button` · `Card` · `CardHorizontal` · `CardVertical` · `Divider` · `Icon` · `Image` · `ProgressBar` · `ScrollArea` · `Select` · `VideoFrame`
 
 ### Beta (not production-ready)
 

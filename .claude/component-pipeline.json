@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-07-09T13:48:40.922Z",
+  "generatedAt": "2026-07-09T14:55:48.669Z",
   "components": [
     {
       "name": "Accordion",
       "type": "interactive",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "learningsBackfilled": true
     },
     {
       "name": "AppHeader",
@@ -68,10 +68,10 @@
       "name": "ButtonArrow",
       "type": "interactive",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-09T14:11:31Z",
+      "learningsBackfilled": true
     },
     {
       "name": "Card",
@@ -104,19 +104,19 @@
       "name": "Checkbox",
       "type": "input",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-09T14:25:42Z",
+      "learningsBackfilled": true
     },
     {
       "name": "Chip",
       "type": "interactive",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "learningsBackfilled": true
     },
     {
       "name": "Divider",
@@ -129,12 +129,12 @@
     },
     {
       "name": "DropdownMenu",
-      "type": "display",
+      "type": "interactive",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-09T14:35:39Z",
+      "learningsBackfilled": true
     },
     {
       "name": "Heading",
@@ -221,19 +221,19 @@
       "name": "TextField",
       "type": "input",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "learningsBackfilled": true
     },
     {
       "name": "TextLink",
       "type": "interactive",
       "maturity": "beta",
-      "implementation": "established",
+      "implementation": "in review",
       "signedOff": false,
-      "reviewedAt": null,
-      "learningsBackfilled": false
+      "reviewedAt": "2026-07-09T00:00:00Z",
+      "learningsBackfilled": true
     },
     {
       "name": "VideoFrame",

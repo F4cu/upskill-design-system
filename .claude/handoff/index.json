@@ -438,5 +438,37 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/TextField.snapshot.json"
+  },
+  {
+    "name": "TextLink.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/TextLink.learnings.json"
+  },
+  {
+    "name": "TextLink.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/TextLink.review.json"
+  },
+  {
+    "name": "TextLink.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/TextLink.run.json"
+  },
+  {
+    "name": "TextLink.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/TextLink.snapshot.json"
   }
 ]

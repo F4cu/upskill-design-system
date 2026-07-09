@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-07-09
-completed: null
+completed: 2026-07-09
 ---
 
 # Established Component Review Backlog — Handoff
@@ -112,10 +112,10 @@ Batch 2 is **not** part of this handoff and should be completed in a future sess
 - [x] Chip — full `/review-component` pass: PR #51 (`component/chip-review`, adversarial pass, verdict `changes-required`, fixed a missing disabled-state a11y test assertion and a story that diverged from the component's own documented `filter-bar` pattern; one low-severity className-merge-order note left as-is). `extract-learnings` found nothing to route — both findings were already correctly documented in metadata, the review just brought the code/test/story into line with the existing contract — so no PR for that step, per the no-PR-on-empty-diff convention.
 - [x] DropdownMenu — full `/review-component` pass: PR #52 (`component/dropdown-menu-review`, adversarial pass, verdict `changes-required`, fixed a real focus-management bug — AppHeader's user menu never returned focus to its trigger button on close — plus a WAI-ARIA APG divergence where `listRole=menu` had no Arrow key navigation, plus a `component.type` metadata/implementation mismatch). Added `AppHeader.a11y.test.tsx` (didn't exist — the gap that let the focus-return bug ship), which also surfaced and fixed a redundant Avatar alt-text axe violation. All metadata amendments were made directly in PR #52; `extract-learnings` found nothing further to route.
 - [x] Select — fully reviewed: PR #11 (`component/select`, fixed keyboard contract: arrow nav, focus management, metadata gaps) + PR #12 (extract-learnings). Verified via `gh pr list` 2026-07-09.
-- [ ] TextField — no review evidence found, only a Tier-2 a11y test PR (#7) from initial build. Still pending.
-- [ ] TextLink — no review evidence found at all (component added later, PR 34a6835/3e7bbed). Still pending.
+- [x] TextField — full `/review-component` pass: PR #53 (`component/text-field-review`, adversarial pass, verdict `clean`, 3 low-severity findings all fixed: a CSS specificity bug where `.input:focus` outranked `.hasError` — silently clearing the error border while editing an invalid field — plus two metadata/implementation token mismatches, `space.stack.xs`→`sm` and `font.weight.medium`→`bold`). Existing `.a11y.test.tsx` judged sufficiently behavioral (label association, `aria-invalid`/`aria-describedby`/`role=alert`), no test gap. `extract-learnings` found nothing left to route — all findings already resolved directly in PR #53 — no PR opened for that step, per the no-PR-on-empty-diff convention (same pattern as ButtonArrow). `run.json` promoted into `run-ledger.json`.
+- [x] TextLink — full `/review-component` pass (its first-ever review): PR #54 (`component/text-link-review`, adversarial pass, verdict `changes-required`, fixed a real type-enforcement gap — `href` was optional and `style` was spread through unfiltered despite metadata already documenting both as forbidden — plus a mis-titled a11y test that claimed Enter-key coverage it never asserted; one low finding, unenforced `canNest`, left as a shared atom-set limitation). `extract-learnings` found nothing left to route — all three findings were already fully documented in metadata beforehand, the review just brought the implementation's type-level enforcement into line with what metadata already required — no PR for that step, per the no-PR-on-empty-diff convention. `run.json` promoted into `run-ledger.json`.
 
-Remaining pending: TextField, TextLink (2 components).
+**Batch 2 complete — all 9 components reviewed, 2026-07-09.**
 
 ---
 
@@ -254,6 +254,22 @@ Full `/review-component` pass. Verdict `changes-required`. The adversarial revie
 
 `/extract-learnings ButtonArrow` found nothing left to route: all three findings were already resolved directly in PR #50 (metadata default corrected, style and test fixed in the same commit), so there was no diff to open a PR for. Wrote `ButtonArrow.learnings.json` with `amendedSections: []`, `skipped: 3` and skipped the PR step — same no-PR-on-empty-diff convention Batch 1's lighter path used, applied here to extract-learnings for the first time.
 
+## TextField — 2026-07-09
+
+Full `/review-component` pass, established/unmodified code. Verdict `clean`, three low-severity findings, all fixed in PR #53: a CSS specificity bug (`.input:focus` outranked `.hasError`, silently clearing the error border on an errored field while it was being edited) and two metadata/implementation token mismatches (`space.stack.xs`→`sm`, `font.weight.medium`→`bold`). Existing `.a11y.test.tsx` judged sufficiently behavioral — no test gap. `extract-learnings` found nothing left to route (metadata already corrected directly in the review PR) — no PR for that step. `run.json` wrote correctly and promoted into `run-ledger.json` — the Accordion gap did not recur again.
+
+## TextLink — last Batch 2 component, 2026-07-09
+
+Full `/review-component` pass — TextLink's first-ever review (added after Batch 2 was originally scoped, no prior review evidence existed at all). Verdict `changes-required`: the adversarial reviewer found a real type-enforcement gap flagged by `components.md`'s "type-enforced anti-patterns" rule — `href` was optional in `TextLinkProps` and `style` was spread through unfiltered, despite `metadata.json` already stating both as forbidden ("href always required", "never override color or text-decoration"). Fixed by making `href: string` required and excluding `style` from the prop spread (PR #54). Also fixed a mis-titled a11y test that claimed Enter-key navigation coverage it never asserted. One low finding (`canNest: false` not type-enforced against nesting other interactive elements) left as a shared, accepted limitation across the atom set. `extract-learnings` found nothing to route — every finding was already documented in metadata beforehand, the gap was purely the implementation catching up to what metadata already required — no PR for that step. `run.json` promoted into `run-ledger.json`.
+
+## Batch 2 complete, handoff closed — 2026-07-09
+
+All 9 Batch 2 components (Accordion, Button, ButtonArrow, Checkbox, Chip, DropdownMenu, Select, TextField, TextLink) have now been through a full `/review-component` adversarial pass, with `/extract-learnings` run for each. Combined with Batch 1 (18 components, checkpoint-downgraded to the lighter path after Heading), all 27 established components have now had a review pass.
+
+`npm run sense` was regenerated after TextLink merged. TextField and TextLink no longer appear in `STATUS_QUO.md`'s "Established — review backlog" (both produced a real `run.json` this session). `Button` and `Select` still appear there despite being genuinely reviewed via earlier PRs (#16/#18, #11/#12) — this is the same known `sense.js` tooling gap already documented above for the 13 lighter-path Batch 1 components: `deriveImplementationStage` clears backlog status only via presence of a `.claude/handoff/runs/<Name>.run.json`, and Button/Select's reviews predate that convention, so no `run.json` exists for them even though the review work is real and verified via `gh pr list`. Not fixing `sense.js` in this handoff, per the same reasoning as before — it's a tooling gap, not unfinished review work.
+
+The public showcase (Phase 11) can now proceed on top of a fully review-passed component set.
+
 ---
 
 # After Batch 1 Completes
@@ -311,6 +327,7 @@ This handoff is complete when:
 - all PRs have been merged — **done** (5 full-review PRs; lighter-path fixes committed directly per the git-workflow exception list, no branch/PR required since they aren't one of the listed agentic moments)
 - `npm run sense` has been regenerated — **done**
 - Batch 1 components no longer appear in the **Established review backlog** — **not achieved, and not achievable as the tooling is built**; see the "known tooling/handoff mismatch" progress note above. The 13 lighter-path components remain listed there because `sense.js` only clears that status via a `/review-component`-produced `run.json`. Treat this bullet as superseded by that note, not as unfinished batch work.
-- this handoff remains **active**, documenting that only the Batch 2 review set remains
+- all 9 Batch 2 components have been reviewed and merged — **done, 2026-07-09** (see "Batch 2 complete, handoff closed" progress note)
+- this handoff is now **done**
 
-**Batch 1 is complete as of 2026-07-09.** Only the 9 Batch 2 components (deep accessibility review) remain outstanding for this handoff.
+**Both batches are complete as of 2026-07-09.** All 27 established components have been through a review pass (Batch 1: 5 full adversarial + 13 checkpoint-downgraded lighter-path; Batch 2: 9 full adversarial). This handoff is closed; run `npm run handoff:tidy` to archive it.
