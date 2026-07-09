@@ -190,5 +190,29 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/Stack.snapshot.json"
+  },
+  {
+    "name": "Text.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Text.review.json"
+  },
+  {
+    "name": "Text.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Text.run.json"
+  },
+  {
+    "name": "Text.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Text.snapshot.json"
   }
 ]
