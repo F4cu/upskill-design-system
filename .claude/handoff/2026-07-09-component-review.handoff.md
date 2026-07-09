@@ -103,17 +103,19 @@ These components require additional validation of:
 
 Batch 2 is **not** part of this handoff and should be completed in a future session.
 
-Components:
+## Checklist
 
-- Accordion
-- Button
-- ButtonArrow
-- Checkbox
-- Chip
-- DropdownMenu
-- Select
-- TextField
-- TextLink
+- [ ] Accordion — retro metadata back-fill exists (PR #10, `retro/accordion`) but no actual `/review-component` adversarial pass was ever run (no `component/accordion-review` branch/PR, no `.review.json`/`.run.json`). Decision 2026-07-09: run the full pass now rather than accept the retro as sufficient (Accordion has a custom keyboard/ARIA contract). **Do this one next.**
+- [x] Button — fully reviewed: PR #16 (`component/button-review`, adversarial pass, fixed form-submit default + hardcoded line-height) + PR #18 (extract-learnings, back-filled Button metadata). Verified via `gh pr list` 2026-07-09.
+- [ ] ButtonArrow — no review evidence found, only a Tier-2 a11y test PR (#4) from initial build. Still pending.
+- [ ] Checkbox — no review evidence found, only a Tier-2 a11y test PR (#5) from initial build. Still pending.
+- [ ] Chip — no review evidence found, only a Tier-2 a11y test PR (#6) from initial build. Still pending.
+- [ ] DropdownMenu — no review evidence found, only a Tier-2 a11y test PR (#8) from initial build. Still pending.
+- [x] Select — fully reviewed: PR #11 (`component/select`, fixed keyboard contract: arrow nav, focus management, metadata gaps) + PR #12 (extract-learnings). Verified via `gh pr list` 2026-07-09.
+- [ ] TextField — no review evidence found, only a Tier-2 a11y test PR (#7) from initial build. Still pending.
+- [ ] TextLink — no review evidence found at all (component added later, PR 34a6835/3e7bbed). Still pending.
+
+Remaining pending: Accordion, ButtonArrow, Checkbox, Chip, DropdownMenu, TextField, TextLink (7 components).
 
 ---
 
