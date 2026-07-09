@@ -107,7 +107,7 @@ Batch 2 is **not** part of this handoff and should be completed in a future sess
 
 - [x] Accordion — full `/review-component` pass run: PR #48 (`component/accordion-review`, adversarial pass, verdict `changes-required`, fixed a real WCAG bug — collapsed panels left focusable descendants Tab-reachable — plus a metadata self-contradiction) + PR #49 (extract-learnings, back-filled the keyboard contract). See "Progress notes" below for the `.run.json` gap found and fixed while closing this out.
 - [x] Button — fully reviewed: PR #16 (`component/button-review`, adversarial pass, fixed form-submit default + hardcoded line-height) + PR #18 (extract-learnings, back-filled Button metadata). Verified via `gh pr list` 2026-07-09.
-- [ ] ButtonArrow — no review evidence found, only a Tier-2 a11y test PR (#4) from initial build. Still pending.
+- [x] ButtonArrow — full `/review-component` pass: PR #50 (`component/button-arrow-review`, adversarial pass, verdict `changes-required`, fixed an undeliverable metadata default plus a hardcoded-style and a thin-test finding). extract-learnings found nothing left to back-fill — all three findings were already resolved directly in PR #50 — so no PR was opened for that step (empty diff), per the same no-PR convention as Batch 1's lighter path.
 - [ ] Checkbox — no review evidence found, only a Tier-2 a11y test PR (#5) from initial build. Still pending.
 - [ ] Chip — no review evidence found, only a Tier-2 a11y test PR (#6) from initial build. Still pending.
 - [ ] DropdownMenu — no review evidence found, only a Tier-2 a11y test PR (#8) from initial build. Still pending.
@@ -115,7 +115,7 @@ Batch 2 is **not** part of this handoff and should be completed in a future sess
 - [ ] TextField — no review evidence found, only a Tier-2 a11y test PR (#7) from initial build. Still pending.
 - [ ] TextLink — no review evidence found at all (component added later, PR 34a6835/3e7bbed). Still pending.
 
-Remaining pending: ButtonArrow, Checkbox, Chip, DropdownMenu, TextField, TextLink (6 components).
+Remaining pending: Checkbox, Chip, DropdownMenu, TextField, TextLink (5 components).
 
 ---
 
@@ -247,6 +247,12 @@ Full `/review-component` pass. Verdict `changes-required`. The adversarial revie
 `/extract-learnings Accordion` (PR #49) back-filled the one finding not already fixed directly in the review commit: the `Tab` keyboard-interaction entry now documents that collapsed-panel content is unreachable because of `inert`. Two low-severity code-style findings (repeated class-merge idiom, no dev-time guard for the children anti-pattern) had no metadata target and were recorded as skipped in the PR description.
 
 **Tooling gap found and fixed while closing this out:** the `/review-component` run for Accordion never wrote `.claude/handoff/runs/Accordion.run.json`, even though `review-component.md` specifies it should (alongside `.review.json`). `Accordion.review.json` was written correctly. This is a gap in that specific run, not a repeat of the lighter-path-by-design gap noted for Batch 1 — Accordion went through the full adversarial path, which is supposed to always produce a `run.json`. Reconstructed `Accordion.run.json` from the review findings in `Accordion.review.json` and PR #48's actual diff (4 `reviewerCaughtBeyondGate` entries, 0 manual rescues, gate passing 5/5) and ran `npm run handoff:tidy` to promote it into `run-ledger.json`, so the run-ledger now has a real (if reconstructed) entry for Accordion. Not investigating the root cause of the missing write in this session — flagging here in case it recurs on the next Batch 2 component; if it does, that's a `/review-component` command bug worth fixing rather than reconstructing by hand a second time.
+
+## ButtonArrow — second Batch 2 component reviewed — 2026-07-09
+
+Full `/review-component` pass. Verdict `changes-required`. The adversarial reviewer found a metadata/implementation contract mismatch: `variants.direction.default` was declared `"right"`, but `direction` was a required prop with no destructuring default — omitting it was a TypeScript compile error, not a fallback to `"right"`. Fixed by setting the metadata default to `null` (matching the existing `Button.shape` convention for a mandatory two-option axis) rather than adding a silent runtime default, since a wrong value here would flip both the chevron direction and the `aria-label` ("Previous" vs. "Next") — a correctness footgun worse than a compile error. Also fixed: a hardcoded inline `transform` style on the Icon (moved to CSS module modifier classes, restoring the CSS-modules-only-`var()` convention) and a thin a11y-test assertion (icon's `aria-hidden` was only proven implicitly via a passing accessible-name query; added a direct assertion). All in PR #50 (`component/button-arrow-review`). `run.json` was written correctly this time (Stage 3 of `/review-component` executed as specified — the gap found on Accordion did not recur).
+
+`/extract-learnings ButtonArrow` found nothing left to route: all three findings were already resolved directly in PR #50 (metadata default corrected, style and test fixed in the same commit), so there was no diff to open a PR for. Wrote `ButtonArrow.learnings.json` with `amendedSections: []`, `skipped: 3` and skipped the PR step — same no-PR-on-empty-diff convention Batch 1's lighter path used, applied here to extract-learnings for the first time.
 
 ---
 

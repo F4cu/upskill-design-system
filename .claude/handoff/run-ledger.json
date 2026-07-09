@@ -70,5 +70,17 @@
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 4,
     "manualRescuesCount": 0
+  },
+  {
+    "component": "ButtonArrow",
+    "ranAt": "2026-07-09T16:15:00Z",
+    "gate": {
+      "passes": 6,
+      "failures": 0,
+      "failureReasons": []
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 3,
+    "manualRescuesCount": 0
   }
 ]
