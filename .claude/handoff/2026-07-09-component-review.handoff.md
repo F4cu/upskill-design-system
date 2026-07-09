@@ -83,7 +83,7 @@ Ordered simplest-first (layout primitives → typography → display atoms → m
 - [x] Badge — lighter path
 - [x] ProgressBar — lighter path
 - [x] Card — lighter path
-- [ ] **← Checkpoint 2**
+- [x] **← Checkpoint 2** — no new decision needed (see "Progress notes"); continuing lighter path
 - [ ] CardHorizontal — lighter path
 - [ ] CardVertical — lighter path
 - [ ] VideoFrame — lighter path
@@ -209,6 +209,12 @@ Manual review surfaced two real accessibility findings, both fixed in this pass 
 - **Card**: metadata documented `accessibility.role: "region"`, but the implementation never set `role="region"` on the div — a bare `<div>` has no implicit role, so the documented landmark behavior never actually happened regardless of whether a caller passed `aria-label`. Fixed by conditionally setting `role="region"` only when `aria-label`/`aria-labelledby` is passed (same conditional-role pattern `Icon` already uses for `role="img"`) — an unlabeled region role would just add landmark noise. Metadata updated to describe the actual (conditional) behavior instead of the previously-aspirational one.
 
 Gate (`metadata:validate`, `typecheck`, `build`, `a11y:coverage`, `a11y:test`) and `lint` all pass after the fixes.
+
+## Checkpoint 2 (after Card) — 2026-07-09
+
+Checkpoint 2's rule reads `run-ledger.json` to decide adversarial-vs-lighter for the *rest* of Batch 1 — but that decision was already made and applied at Checkpoint 1 (downgrade all remaining Batch 1 components to the lighter path), so there is no new ledger to evaluate: the lighter path doesn't write to `run-ledger.json` (see the "Lighter-path reviews 1-5" note above). No new decision needed here; continuing the lighter path for the remaining 6 Batch 1 components (CardHorizontal, CardVertical, VideoFrame, ScrollArea, Breadcrumb, AppHeader), as planned.
+
+Worth noting: the lighter path is not rubber-stamping. It caught two genuine accessibility bugs (ProgressBar's missing accessible name, Card's undocumented-vs-actual role mismatch) that the deterministic gate alone would not have caught, since jsdom a11y tests aren't required for these non-interactive/display components (ADR-008). This is better evidence for the lighter path's value than Checkpoint 1's ledger data alone.
 
 ---
 
