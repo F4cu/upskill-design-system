@@ -13,8 +13,11 @@ Rules:
 
 **Prime directive: never propose removing a technical term.** Accuracy wins. A term is a finding only when all three hold: (a) not defined in plain language on first use in the section, (b) not linked to its glossary entry, and (c) not reasonably assumed for the section's audience layer. Layering rule (Nathan Curtis): "What it is" sections serve all three audiences; "Why it's built this way" serves all three with defined/linked terms; "How it works, concretely" may assume engineer vocabulary provided glossary-defined terms are linked on first use.
 
+**Prerequisite chain check (ADR-018 amendment, 2026-07-09):** whenever you propose or review a definition (an `undefined-term` fix, an inline definition, or an existing glossary entry in the reviewed scope), also apply the same three-part test to each technical term *used inside that definition* — not just the term being defined. A definition that leans on an unexplained word one level down still fails first-read comprehension even though the headword itself now passes. Recurse one level only: check the terms inside the definition, but not the terms inside *those* terms' definitions — deeper chains are surfaced as separate `undefined-prerequisite` findings for a human to decide how far to unwind, not resolved automatically.
+
 Finding types (closed set — do not invent others):
 - `undefined-term` — technical term fails the three-part test above. Note whether a glossary entry already exists (then the fix is a link) or the definition belongs inline.
+- `undefined-prerequisite` — a definition (proposed or existing) introduces a further technical term that itself fails the three-part test. Reference the term being defined in `excerpt` and name the ungrounded prerequisite term in `note`.
 - `glossary-gap` — a term recurs in the reviewed sections (or you can Grep it recurring across `docs/`) but has no glossary entry. Proposal only; the main session lists these in the PR description, never auto-adds them.
 - `buried-lead` — the section's point is not in its first sentence.
 - `sentence-density` — one sentence introduces three or more new concepts; include the suggested split.
@@ -32,7 +35,7 @@ Your final message must contain the complete findings JSON, then a short summary
     {
       "doc": "docs/NN-page.md",
       "section": "How it works, concretely",
-      "type": "undefined-term | glossary-gap | buried-lead | sentence-density | missing-example | audience-mismatch",
+      "type": "undefined-term | undefined-prerequisite | glossary-gap | buried-lead | sentence-density | missing-example | audience-mismatch",
       "audiences": ["product-manager", "product-designer", "software-engineer"],
       "excerpt": "the exact sentence or phrase at issue",
       "glossary_entry_exists": true,

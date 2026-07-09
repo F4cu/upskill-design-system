@@ -2,6 +2,7 @@
 
 **Date:** 2026-07-09
 **Status:** `accepted`
+**Amended:** 2026-07-09
 
 ## Context
 
@@ -32,3 +33,9 @@ Findings use a closed type set (`undefined-term`, `glossary-gap`, `buried-lead`,
 - Docs quality for non-engineer stakeholders becomes a reviewed property of every sync, not an aspiration — while the 5-section page template, claim-to-source citations, and Autodocs-owned content remain untouchable by rubric rule.
 - The glossary gains a growth mechanism: recurring undefined terms surface as PR-level proposals instead of being noticed by accident.
 - Deferred: a dedicated layout-reviewer agent (ADR-016 reuses the adversarial subagent opt-in) — revisit after the scribe proves its cost in 2–3 runs, judged the same way the adversarial reviewer is: empirically, via run telemetry.
+
+## Amendment (2026-07-09)
+
+While hand-fixing the "Glob pattern" glossary entry (issue #38), the `undefined-term` rubric passed a definition that itself leaned on an undefined term ("wildcard"), and after that fix, a second undefined term one level down ("file path"). The rubric checked the flagged headword but had no visibility into the prerequisite chain a definition quietly depends on — a definition can pass the three-part test in isolation while introducing a new ungrounded term.
+
+Added an `undefined-prerequisite` finding type and a rubric step: when the scribe proposes or reviews a definition, it also runs the three-part test against each technical term used *inside* that definition, recursing one level only. Deeper chains are flagged rather than resolved automatically, leaving the developer to decide how far to unwind. See `.claude/agents/docs-scribe.md`.
