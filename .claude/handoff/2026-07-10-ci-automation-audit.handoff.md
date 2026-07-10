@@ -52,3 +52,14 @@ Principle: derived files that only change as a *consequence* of a merge should b
 
 ## Order & effort
 1 → 3 are independent quick wins (each < 1 session). 2 needs a PAT-or-`GITHUB_TOKEN`-push decision for auto-commits to `main`. 4 is the largest (deploy config + base path). Suggested order: 1, 3, 2, 4, 5.
+
+## Model per PR (Pro usage-window economics)
+| PR | Model | Why |
+|---|---|---|
+| 1 Workflow hygiene | Sonnet 5 | Mechanical YAML, but concurrency/trigger semantics (`github.ref` vs `head_ref` grouping) warrant more than Haiku |
+| 2 Snapshot sync + airtable-pull cron | Fable 5 / Opus 4.8 | Hardest: `GITHUB_TOKEN` vs PAT, `[skip ci]` loop prevention, commit-only-if-changed — wrong choices fail silently or loop |
+| 3 Command-file edits | Sonnet 5 | Prose edits with placement judgment; handoff is the spec |
+| 4 Showcase CI + Pages deploy | Fable 5 / Opus 4.8 | Iterative deploy debugging (base path, SPA fallback, Pages permissions) — weaker models burn more retrying |
+| 5 Script tidy | Haiku 4.5 | Pure mechanical cleanup |
+
+Batching tip: 1 + 3 + 5 together in one Sonnet session likely costs less than PR 2 alone; save the Fable/Opus window for 2 and 4.
