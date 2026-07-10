@@ -21,7 +21,6 @@
     "tokens:build": "npm run build:tokens -w @upskill/tokens",
     "typecheck": "npm run typecheck -w @upskill/components",
     "storybook": "npm run storybook -w @upskill/components",
-    "storybook:build": "npm run build:storybook -w @upskill/components",
     "airtable:push:primitives": "node scripts/airtable-sync.js push:primitives",
     "airtable:push:semantic": "node scripts/airtable-sync.js push:semantic",
     "airtable:push:device": "node scripts/airtable-sync.js push:device",
@@ -33,7 +32,6 @@
     "pipeline:status": "node scripts/pipeline-status.js",
     "pipeline-dashboard": "npm run dev -w @upskill/showcase -- --port 5176",
     "tokens:usage": "node scripts/token-usage.js",
-    "tokens:diff": "node scripts/token-diff.js",
     "tokens:contrast-check": "node scripts/token-contrast-check.js",
     "sense": "node scripts/sense.js",
     "patterns:generate": "node scripts/generate-pattern-schema.js",
@@ -47,8 +45,6 @@
     "metadata:validate": "node scripts/validate-metadata.js",
     "layout:validate": "node scripts/validate-layout.js",
     "a11y:coverage": "node scripts/a11y-coverage.js",
-    "a11y:test": "npm run test:a11y -w @upskill/components",
-    "component:check": "npm run metadata:validate && npm run typecheck && npm run build && echo 'Gate passed. Preview changes with: npm run storybook. Once confirmed, run: npm run component:refresh to update documentation and memory'",
-    "component:refresh": "npm run tokens:usage && npm run sense"
+    "a11y:test": "npm run test:a11y -w @upskill/components"
   }
 }
