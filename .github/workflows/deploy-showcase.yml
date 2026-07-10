@@ -1,0 +1,65 @@
+name: Deploy showcase
+
+# Publishes the showcase app to GitHub Pages
+# (https://f4cu.github.io/upskill-design-system/) on every merge to main
+# that touches it. ROADMAP :143; Pages replaces the earlier Vercel plan.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "apps/showcase/**"
+      - "packages/**"
+      - "package-lock.json"
+      - ".github/workflows/deploy-showcase.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy-showcase
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # tokens + components — showcase typecheck needs @upskill/components dist types
+      - name: Build tokens and components
+        run: npm run build
+
+      - name: Build showcase
+        run: npm run build -w @upskill/showcase
+        env:
+          VITE_BASE_PATH: /upskill-design-system/
+
+      # GitHub Pages serves 404.html (with the original URL intact) for any
+      # unknown path — copying index.html lets react-router handle deep links
+      - name: SPA fallback
+        run: cp apps/showcase/dist/index.html apps/showcase/dist/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/showcase/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
