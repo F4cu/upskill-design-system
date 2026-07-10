@@ -17,19 +17,20 @@ const repoRoot = join(__dirname, '..', '..', '..');
 const outDir = join(__dirname, '..', 'src', 'data');
 
 const sources = [
-  { path: join(repoRoot, '.claude', 'component-pipeline.json'), out: 'component-pipeline.json' },
-  { path: join(repoRoot, 'packages', 'tokens', 'airtable-governance.json'), out: 'airtable-governance.json' },
-  { path: join(repoRoot, 'packages', 'tokens', 'token-usage.json'), out: 'token-usage.json' },
-  { path: join(repoRoot, 'packages', 'tokens', 'figma-variables.json'), out: 'figma-variables.json' },
-  { path: join(repoRoot, '.claude', 'pipeline-status.json'), out: 'pipeline-status.json' },
+  { path: join(repoRoot, '.claude', 'component-pipeline.json'), out: 'component-pipeline.json', cmd: 'npm run sense' },
+  { path: join(repoRoot, 'packages', 'tokens', 'airtable-governance.json'), out: 'airtable-governance.json', cmd: 'npm run airtable:pull:governance' },
+  { path: join(repoRoot, 'packages', 'tokens', 'token-usage.json'), out: 'token-usage.json', cmd: 'npm run tokens:usage' },
+  { path: join(repoRoot, 'packages', 'tokens', 'figma-variables.json'), out: 'figma-variables.json', cmd: '/figma-variable-audit (Figma MCP moment — no npm script)' },
+  { path: join(repoRoot, '.claude', 'pipeline-status.json'), out: 'pipeline-status.json', cmd: 'npm run pipeline:status' },
 ];
 
 mkdirSync(outDir, { recursive: true });
 
-for (const { path, out } of sources) {
+for (const { path, out, cmd } of sources) {
   if (!existsSync(path)) {
-    console.warn(`[copy-pipeline-data] skipping ${path} — not present yet`);
-    continue;
+    console.error(`[copy-pipeline-data] missing required snapshot: ${path}`);
+    console.error(`  Generate it with: ${cmd}`);
+    process.exit(1);
   }
   copyFileSync(path, join(outDir, out));
   console.log(`[copy-pipeline-data] copied ${path} -> src/data/${out}`);
