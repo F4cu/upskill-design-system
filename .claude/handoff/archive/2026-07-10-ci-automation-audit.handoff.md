@@ -1,12 +1,12 @@
 ---
-status: active
+status: done
 created: 2026-07-10
-completed:
+completed: 2026-07-10
 ---
 
 # CI / automation audit — optimization plan
 
-> **2026-07-10 — all five items executed as PRs, pending merge:**
+> **2026-07-10 — all five items executed and merged (#57, #58, #59, #60, #61):**
 > item 1 → #57 · item 3 → #58 · item 2 → #59 · item 4 → #60 · item 5 → #61.
 > Merge order: #61 **last** (docs/07 sources include workflows the others change).
 > Item 2 decision: default `GITHUB_TOKEN` (`contents: write`), no PAT — main is
