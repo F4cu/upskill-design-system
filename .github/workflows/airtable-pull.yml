@@ -1,0 +1,46 @@
+name: Pull Airtable governance
+
+# Weekly refresh of the frozen Airtable mirrors (governance state + component
+# sign-off), so deprecation work and sense.js read recent human decisions
+# without anyone remembering to run the pull manually (ROADMAP :66).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+
+concurrency:
+  group: airtable-pull
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Pull governance state from Airtable
+        run: node scripts/airtable-pull.js
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+
+      # GITHUB_TOKEN pushes never trigger other workflows; [skip ci] is
+      # belt-and-braces.
+      - name: Commit refreshed governance mirrors
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/tokens/airtable-governance.json .claude/component-signoff.json
+          if git diff --cached --quiet; then
+            echo "Governance mirrors unchanged."
+          else
+            git commit -m "chore: refresh Airtable governance mirrors [skip ci]"
+            git pull --rebase origin main
+            git push origin main
+          fi

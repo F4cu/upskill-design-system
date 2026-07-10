@@ -184,6 +184,10 @@ Confirm to apply — layout-generation.md is not edited in this PR.
 - Does not re-process findings already captured in the current metadata.
 - Does not widen into process or tooling learnings — component, layout, and token contracts only.
 
+## Close-out
+
+Run `npm run handoff:tidy` — it archives `done`/`superseded` handoffs, regenerates `handoff/index.json`, and promotes each `<Name>.run.json` into the committed run ledger. This is the designated home for tidy (deliberately not CI); extraction is the natural moment because the run artifacts it promotes were just consumed here.
+
 ## Success signal
 
-`metadata:validate` passes. Every amendment traces to a specific finding. Future `/add-component` runs for similar components scaffold with the corrected contracts — the same mistakes do not appear in Stage 3 findings again.
+`metadata:validate` passes. Every amendment traces to a specific finding. `handoff:tidy` has run. Future `/add-component` runs for similar components scaffold with the corrected contracts — the same mistakes do not appear in Stage 3 findings again.
