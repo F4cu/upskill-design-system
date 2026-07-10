@@ -101,4 +101,4 @@ flowchart LR
 
 - ADRs: [002 — Three-layer token model](decisions/002-three-layer-token-model.md) (+ two amendments), [003 — `$root` convention (superseded)](decisions/003-root-token-convention.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [012 — Brand layer](decisions/012-brand-layer-multi-brand.md)
 - Commands: `/tokens-author`, `/figma-variable-audit`, `/figma-variable-push` (all in `.claude/commands/`)
-- Config: `packages/tokens/build.js` · Scripts: `npm run tokens:build`, `npm run tokens:usage`, `npm run tokens:diff`, `npm run tokens:contrast-check` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Config: `packages/tokens/build.js` · Scripts: `npm run tokens:build`, `npm run tokens:usage`, `npm run tokens:contrast-check` — see the [npm scripts reference](07-npm-scripts-reference.md)

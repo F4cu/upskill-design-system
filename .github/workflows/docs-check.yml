@@ -23,7 +23,7 @@ jobs:
           node-version: 22
 
       - name: Docs staleness check
-        run: node scripts/docs-check.js
+        run: npm run docs:check
 
       - name: CLAUDE.md context-budget check
-        run: node scripts/claude-md-check.js
+        run: npm run claudemd:check
