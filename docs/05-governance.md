@@ -11,6 +11,7 @@ sources:
   - docs/decisions/010-component-lifecycle-two-axes.md
   - .claude/commands/airtable-sync.md
   - .claude/commands/token-deprecation-pass.md
+# clock reset 2026-07-10: /token-deprecation-pass gains a pre-PR deterministic gate; governance flows unchanged, still accurate
 ---
 # Governance
 

@@ -1,17 +1,15 @@
 name: Token build check
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'packages/tokens/src/**'
-      - 'packages/tokens/build.js'
-      - 'packages/tokens/package.json'
   pull_request:
     paths:
       - 'packages/tokens/src/**'
       - 'packages/tokens/build.js'
       - 'packages/tokens/package.json'
+
+concurrency:
+  group: tokens-check-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-tokens:
@@ -69,8 +67,13 @@ jobs:
 
       - name: Build base tokens
         if: github.event_name == 'pull_request'
-        working-directory: .base/packages/tokens
-        run: npm install && node build.js
+        working-directory: .base
+        # npm ci against the base lockfile (hits the shared npm cache);
+        # scoped to the tokens workspace so we don't install the whole repo.
+        # build.js resolves src/ and dist/ from cwd, so run it from the package dir.
+        run: |
+          npm ci -w @upskill/tokens
+          cd packages/tokens && node build.js
 
       - name: Generate token diff
         if: github.event_name == 'pull_request'
