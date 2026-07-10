@@ -4,6 +4,7 @@ sources:
   - apps/showcase/package.json
   - apps/showcase/scripts/copy-pipeline-data.js
   - .github/workflows/*.yml
+# clock reset 2026-07-10: CI-audit workflows (#57-#60) merged; this page's rewrite in #61 already describes the end state (lint gate, sync.yml, weekly pull, showcase-check)
 ---
 # npm scripts reference
 
