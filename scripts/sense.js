@@ -30,6 +30,7 @@ const HANDOFF_DIR      = path.resolve(ROOT, ".claude/handoff/runs");
 const OUTPUT_PATH      = path.resolve(ROOT, ".claude/STATUS_QUO.md");
 const PIPELINE_PATH    = path.resolve(ROOT, ".claude/component-pipeline.json");
 const SIGNOFF_PATH     = path.resolve(ROOT, ".claude/component-signoff.json");
+const REVIEW_STATE_PATH = path.resolve(ROOT, ".claude/component-review-state.json");
 
 // Human-owned implementation values, set in Airtable and pulled via
 // airtable-pull.js. They win over the artifact-derived stage:
@@ -153,8 +154,9 @@ function handoffArtifact(name, ext) {
 }
 
 // Implementation stage = where a component sits in the add-component →
-// review-component → extract-learnings loop, derived purely from its committed
-// handoff artifacts (never a live call):
+// review-component → extract-learnings loop, derived purely from files (never
+// a live call): the committed component-review-state.json baseline plus any
+// local runs/ artifacts (see promoteReviewState):
 //
 //   in review   — loop fully closed. Two ways to get here:
 //                 (a) full path: adversarial review ran AND learnings were
@@ -187,19 +189,53 @@ function readSignoff() {
   }
 }
 
-function deriveImplementation(name, signoff) {
+// Review state must survive in a committed file: sense also runs in CI
+// (sync.yml post-merge) on a checkout where the gitignored runs/ artifacts
+// don't exist, yet the pipeline it derives is committed. Local artifacts are
+// merged over the committed baseline (a local review wins; learningsBackfilled
+// latches true) and written back, so CI reads the file as-is and can never
+// regress a stage it has no artifacts for. See ADR-015 amendment.
+function promoteReviewState() {
+  const state = fs.existsSync(REVIEW_STATE_PATH)
+    ? JSON.parse(fs.readFileSync(REVIEW_STATE_PATH, "utf8"))
+    : {};
+
+  const names = new Set(
+    (fs.existsSync(HANDOFF_DIR) ? fs.readdirSync(HANDOFF_DIR) : [])
+      .map((f) => f.match(/^(.+)\.(review|learnings)\.json$/))
+      .filter(Boolean)
+      .map((m) => m[1]),
+  );
+  for (const name of names) {
+    const review = handoffArtifact(name, "review");
+    const learnings = handoffArtifact(name, "learnings") !== null;
+    const prev = state[name] ?? {};
+    state[name] = {
+      reviewedAt: review?.reviewedAt ?? prev.reviewedAt ?? null,
+      path: review ? (review.path ?? "full") : (prev.path ?? "full"),
+      learningsBackfilled: learnings || prev.learningsBackfilled === true,
+    };
+  }
+
+  const sorted = Object.fromEntries(
+    Object.keys(state).sort().map((k) => [k, state[k]]),
+  );
+  writeIfChanged(REVIEW_STATE_PATH, JSON.stringify(sorted, null, 2) + "\n", (s) => s);
+  return sorted;
+}
+
+function deriveImplementation(name, signoff, reviewState) {
   const human = signoff[name];
   if (HUMAN_OWNED_IMPL.has(human)) return human;
-  const review = handoffArtifact(name, "review");
-  const learnings = handoffArtifact(name, "learnings");
+  const rec = reviewState[name];
   const run = handoffArtifact(name, "run");
-  if (review?.path === "lighter") return "in review";
-  if (review && learnings) return "in review";
-  if (review || run) return "in progress";
+  if (rec?.path === "lighter") return "in review";
+  if (rec?.reviewedAt && rec.learningsBackfilled) return "in review";
+  if (rec || run) return "in progress";
   return "established"; // pre-loop: predates the add-component loop, no artifacts
 }
 
-function buildComponentPipeline() {
+function buildComponentPipeline(reviewState) {
   if (!fs.existsSync(COMPONENTS_DIR)) return [];
   const signoff = readSignoff();
   return fs
@@ -209,16 +245,16 @@ function buildComponentPipeline() {
       const p = path.join(COMPONENTS_DIR, d.name, `${d.name}.metadata.json`);
       if (!fs.existsSync(p)) return [];
       const c = JSON.parse(fs.readFileSync(p, "utf8")).component;
-      const review = handoffArtifact(c.name, "review");
+      const rec = reviewState[c.name];
       return [{
         name: c.name,
         type: c.type,
         maturity: c.status,
-        implementation: deriveImplementation(c.name, signoff),
+        implementation: deriveImplementation(c.name, signoff, reviewState),
         signedOff: HUMAN_OWNED_IMPL.has(signoff[c.name]),
-        reviewedAt: review?.reviewedAt ?? null,
-        reviewPath: review?.path ?? "full",
-        learningsBackfilled: handoffArtifact(c.name, "learnings") !== null,
+        reviewedAt: rec?.reviewedAt ?? null,
+        reviewPath: rec?.path ?? "full",
+        learningsBackfilled: rec?.learningsBackfilled === true,
       }];
     });
 }
@@ -345,29 +381,10 @@ function componentSection(pipeline) {
   return out.join("\n");
 }
 
-function pendingLearningsSection() {
-  if (!fs.existsSync(HANDOFF_DIR)) {
-    return ["## Pending extract-learnings", "", "None. No handoff directory found.", ""].join("\n");
-  }
-
-  const pending = fs
-    .readdirSync(HANDOFF_DIR)
-    .filter((f) => f.endsWith(".review.json"))
-    .filter((f) => {
-      const name = f.replace(".review.json", "");
-      return !fs.existsSync(path.join(HANDOFF_DIR, `${name}.learnings.json`));
-    })
-    .map((f) => {
-      const name = f.replace(".review.json", "");
-      let reviewedAt = null;
-      try {
-        const review = JSON.parse(fs.readFileSync(path.join(HANDOFF_DIR, f), "utf8"));
-        reviewedAt = review.reviewedAt ?? null;
-      } catch {
-        // malformed file — still surface it
-      }
-      return { name, reviewedAt };
-    });
+function pendingLearningsSection(reviewState) {
+  const pending = Object.entries(reviewState)
+    .filter(([, rec]) => rec.reviewedAt && !rec.learningsBackfilled)
+    .map(([name, rec]) => ({ name, reviewedAt: rec.reviewedAt }));
 
   const out = ["## Pending extract-learnings", ""];
 
@@ -412,12 +429,13 @@ function main() {
     "",
   ].join("\n");
 
-  const pipeline = buildComponentPipeline();
+  const reviewState = promoteReviewState();
+  const pipeline = buildComponentPipeline(reviewState);
 
   const body = [
     governanceSection(governance, usage),
     componentSection(pipeline),
-    pendingLearningsSection(),
+    pendingLearningsSection(reviewState),
     usageSection(usage),
     figmaSection(now),
   ].join("\n");

@@ -1,6 +1,7 @@
 # ADR-015 — Handoff artifact lifecycle convention
 
 **Date:** 2026-07-08
+**Amended:** 2026-07-10
 **Status:** `accepted`
 
 ## Context
@@ -65,3 +66,31 @@ handoff's own prose when the two disagree.
 - Future writers of per-run component-loop artifacts (`sense-component.js`,
   `/add-component`, `/review-component`, `/extract-learnings`) must target
   `.claude/handoff/runs/`, not the flat `.claude/handoff/` directory.
+
+## Amendment — 2026-07-10: committed review-state baseline
+
+Keeping the per-run JSON gitignored while deriving the *committed*
+`component-pipeline.json` from it broke the moment sense ran outside the
+maintainer's machine: the post-merge snapshot workflow (`sync.yml`, added
+2026-07-09) reran `scripts/sense.js` on a fresh CI checkout where
+`.claude/handoff/runs/` doesn't exist, and commit `942239a` regressed all 27
+components to `"established"` / `reviewedAt: null`. The committed
+`run-ledger.json` couldn't backstop it — sense never read it, and it only
+records full-loop runs, not lighter-path reviews.
+
+Decision: review completion is promoted into a **committed** file,
+`.claude/component-review-state.json` (per component: `reviewedAt`, `path`,
+`learningsBackfilled`). `scripts/sense.js` owns it — on every run it merges any
+local `runs/` review/learnings artifacts over the committed baseline (a local
+review wins; `learningsBackfilled` latches true, entries are never removed) and
+derives the pipeline from the merged state. In CI, with no local artifacts, the
+file passes through unchanged, so a snapshot refresh can never regress a
+review-derived stage. `sync.yml` includes the file in its auto-commit.
+
+Promotion lives in sense (not `handoff-tidy.js`) so the pipeline and the state
+it derives from are written in the same pass and cannot skew. Known edge: a
+lone `.run.json` with no review still derives `"in progress"` only where that
+local file exists — acceptable, since that state is transient mid-loop.
+Rejected: committing the per-run JSON wholesale (repo churn the ledger was
+designed to summarize); extending `run-ledger.json` (append-only run telemetry,
+a different axis from current-review state).
