@@ -4,6 +4,7 @@ sources:
   - .claude/commands/*.md
   - ROADMAP.md
 # clock reset 2026-07-09: ADR-018 amendment adds undefined-prerequisite rubric detail; this page doesn't describe the scribe rubric, still accurate
+# clock reset 2026-07-10: four commands gain deterministic-gate steps; this page describes no per-command steps, still accurate
 ---
 # Start here
 
