@@ -7,6 +7,7 @@ sources:
   - packages/components/component.schema.json
   - docs/decisions/007-verified-component-loop.md
 # clock reset 2026-07-08: /extract-learnings routing widened; glossary only lists the moment, still accurate
+# clock reset 2026-07-10: sense.js lighter-path review recognition; glossary defines no stage-derivation rules, still accurate
 ---
 # Glossary
 
