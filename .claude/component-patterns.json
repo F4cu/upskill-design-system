@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "4980868ff813a1aea9eecf843aeb75c1ec25c44f",
+  "generatedFrom": "547e54ebb7188c1affbfbfe1144d53b3717501b9",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -352,19 +352,19 @@
           "component": "Box",
           "composition": [],
           "maturity": "beta",
-          "stage": "in progress"
+          "stage": "in review"
         },
         {
           "component": "Inline",
           "composition": [],
           "maturity": "beta",
-          "stage": "in progress"
+          "stage": "in review"
         },
         {
           "component": "ScrollArea",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "The native scrollbar is hidden visually but scroll behaviour is fully intact. Keyboard users can scroll via arrow keys once the container is focused. If the scroll region contains important content, consider adding tabindex=0 so keyboard users can reach and scroll it."
           ]
@@ -373,7 +373,7 @@
           "component": "Stack",
           "composition": [],
           "maturity": "beta",
-          "stage": "in progress"
+          "stage": "in review"
         }
       ]
     },
@@ -413,7 +413,7 @@
             "TextField"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "aria-label=\"Main navigation\" on the <nav> element",
             "aria-current=\"page\" on the active nav link",
@@ -440,7 +440,7 @@
             "Icon"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "aria-label=\"Breadcrumb\" on the <nav> element",
             "aria-current=\"page\" on the last item"
@@ -456,7 +456,7 @@
           "component": "Avatar",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "alt (required — pass the person's full name, or empty string when adjacent text already identifies them)"
           ]
@@ -467,7 +467,7 @@
             "Text"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "Renders a plain <span> with visible text — no ARIA role needed; the label is read inline as text content. Not focusable and not interactive. If the badge conveys meaning beyond the adjacent content (e.g. a status not otherwise stated), make the label text explicit rather than relying on colour alone."
           ]
@@ -484,7 +484,7 @@
           "component": "Card",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "aria-label or aria-labelledby (sets role=\"region\" as a side effect — omit both if the Card doesn't need to be a distinguishable landmark, since an unlabeled region role adds landmark noise)"
           ]
@@ -509,7 +509,7 @@
             "Text"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)"
           ]
@@ -530,7 +530,7 @@
             "Text"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "thumbnailAlt — pass a meaningful description of the course image, or empty string if the title already provides sufficient context."
           ]
@@ -539,13 +539,13 @@
           "component": "Divider",
           "composition": [],
           "maturity": "beta",
-          "stage": "established"
+          "stage": "in review"
         },
         {
           "component": "Heading",
           "composition": [],
           "maturity": "beta",
-          "stage": "in progress",
+          "stage": "in review",
           "systemSpecificNotes": [
             "Always set as to the correct heading level for document outline. Size and as are deliberately decoupled so visual scale never forces a skip in heading levels."
           ]
@@ -562,7 +562,7 @@
           "component": "Icon",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "Icons are decorative by default (aria-hidden=true). When an Icon is the only content conveying meaning, pass the label prop to add aria-label and role=img.",
             "aria-hidden (default true)",
@@ -582,7 +582,7 @@
             "Icon"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "alt — required when src is provided; pass empty string if the surrounding context (e.g. card title) already describes the image."
           ]
@@ -591,7 +591,7 @@
           "component": "Text",
           "composition": [],
           "maturity": "beta",
-          "stage": "in progress",
+          "stage": "in review",
           "systemSpecificNotes": [
             "Use the as prop to select a semantically meaningful element when needed (e.g. as=span for inline text, as=p for block paragraphs — p is the default)."
           ]
@@ -606,7 +606,7 @@
           "component": "VideoFrame",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "VideoFrame itself is not interactive. The parent should handle click and keyboard events to initiate playback, using an appropriate role (e.g. button) on the wrapper.",
             "alt — pass a meaningful description of the video content; the play overlay is aria-hidden"
@@ -632,7 +632,7 @@
           "component": "ProgressBar",
           "composition": [],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in review",
           "systemSpecificNotes": [
             "aria-valuenow (set to the clamped value)",
             "aria-valuemin=0",
