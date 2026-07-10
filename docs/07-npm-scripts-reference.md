@@ -5,7 +5,7 @@ sources:
   - apps/showcase/scripts/copy-pipeline-data.js
   - .github/workflows/tokens-check.yml
   - .github/workflows/components-check.yml
-  - .github/workflows/sync-tokens.yml
+  - .github/workflows/sync.yml
   - .github/workflows/docs-check.yml
 # clock reset 2026-07-10: check workflows gain concurrency/PR-only triggers and lint joins components-check; prose rewrite for these rides in the script-tidy PR (#61)
 ---
@@ -71,7 +71,7 @@ Airtable is the [governance layer](05-governance.md) — it holds ownership, sta
 
 | Command | What it does | When it runs |
 |---|---|---|
-| `npm run airtable:push:primitives` | Upsert primitive tokens (`primitives.json`). | Automatic: `sync-tokens.yml` runs it on every push to `main` that touches token source. You type it only for a one-off re-push. |
+| `npm run airtable:push:primitives` | Upsert primitive tokens (`primitives.json`). | Automatic: `sync.yml` (the post-merge sync) runs it on every push to `main` that touches token source. You type it only for a one-off re-push. |
 | `npm run airtable:push:semantic` | Upsert semantic tokens (`theme/light.json`, `theme/dark.json`). | Same as above — automatic on `main`, manual only for a re-push. |
 | `npm run airtable:push:device` | Upsert device tokens (`device/*.json`). | Same as above — automatic on `main`, manual only for a re-push. |
 | `npm run airtable:push:components` | Upsert component metadata (maturity axis) — pushes the current snapshot without refreshing it. | Rarely by hand — prefer `airtable:sync:components`. CI runs the equivalent (sense, then push) on `main`. |
@@ -90,7 +90,7 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 
 | Command | What it does | When it runs |
 |---|---|---|
-| `npm run sense` | Aggregate the committed mirror files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`. | You type it before any agent loop run; it also runs inside `component:refresh` and `airtable:sync:components`, and CI runs it on `main` as part of `sync-tokens.yml`. |
+| `npm run sense` | Aggregate the committed mirror files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`. | You type it before any agent loop run; it also runs inside `component:refresh` and `airtable:sync:components`, and CI runs it on `main` as part of `sync.yml`. |
 | `npm run sense:component` | Narrow the baseline to one component → `.claude/handoff/runs/<Name>.snapshot.json`. Usage: `npm run sense:component -- <Name>`. | You type it (or `/add-component` does) at the start of a per-component loop run. |
 | `npm run pipeline:status` | Capture CI workflow status + open issues from GitHub → `.claude/pipeline-status.json` (via the `gh` CLI). One of the five files the [showcase dashboard](#showcase-app-data-ingestion) reads. | You type it before deploying the showcase, or whenever the dashboard's CI/issues panel looks out of date. Never runs automatically. |
 | `npm run patterns:generate` | Deterministic AST (abstract syntax tree — a parsed representation of the component source code's structure) + metadata scan of all components → `.claude/component-patterns.json`, the cross-component pattern aggregate consumed by `/layout-generation` (ADR-013). | You type it after changing a component's structure or ARIA wiring; CI regenerates it on every component PR and fails if the committed file is stale. |
