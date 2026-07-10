@@ -6,6 +6,15 @@ completed:
 
 # CI / automation audit — optimization plan
 
+> **2026-07-10 — all five items executed as PRs, pending merge:**
+> item 1 → #57 · item 3 → #58 · item 2 → #59 · item 4 → #60 · item 5 → #61.
+> Merge order: #61 **last** (docs/07 sources include workflows the others change).
+> Item 2 decision: default `GITHUB_TOKEN` (`contents: write`), no PAT — main is
+> unprotected and GITHUB_TOKEN pushes can't trigger workflows, so no loop.
+> After #60 merges: Settings → Pages → Source = "GitHub Actions" (one-time).
+> Known pre-existing failure: docs-check is red on `main` (docs/06 + docs/08
+> stale vs scripts/sense.js) — shows on all five PRs; needs `/docs-sync`.
+
 Audit of the four workflows, 34 npm scripts, and 11 commands (2026-07-10). Guiding principle from the charter: recurring work is scripts + Actions; agents only where a script can't do it; **not everything gates every PR** — pick the cheapest surface that catches the mistake.
 
 ## Current state (facts the plan rests on)
