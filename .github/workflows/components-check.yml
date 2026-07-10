@@ -1,18 +1,6 @@
 name: Component check
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'packages/components/**'
-      - 'packages/tokens/**'
-      - 'scripts/validate-metadata.js'
-      - 'scripts/a11y-coverage.js'
-      - 'scripts/a11y-backlog.json'
-      - 'scripts/generate-pattern-schema.js'
-      - '.claude/component-patterns.json'
-      - 'package.json'
-      - 'package-lock.json'
   pull_request:
     paths:
       - 'packages/components/**'
@@ -24,6 +12,10 @@ on:
       - '.claude/component-patterns.json'
       - 'package.json'
       - 'package-lock.json'
+
+concurrency:
+  group: components-check-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check-components:
@@ -43,6 +35,9 @@ jobs:
 
       - name: Build tokens
         run: npm run tokens:build
+
+      - name: Lint (Tier-1 a11y via jsx-a11y)
+        run: npm run lint
 
       - name: Validate component metadata
         run: npm run metadata:validate

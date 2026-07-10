@@ -3,9 +3,11 @@ name: Docs staleness check
 # Runs on every PR (no path filter): any changed file could be a declared
 # source of a docs page, and the check itself costs seconds.
 on:
-  push:
-    branches: [main]
   pull_request:
+
+concurrency:
+  group: docs-check-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   docs-check:

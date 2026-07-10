@@ -7,6 +7,7 @@ sources:
   - .github/workflows/components-check.yml
   - .github/workflows/sync-tokens.yml
   - .github/workflows/docs-check.yml
+# clock reset 2026-07-10: check workflows gain concurrency/PR-only triggers and lint joins components-check; prose rewrite for these rides in the script-tidy PR (#61)
 ---
 # npm scripts reference
 
