@@ -4,6 +4,7 @@ sources:
   - .claude/commands/*.md
   - ROADMAP.md
 # clock reset 2026-07-09: ADR-018 amendment adds undefined-prerequisite rubric detail; this page doesn't describe the scribe rubric, still accurate
+# clock reset 2026-07-10: /extract-learnings gains a handoff:tidy close-out step; this page doesn't describe per-moment steps, still accurate
 ---
 # Start here
 

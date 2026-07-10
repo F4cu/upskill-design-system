@@ -4,7 +4,8 @@ sources:
   - scripts/airtable-pull.js
   - scripts/airtable-ids.js
   - scripts/lib.js
-  - .github/workflows/sync-tokens.yml
+  - .github/workflows/sync.yml
+  - .github/workflows/airtable-pull.yml
   - docs/decisions/002-three-layer-token-model.md
   - docs/decisions/003-root-token-convention.md
   - docs/decisions/010-component-lifecycle-two-axes.md
@@ -33,9 +34,9 @@ The decision records in `docs/decisions/` follow the same discipline as the data
 
 ## How it works, concretely
 
-**Code → Airtable** (push, automated on merge): `scripts/airtable-sync.js` upserts primitives, semantic, and device tokens to three tables via direct REST, and pushes component `Maturity` plus the derived `Implementation` stage. Runs in CI via `.github/workflows/sync-tokens.yml`; locally via the `airtable:push:*` / `airtable:sync:*` scripts. Requires `AIRTABLE_API_KEY` in the environment (a `.env` file locally, a repository secret in CI — never committed).
+**Code → Airtable** (push, automated on merge): `scripts/airtable-sync.js` upserts primitives, semantic, and device tokens to three tables via direct REST, and pushes component `Maturity` plus the derived `Implementation` stage. Runs in CI via `.github/workflows/sync.yml` (the post-merge sync, which also recommits the refreshed frozen snapshots); locally via the `airtable:push:*` / `airtable:sync:*` scripts. Requires `AIRTABLE_API_KEY` in the environment (a `.env` file locally, a repository secret in CI — never committed).
 
-**Airtable → code** (pull, run manually until the scheduled pull Action is built — the remaining Phase 6 item):
+**Airtable → code** (pull, automated weekly): `.github/workflows/airtable-pull.yml` runs the pull every Monday (plus on demand via `workflow_dispatch`) and commits the snapshots if they changed — the formerly remaining Phase 6 item. Run it manually when you need fresh governance state *now*, e.g. right before deprecation work:
 
 ```bash
 npm run airtable:pull:governance
@@ -54,8 +55,8 @@ These committed files are what everything downstream reads. The `/token-deprecat
 flowchart LR
     R[Repo: committed tokens,<br/>component metadata,<br/>handoff artifacts]
     A[(Airtable<br/>3 token tables + Components)]
-    R -->|"on merge — sync-tokens.yml<br/>airtable-sync.js: tokens, Maturity,<br/>derived Implementation<br/>guard: never overwrite done/todo"| A
-    A -->|"manual — airtable:pull:governance<br/>airtable-pull.js"| G[airtable-governance.json<br/>component-signoff.json]
+    R -->|"on merge — sync.yml<br/>airtable-sync.js: tokens, Maturity,<br/>derived Implementation<br/>guard: never overwrite done/todo"| A
+    A -->|"weekly cron + manual — airtable-pull.yml<br/>airtable:pull:governance"| G[airtable-governance.json<br/>component-signoff.json]
     G --> R
 ```
 
