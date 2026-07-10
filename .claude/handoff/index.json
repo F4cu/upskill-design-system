@@ -16,6 +16,14 @@
     "path": ".claude/handoff/2026-07-07-figma-variable-push-prep.handoff.md"
   },
   {
+    "name": "2026-07-10-ci-automation-audit",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-07-10",
+    "updated": "2026-07-10",
+    "path": ".claude/handoff/2026-07-10-ci-automation-audit.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
@@ -144,6 +152,38 @@
     "path": ".claude/handoff/runs/Accordion.snapshot.json"
   },
   {
+    "name": "AppHeader.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/AppHeader.review.json"
+  },
+  {
+    "name": "Avatar.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Avatar.review.json"
+  },
+  {
+    "name": "Badge.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Badge.review.json"
+  },
+  {
+    "name": "Box.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Box.learnings.json"
+  },
+  {
     "name": "Box.review",
     "kind": "run",
     "status": "in-flight",
@@ -166,6 +206,14 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/Box.snapshot.json"
+  },
+  {
+    "name": "Breadcrumb.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Breadcrumb.review.json"
   },
   {
     "name": "Button.snapshot",
@@ -206,6 +254,30 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/ButtonArrow.snapshot.json"
+  },
+  {
+    "name": "Card.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Card.review.json"
+  },
+  {
+    "name": "CardHorizontal.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/CardHorizontal.review.json"
+  },
+  {
+    "name": "CardVertical.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/CardVertical.review.json"
   },
   {
     "name": "Checkbox.learnings",
@@ -272,6 +344,14 @@
     "path": ".claude/handoff/runs/Chip.snapshot.json"
   },
   {
+    "name": "Divider.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Divider.review.json"
+  },
+  {
     "name": "Divider.snapshot",
     "kind": "run",
     "status": "in-flight",
@@ -312,6 +392,14 @@
     "path": ".claude/handoff/runs/DropdownMenu.snapshot.json"
   },
   {
+    "name": "Heading.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Heading.learnings.json"
+  },
+  {
     "name": "Heading.review",
     "kind": "run",
     "status": "in-flight",
@@ -334,6 +422,30 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/Heading.snapshot.json"
+  },
+  {
+    "name": "Icon.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Icon.review.json"
+  },
+  {
+    "name": "Image.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Image.review.json"
+  },
+  {
+    "name": "Inline.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Inline.learnings.json"
   },
   {
     "name": "Inline.review",
@@ -360,6 +472,30 @@
     "path": ".claude/handoff/runs/Inline.snapshot.json"
   },
   {
+    "name": "ProgressBar.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/ProgressBar.review.json"
+  },
+  {
+    "name": "ScrollArea.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/ScrollArea.review.json"
+  },
+  {
+    "name": "Stack.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Stack.learnings.json"
+  },
+  {
     "name": "Stack.review",
     "kind": "run",
     "status": "in-flight",
@@ -382,6 +518,14 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/Stack.snapshot.json"
+  },
+  {
+    "name": "Text.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/Text.learnings.json"
   },
   {
     "name": "Text.review",
@@ -470,5 +614,13 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/TextLink.snapshot.json"
+  },
+  {
+    "name": "VideoFrame.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-07-09",
+    "updated": "2026-07-09",
+    "path": ".claude/handoff/runs/VideoFrame.review.json"
   }
 ]
