@@ -31,12 +31,14 @@ import {
 } from '@upskill/components'
 
 // ─── Sample data ─────────────────────────────────────────────────────────────
-const VIDEO_SRC = '/course-video-image-example.png'
+// public/ assets need the Vite base prefix to resolve under GitHub Pages
+const BASE = import.meta.env.BASE_URL
+const VIDEO_SRC = `${BASE}course-video-image-example.png`
 const CARD_IMGS = [
-  '/image-placeholder.png',
-  '/image-placeholder.png',
-  '/image-placeholder.png',
-  '/image-placeholder.png',
+  `${BASE}image-placeholder.png`,
+  `${BASE}image-placeholder.png`,
+  `${BASE}image-placeholder.png`,
+  `${BASE}image-placeholder.png`,
 ]
 const BOOK_IMGS = [
   'https://picsum.photos/seed/zenmin/80/80',
@@ -106,8 +108,8 @@ export default function CourseOverview() {
       {/* ── Header ── grammar: AppHeader satisfies the banner/navigation landmark */}
       {/* Logos are served from apps/showcase/public/ — see index.html for font imports */}
       <AppHeader
-        logoSrc="/logo.svg"
-        logoSrcDark="/logo-dark.svg"
+        logoSrc={`${BASE}logo.svg`}
+        logoSrcDark={`${BASE}logo-dark.svg`}
         logoAlt="UpSkill"
         navItems={[
           { label: 'All Courses', href: '/courses' },
@@ -368,7 +370,7 @@ export default function CourseOverview() {
       >
         <Box className="container" paddingY="md">
           <Inline justify="space-between" align="center">
-            <img src="/logo-dark.svg" alt="UpSkill" height={32} width={84} />
+            <img src={`${BASE}logo-dark.svg`} alt="UpSkill" height={32} width={84} />
             <Text size="body-small" style={{ color: 'var(--ds-color-text-inverted-subtle)' }}>
               Terms and Conditions
             </Text>

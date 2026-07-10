@@ -1,0 +1,41 @@
+name: Showcase check
+
+on:
+  pull_request:
+    paths:
+      - "apps/showcase/**"
+      - "packages/**"
+      - "scripts/validate-layout.js"
+      - "package.json"
+      - "package-lock.json"
+
+concurrency:
+  group: showcase-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-showcase:
+    name: Build showcase, validate layouts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # tokens + components — showcase typecheck needs @upskill/components dist types
+      - name: Build tokens and components
+        run: npm run build
+
+      # prebuild copies pipeline data — catches the stale-input failure mode
+      - name: Build showcase (typecheck + vite build)
+        run: npm run build -w @upskill/showcase
+
+      - name: Validate layout grammar (ADR-011)
+        run: npm run layout:validate apps/showcase/src/pages

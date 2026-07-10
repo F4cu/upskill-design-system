@@ -28,6 +28,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
       - **CSS usages:** find every component file that uses `var(--ds-<css-name>)` and replace with `var(--ds-<successor-css-name>)`. Convert dot-path to CSS name by replacing `.` with `-` and prepending `--ds-`.
 3. After all replacements, run `npm run tokens:build` and confirm no alias errors.
 4. Run `npm run tokens:usage` and confirm the deprecated token paths no longer appear in either map.
+5. This pass edits component CSS, so run the full deterministic gate before opening the migration PR:
+   `npm run tokens:contrast-check && npm run metadata:validate && npm run typecheck && npm run build -w @upskill/components`.
 
 ## Output
 
@@ -48,4 +50,4 @@ rebuild, and re-run airtable:pull:governance to confirm clean state.
 
 ## Success signal
 
-`npm run tokens:usage` shows zero references to any deprecated token path. Build passes. PR is ready to merge.
+`npm run tokens:usage` shows zero references to any deprecated token path. The step-5 gate (contrast, metadata, typecheck, component build) passes. PR is ready to merge.

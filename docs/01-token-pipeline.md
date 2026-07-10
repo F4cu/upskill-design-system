@@ -9,6 +9,7 @@ sources:
   - docs/decisions/012-brand-layer-multi-brand.md
   - docs/decisions/014-feedback-hue-and-ramp-regeneration.md
   - .claude/commands/tokens-author.md
+# clock reset 2026-07-10: /tokens-author adds contrast-check + usage/sense refresh to its procedure; pipeline description unchanged, still accurate
 ---
 # Token pipeline
 

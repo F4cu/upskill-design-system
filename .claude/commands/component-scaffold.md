@@ -43,4 +43,10 @@ The four files above, ready to write to disk. No placeholder values — every fi
 
 ## Success signal
 
-`npm run build` and `npm run storybook` both pass with no manual restructuring. The component renders in both light and dark themes. The metadata file validates against `component.schema.json`.
+For a standalone run (outside `/add-component`), the standard deterministic gate passes:
+
+```bash
+npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test
+```
+
+`npm run storybook` renders the component with no manual restructuring, in both light and dark themes.
