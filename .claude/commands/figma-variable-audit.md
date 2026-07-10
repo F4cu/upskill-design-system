@@ -57,4 +57,4 @@ A report with four sections:
 
 ## Success signal
 
-No removed or renamed token with active usages merges silently. If the report is clean, write the cleaned export to `packages/tokens/src/primitives.json`, run `npm run tokens:build`, and confirm the build passes.
+No removed or renamed token with active usages merges silently. If the report is clean, write the cleaned export to `packages/tokens/src/primitives.json`, run `npm run tokens:build`, and confirm the build passes. If any accepted drift touches a color value, also run `npm run tokens:contrast-check` — a Figma-side tweak can silently break a WCAG AA pair.
