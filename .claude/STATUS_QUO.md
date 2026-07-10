@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-07-09T15:27:16.218Z**
+Generated: **2026-07-10T10:21:00.227Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -25,39 +25,8 @@ None. No deprecated token has a live reference. ✅
 
 - **27 total** — Maturity: 27 beta
 - By type: container (6) · display (12) · input (3) · interactive (6)
-- Implementation: 0 done · 25 in review · 0 in progress · 0 todo · 2 established (pre-loop)
+- Implementation: 0 done · 0 in review · 0 in progress · 0 todo · 27 established (pre-loop)
 - Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
-
-### In review — awaiting human sign-off
-
-Gate, adversarial review, and learnings back-fill all green. Promote to `done`
-in Airtable (Implementation column) after the visual check in Storybook.
-
-- `Accordion` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `AppHeader` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Avatar` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Badge` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Box` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Breadcrumb` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `ButtonArrow` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Card` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `CardHorizontal` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `CardVertical` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Checkbox` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Chip` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Divider` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `DropdownMenu` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Heading` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Icon` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Image` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Inline` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `ProgressBar` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `ScrollArea` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Stack` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Text` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `TextField` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `TextLink` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `VideoFrame` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
 
 ### Established — review backlog
 
@@ -66,7 +35,7 @@ through an adversarial review. Not active work — candidates to harden with
 `/review-component <Name>` when there's time. Running one moves the
 component into the loop automatically.
 
-`Button` · `Select`
+`Accordion` · `AppHeader` · `Avatar` · `Badge` · `Box` · `Breadcrumb` · `Button` · `ButtonArrow` · `Card` · `CardHorizontal` · `CardVertical` · `Checkbox` · `Chip` · `Divider` · `DropdownMenu` · `Heading` · `Icon` · `Image` · `Inline` · `ProgressBar` · `ScrollArea` · `Select` · `Stack` · `Text` · `TextField` · `TextLink` · `VideoFrame`
 
 ### Beta (not production-ready)
 
@@ -100,22 +69,7 @@ component into the loop automatically.
 
 ## Pending extract-learnings
 
-**13** component(s) reviewed but learnings not yet back-filled into metadata.
-Run `/extract-learnings --all` to process all at once, or `/extract-learnings <Name>` individually.
-
-- `AppHeader` — reviewed 2026-07-09 → `/extract-learnings AppHeader`
-- `Avatar` — reviewed 2026-07-09 → `/extract-learnings Avatar`
-- `Badge` — reviewed 2026-07-09 → `/extract-learnings Badge`
-- `Breadcrumb` — reviewed 2026-07-09 → `/extract-learnings Breadcrumb`
-- `Card` — reviewed 2026-07-09 → `/extract-learnings Card`
-- `CardHorizontal` — reviewed 2026-07-09 → `/extract-learnings CardHorizontal`
-- `CardVertical` — reviewed 2026-07-09 → `/extract-learnings CardVertical`
-- `Divider` — reviewed 2026-07-09 → `/extract-learnings Divider`
-- `Icon` — reviewed 2026-07-09 → `/extract-learnings Icon`
-- `Image` — reviewed 2026-07-09 → `/extract-learnings Image`
-- `ProgressBar` — reviewed 2026-07-09 → `/extract-learnings ProgressBar`
-- `ScrollArea` — reviewed 2026-07-09 → `/extract-learnings ScrollArea`
-- `VideoFrame` — reviewed 2026-07-09 → `/extract-learnings VideoFrame`
+None. No handoff directory found.
 
 ## Token usage
 
@@ -126,7 +80,7 @@ Run `/extract-learnings --all` to process all at once, or `/extract-learnings <N
 ## Figma drift
 
 - Snapshot captured: **2026-07-07** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **2 day(s)**
+- Age: **3 day(s)**
 - Variables mirrored: **454** (Primitives 288 · Theme 106 · Device 60)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 
