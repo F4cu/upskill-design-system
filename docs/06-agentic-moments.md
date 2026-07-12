@@ -9,6 +9,7 @@ sources:
   - scripts/sense-component.js
 # clock reset 2026-07-10: four commands gain deterministic-gate steps (PR #58); moment invariants in the table are unchanged, still accurate
 # clock reset 2026-07-12: 4-stage Implementation model lands in sense.js + ADR-010 amendment (#64); stage-vocabulary sweep for this page follows in the dedicated docs PR
+# clock reset 2026-07-12: commands gain visual-review step + adversarial/in-session path rename (#64 PR 2); stage-vocabulary sweep for this page follows in the dedicated docs PR
 ---
 # Agentic moments
 

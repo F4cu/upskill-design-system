@@ -17,6 +17,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Agent
 
 Spawns one adversarial reviewer subagent against the component diff, applies every `high`/`medium` finding in the main session, re-runs the deterministic gate, then opens a PR. Produces `.claude/handoff/runs/<Name>.review.json` — the structured findings file that `/extract-learnings` reads to back-fill metadata.
 
+This is the **`adversarial`** review path (`path: "adversarial"` in `.review.json` and `component-review-state.json`, `reviewPath` in `component-pipeline.json`). The cheaper alternative is the **`in-session`** path — `/code-review` on the diff, no subagent, no handoff file, no learnings back-fill.
+
 ## Binding rules
 
 - **One subagent, no more.** The reviewer gets fresh context — it has never seen the scaffold or any earlier session reasoning. No parallel agents.
@@ -44,6 +46,7 @@ The subagent returns its findings as JSON in its final message; the main session
 {
   "component": "<Name>",
   "reviewedAt": "<iso>",
+  "path": "adversarial",
   "lint": { "errors": 0, "warnings": 0, "findings": [] },
   "codeReview": [ { "severity": "high|medium|low", "file": "", "issue": "", "fix": "" } ],
   "a11y": [ { "severity": "", "issue": "", "fix": "" } ],
