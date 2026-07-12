@@ -1,6 +1,7 @@
 # ADR-010 — Component lifecycle: two axes (maturity vs implementation)
 
 **Date:** 2026-06-25
+**Amended:** 2026-07-12
 **Status:** `accepted`
 
 Related: ADR-001 (component metadata schema), ADR-002 (three-layer token model — Airtable governance direction), ADR-007 (verified component loop), ADR-008 (behavioral a11y tier).
@@ -36,9 +37,10 @@ Maturity and the derived stages flow **code → Airtable** (pushed, overwritten 
 
 2. **Implementation** — `in progress` / `in review` / `established` / `done` / `todo`. Where the component sits in the add-component → review-component → extract-learnings loop. Stored in a new Airtable **`Implementation`** field. Split by ownership:
    - `in progress` / `in review` / `established` are **derived by `sense.js`** from committed handoff artifacts and pushed code → Airtable:
-     - `in review` — `.review.json` **and** `.learnings.json` both present (everything an agent/script can verify is green; awaiting the human visual check + sign-off).
-     - `in progress` — `.review.json` or `.run.json` present but the loop is not closed.
+     - `in review` — the loop is closed: on the full path `.review.json` **and** `.learnings.json` are both present; on the lighter path (added later — `/code-review` in-session, no subagent) a `.review.json` carrying `path: "lighter"` closes the loop alone, since that route has no separate learnings step. *(Corrected 2026-07-12: the original prose predated the lighter path and claimed both files were always required.)*
+     - `in progress` — a full-path `.review.json` awaiting learnings back-fill, or a `.run.json` with no matching review.
      - `established` — no loop artifacts (a lone `.snapshot.json` is just a context cache): a component that predates the loop. Pushed explicitly so the column is never ambiguously blank.
+     - *This derived-stage vocabulary is superseded by the 2026-07-12 amendment below; the ownership split and safety rules stand.*
    - `done` and `todo` are the **human-owned values**, authored in Airtable and pulled back into code (`airtable-pull.js` → `.claude/component-signoff.json`). `sense.js` layers them over the derived stage; they win. `done` is the "set by a human, not an agent" sign-off (the visual check code cannot know); `todo` flags a planned/backlog component the maintainer is queuing (possibly before any code exists).
 
 Maturity and the implementation *stage* are both code-owned; the only human-governed bits are the `done`/`todo` values. The two axes never share a column, so a pushed value and a human value can never collide. `Accordion` reads `Maturity: beta` + `Implementation: done` simultaneously.
@@ -54,3 +56,15 @@ Maturity and the implementation *stage* are both code-owned; the only human-gove
 - Two new committed frozen-memory files: `.claude/component-pipeline.json` (sense output, resolved truth) and `.claude/component-signoff.json` (pulled human sign-off). `sense.js` degrades gracefully when the latter is absent.
 - The Airtable schema change (rename `Status` → `Maturity` with options trimmed to the three maturity values; add `Implementation`) is a one-off, applied manually or via a token with `schema.bases:write` scope — the data-plane sync key cannot mutate schema.
 - Trade-off: `done` accuracy depends on the human keeping Airtable current; `sense.js` can later flag drift (Airtable `done` while the derived stage regressed) but does not today.
+
+## Amendment — 2026-07-12: four broad stages, review checklist, path rename
+
+Implements issue #64 (consolidating the research from #56). The original derived labels said the opposite of what they meant — `established` named the review *backlog*, `in progress` meant "review closed, learnings pending", `in review` meant "review complete" — and none was inferable without reading `sense.js` source. A survey (GOV.UK, IBM Carbon, Shopify Polaris, Atlassian, Storybook status conventions, Nathan Curtis) converged on 3–4 broad stages plus a per-component quality checklist ordered automated gate → visual review → code review.
+
+**Broad stages.** The Airtable `Implementation` column holds exactly four values: `todo` (human), `in progress` (derived — code exists, review pipeline not begun), `in review` (derived — generation complete and renderable; checklist open; committable WIP until sign-off), `done` (human). `established` is deprecated globally; its population becomes `in progress` with sub-state `unreviewed`. Sub-states (`unreviewed`, `scaffold-underway`) live only in `component-pipeline.json` / `STATUS_QUO.md`, never in Airtable. An earlier proposal to reuse `ready` here was rejected: `ready` belongs to the Maturity axis, and reusing it would collapse the two-axis separation this ADR exists to protect.
+
+**Review checklist.** Under `in review`, four items rendered per component in `STATUS_QUO.md` and derived at render time in `sense.js` (no new stored state): (1) automated gate — one pass/fail item covering lint · typecheck · build · metadata · a11y scripts; (2) visual review — human y/n/other(comments), recorded as `visualReview: { status, comments, at }` in `component-review-state.json` by `/add-component` and `/layout-generation` right after the render checkpoint; (3) code review — label adapts: "Code and behavioural a11y review — adversarial subagent" for Tier-2/interactive components (ADR-008), plain "Code review" otherwise; (4) learnings back-fill. Items a path doesn't require render as explicit `n/a — reason` lines, never omitted.
+
+**Path rename.** `full` → `adversarial`, `lighter` → `in-session`, in `component-review-state.json` `path` values, `reviewPath` in the pipeline JSON, and all prose. `sense.js` normalizes legacy values on read so old local `runs/` artifacts cannot reintroduce them.
+
+Unchanged by design: the ownership split, both safety rules, the flow diagram direction, and the `HUMAN_OWNED_IMPL` guard in `airtable-sync.js`. CI still can never regress a stage (ADR-015 amendment latch).

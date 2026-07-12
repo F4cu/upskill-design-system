@@ -27,7 +27,6 @@ const IMPLEMENTATION_ORDER: { label: string; tone: SplitDatum['tone'] }[] = [
   { label: 'done', tone: 'success' },
   { label: 'in review', tone: 'warning' },
   { label: 'in progress', tone: 'brand' },
-  { label: 'established', tone: 'neutral' },
   { label: 'todo', tone: 'neutralFaint' },
 ]
 

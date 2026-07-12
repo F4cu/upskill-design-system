@@ -32,10 +32,14 @@ The 2026-06-17 amendment tightened it after a foundation review found 7 of 11 me
 | Value | Axis | Owner | Set where |
 |---|---|---|---|
 | `beta` / `ready` / `deprecated` | Maturity | Code | `component.status` in metadata → pushed to Airtable's `Maturity` column |
-| `in progress` / `in review` / `established` | Implementation | Code (derived) | `sense.js` derives from handoff artifacts → pushed to `Implementation` |
+| `in progress` / `in review` | Implementation | Code (derived) | `sense.js` derives from handoff artifacts → pushed to `Implementation` |
 | `done` / `todo` | Implementation | **Human** | Set directly in Airtable, pulled into `.claude/component-signoff.json`, never overwritten |
 
-The derivation rules are machine-checkable. `in review` = the loop is closed, which happens two ways. On the full path, `.review.json` **and** `.learnings.json` are both present. On the lighter path, a `.review.json` carrying `"path": "lighter"` closes the loop on its own — it's written by `/code-review`, the quicker review run inside the working session itself with no fresh reviewer [subagent](08-glossary.md), and that route has no separate learnings step. `in progress` = a full-path `.review.json` awaiting its learnings back-fill, or — rarer, usually a tooling gap — a `.run.json` with no matching review. `established` = no loop artifacts (a lone `.snapshot.json` is just a context cache — the component predates the loop). Each component's entry in `.claude/component-pipeline.json` also records which route it took in a `reviewPath` field (`full`/`lighter`). Human `done`/`todo` values win over the derived stage, and the push **never overwrites them** — the "don't downgrade done" guard, covered in [Governance](05-governance.md). Because the two axes never share a column, a pushed value and a human value can never collide: `Accordion` reads `Maturity: beta` + `Implementation: done` simultaneously.
+The Implementation axis holds exactly four broad stages (the only values that ever reach Airtable — issue #64, [ADR-010](decisions/010-component-lifecycle-two-axes.md) amendment), and the derivation rules are machine-checkable. `in progress` = code exists but the review pipeline hasn't begun; a `substate` field in `.claude/component-pipeline.json` distinguishes `unreviewed` (no loop artifacts at all — a lone `.snapshot.json` is just a context cache; this replaces the old `established` label) from `scaffold-underway` (a `.run.json` open with no render checkpoint yet). `in review` = generation is complete and renderable, so the **review checklist** has begun — the component stays here, as committable work-in-progress, until human sign-off.
+
+The checklist has four items, rendered per component in `STATUS_QUO.md` and derived at render time by `sense.js` (no stored checklist state): (1) the automated gate — lint, typecheck, build, metadata, a11y scripts as one pass/fail item; (2) visual review — a human y/n/other(comments) answer recorded as `visualReview: { status, comments, at }` in `.claude/component-review-state.json` by `/add-component` or `/layout-generation` right after the render checkpoint; (3) code review — labelled "Code and behavioural a11y review — adversarial subagent" for Tier-2 interactive components ([ADR-008](decisions/008-behavioral-a11y-tier.md)), plain "Code review" otherwise; (4) learnings back-fill via `/extract-learnings`. Items a path doesn't require render as explicit `n/a — reason` lines, never silently omitted.
+
+Which review route a component took is recorded in a `reviewPath` field: `adversarial` (`/review-component` — a fresh reviewer [subagent](08-glossary.md) plus the learnings loop) or `in-session` (`/code-review` run inside the working session, no subagent and no separate learnings step, so item 4 is `n/a`). Human `done`/`todo` values win over the derived stage, and the push **never overwrites them** — the "don't downgrade done" guard, covered in [Governance](05-governance.md). Because the two axes never share a column, a pushed value and a human value can never collide: `Accordion` reads `Maturity: beta` + `Implementation: done` simultaneously.
 
 ### The three-question test before any new component
 
@@ -77,17 +81,17 @@ flowchart TB
     subgraph I[Implementation axis]
         direction LR
         subgraph derived[derived by sense.js]
-            established
-            inprogress[in progress]
-            inreview[in review]
+            inprogress["in progress<br/>(unreviewed / scaffold-underway)"]
+            inreview["in review<br/>(checklist: gate → visual → code review → learnings)"]
+            inprogress --> inreview
         end
         subgraph human[human-set in Airtable]
-            done
             todo
+            done
         end
     end
     meta[component.status<br/>in metadata] --> M
-    artifacts[.review.json / .run.json /<br/>.learnings.json handoff artifacts] --> derived
+    artifacts[.review.json / .run.json / visualReview<br/>handoff artifacts + review state] --> derived
     M -->|pushed| A[(Airtable<br/>Maturity column)]
     derived -->|pushed, skips cell<br/>if human value present| B[(Airtable<br/>Implementation column)]
     human -->|pulled, wins over derived| B

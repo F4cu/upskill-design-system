@@ -9,6 +9,7 @@ sources:
 # clock reset 2026-07-08: /extract-learnings routing widened; glossary only lists the moment, still accurate
 # clock reset 2026-07-10: sense.js lighter-path review recognition; glossary defines no stage-derivation rules, still accurate
 # clock reset 2026-07-10: four commands gain deterministic-gate steps (PR #58); glossary defines no per-command procedures, still accurate
+# clock reset 2026-07-12: 4-stage Implementation model lands in sense.js + ADR-010 amendment (#64); stage-vocabulary sweep for this page follows in the dedicated docs PR
 ---
 # Glossary
 

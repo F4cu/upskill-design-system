@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-07-10T10:33:32.849Z**
+Generated: **2026-07-12T16:02:35.070Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -25,48 +25,199 @@ None. No deprecated token has a live reference. ✅
 
 - **27 total** — Maturity: 27 beta
 - By type: container (6) · display (12) · input (3) · interactive (6)
-- Implementation: 0 done · 25 in review · 0 in progress · 0 todo · 2 established (pre-loop)
+- Implementation: 0 done · 25 in review · 2 in progress (2 unreviewed) · 0 todo
 - Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
 
-### In review — awaiting human sign-off
+### In review — checklist open, awaiting human sign-off
 
-Gate, adversarial review, and learnings back-fill all green. Promote to `done`
-in Airtable (Implementation column) after the visual check in Storybook.
+Generation is complete and renderable; each component works through its
+review checklist (committable WIP). Promote to `done` in Airtable
+(Implementation column) once every required item is checked.
 
-- `Accordion` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `AppHeader` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Avatar` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Badge` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Box` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Breadcrumb` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `ButtonArrow` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Card` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `CardHorizontal` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `CardVertical` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Checkbox` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Chip` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Divider` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `DropdownMenu` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Heading` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Icon` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Image` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Inline` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `ProgressBar` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `ScrollArea` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
-- `Stack` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `Text` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `TextField` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `TextLink` — maturity `beta` · reviewed 2026-07-09 · learnings back-filled
-- `VideoFrame` — maturity `beta` · reviewed 2026-07-09 · lighter-path review (no learnings step needed)
+#### Review checklist — Accordion (interactive, path: adversarial)
 
-### Established — review backlog
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code and behavioural a11y review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
 
-Stable, documented components that predate the loop and were never put
-through an adversarial review. Not active work — candidates to harden with
-`/review-component <Name>` when there's time. Running one moves the
-component into the loop automatically.
+#### Review checklist — AppHeader (container, path: in-session)
 
-`Button` · `Select`
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — Avatar (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — Badge (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — Box (container, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — Breadcrumb (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — ButtonArrow (interactive, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code and behavioural a11y review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — Card (container, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — CardHorizontal (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — CardVertical (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — Checkbox (input, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code and behavioural a11y review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — Chip (interactive, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code and behavioural a11y review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — Divider (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — DropdownMenu (interactive, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code and behavioural a11y review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — Heading (display, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — Icon (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — Image (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — Inline (container, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — ProgressBar (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — ScrollArea (container, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+#### Review checklist — Stack (container, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — Text (display, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — TextField (input, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code and behavioural a11y review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — TextLink (interactive, path: adversarial)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code and behavioural a11y review — adversarial subagent
+4. [x] Learnings back-fill (/extract-learnings)
+
+#### Review checklist — VideoFrame (display, path: in-session)
+
+1. [x] Automated gate — lint · typecheck · build · metadata · a11y scripts
+2. [ ] Visual review — human y/n/other(comments)
+3. [x] Code review — in-session /code-review
+4. n/a Learnings back-fill — not required on in-session path
+
+### In progress — review pipeline not begun
+
+Code exists but the checklist hasn't started. `unreviewed` components never
+entered the loop (the old "established" backlog) — candidates to harden with
+`/review-component <Name>` when there's time. `scaffold-underway` means a
+`.run.json` is open with no render checkpoint yet.
+
+- `Button` — maturity `beta` · unreviewed
+- `Select` — maturity `beta` · unreviewed
 
 ### Beta (not production-ready)
 
@@ -100,22 +251,7 @@ component into the loop automatically.
 
 ## Pending extract-learnings
 
-**13** component(s) reviewed but learnings not yet back-filled into metadata.
-Run `/extract-learnings --all` to process all at once, or `/extract-learnings <Name>` individually.
-
-- `AppHeader` — reviewed 2026-07-09 → `/extract-learnings AppHeader`
-- `Avatar` — reviewed 2026-07-09 → `/extract-learnings Avatar`
-- `Badge` — reviewed 2026-07-09 → `/extract-learnings Badge`
-- `Breadcrumb` — reviewed 2026-07-09 → `/extract-learnings Breadcrumb`
-- `Card` — reviewed 2026-07-09 → `/extract-learnings Card`
-- `CardHorizontal` — reviewed 2026-07-09 → `/extract-learnings CardHorizontal`
-- `CardVertical` — reviewed 2026-07-09 → `/extract-learnings CardVertical`
-- `Divider` — reviewed 2026-07-09 → `/extract-learnings Divider`
-- `Icon` — reviewed 2026-07-09 → `/extract-learnings Icon`
-- `Image` — reviewed 2026-07-09 → `/extract-learnings Image`
-- `ProgressBar` — reviewed 2026-07-09 → `/extract-learnings ProgressBar`
-- `ScrollArea` — reviewed 2026-07-09 → `/extract-learnings ScrollArea`
-- `VideoFrame` — reviewed 2026-07-09 → `/extract-learnings VideoFrame`
+None. All review findings have been back-filled. ✅
 
 ## Token usage
 
@@ -126,7 +262,7 @@ Run `/extract-learnings --all` to process all at once, or `/extract-learnings <N
 ## Figma drift
 
 - Snapshot captured: **2026-07-07** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **3 day(s)**
+- Age: **5 day(s)**
 - Variables mirrored: **454** (Primitives 288 · Theme 106 · Device 60)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 

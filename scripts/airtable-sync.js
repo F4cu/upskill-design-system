@@ -249,8 +249,10 @@ function cleanFigmaNodeId(raw) {
 
 const PIPELINE_PATH = path.resolve(__dirname, "../.claude/component-pipeline.json");
 
-// sense.js-derived implementation stage per component (in progress / in review /
-// done / todo / null). Run `npm run sense` before pushing so this is fresh.
+// sense.js-derived implementation stage per component — one of the four broad
+// stages (todo / in progress / in review / done, issue #64); sub-states stay in
+// pipeline JSON and never reach Airtable. Run `npm run sense` before pushing so
+// this is fresh.
 function loadPipelineImpl() {
   if (!fs.existsSync(PIPELINE_PATH)) return {};
   const { components = [] } = JSON.parse(fs.readFileSync(PIPELINE_PATH, "utf8"));
