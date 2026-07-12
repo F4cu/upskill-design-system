@@ -5,6 +5,7 @@ sources:
   - apps/showcase/scripts/copy-pipeline-data.js
   - .github/workflows/*.yml
 # clock reset 2026-07-10: CI-audit workflows (#57-#60) merged; this page's rewrite in #61 already describes the end state (lint gate, sync.yml, weekly pull, showcase-check)
+# clock reset 2026-07-12: pre-existing staleness on main (sync.yml / CLAUDE.md / ADR-015 touched 2026-07-10 without a same-PR doc touch); content unchanged by those commits' scope here — stage-vocabulary sweep for this page follows in the dedicated docs PR (#64)
 ---
 # npm scripts reference
 

@@ -9,6 +9,7 @@ sources:
   - docs/decisions/013-cross-component-pattern-schema.md
   - docs/decisions/015-handoff-artifact-lifecycle.md
   - docs/decisions/017-claude-md-context-budget.md
+# clock reset 2026-07-12: pre-existing staleness on main (sync.yml / CLAUDE.md / ADR-015 touched 2026-07-10 without a same-PR doc touch); content unchanged by those commits' scope here — stage-vocabulary sweep for this page follows in the dedicated docs PR (#64)
 ---
 # Context engineering
 
