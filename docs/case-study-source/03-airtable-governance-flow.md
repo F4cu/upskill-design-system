@@ -4,7 +4,7 @@
 
 ## The problem with one column doing two jobs
 
-Early on, the Airtable Components table had a single `Status` field, and its options quietly mixed two unrelated questions: *is this component production-ready* (`beta` / `ready` / `deprecated`) and *where is it in the pipeline* (`todo` / `in progress` / `in review`). One field, two axes, and the collision showed up immediately in practice. `Select` had been through a full adversarial review — `.review.json` written, the gate green, `.learnings.json` filed — and `STATUS_QUO.md` still showed nothing but `ready`. The review had happened and was invisible. `Accordion` was the opposite kind of contradiction: `beta` by maturity, but the maintainer considered its implementation finished. No single field can hold both of those facts at once.
+Early on, the Airtable Components table had a single `Status` field, and its options quietly mixed two unrelated questions: *is this component production-ready* (`beta` / `ready` / `deprecated`) and *where is it in the pipeline* (`todo` / `in progress` / `in review`). One field, two axes, and the collision showed up immediately in practice. `Select` had been through an adversarial review — `.review.json` written, the gate green, `.learnings.json` filed — and `STATUS_QUO.md` still showed nothing but `ready`. The review had happened and was invisible. `Accordion` was the opposite kind of contradiction: `beta` by maturity, but the maintainer considered its implementation finished. No single field can hold both of those facts at once.
 
 That's the failure ADR-010 fixes, and it's worth walking through because the fix generalizes into the rule that governs *every* Airtable interaction in this system: **never let a human-owned value and a code-owned value share a column.**
 
@@ -15,7 +15,7 @@ The resolution splits component lifecycle into Maturity and Implementation, and 
 | Value | Axis | Owner | Direction |
 |---|---|---|---|
 | `beta` / `ready` / `deprecated` | Maturity | Code (`component.status` in metadata) | Code → Airtable, pushed on merge |
-| `in progress` / `in review` / `established` | Implementation | Code, derived by `sense.js` from handoff artifacts | Code → Airtable, pushed on merge |
+| `in progress` / `in review` | Implementation | Code, derived by `sense.js` from handoff artifacts | Code → Airtable, pushed on merge |
 | `done` / `todo` | Implementation | Human, set directly in Airtable | Airtable → code, pulled |
 
 Token governance follows the identical shape, one layer up: `status` (`active`/`deprecated`), `owner`, `successor`, and `notes` are authored by a human in Airtable and pulled into `airtable-governance.json` — never pushed from code, because a deprecation decision is a judgment call, not a derived fact.
@@ -50,7 +50,7 @@ The trade-off is explicit, not hidden: `done` accuracy depends on a human rememb
 flowchart LR
     subgraph Code side
         M[component.status<br/>Maturity, PR-authored]
-        S[sense.js<br/>derives in progress/in review/established<br/>from handoff artifacts]
+        S[sense.js<br/>derives in progress/in review<br/>from handoff artifacts]
     end
     subgraph Airtable
         AT[(Components table<br/>Maturity + Implementation columns)]

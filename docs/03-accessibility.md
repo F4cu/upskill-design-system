@@ -8,6 +8,7 @@ sources:
   - docs/decisions/007-verified-component-loop.md
   - .github/workflows/tokens-check.yml
 # clock reset 2026-07-10: tokens-check.yml gains concurrency + PR-only trigger + npm ci base build; contrast gate still runs on every token PR, page still accurate
+# clock reset 2026-07-12: ADR-007 gains a renamed-review-path parenthetical (#64 docs sweep); this page uses no review-path vocabulary, still accurate
 ---
 # Accessibility
 

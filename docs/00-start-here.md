@@ -6,8 +6,7 @@ sources:
 # clock reset 2026-07-09: ADR-018 amendment adds undefined-prerequisite rubric detail; this page doesn't describe the scribe rubric, still accurate
 # clock reset 2026-07-10: four commands gain deterministic-gate steps; this page describes no per-command steps, still accurate
 # clock reset 2026-07-10: /extract-learnings gains a handoff:tidy close-out step; this page doesn't describe per-moment steps, still accurate
-# clock reset 2026-07-12: 4-stage Implementation model lands in sense.js + ADR-010 amendment (#64); stage-vocabulary sweep for this page follows in the dedicated docs PR
-# clock reset 2026-07-12: commands gain visual-review step + adversarial/in-session path rename (#64 PR 2); stage-vocabulary sweep for this page follows in the dedicated docs PR
+# clock reset 2026-07-12: #64 docs sweep landed (ADR-007/015 gain renamed-path/stage parentheticals); this page carried no stage or review-path vocabulary, still accurate
 ---
 # Start here
 

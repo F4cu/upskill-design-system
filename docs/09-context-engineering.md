@@ -9,7 +9,6 @@ sources:
   - docs/decisions/013-cross-component-pattern-schema.md
   - docs/decisions/015-handoff-artifact-lifecycle.md
   - docs/decisions/017-claude-md-context-budget.md
-# clock reset 2026-07-12: pre-existing staleness on main (sync.yml / CLAUDE.md / ADR-015 touched 2026-07-10 without a same-PR doc touch); content unchanged by those commits' scope here — stage-vocabulary sweep for this page follows in the dedicated docs PR (#64)
 ---
 # Context engineering
 
@@ -63,7 +62,7 @@ One naming trap, stated once: Claude Code's terms are the inverse of intuition. 
 
 ### The handoff lifecycle
 
-Markdown handoffs are committed, named `YYYY-MM-DD-slug.handoff.md`, and carry `status: active | done | superseded` plus `created:`/`completed:` dates. `npm run handoff:tidy` is the only thing that moves files: it archives `done`/`superseded` handoffs into `handoff/archive/` (nothing is ever deleted — archives are permanent), regenerates `handoff/index.json`, and promotes each per-run `<Name>.run.json` into `run-ledger.json`. A handoff missing frontmatter is a hard failure at tidy time — deliberate friction, per ADR-015, so the convention can't erode back into the pre-ADR state. Per-run JSON (`<Name>.{snapshot,review,run,learnings}.json`) lives under the gitignored `.claude/handoff/runs/` because it is regenerable (`npm run sense:component <Name>`); the run files persist there indefinitely because `scripts/sense.js` reads their presence to derive a component's `"in review"` pipeline stage.
+Markdown handoffs are committed, named `YYYY-MM-DD-slug.handoff.md`, and carry `status: active | done | superseded` plus `created:`/`completed:` dates. `npm run handoff:tidy` is the only thing that moves files: it archives `done`/`superseded` handoffs into `handoff/archive/` (nothing is ever deleted — archives are permanent), regenerates `handoff/index.json`, and promotes each per-run `<Name>.run.json` into `run-ledger.json`. A handoff missing frontmatter is a hard failure at tidy time — deliberate friction, per ADR-015, so the convention can't erode back into the pre-ADR state. Per-run JSON (`<Name>.{snapshot,review,run,learnings}.json`) lives under the gitignored `.claude/handoff/runs/` because it is regenerable (`npm run sense:component <Name>`); the run files persist there indefinitely because `scripts/sense.js` merges their presence over the committed `.claude/component-review-state.json` baseline to derive a component's pipeline stage (`in progress` / `in review`) and the state of its review checklist.
 
 ### The enforcement layer, in one table
 
