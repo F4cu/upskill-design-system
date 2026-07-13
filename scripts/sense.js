@@ -153,29 +153,29 @@ function handoffArtifact(name, ext) {
   }
 }
 
-// Implementation stage = where a component sits in the add-component →
-// review-component → extract-learnings loop, derived purely from files (never
-// a live call): the committed component-review-state.json baseline plus any
-// local runs/ artifacts (see promoteReviewState):
+// Implementation stage = one of four broad stages (issue #64, ADR-010
+// amendment), derived purely from files (never a live call): the committed
+// component-review-state.json baseline plus any local runs/ artifacts (see
+// promoteReviewState). These four values are the only ones that ever reach
+// the Airtable Implementation column:
 //
-//   in review   — loop fully closed. Two ways to get here:
-//                 (a) full path: adversarial review ran AND learnings were
-//                     back-filled, or
-//                 (b) lighter path (`.review.json` with `"path": "lighter"`):
-//                     the CLAUDE.md "light in-session review, no subagent"
-//                     option — `/code-review` + the gate, findings fixed
-//                     inline in the same pass. There is no separate
-//                     extract-learnings step for this path, so a `.review.json`
-//                     alone closes the loop; it never needs a `.learnings.json`.
-//                 Either way, everything an agent/script can verify is green;
-//                 awaiting the human visual check + `done` sign-off.
-//   in progress — loop started but not closed: a *full-path* review ran but
-//                 `/extract-learnings` hasn't back-filled its findings yet
-//                 (the common case), or — rarer, and generally a tooling gap
-//                 worth investigating — a `.run.json` was logged with no
-//                 matching `.review.json` at all.
-//   null        — pre-loop ("established"): never entered the formal loop.
-//                 A lone snapshot is just a context cache and does not count.
+//   todo        — human-owned (Airtable): planned / backlog.
+//   in progress — code exists, review pipeline not begun. Sub-states:
+//                 `unreviewed` (no artifacts at all — replaces the old
+//                 `established`; a lone snapshot is just a context cache) or
+//                 `scaffold-underway` (a `.run.json` open, no render
+//                 checkpoint yet).
+//   in review   — generation complete and renderable: the review checklist
+//                 has begun (a review ran, or a visual review was recorded).
+//                 Committable WIP; stays here until human sign-off, including
+//                 while visual review or learnings back-fill are pending.
+//                 Checklist detail is derived at render time (reviewChecklist).
+//   done        — human-owned (Airtable): sign-off after the checklist.
+//
+// Review paths: `adversarial` (/review-component, fresh subagent + learnings
+// loop) or `in-session` (/code-review on the diff — no subagent, no separate
+// learnings step). Legacy artifact values `full`/`lighter` are normalized on
+// read so old local runs/ artifacts can't reintroduce them.
 //
 // `done`/`todo` are human-owned and authored in Airtable, pulled into
 // component-signoff.json by airtable-pull.js. They are layered on here and win
@@ -195,10 +195,16 @@ function readSignoff() {
 // merged over the committed baseline (a local review wins; learningsBackfilled
 // latches true) and written back, so CI reads the file as-is and can never
 // regress a stage it has no artifacts for. See ADR-015 amendment.
+const LEGACY_PATHS = { full: "adversarial", lighter: "in-session" };
+const normalizePath = (p) => LEGACY_PATHS[p] ?? p ?? "adversarial";
+
 function promoteReviewState() {
   const state = fs.existsSync(REVIEW_STATE_PATH)
     ? JSON.parse(fs.readFileSync(REVIEW_STATE_PATH, "utf8"))
     : {};
+  for (const rec of Object.values(state)) {
+    if (rec.path) rec.path = normalizePath(rec.path);
+  }
 
   const names = new Set(
     (fs.existsSync(HANDOFF_DIR) ? fs.readdirSync(HANDOFF_DIR) : [])
@@ -212,8 +218,9 @@ function promoteReviewState() {
     const prev = state[name] ?? {};
     state[name] = {
       reviewedAt: review?.reviewedAt ?? prev.reviewedAt ?? null,
-      path: review ? (review.path ?? "full") : (prev.path ?? "full"),
+      path: normalizePath(review ? review.path : prev.path),
       learningsBackfilled: learnings || prev.learningsBackfilled === true,
+      ...(prev.visualReview ? { visualReview: prev.visualReview } : {}),
     };
   }
 
@@ -226,13 +233,46 @@ function promoteReviewState() {
 
 function deriveImplementation(name, signoff, reviewState) {
   const human = signoff[name];
-  if (HUMAN_OWNED_IMPL.has(human)) return human;
+  if (HUMAN_OWNED_IMPL.has(human)) return { stage: human, substate: null };
   const rec = reviewState[name];
+  if (rec?.reviewedAt || rec?.visualReview) return { stage: "in review", substate: null };
   const run = handoffArtifact(name, "run");
-  if (rec?.path === "lighter") return "in review";
-  if (rec?.reviewedAt && rec.learningsBackfilled) return "in review";
-  if (rec || run) return "in progress";
-  return "established"; // pre-loop: predates the add-component loop, no artifacts
+  if (rec || run) return { stage: "in progress", substate: "scaffold-underway" };
+  return { stage: "in progress", substate: "unreviewed" };
+}
+
+// Tier-2 proxy for the checklist label: a11y-coverage.js derives interactivity
+// from type ∈ {interactive, input} plus role/keyboard heuristics; type alone is
+// enough to phrase the item — the coverage gate itself stays authoritative.
+const TIER2_TYPES = new Set(["interactive", "input"]);
+
+// Checklist under `in review`, derived at render time — no stored state beyond
+// reviewPath / learningsBackfilled / visualReview (issue #64). Item 1 is one
+// pass/fail item and is checked for anything in review: the CI gate runs the
+// same scripts on every components PR, and the add-component loop fail-fasts
+// before the render checkpoint. Non-required items render as explicit n/a.
+function reviewChecklist(c) {
+  const adversarial = c.reviewPath === "adversarial";
+  const codeLabel = adversarial
+    ? TIER2_TYPES.has(c.type)
+      ? "Code and behavioural a11y review — adversarial subagent"
+      : "Code review — adversarial subagent"
+    : "Code review — in-session /code-review";
+  const visual = c.visualReview;
+  return [
+    { label: "Automated gate — lint · typecheck · build · metadata · a11y scripts", done: true },
+    {
+      label: "Visual review — human y/n/other(comments)",
+      done: visual?.status === "approved",
+      note: visual?.status === "changes-requested"
+        ? `changes requested${visual.comments ? ` — ${visual.comments}` : ""}`
+        : null,
+    },
+    { label: codeLabel, done: Boolean(c.reviewedAt) },
+    adversarial
+      ? { label: "Learnings back-fill (/extract-learnings)", done: c.learningsBackfilled }
+      : { label: "Learnings back-fill", na: "not required on in-session path" },
+  ];
 }
 
 function buildComponentPipeline(reviewState) {
@@ -246,16 +286,21 @@ function buildComponentPipeline(reviewState) {
       if (!fs.existsSync(p)) return [];
       const c = JSON.parse(fs.readFileSync(p, "utf8")).component;
       const rec = reviewState[c.name];
-      return [{
+      const { stage, substate } = deriveImplementation(c.name, signoff, reviewState);
+      const entry = {
         name: c.name,
         type: c.type,
         maturity: c.status,
-        implementation: deriveImplementation(c.name, signoff, reviewState),
+        implementation: stage,
+        substate,
         signedOff: HUMAN_OWNED_IMPL.has(signoff[c.name]),
         reviewedAt: rec?.reviewedAt ?? null,
-        reviewPath: rec?.path ?? "full",
+        reviewPath: rec?.path ?? null,
         learningsBackfilled: rec?.learningsBackfilled === true,
-      }];
+        visualReview: rec?.visualReview ?? null,
+      };
+      entry.checklist = stage === "in review" ? reviewChecklist(entry) : null;
+      return [entry];
     });
 }
 
@@ -266,7 +311,7 @@ function componentSection(pipeline) {
 
   const byStatus = {};
   const byType = {};
-  const byImpl = { done: [], "in review": [], "in progress": [], todo: [], established: [] };
+  const byImpl = { done: [], "in review": [], "in progress": [], todo: [] };
 
   for (const c of pipeline) {
     (byStatus[c.maturity] ?? (byStatus[c.maturity] = [])).push(c.name);
@@ -285,12 +330,12 @@ function componentSection(pipeline) {
     .map(([type, names]) => `${type} (${names.length})`)
     .join(" · ");
 
+  const unreviewed = byImpl["in progress"].filter((c) => c.substate === "unreviewed").length;
   const implLine = [
     `${byImpl.done.length} done`,
     `${byImpl["in review"].length} in review`,
-    `${byImpl["in progress"].length} in progress`,
+    `${byImpl["in progress"].length} in progress${unreviewed ? ` (${unreviewed} unreviewed)` : ""}`,
     `${byImpl.todo.length} todo`,
-    `${byImpl.established.length} established (pre-loop)`,
   ].join(" · ");
 
   const out = [
@@ -311,34 +356,39 @@ function componentSection(pipeline) {
 
   if (byImpl["in review"].length) {
     out.push(
-      "### In review — awaiting human sign-off",
+      "### In review — checklist open, awaiting human sign-off",
       "",
-      "Gate, adversarial review, and learnings back-fill all green. Promote to `done`",
-      "in Airtable (Implementation column) after the visual check in Storybook.",
+      "Generation is complete and renderable; each component works through its",
+      "review checklist (committable WIP). Promote to `done` in Airtable",
+      "(Implementation column) once every required item is checked.",
       "",
     );
     for (const c of byImpl["in review"]) {
-      const when = c.reviewedAt ? `reviewed ${c.reviewedAt.slice(0, 10)}` : "review date unknown";
-      const via = c.reviewPath === "lighter" ? "lighter-path review (no learnings step needed)" : "learnings back-filled";
-      out.push(`- \`${c.name}\` — maturity \`${c.maturity}\` · ${when} · ${via}`);
+      out.push(`#### Review checklist — ${c.name} (${c.type}, path: ${c.reviewPath ?? "not started"})`, "");
+      c.checklist.forEach((item, i) => {
+        if (item.na) {
+          out.push(`${i + 1}. n/a ${item.label} — ${item.na}`);
+        } else {
+          const note = item.note ? ` — ${item.note}` : "";
+          out.push(`${i + 1}. [${item.done ? "x" : " "}] ${item.label}${note}`);
+        }
+      });
+      out.push("");
     }
-    out.push("");
   }
 
   if (byImpl["in progress"].length) {
     out.push(
-      "### In progress — review done, learnings not yet back-filled",
+      "### In progress — review pipeline not begun",
       "",
-      "A full-path adversarial review (`/review-component`) ran and closed, but",
-      "`/extract-learnings` hasn't routed its findings into metadata yet — that's",
-      "the near-universal case here. The rarer case is a `.run.json` logged with",
-      "no matching `.review.json` at all, which usually signals a tooling gap",
-      "worth investigating rather than a normal in-flight review.",
+      "Code exists but the checklist hasn't started. `unreviewed` components never",
+      "entered the loop (the old \"established\" backlog) — candidates to harden with",
+      "`/review-component <Name>` when there's time. `scaffold-underway` means a",
+      "`.run.json` is open with no render checkpoint yet.",
       "",
     );
     for (const c of byImpl["in progress"]) {
-      const pending = c.learningsBackfilled ? "" : " · `/extract-learnings` pending";
-      out.push(`- \`${c.name}\` — maturity \`${c.maturity}\`${pending}`);
+      out.push(`- \`${c.name}\` — maturity \`${c.maturity}\` · ${c.substate}`);
     }
     out.push("");
   }
@@ -350,20 +400,6 @@ function componentSection(pipeline) {
     );
     for (const c of byImpl.todo) out.push(`- \`${c.name}\` — maturity \`${c.maturity}\``);
     out.push("");
-  }
-
-  if (byImpl.established.length) {
-    out.push(
-      "### Established — review backlog",
-      "",
-      "Stable, documented components that predate the loop and were never put",
-      "through an adversarial review. Not active work — candidates to harden with",
-      "`/review-component <Name>` when there's time. Running one moves the",
-      "component into the loop automatically.",
-      "",
-      byImpl.established.map((c) => `\`${c.name}\``).join(" · "),
-      "",
-    );
   }
 
   if (byStatus.beta?.length) {
@@ -383,7 +419,7 @@ function componentSection(pipeline) {
 
 function pendingLearningsSection(reviewState) {
   const pending = Object.entries(reviewState)
-    .filter(([, rec]) => rec.reviewedAt && !rec.learningsBackfilled)
+    .filter(([, rec]) => rec.path === "adversarial" && rec.reviewedAt && !rec.learningsBackfilled)
     .map(([name, rec]) => ({ name, reviewedAt: rec.reviewedAt }));
 
   const out = ["## Pending extract-learnings", ""];
