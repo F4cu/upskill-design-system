@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-07-07T12:40:44.649Z",
+  "capturedAt": "2026-07-13T13:16:36.868Z",
   "workflows": {
     "tokens-check": {
       "conclusion": "success",
@@ -8,16 +8,24 @@
     },
     "components-check": {
       "conclusion": "success",
-      "updatedAt": "2026-07-07T12:37:24Z",
-      "htmlUrl": "https://github.com/F4cu/upskill-design-system/actions/runs/28866616748"
+      "updatedAt": "2026-07-10T09:58:04Z",
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/actions/runs/29084764184"
     },
     "sync-tokens": {
       "conclusion": "success",
-      "updatedAt": "2026-07-07T09:55:15Z",
-      "htmlUrl": "https://github.com/F4cu/upskill-design-system/actions/runs/28857519505"
+      "updatedAt": "2026-07-10T09:26:26Z",
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/actions/runs/29083021869"
     }
   },
   "issues": [
+    {
+      "number": 30,
+      "title": "tokens: SplitChart neutralFaint/brand segment fills fail WCAG 1.4.11 against Card surface",
+      "labels": [
+        "bug"
+      ],
+      "htmlUrl": "https://github.com/F4cu/upskill-design-system/issues/30"
+    },
     {
       "number": 29,
       "title": ".claude/commands/figma-variable-push.md: drift diff needs value-based resolution + a confirmed-drift apply step",
@@ -26,14 +34,6 @@
         "enhancement"
       ],
       "htmlUrl": "https://github.com/F4cu/upskill-design-system/issues/29"
-    },
-    {
-      "number": 28,
-      "title": "components: Select selectedLabel and error strings render raw, bypassing the <Text>/<Heading> typography rule",
-      "labels": [
-        "bug"
-      ],
-      "htmlUrl": "https://github.com/F4cu/upskill-design-system/issues/28"
     },
     {
       "number": 26,

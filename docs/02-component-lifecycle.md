@@ -8,6 +8,7 @@ sources:
   - docs/decisions/006-carousel-hook-not-component.md
   - docs/decisions/009-extend-vs-new-vs-internal.md
   - docs/decisions/010-component-lifecycle-two-axes.md
+# clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
 ---
 # Component lifecycle
 

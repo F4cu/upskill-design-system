@@ -92,6 +92,16 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 | `npm run pipeline:status` | Capture CI workflow status + open issues from GitHub → `.claude/pipeline-status.json` (via the `gh` CLI). One of the five files the [showcase dashboard](#showcase-app-data-ingestion) reads. | You type it before deploying the showcase, or whenever the dashboard's CI/issues panel looks out of date. Never runs automatically. |
 | `npm run patterns:generate` | Deterministic AST (abstract syntax tree — a parsed representation of the component source code's structure) + metadata scan of all components → `.claude/component-patterns.json`, the cross-component pattern aggregate consumed by `/layout-generation` (ADR-013). | You type it after changing a component's structure or ARIA wiring; CI regenerates it on every component PR and fails if the committed file is stale. |
 
+### Reading the snapshots in the terminal
+
+`scripts/status.js` renders the snapshots above as terminal views — a dumb reader, no AI, no network, no state written. Run `npm run sense` first if the snapshots are stale.
+
+| Command | What it does |
+|---|---|
+| `npm run status` | Dashboard: component totals by stage/maturity/type, token counts per layer, governance summary, and the latest five token adds/edits (replayed from git history of `packages/tokens/src`). |
+| `npm run status:pipeline` | Per-component review table — the `STATUS_QUO.md` checklist table with ✓/○/– marks. |
+| `npm run status:component` | One component's checklist card plus its suggested next step. Usage: `npm run status:component -- <Name>`. |
+
 ---
 
 ## Validation & accessibility
