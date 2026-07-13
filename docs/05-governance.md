@@ -12,7 +12,6 @@ sources:
   - .claude/commands/airtable-sync.md
   - .claude/commands/token-deprecation-pass.md
 # clock reset 2026-07-10: /token-deprecation-pass gains a pre-PR deterministic gate; governance flows unchanged, still accurate
-# clock reset 2026-07-12: 4-stage Implementation model lands in sense.js + ADR-010 amendment (#64); stage-vocabulary sweep for this page follows in the dedicated docs PR
 ---
 # Governance
 
@@ -28,7 +27,7 @@ The direction split comes from [ADR-002](decisions/002-three-layer-token-model.m
 
 ### The "don't downgrade done" guard
 
-The one place the two directions could still collide is the component `Implementation` column: code pushes derived stages (`in progress`/`in review`/`established`) into the same column where humans write `done`/`todo`. ADR-010's guard: `push:components` reads the current Implementation value before writing and **skips the cell entirely if Airtable already holds `done` or `todo`**. Combined with partial upserts (omitted fields are never cleared), human values are immune to the sync. `done`/`todo` rows are also exempt from orphan deletion — the sync's cleanup step that removes Airtable rows whose code-side counterpart no longer exists.
+The one place the two directions could still collide is the component `Implementation` column: code pushes derived stages (`in progress`/`in review`) into the same column where humans write `done`/`todo`. ADR-010's guard: `push:components` reads the current Implementation value before writing and **skips the cell entirely if Airtable already holds `done` or `todo`**. Combined with partial upserts (omitted fields are never cleared), human values are immune to the sync. `done`/`todo` rows are also exempt from orphan deletion — the sync's cleanup step that removes Airtable rows whose code-side counterpart no longer exists.
 
 ### ADR practice is itself a governance artifact
 

@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-07-12
-completed:
+completed: 2026-07-13
 ---
 
 # Lifecycle stage model: 4 broad stages + review checklist (implements #64)

@@ -5,7 +5,6 @@ sources:
   - apps/showcase/scripts/copy-pipeline-data.js
   - .github/workflows/*.yml
 # clock reset 2026-07-10: CI-audit workflows (#57-#60) merged; this page's rewrite in #61 already describes the end state (lint gate, sync.yml, weekly pull, showcase-check)
-# clock reset 2026-07-12: pre-existing staleness on main (sync.yml / CLAUDE.md / ADR-015 touched 2026-07-10 without a same-PR doc touch); content unchanged by those commits' scope here — stage-vocabulary sweep for this page follows in the dedicated docs PR (#64)
 ---
 # npm scripts reference
 
@@ -88,7 +87,7 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 
 | Command | What it does | When it runs |
 |---|---|---|
-| `npm run sense` | Aggregate the committed mirror files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`. | You type it before any agent loop run; it also runs inside `airtable:sync:components`, and the post-merge sync (`sync.yml`) runs it on `main` and recommits the refreshed snapshots. |
+| `npm run sense` | Aggregate the committed mirror files (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`) into `.claude/STATUS_QUO.md` and `.claude/component-pipeline.json`, merging local review artifacts over the committed `.claude/component-review-state.json` baseline (reviews and `visualReview` records are never regressed by CI — ADR-015 amendment). | You type it before any agent loop run; it also runs inside `airtable:sync:components`, and the post-merge sync (`sync.yml`) runs it on `main` and recommits the refreshed snapshots. |
 | `npm run sense:component` | Narrow the baseline to one component → `.claude/handoff/runs/<Name>.snapshot.json`. Usage: `npm run sense:component -- <Name>`. | You type it (or `/add-component` does) at the start of a per-component loop run. |
 | `npm run pipeline:status` | Capture CI workflow status + open issues from GitHub → `.claude/pipeline-status.json` (via the `gh` CLI). One of the five files the [showcase dashboard](#showcase-app-data-ingestion) reads. | You type it before deploying the showcase, or whenever the dashboard's CI/issues panel looks out of date. Never runs automatically. |
 | `npm run patterns:generate` | Deterministic AST (abstract syntax tree — a parsed representation of the component source code's structure) + metadata scan of all components → `.claude/component-patterns.json`, the cross-component pattern aggregate consumed by `/layout-generation` (ADR-013). | You type it after changing a component's structure or ARIA wiring; CI regenerates it on every component PR and fails if the committed file is stale. |

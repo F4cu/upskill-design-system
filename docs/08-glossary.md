@@ -9,7 +9,6 @@ sources:
 # clock reset 2026-07-08: /extract-learnings routing widened; glossary only lists the moment, still accurate
 # clock reset 2026-07-10: sense.js lighter-path review recognition; glossary defines no stage-derivation rules, still accurate
 # clock reset 2026-07-10: four commands gain deterministic-gate steps (PR #58); glossary defines no per-command procedures, still accurate
-# clock reset 2026-07-12: 4-stage Implementation model lands in sense.js + ADR-010 amendment (#64); stage-vocabulary sweep for this page follows in the dedicated docs PR
 ---
 # Glossary
 
@@ -34,6 +33,9 @@ Two things are coupled when one depends on the other — changing or using one a
 **Hook (Claude Code)**
 A shell command that runs automatically when Claude does something — for example, "run the linter after every file edit." Configured in `.claude/settings.json`. Unrelated to React hooks despite sharing the name.
 
+**Implementation stage**
+Where a component sits in the build-review-sign-off pipeline — one axis of the two-axis lifecycle (the other is maturity: `beta`/`ready`/`deprecated`). Exactly four broad stages exist, and only these four ever reach Airtable's `Implementation` column: `todo` (human-set — planned, no code yet), `in progress` (derived — code exists but the review pipeline hasn't begun), `in review` (derived — generation is complete and renderable; the review checklist is open, and the component stays here as committable work-in-progress until sign-off), and `done` (human-set sign-off). `sense.js` derives the two middle stages from handoff artifacts; the human values always win and are never overwritten. See also Sub-state (pipeline), Review checklist.
+
 **Layout component**
 A component whose only job is to control how its children are arranged in space — it has no visual style of its own. `Box`, `Stack`, and `Inline` are layout components. They set spacing, direction, and alignment via tokens but render no color, border, or background. Contrast with content component.
 
@@ -49,11 +51,23 @@ Two things are orthogonal when they are fully independent — using or changing 
 **Props and variants**
 Props are the inputs you pass to a component to control its appearance or behavior — similar to settings or options. For example, `<Button size="lg" disabled>Save</Button>` passes a `size` prop and a `disabled` prop. A **variant** is a specific type of prop that switches between named visual styles: `<Button variant="primary">` vs `<Button variant="secondary">`. In this repo's metadata, variants are modelled as named axes — each axis (like `variant` or `size`) lists its options, its default, and the purpose of each option. This is how the scaffold and layout tools know what combinations a component supports.
 
+**Review checklist**
+The four items a component clears while in the `in review` stage, rendered per component in `STATUS_QUO.md` and derived at render time by `sense.js` (no stored checklist state): (1) the automated gate — lint, typecheck, build, metadata, a11y as one pass/fail item; (2) visual review — the human go/no-go; (3) code review — via the adversarial subagent or in-session `/code-review`, depending on the review path; (4) learnings back-fill via `/extract-learnings`. Items a path doesn't require render as an explicit `n/a — reason`, never silently omitted. See also Review path, Visual review.
+
+**Review path**
+Which review route a component or layout took, recorded as `reviewPath` in the review artifacts. Two values: `adversarial` (`/review-component` — one fresh, read-only subagent reviews with independent context, followed by the `/extract-learnings` loop) and `in-session` (`/code-review` run on the diff inside the working session — no subagent, no separate learnings step, so checklist item 4 is `n/a`). See also Adversarial Review, Subagent.
+
 **Scaffold**
 To generate the skeleton files for a new component — the `index.tsx`, CSS module, stories file, and `metadata.json` — from a template, before any real logic is written. Scaffolding creates the structure; the developer (or agent) fills in the details afterward. In this repo the `/component-scaffold` command does this.
 
 **State (component)**
 The different conditions a component can be in that change its appearance or behavior. Common states: `default`, `hover` (cursor is over it), `focused` (selected via keyboard), `disabled` (not interactive), `loading`, `error`. States are defined in each component's `metadata.json` and are distinct from React state (the internal data a component holds) — though the two are related: a component uses React state to track which visual state it is currently in.
+
+**Sub-state (pipeline)**
+A finer-grained label under the `in progress` implementation stage, recorded only in `.claude/component-pipeline.json` and `STATUS_QUO.md` — never pushed to Airtable. Two values: `unreviewed` (code exists but no loop artifacts at all — this replaces the old `established` stage label) and `scaffold-underway` (a `.run.json` is open but the component hasn't reached its render checkpoint yet). See also Implementation stage.
+
+**Visual review**
+The human yes/no/other judgment on a freshly rendered component or layout, given in Storybook right after the render checkpoint. `/add-component` and `/layout-generation` record the answer as a `visualReview` record (`status: approved | changes-requested`, `comments`, `at`) in `.claude/component-review-state.json` — it is item 2 of the review checklist. See also Review checklist.
 
 **Wrapper**
 A component (or element) whose only purpose is to surround something else — to add styling, behavior, or structure without contributing visible content of its own. `ScrollArea` is a wrapper: it adds hidden-scrollbar overflow behavior to whatever is inside it. `Box` is a wrapper: it applies spacing and layout rules. Wrappers are often thin — just a `div` with a CSS class or a few props — and they rely on composition to do meaningful work.

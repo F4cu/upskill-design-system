@@ -9,6 +9,7 @@ sources:
   - docs/decisions/004-layout-token-categories.md
   - docs/decisions/005-size-vs-space-primitives.md
   - docs/decisions/009-extend-vs-new-vs-internal.md
+# clock reset 2026-07-12: commands gain visual-review step + adversarial/in-session path rename (#64 PR 2); stage-vocabulary sweep for this page follows in the dedicated docs PR
 ---
 # Layout grammar
 

@@ -74,9 +74,11 @@ Keeping the per-run JSON gitignored while deriving the *committed*
 maintainer's machine: the post-merge snapshot workflow (`sync.yml`, added
 2026-07-09) reran `scripts/sense.js` on a fresh CI checkout where
 `.claude/handoff/runs/` doesn't exist, and commit `942239a` regressed all 27
-components to `"established"` / `reviewedAt: null`. The committed
+components to `"established"` (the pre-#64 label for today's `in progress` /
+`unreviewed` — ADR-010 amendment 2026-07-12) / `reviewedAt: null`. The committed
 `run-ledger.json` couldn't backstop it — sense never read it, and it only
-records full-loop runs, not lighter-path reviews.
+records full-loop runs (the `adversarial` path), not `in-session`-path reviews
+(paths renamed from "full"/"lighter" — ADR-010 amendment 2026-07-12).
 
 Decision: review completion is promoted into a **committed** file,
 `.claude/component-review-state.json` (per component: `reviewedAt`, `path`,
