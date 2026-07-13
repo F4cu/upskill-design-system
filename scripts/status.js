@@ -100,7 +100,7 @@ function cmdComponent(name) {
 }
 
 const STAGE_ORDER = ["done", "in review", "in progress", "todo"];
-const mark = (item) => (item.na ? dim("–") : item.done ? green("✓") : yellow("○"));
+const mark = (item) => (item.na ? dim("–") : item.done ? green("✓") : dim("○"));
 
 function cmdBoard() {
   const all = components().sort(
