@@ -10,6 +10,7 @@ sources:
   - docs/decisions/015-handoff-artifact-lifecycle.md
   - docs/decisions/017-claude-md-context-budget.md
 # clock reset 2026-07-13: #70 adds a $deprecated exception note to CLAUDE.md and .claude/rules/tokens.md; the layering/budget mechanics this page describes are unchanged, still accurate
+# verified 2026-07-13 (issue #74): checked against ADR-015 amendment and CLAUDE.md as of #65-#68 + the full/standard rename; handoff-lifecycle section already describes the review-state baseline + checklist derivation from the #64 sweep, "adversarial" survives as the full path's description per ADR-010, still accurate
 ---
 # Context engineering
 

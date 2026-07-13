@@ -12,6 +12,7 @@ sources:
   - .claude/commands/airtable-sync.md
   - .claude/commands/token-deprecation-pass.md
 # clock reset 2026-07-10: /token-deprecation-pass gains a pre-PR deterministic gate; governance flows unchanged, still accurate
+# verified 2026-07-13 (issue #74): checked against ADR-010 amendments (4 broad stages, full/standard rename); derived stages already read `in progress`/`in review` from the #64 sweep, guard and push/pull flows unchanged by design, still accurate
 ---
 # Governance
 
