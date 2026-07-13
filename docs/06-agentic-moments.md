@@ -8,6 +8,7 @@ sources:
   - scripts/sense.js
   - scripts/sense-component.js
 # clock reset 2026-07-10: four commands gain deterministic-gate steps (PR #58); moment invariants in the table are unchanged, still accurate
+# clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
 ---
 # Agentic moments
 

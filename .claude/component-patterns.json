@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "547e54ebb7188c1affbfbfe1144d53b3717501b9",
+  "generatedFrom": "f6818227455044a96333ae1b1781b2edd50760e5",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -59,7 +59,7 @@
             "Icon"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in progress",
           "systemSpecificNotes": [
             "Uses a native <button> element. The disabled prop sets the HTML disabled attribute, which natively prevents click events and removes the element from the tab order.",
             "aria-label (set on icon-only buttons via shape to provide an accessible name; flows through ...rest)",
@@ -214,7 +214,7 @@
             "listboxId"
           ],
           "maturity": "beta",
-          "stage": "established",
+          "stage": "in progress",
           "state": {
             "controlled": "optional",
             "props": [
