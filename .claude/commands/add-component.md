@@ -55,11 +55,23 @@ Wait for the developer's reply. Three cases:
 - **`go`** (developer made manual edits) — re-run the Stage 2 gate first; if it passes, continue to Stage 3; if it fails, bounce back to fix the failure, then resurface this checkpoint.
 - **Any issue description** (Claude should fix) — apply the described changes, re-run the Stage 2 gate, then resurface this checkpoint.
 
+### Stage 2c · Record visual review (human answer → review-state)
+
+Once the developer has replied at the Stage 2b checkpoint and the gate is green, ask the visual-review question with the AskUserQuestion tool: **"Is the component correctly rendered?"** — options **yes** / **no**, with free-text comments available via "Other".
+
+Write the answer into `.claude/component-review-state.json` under the component's entry:
+```json
+"visualReview": { "status": "approved", "comments": null, "at": "<iso>" }
+```
+`yes` → `"approved"`; `no` or an "Other" reply → `"changes-requested"` with the reply text as `comments` (otherwise `null`). Then run `npm run sense` so `STATUS_QUO.md` and `component-pipeline.json` pick up the checklist item.
+
+A `changes-requested` answer records the state but does **not** block committing — `in review` is committable WIP (issue #64). Apply what the comments describe (re-running the Stage 2 gate, as in 2b), but proceed to Stage 3 either way with the recorded state intact.
+
 ### Stage 3+ · Review + PR
 
-Delegate to `/review-component <Name>`. That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
+Delegate to `/review-component <Name>` — the **adversarial** review path (`path: "adversarial"` in review-state). That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
 
 `/review-component` is also the standalone entry point for reviewing existing components — the same command works in both contexts.
 
 ## Success signal
-The component ships *through* the loop — meeting its roadmap success signal with no manual restructuring, the human reviewing only clean code. Stages 0–2b complete cleanly, then `/review-component` clears the adversarial review and opens the PR. Update this prompt with anything learned from each run.
+The component ships *through* the loop — meeting its roadmap success signal with no manual restructuring, the human reviewing only clean code. Stages 0–2c complete cleanly, then `/review-component` clears the adversarial review and opens the PR. Update this prompt with anything learned from each run.

@@ -248,12 +248,24 @@ npm run layout:validate apps/showcase/src/pages/<Name>.tsx
 
 The validator checks landmark structure (one `<main>`, named sections, labelled navs), fixed-set usage, and the inline-style reconciliation rules. Fix any violations before declaring the layout done.
 
+### Visual review (human answer → review-state)
+
+After validation passes and the page renders (via `npm run dev -w @upskill/showcase`, or `/run-storybook` for `--story` output), ask the visual-review question with the AskUserQuestion tool: **"Is the layout correctly rendered?"** — options **yes** / **no**, with free-text comments available via "Other".
+
+Write the answer into `.claude/component-review-state.json` under the page's entry (keyed by the generated `<Name>`):
+```json
+"visualReview": { "status": "approved", "comments": null, "at": "<iso>" }
+```
+`yes` → `"approved"`; `no` or an "Other" reply → `"changes-requested"` with the reply text as `comments` (otherwise `null`). Then run `npm run sense` so `STATUS_QUO.md` and `component-pipeline.json` pick it up.
+
+A `changes-requested` answer records the state but does **not** block committing — `in review` is committable WIP (issue #64). Apply what the comments describe and re-validate, but continue to the review path either way with the recorded state intact.
+
 ### Review path (ADR-016)
 
 Generated layout code does not land on `main` unreviewed, same invariant as component scaffolds — but the review tier is cheaper by default:
 
-- **Default:** once validation and typecheck pass, commit the new/changed file(s) to a feature branch (e.g. `layout/<kebab-name>`) and open a PR against `main` with `gh`. The developer runs in-session `/code-review` on the diff before merging — no subagent, no handoff file.
-- **Opt-in, full route pages only:** if the developer asks for a deeper check (not for `--story` fragments), spawn the same read-only `adversarial-reviewer` subagent used by `/review-component` (`.claude/agents/adversarial-reviewer.md`), passing it the diff and this file's grammar/constraints sections in place of a component snapshot. Persist its findings the same way `/review-component` does, but there is no `.review.json`/`.run.json` pair to write here — this is a one-off check, not a tracked loop stage.
+- **Default — the `in-session` path:** once validation and typecheck pass, commit the new/changed file(s) to a feature branch (e.g. `layout/<kebab-name>`) and open a PR against `main` with `gh`. The developer runs `/code-review` on the diff before merging — no subagent, no handoff file.
+- **Opt-in — the `adversarial` path, complete route pages only:** if the developer asks for a deeper check (not for `--story` fragments), spawn the same read-only `adversarial-reviewer` subagent used by `/review-component` (`.claude/agents/adversarial-reviewer.md`), passing it the diff and this file's grammar/constraints sections in place of a component snapshot. Persist its findings the same way `/review-component` does, but there is no `.review.json`/`.run.json` pair to write here — this is a one-off check, not a tracked loop stage.
 
 Do not commit layout output directly to `main`.
 
