@@ -172,10 +172,12 @@ function handoffArtifact(name, ext) {
 //                 Checklist detail is derived at render time (reviewChecklist).
 //   done        — human-owned (Airtable): sign-off after the checklist.
 //
-// Review paths: `adversarial` (/review-component, fresh subagent + learnings
-// loop) or `in-session` (/code-review on the diff — no subagent, no separate
-// learnings step). Legacy artifact values `full`/`lighter` are normalized on
-// read so old local runs/ artifacts can't reintroduce them.
+// Review paths: `full` (/review-component, fresh adversarial subagent +
+// learnings loop) or `standard` (/code-review on the diff — no subagent, no
+// separate learnings step). Legacy artifact values `adversarial`/`in-session`
+// (and the older `lighter`) are normalized on read so old local runs/
+// artifacts can't reintroduce them. Note `full` kept its meaning across both
+// renames — it has always been the subagent path.
 //
 // `done`/`todo` are human-owned and authored in Airtable, pulled into
 // component-signoff.json by airtable-pull.js. They are layered on here and win
@@ -195,8 +197,8 @@ function readSignoff() {
 // merged over the committed baseline (a local review wins; learningsBackfilled
 // latches true) and written back, so CI reads the file as-is and can never
 // regress a stage it has no artifacts for. See ADR-015 amendment.
-const LEGACY_PATHS = { full: "adversarial", lighter: "in-session" };
-const normalizePath = (p) => LEGACY_PATHS[p] ?? p ?? "adversarial";
+const LEGACY_PATHS = { adversarial: "full", "in-session": "standard", lighter: "standard" };
+const normalizePath = (p) => LEGACY_PATHS[p] ?? p ?? "full";
 
 function promoteReviewState() {
   const state = fs.existsSync(REVIEW_STATE_PATH)
@@ -252,12 +254,12 @@ const TIER2_TYPES = new Set(["interactive", "input"]);
 // same scripts on every components PR, and the add-component loop fail-fasts
 // before the render checkpoint. Non-required items render as explicit n/a.
 function reviewChecklist(c) {
-  const adversarial = c.reviewPath === "adversarial";
-  const codeLabel = adversarial
+  const full = c.reviewPath === "full";
+  const codeLabel = full
     ? TIER2_TYPES.has(c.type)
       ? "Code and behavioural a11y review — adversarial subagent"
       : "Code review — adversarial subagent"
-    : "Code review — in-session /code-review";
+    : "Code review — in-session /code-review (standard path)";
   const visual = c.visualReview;
   return [
     { label: "Automated gate — lint · typecheck · build · metadata · a11y scripts", done: true },
@@ -269,9 +271,9 @@ function reviewChecklist(c) {
         : null,
     },
     { label: codeLabel, done: Boolean(c.reviewedAt) },
-    adversarial
+    full
       ? { label: "Learnings back-fill (/extract-learnings)", done: c.learningsBackfilled }
-      : { label: "Learnings back-fill", na: "not required on in-session path" },
+      : { label: "Learnings back-fill", na: "not required on standard path" },
   ];
 }
 
@@ -364,8 +366,9 @@ function componentSection(pipeline) {
       "",
       "The automated gate (lint · typecheck · build · metadata · a11y scripts) has",
       "passed for every row — it is a precondition of reaching review. On the",
-      "adversarial path, code review of `interactive`/`input` components also covers",
-      "behavioural a11y; learnings back-fill is n/a on the in-session path.",
+      "full path (adversarial subagent), code review of `interactive`/`input`",
+      "components also covers behavioural a11y; learnings back-fill is n/a on the",
+      "standard path (in-session /code-review).",
       "",
       "| Component | Path | Visual review | Code review | Learnings |",
       "|---|---|---|---|---|",
@@ -429,7 +432,7 @@ function componentSection(pipeline) {
 
 function pendingLearningsSection(reviewState) {
   const pending = Object.entries(reviewState)
-    .filter(([, rec]) => rec.path === "adversarial" && rec.reviewedAt && !rec.learningsBackfilled)
+    .filter(([, rec]) => rec.path === "full" && rec.reviewedAt && !rec.learningsBackfilled)
     .map(([name, rec]) => ({ name, reviewedAt: rec.reviewedAt }));
 
   const out = ["## Pending extract-learnings", ""];

@@ -91,7 +91,7 @@ function cmdComponent(name) {
     lines.push(
       { rule: "next" },
       c.substate === "unreviewed"
-        ? `never entered the loop — /review-component ${c.name} (adversarial) or /code-review (in-session)`
+        ? `never entered the loop — /review-component ${c.name} (full) or /code-review (standard)`
         : "scaffold underway — a .run.json is open with no render checkpoint yet",
     );
   }

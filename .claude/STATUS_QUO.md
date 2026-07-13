@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-07-13T12:57:01.017Z**
+Generated: **2026-07-13T13:59:39.407Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -36,36 +36,37 @@ review checklist (committable WIP). Promote to `done` in Airtable
 
 The automated gate (lint · typecheck · build · metadata · a11y scripts) has
 passed for every row — it is a precondition of reaching review. On the
-adversarial path, code review of `interactive`/`input` components also covers
-behavioural a11y; learnings back-fill is n/a on the in-session path.
+full path (adversarial subagent), code review of `interactive`/`input`
+components also covers behavioural a11y; learnings back-fill is n/a on the
+standard path (in-session /code-review).
 
 | Component | Path | Visual review | Code review | Learnings |
 |---|---|---|---|---|
-| `Accordion` (interactive) | adversarial | ☐ | ✅ | ✅ |
-| `AppHeader` (container) | in-session | ☐ | ✅ | n/a |
-| `Avatar` (display) | in-session | ☐ | ✅ | n/a |
-| `Badge` (display) | in-session | ☐ | ✅ | n/a |
-| `Box` (container) | adversarial | ☐ | ✅ | ✅ |
-| `Breadcrumb` (display) | in-session | ☐ | ✅ | n/a |
-| `ButtonArrow` (interactive) | adversarial | ☐ | ✅ | ✅ |
-| `Card` (container) | in-session | ☐ | ✅ | n/a |
-| `CardHorizontal` (display) | in-session | ☐ | ✅ | n/a |
-| `CardVertical` (display) | in-session | ☐ | ✅ | n/a |
-| `Checkbox` (input) | adversarial | ☐ | ✅ | ✅ |
-| `Chip` (interactive) | adversarial | ☐ | ✅ | ✅ |
-| `Divider` (display) | in-session | ☐ | ✅ | n/a |
-| `DropdownMenu` (interactive) | adversarial | ☐ | ✅ | ✅ |
-| `Heading` (display) | adversarial | ☐ | ✅ | ✅ |
-| `Icon` (display) | in-session | ☐ | ✅ | n/a |
-| `Image` (display) | in-session | ☐ | ✅ | n/a |
-| `Inline` (container) | adversarial | ☐ | ✅ | ✅ |
-| `ProgressBar` (display) | in-session | ☐ | ✅ | n/a |
-| `ScrollArea` (container) | in-session | ☐ | ✅ | n/a |
-| `Stack` (container) | adversarial | ☐ | ✅ | ✅ |
-| `Text` (display) | adversarial | ☐ | ✅ | ✅ |
-| `TextField` (input) | adversarial | ☐ | ✅ | ✅ |
-| `TextLink` (interactive) | adversarial | ☐ | ✅ | ✅ |
-| `VideoFrame` (display) | in-session | ☐ | ✅ | n/a |
+| `Accordion` (interactive) | full | ☐ | ✅ | ✅ |
+| `AppHeader` (container) | standard | ☐ | ✅ | n/a |
+| `Avatar` (display) | standard | ☐ | ✅ | n/a |
+| `Badge` (display) | standard | ☐ | ✅ | n/a |
+| `Box` (container) | full | ☐ | ✅ | ✅ |
+| `Breadcrumb` (display) | standard | ☐ | ✅ | n/a |
+| `ButtonArrow` (interactive) | full | ☐ | ✅ | ✅ |
+| `Card` (container) | standard | ☐ | ✅ | n/a |
+| `CardHorizontal` (display) | standard | ☐ | ✅ | n/a |
+| `CardVertical` (display) | standard | ☐ | ✅ | n/a |
+| `Checkbox` (input) | full | ☐ | ✅ | ✅ |
+| `Chip` (interactive) | full | ☐ | ✅ | ✅ |
+| `Divider` (display) | standard | ☐ | ✅ | n/a |
+| `DropdownMenu` (interactive) | full | ☐ | ✅ | ✅ |
+| `Heading` (display) | full | ☐ | ✅ | ✅ |
+| `Icon` (display) | standard | ☐ | ✅ | n/a |
+| `Image` (display) | standard | ☐ | ✅ | n/a |
+| `Inline` (container) | full | ☐ | ✅ | ✅ |
+| `ProgressBar` (display) | standard | ☐ | ✅ | n/a |
+| `ScrollArea` (container) | standard | ☐ | ✅ | n/a |
+| `Stack` (container) | full | ☐ | ✅ | ✅ |
+| `Text` (display) | full | ☐ | ✅ | ✅ |
+| `TextField` (input) | full | ☐ | ✅ | ✅ |
+| `TextLink` (interactive) | full | ☐ | ✅ | ✅ |
+| `VideoFrame` (display) | standard | ☐ | ✅ | n/a |
 
 ### In progress — review pipeline not begun
 

@@ -264,8 +264,8 @@ A `changes-requested` answer records the state but does **not** block committing
 
 Generated layout code does not land on `main` unreviewed, same invariant as component scaffolds — but the review tier is cheaper by default:
 
-- **Default — the `in-session` path:** once validation and typecheck pass, commit the new/changed file(s) to a feature branch (e.g. `layout/<kebab-name>`) and open a PR against `main` with `gh`. The developer runs `/code-review` on the diff before merging — no subagent, no handoff file.
-- **Opt-in — the `adversarial` path, complete route pages only:** if the developer asks for a deeper check (not for `--story` fragments), spawn the same read-only `adversarial-reviewer` subagent used by `/review-component` (`.claude/agents/adversarial-reviewer.md`), passing it the diff and this file's grammar/constraints sections in place of a component snapshot. Persist its findings the same way `/review-component` does, but there is no `.review.json`/`.run.json` pair to write here — this is a one-off check, not a tracked loop stage.
+- **Default — the `standard` path:** once validation and typecheck pass, commit the new/changed file(s) to a feature branch (e.g. `layout/<kebab-name>`) and open a PR against `main` with `gh`. The developer runs `/code-review` on the diff before merging — no subagent, no handoff file.
+- **Opt-in — the `full` path, complete route pages only:** if the developer asks for a deeper check (not for `--story` fragments), spawn the same read-only `adversarial-reviewer` subagent used by `/review-component` (`.claude/agents/adversarial-reviewer.md`), passing it the diff and this file's grammar/constraints sections in place of a component snapshot. Persist its findings the same way `/review-component` does, but there is no `.review.json`/`.run.json` pair to write here — this is a one-off check, not a tracked loop stage.
 
 Do not commit layout output directly to `main`.
 

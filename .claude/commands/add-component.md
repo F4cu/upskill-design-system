@@ -69,7 +69,7 @@ A `changes-requested` answer records the state but does **not** block committing
 
 ### Stage 3+ · Review + PR
 
-Delegate to `/review-component <Name>` — the **adversarial** review path (`path: "adversarial"` in review-state). That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
+Delegate to `/review-component <Name>` — the **full** review path (`path: "full"` in review-state). That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
 
 `/review-component` is also the standalone entry point for reviewing existing components — the same command works in both contexts.
 

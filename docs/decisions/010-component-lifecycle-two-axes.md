@@ -1,7 +1,7 @@
 # ADR-010 — Component lifecycle: two axes (maturity vs implementation)
 
 **Date:** 2026-06-25
-**Amended:** 2026-07-12
+**Amended:** 2026-07-13
 **Status:** `accepted`
 
 Related: ADR-001 (component metadata schema), ADR-002 (three-layer token model — Airtable governance direction), ADR-007 (verified component loop), ADR-008 (behavioral a11y tier).
@@ -68,3 +68,9 @@ Implements issue #64 (consolidating the research from #56). The original derived
 **Path rename.** `full` → `adversarial`, `lighter` → `in-session`, in `component-review-state.json` `path` values, `reviewPath` in the pipeline JSON, and all prose. `sense.js` normalizes legacy values on read so old local `runs/` artifacts cannot reintroduce them.
 
 Unchanged by design: the ownership split, both safety rules, the flow diagram direction, and the `HUMAN_OWNED_IMPL` guard in `airtable-sync.js`. CI still can never regress a stage (ADR-015 amendment latch).
+
+## Amendment — 2026-07-13: path rename #2 (`full` / `standard`)
+
+The 2026-07-12 names didn't survive first contact with the status board: `adversarial` describes the reviewer's posture (agent jargon) and `in-session` describes a mechanism — neither tells someone unfamiliar with the repo what they're choosing between. Renamed to plain review-tier words: `adversarial` → **`full`** (`/review-component` — fresh adversarial subagent + learnings loop) and `in-session` → **`standard`** (`/code-review` on the diff — no subagent, no learnings step). Note `full` thereby returns to its original pre-2026-07-12 meaning; it has always denoted the subagent path. "Adversarial subagent" survives everywhere as the *description* of what the full path spawns — only the stored path value and its prose references changed.
+
+`sense.js`'s `LEGACY_PATHS` now normalizes `adversarial`, `in-session`, and the original `lighter` on read, so old local `runs/` artifacts cannot reintroduce any prior vocabulary. Everything else in the 2026-07-12 amendment stands.

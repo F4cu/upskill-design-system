@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 **Trigger:** Developer, after a component review has been run (via `/review-component` or the `/add-component` loop) and fixes have been applied to the code — or after a `/layout-generation` session that surfaced a composition or token mistake worth keeping. Run once per component, or as a `--all` batch pass.
 
-**Path scope:** this step belongs to the **`adversarial`** review path only. **`in-session`** reviews (`/code-review` on the diff) write no `.review.json`, and the review checklist renders their learnings item as `n/a` — do not manufacture findings for them.
+**Path scope:** this step belongs to the **`full`** review path only. **`standard`**-path reviews (`/code-review` on the diff) write no `.review.json`, and the review checklist renders their learnings item as `n/a` — do not manufacture findings for them.
 
 **Invocation:**
 - `/extract-learnings <Name>` — single component (e.g. `/extract-learnings Accordion`)

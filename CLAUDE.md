@@ -94,7 +94,7 @@ Commit directly to the current branch — do not create new branches unless expl
 
 - `/review-component` (also inside `/add-component`): branch `component/<kebab-name>`, PR against `main`.
 - `/docs-sync`: branch `docs-sync/<YYYY-MM-DD>`, PR.
-- `/layout-generation`: branch `layout/<kebab-name>`, PR, reviewed in-session with `/code-review` by default (adversarial subagent opt-in for full route pages) — ADR-016.
+- `/layout-generation`: branch `layout/<kebab-name>`, PR, reviewed in-session with `/code-review` by default (adversarial subagent opt-in for complete route pages) — ADR-016.
 
 ## Commands and skills
 
@@ -116,7 +116,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 | 8 | Extract learnings | `/extract-learnings` | Route each finding to its durable home — component metadata first; token conventions → `/tokens-author`; contrast misses → the curated `PAIRS` list. `--all` proposals require developer confirmation. |
 | 9 | Docs sync | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is developer-triggered, never CI. Rewrite only stale sections; never touch Autodocs/docgen-owned content. One read-only `docs-scribe` subagent reviews rewritten sections before the PR (ADR-018). PR on `docs-sync/<date>`. |
 
-**For existing component reviews:** `/review-component <Name>` for the `adversarial` path (fresh subagent + learnings loop); `/code-review` on the diff for the `in-session` path — no subagent, no handoff file, no learnings step.
+**For existing component reviews:** `/review-component <Name>` for the `full` path (fresh adversarial subagent + learnings loop); `/code-review` on the diff for the `standard` path — no subagent, no handoff file, no learnings step.
 
 **Ad-hoc loops vs continuous loops.** A developer-triggered loop that runs a bounded sequence once and stops (moment 6) is allowed. A *continuous* loop, scheduled agent run, or always-on watcher is not: push back and propose a script, a GitHub Action, or one of these moments instead.
 

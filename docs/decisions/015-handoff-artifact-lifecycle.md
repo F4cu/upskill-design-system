@@ -77,8 +77,8 @@ maintainer's machine: the post-merge snapshot workflow (`sync.yml`, added
 components to `"established"` (the pre-#64 label for today's `in progress` /
 `unreviewed` — ADR-010 amendment 2026-07-12) / `reviewedAt: null`. The committed
 `run-ledger.json` couldn't backstop it — sense never read it, and it only
-records full-loop runs (the `adversarial` path), not `in-session`-path reviews
-(paths renamed from "full"/"lighter" — ADR-010 amendment 2026-07-12).
+records full-loop runs (the `full` path), not `standard`-path reviews
+(path names per ADR-010 amendments 2026-07-12 and 2026-07-13).
 
 Decision: review completion is promoted into a **committed** file,
 `.claude/component-review-state.json` (per component: `reviewedAt`, `path`,
