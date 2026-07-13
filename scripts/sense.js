@@ -362,19 +362,23 @@ function componentSection(pipeline) {
       "review checklist (committable WIP). Promote to `done` in Airtable",
       "(Implementation column) once every required item is checked.",
       "",
+      "The automated gate (lint · typecheck · build · metadata · a11y scripts) has",
+      "passed for every row — it is a precondition of reaching review. On the",
+      "adversarial path, code review of `interactive`/`input` components also covers",
+      "behavioural a11y; learnings back-fill is n/a on the in-session path.",
+      "",
+      "| Component | Path | Visual review | Code review | Learnings |",
+      "|---|---|---|---|---|",
     );
+    const mark = (item) => (item.na ? "n/a" : item.done ? "✅" : "☐");
     for (const c of byImpl["in review"]) {
-      out.push(`#### Review checklist — ${c.name} (${c.type}, path: ${c.reviewPath ?? "not started"})`, "");
-      c.checklist.forEach((item, i) => {
-        if (item.na) {
-          out.push(`${i + 1}. n/a ${item.label} — ${item.na}`);
-        } else {
-          const note = item.note ? ` — ${item.note}` : "";
-          out.push(`${i + 1}. [${item.done ? "x" : " "}] ${item.label}${note}`);
-        }
-      });
-      out.push("");
+      const [, visual, code, learnings] = c.checklist;
+      const visualCell = visual.note ? `☐ ${visual.note}` : mark(visual);
+      out.push(
+        `| \`${c.name}\` (${c.type}) | ${c.reviewPath ?? "not started"} | ${visualCell} | ${mark(code)} | ${mark(learnings)} |`,
+      );
     }
+    out.push("");
   }
 
   if (byImpl["in progress"].length) {
@@ -403,15 +407,21 @@ function componentSection(pipeline) {
   }
 
   if (byStatus.beta?.length) {
-    out.push("### Beta (not production-ready)", "");
-    for (const name of byStatus.beta) out.push(`- \`${name}\``);
-    out.push("");
+    out.push(
+      "### Beta (not production-ready)",
+      "",
+      byStatus.beta.map((name) => `\`${name}\``).join(" · "),
+      "",
+    );
   }
 
   if (byStatus.deprecated?.length) {
-    out.push("### Deprecated — migration needed", "");
-    for (const name of byStatus.deprecated) out.push(`- \`${name}\``);
-    out.push("");
+    out.push(
+      "### Deprecated — migration needed",
+      "",
+      byStatus.deprecated.map((name) => `\`${name}\``).join(" · "),
+      "",
+    );
   }
 
   return out.join("\n");
