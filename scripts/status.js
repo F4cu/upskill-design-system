@@ -55,7 +55,7 @@ function box(title, lines) {
 function checklistLines(c) {
   return c.checklist.map((item) => {
     if (item.na) return `${dim("n/a")} ${dim(`${item.label} — ${item.na}`)}`;
-    const mark = item.done ? green("[x]") : yellow("[ ]");
+    const mark = item.done ? green("[x]") : "[ ]";
     return `${mark} ${item.label}${item.note ? ` — ${item.note}` : ""}`;
   });
 }
