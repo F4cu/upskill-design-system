@@ -12,6 +12,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Inputs (read all before starting)
 
+- Token source `$deprecated` markers — `packages/tokens/src/primitives.json`, `packages/tokens/src/theme/{light,dark}.json`. This is the durable in-source record (ADR-002 amendment, 2026-07-13); `airtable-governance.json` remains the governance mirror and the two must agree — `npm run tokens:deprecations:check` verifies that. A token's successor is discoverable straight from its `$deprecated` message (`"Replaced by {path}."`) without an Airtable pull.
 - Governance state — `packages/tokens/airtable-governance.json`
 - Token usage map — `packages/tokens/token-usage.json` (run `npm run tokens:usage` first if stale)
 - Theme alias files — `packages/tokens/src/theme/light.json`, `packages/tokens/src/theme/dark.json`
@@ -20,6 +21,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Steps
 
+0. Run `npm run tokens:deprecations:check`. If it reports out of sync, run `npm run tokens:deprecations` first so source `$deprecated` markers match governance before collecting anything.
 1. Collect all deprecated tokens from `airtable-governance.json` (both `primitives` and `semantic` sections).
 2. For each deprecated token:
    a. Look up its `successor` (dot-path). If `successor` is null, flag it — no automated migration is possible; note it for manual review.

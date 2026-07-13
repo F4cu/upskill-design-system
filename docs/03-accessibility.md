@@ -9,6 +9,7 @@ sources:
   - .github/workflows/tokens-check.yml
 # clock reset 2026-07-10: tokens-check.yml gains concurrency + PR-only trigger + npm ci base build; contrast gate still runs on every token PR, page still accurate
 # clock reset 2026-07-12: ADR-007 gains a renamed-review-path parenthetical (#64 docs sweep); this page uses no review-path vocabulary, still accurate
+# clock reset 2026-07-13: #70 adds a deprecation-sync check step to tokens-check.yml; the contrast gate this page describes is unchanged, still accurate
 ---
 # Accessibility
 

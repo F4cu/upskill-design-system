@@ -51,7 +51,7 @@ change — record or amend an ADR (see CLAUDE.md → "Architectural decisions").
 
 - Keys use `kebab-case` for multi-word names (`border-radius`, `font-size`).
 - Numeric scale steps are plain numbers as string keys (`"1"`–`"12"`, `"100"`–`"800"`).
-- No trailing commas (strict JSON). No `$extensions` in source.
+- No trailing commas (strict JSON). No `$extensions` in source. `$deprecated` is the one other allowed `$` key — machine-managed, see `.claude/rules/tokens.md`.
 - Line-heights are unitless ratios (`1`, `1.25`, `1.4`, `1.5`, `1.75`) — never px.
 - Don't mix color sub-scales on one token: `1–12` (light), `dark-1…dark-12`, `alpha-1…alpha-12`.
 
