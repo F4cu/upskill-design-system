@@ -9,6 +9,7 @@ sources:
   - docs/decisions/013-cross-component-pattern-schema.md
   - docs/decisions/015-handoff-artifact-lifecycle.md
   - docs/decisions/017-claude-md-context-budget.md
+# clock reset 2026-07-13: #70 adds a $deprecated exception note to CLAUDE.md and .claude/rules/tokens.md; the layering/budget mechanics this page describes are unchanged, still accurate
 ---
 # Context engineering
 

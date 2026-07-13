@@ -16,6 +16,8 @@ Every token uses `$type` and `$value`. Aliases use curly-brace syntax. No `$exte
 { "$type": "color", "$value": "{color.terracotta.9}" }  // alias
 ```
 
+`$deprecated` **is** allowed — it's a DTCG spec property (2025.10), not `$extensions`. It's machine-managed by `scripts/token-deprecation-mirror.js`, which mirrors Airtable governance (`status`/`successor`) into source after every `npm run airtable:pull:governance`; never hand-author it ad hoc — deprecate a token in Airtable, then pull. Value convention: `true` (no successor) or `"Replaced by {successor.path}."`. `npm run tokens:deprecations:check` (CI-gated) keeps source and governance in sync. See ADR-002 amendment (2026-07-13).
+
 ## Token JSON conventions
 
 - Keys use `kebab-case` for multi-word names (`border-radius`, `font-size`, `line-height`)

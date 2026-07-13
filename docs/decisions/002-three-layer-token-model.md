@@ -1,7 +1,7 @@
 # ADR-002 — Three-Layer Token Model
 
 **Date:** 2026-06-11
-**Amended:** 2026-06-17, 2026-07-06, 2026-07-07
+**Amended:** 2026-06-17, 2026-07-06, 2026-07-07, 2026-07-13
 **Status:** `accepted`
 
 ## Context
@@ -94,3 +94,11 @@ The token model is now **four** layers: primitives → brand → theme → devic
 The primitive color hue list grew to include a new `red` hue (light `1–12` + dark `1–12`, from the official Radix UI red scale), bringing the set to: terracotta, cyan, gold, teal, sand, grey, black, white, amber, **red**. `red` was added specifically to give `feedback.error` a dedicated hue that never collides with a brand accent, and it is deliberately not brand-eligible. The same pass darkened several step-11 values and regenerated cyan's light ramp to be monotonic.
 
 This does not change the layer model — it records that the primitive layer's hue set (governed by this ADR) expanded, and the new convention that a feedback semantic must not alias a brand-eligible hue. See **ADR-014** for the full decision, including the terracotta-luminance-matching ramp-regeneration method.
+
+## Amendment (2026-07-13) — Deprecation state mirrored into DTCG `$deprecated`
+
+The DTCG Format Module's first stable version (2025.10) defines an optional, first-class `$deprecated` property. Token deprecation state now lands there in the committed source, not only in Airtable.
+
+Airtable remains the governance UI — humans still set `status` and `successor` per token in the primitives/semantic tables. But the committed JSON becomes the durable record: `scripts/token-deprecation-mirror.js` mirrors governance into `$deprecated` on the affected leaf after every governance pull (`npm run airtable:pull:governance`), and CI (`npm run tokens:deprecations:check`, wired into `tokens-check.yml`) fails a PR where source and governance have drifted apart. Message convention: `true` when there is no successor, otherwise `"Replaced by {successor.path}."` (the successor's dot-path in curly braces, matching the alias syntax already used elsewhere in source).
+
+`$deprecated` is a spec property, not an `$extensions` block — it does not conflict with the "never commit `$extensions`" rule above. It is machine-managed only; nobody hand-authors it (deprecate via Airtable, then pull). Consumers: `/token-deprecation-pass` now reads `$deprecated` from source as the durable record, using `airtable-governance.json` only as a cross-check.

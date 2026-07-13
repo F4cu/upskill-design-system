@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check deprecation state in sync with governance
+        run: npm run tokens:deprecations:check
+
       - name: Build tokens
         run: npm run tokens:build
 

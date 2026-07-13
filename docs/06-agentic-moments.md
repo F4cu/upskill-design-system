@@ -31,7 +31,7 @@ Each command file in `.claude/commands/` holds the full inputs, steps, and succe
 | # | Moment | Command | Load-bearing invariant |
 |---|---|---|---|
 | 1 | Figma variable audit (drift check) | `/figma-variable-audit` | Never overwrite primitives without diffing against usage; capture the read into `figma-variables.json`; exclude representational divergences from the drift report. |
-| 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the Airtable `successor`; read `airtable-governance.json`, no MCP. |
+| 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the successor discoverable from the token's own `$deprecated` message; read source `$deprecated` as the durable record, `airtable-governance.json` as cross-check, no MCP. |
 | 3 | Component scaffold | `/component-scaffold` | Read schema + template + Figma context; produce the four component files. |
 | 4 | Layout generation | `/layout-generation` | Only fixed-set components and tokens; every structural choice cites a metadata rule. Output reaches `main` only via a `layout/<kebab-name>` PR, reviewed in-session by default ([ADR-016](decisions/016-layout-output-review-path.md)). |
 | 5 | Figma variable push (code → Figma) | `/figma-variable-push` | Write only clean-missing variables; never delete or overwrite Figma variables without explicit confirmation. |

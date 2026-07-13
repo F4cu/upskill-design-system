@@ -148,7 +148,7 @@ A conversion step applied by Style Dictionary during the build. Examples in this
 ## Design tokens — governance
 
 **Deprecated**
-A token that is scheduled for removal. It still works, but should not be used in new code. In this repo, deprecated tokens are flagged in Airtable with `status: deprecated` and point to a `successor` token that should be used instead. The `/token-deprecation-pass` command migrates existing usages automatically.
+A token that is scheduled for removal. It still works, but should not be used in new code. In this repo, deprecated tokens are flagged in Airtable with `status: deprecated` and point to a `successor` token that should be used instead. Since the 2026-07-13 ADR-002 amendment, that state is also mirrored into the committed source as the token's DTCG `$deprecated` property (`true`, or `"Replaced by {successor.path}."` when a successor exists) — the committed JSON, not Airtable, is the durable record; Airtable remains the human-facing governance UI. The `/token-deprecation-pass` command migrates existing usages automatically.
 
 **Drift**
 When Figma variables and code tokens have diverged and no longer match — a value was changed in one place but not the other. In this repo, code is the source of truth, so drift is always resolved by updating Figma to match the code, never the other way around. The `/figma-variable-audit` command detects drift.

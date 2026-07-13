@@ -48,7 +48,7 @@ npm run airtable:pull:governance
 - `packages/tokens/airtable-governance.json` — per token: `status` (`active`|`deprecated`), `owner`, `successor` (a dot-path like `color.terracotta.9`, nullable), `notes`
 - `.claude/component-signoff.json` — per component: the human `Implementation` sign-off (`done`/`todo`)
 
-These committed files are what everything downstream reads. The `/token-deprecation-pass` command, for example, reads `airtable-governance.json` (never the Airtable MCP) and migrates every usage of a deprecated token to its `successor`. The `/airtable-sync` command wraps both directions using the committed scripts. Run the pull before any deprecation or sign-off work so the snapshot is fresh.
+These committed files are what everything downstream reads. Since the 2026-07-13 ADR-002 amendment, `airtable:pull:governance` also chains `scripts/token-deprecation-mirror.js`, which mirrors each deprecated token's governance state into the DTCG `$deprecated` property on the affected leaf in `packages/tokens/src/` — the committed token source becomes the durable deprecation record, not just `airtable-governance.json`. `/token-deprecation-pass` now reads `$deprecated` straight from source as the primary record, using `airtable-governance.json` only as a cross-check; `npm run tokens:deprecations:check` (CI-gated in `tokens-check.yml`) fails a PR where the two have drifted apart. The `/airtable-sync` command wraps both directions using the committed scripts. Run the pull before any deprecation or sign-off work so the snapshot — and the mirrored `$deprecated` state — are fresh.
 
 ## Diagram
 

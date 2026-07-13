@@ -36,7 +36,7 @@ Tokens resolve in this fixed order — later layers override earlier ones:
 
 Breakpoints: desktop ≥ 1440px, tablet ≥ 768px, mobile < 768px. Runtime brand selection is a `data-brand` attribute, mirroring `data-theme`; import order in `tokens.css` (primitives → default brand → non-default brands → device → theme.light → theme.dark) is load-bearing for cascade correctness at equal specificity — see ADR-012.
 
-Format is W3C DTCG (`$type`/`$value`, curly-brace aliases, never commit `$extensions`). Scales, naming conventions, line-height convention, and build detail: `.claude/rules/tokens.md`. Authoring procedure: `/tokens-author`.
+Format is W3C DTCG (`$type`/`$value`, curly-brace aliases, never commit `$extensions` — `$deprecated` is the exception, machine-mirrored from Airtable). Scales, naming conventions, line-height convention, and build detail: `.claude/rules/tokens.md`. Authoring procedure: `/tokens-author`.
 
 ## Style Dictionary build
 
@@ -107,7 +107,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 | # | Moment | Command | Invariant that must survive |
 |---|---|---|---|
 | 1 | Figma variable audit (drift check) | `/figma-variable-audit` | Never overwrite primitives without a usage diff; capture the read into `figma-variables.json`; exclude representational divergences. |
-| 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the Airtable `successor`; read `airtable-governance.json`, no MCP. |
+| 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the successor from source `$deprecated`; `airtable-governance.json` is the cross-check, no MCP. |
 | 3 | Component scaffold | `/component-scaffold` | Read schema + template + Figma context; produce the four component files. |
 | 4 | Layout generation | `/layout-generation` | Only fixed-set components and tokens; every structural choice cites a metadata rule. |
 | 5 | Figma variable push (code → Figma) | `/figma-variable-push` | Write only clean-missing variables; never delete or overwrite without explicit confirmation. |
