@@ -5,7 +5,7 @@
 //
 //   npm run status                    dashboard — component/token totals,
 //                                     latest token changes (from git history)
-//   npm run status:pipeline           per-component review table
+//   npm run status:board              per-component review table
 //   npm run status:component <Name>   one component's checklist card
 
 import path from "path";
@@ -21,11 +21,16 @@ const tty = process.stdout.isTTY;
 const paint = (code) => (s) => (tty ? `\x1b[${code}m${s}\x1b[0m` : s);
 const green = paint("32");
 const yellow = paint("33");
+const cyan = paint("36");
 const dim = paint("2");
 const bold = paint("1");
+const gray = paint("90");
 
 const visLen = (s) => s.replace(/\x1b\[[0-9;]*m/g, "").length;
 const padEnd = (s, w) => s + " ".repeat(Math.max(0, w - visLen(s)));
+
+// left-hand key column inside boxes: `type        interactive`
+const kv = (k, v) => `${cyan(padEnd(k, 11))} ${v}`;
 
 // lines: strings, or { rule: "section title" } for an inner divider
 function box(title, lines) {
@@ -33,15 +38,17 @@ function box(title, lines) {
     visLen(title) + 4,
     ...lines.map((l) => (typeof l === "string" ? visLen(l) : visLen(l.rule) + 4)),
   );
-  const out = [`┌─ ${bold(title)} ${"─".repeat(w - visLen(title) - 1)}┐`];
+  const out = [
+    gray("┌─ ") + bold(cyan(title)) + gray(` ${"─".repeat(w - visLen(title) - 1)}┐`),
+  ];
   for (const l of lines) {
     if (typeof l === "string") {
-      out.push(`│ ${padEnd(l, w)} │`);
+      out.push(`${gray("│")} ${padEnd(l, w)} ${gray("│")}`);
     } else {
-      out.push(`├─ ${l.rule} ${"─".repeat(w - visLen(l.rule) - 1)}┤`);
+      out.push(gray("├─ ") + cyan(l.rule) + gray(` ${"─".repeat(w - visLen(l.rule) - 1)}┤`));
     }
   }
-  out.push(`└${"─".repeat(w + 2)}┘`);
+  out.push(gray(`└${"─".repeat(w + 2)}┘`));
   return out.join("\n");
 }
 
@@ -67,11 +74,11 @@ function cmdComponent(name) {
   }
 
   const lines = [
-    `type        ${c.type}`,
-    `maturity    ${c.maturity}`,
-    `stage       ${c.implementation}${c.substate ? ` · ${c.substate}` : ""}${c.reviewPath ? ` · path: ${c.reviewPath}` : ""}`,
+    kv("type", c.type),
+    kv("maturity", c.maturity),
+    kv("stage", `${c.implementation}${c.substate ? ` · ${c.substate}` : ""}${c.reviewPath ? ` · path: ${c.reviewPath}` : ""}`),
   ];
-  if (c.reviewedAt) lines.push(`reviewed    ${c.reviewedAt.slice(0, 10)}`);
+  if (c.reviewedAt) lines.push(kv("reviewed", c.reviewedAt.slice(0, 10)));
 
   if (c.checklist) {
     lines.push({ rule: "review checklist" }, ...checklistLines(c));
@@ -95,7 +102,7 @@ function cmdComponent(name) {
 const STAGE_ORDER = ["done", "in review", "in progress", "todo"];
 const mark = (item) => (item.na ? dim("–") : item.done ? green("✓") : yellow("○"));
 
-function cmdPipeline() {
+function cmdBoard() {
   const all = components().sort(
     (a, b) =>
       STAGE_ORDER.indexOf(a.implementation) - STAGE_ORDER.indexOf(b.implementation) ||
@@ -117,7 +124,7 @@ function cmdPipeline() {
   ).join(" · ");
   console.log(`${bold(`${all.length} components`)} — ${counts}`);
   console.log(dim("gate passed for every reviewed row; VIS/CODE/LEARN: ✓ done · ○ pending · – n/a\n"));
-  console.log(dim(head.map((h, i) => padEnd(h, widths[i])).join("  ")));
+  console.log(cyan(head.map((h, i) => padEnd(h, widths[i])).join("  ")));
   for (const r of rows) console.log(r.map((cell, i) => padEnd(cell, widths[i])).join("  "));
 }
 
@@ -192,9 +199,9 @@ function cmdDashboard() {
 
   console.log(
     box(`components — ${all.length}`, [
-      `stage       ${byImpl}`,
-      `maturity    ${fmt(byMaturity)}`,
-      `type        ${fmt(byType)}`,
+      kv("stage", byImpl),
+      kv("maturity", fmt(byMaturity)),
+      kv("type", fmt(byType)),
     ]),
   );
 
@@ -224,10 +231,13 @@ function cmdDashboard() {
 
   console.log(
     box(`tokens — ${total}`, [
-      `layers      ${Object.entries(layers).map(([k, n]) => `${k} ${n}`).join(" · ")}`,
-      `governed    ${governed.join(" · ")}`,
-      `in use      ${Object.keys(usage.css ?? {}).length} css vars · ${Object.keys(usage.aliases ?? {}).length} {alias} refs` +
-        (deprecatedInUse ? ` · ${yellow(`${deprecatedInUse} deprecated still referenced`)}` : ""),
+      kv("layers", Object.entries(layers).map(([k, n]) => `${k} ${n}`).join(" · ")),
+      kv("governed", governed.join(" · ")),
+      kv(
+        "in use",
+        `${Object.keys(usage.css ?? {}).length} css vars · ${Object.keys(usage.aliases ?? {}).length} {alias} refs` +
+          (deprecatedInUse ? ` · ${yellow(`${deprecatedInUse} deprecated still referenced`)}` : ""),
+      ),
     ]),
   );
 
@@ -249,9 +259,9 @@ function cmdDashboard() {
 
 const [cmd, arg] = process.argv.slice(2);
 if (cmd === "component") cmdComponent(arg);
-else if (cmd === "pipeline") cmdPipeline();
+else if (cmd === "board") cmdBoard();
 else if (!cmd) cmdDashboard();
 else {
-  console.error(`Unknown subcommand: ${cmd}. Use: status | status pipeline | status component <Name>`);
+  console.error(`Unknown subcommand: ${cmd}. Use: status | status board | status component <Name>`);
   process.exit(1);
 }

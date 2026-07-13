@@ -99,7 +99,7 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 | Command | What it does |
 |---|---|
 | `npm run status` | Dashboard: component totals by stage/maturity/type, token counts per layer, governance summary, and the latest five token adds/edits (replayed from git history of `packages/tokens/src`). |
-| `npm run status:pipeline` | Per-component review table — the `STATUS_QUO.md` checklist table with ✓/○/– marks. |
+| `npm run status:board` | Per-component review table — the `STATUS_QUO.md` checklist table with ✓/○/– marks. (Named `board`, not `pipeline`, to avoid colliding with the unrelated `pipeline:status` GitHub snapshot above.) |
 | `npm run status:component` | One component's checklist card plus its suggested next step. Usage: `npm run status:component -- <Name>`. |
 
 ---
