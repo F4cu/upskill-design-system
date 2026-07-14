@@ -19,6 +19,7 @@
     "build": "tsc -p tsconfig.build.json && vite build",
     "typecheck": "tsc --noEmit",
     "test:a11y": "vitest run",
+    "test:a11y:stories": "vitest run --config vitest.stories.config.ts",
     "storybook": "storybook dev -p 6006",
     "build:storybook": "storybook build"
   },

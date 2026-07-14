@@ -37,6 +37,7 @@ export const WithSelection: Story = {
     items: ITEMS,
     selectedValue: 'spanish',
     listRole: 'listbox',
+    'aria-label': 'Language',
     onSelect: () => {},
     onClose: () => {},
   },

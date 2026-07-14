@@ -54,6 +54,7 @@
     "screenshot:check": "node scripts/screenshot.js check",
     "screenshot:approve": "node scripts/screenshot.js approve",
     "a11y:coverage": "node scripts/a11y-coverage.js",
-    "a11y:test": "npm run test:a11y -w @upskill/components"
+    "a11y:test": "npm run test:a11y -w @upskill/components",
+    "a11y:stories": "npm run test:a11y:stories -w @upskill/components"
   }
 }

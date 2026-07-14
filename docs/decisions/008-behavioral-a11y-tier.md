@@ -1,7 +1,7 @@
 # ADR-008 — Behavioral a11y verification tier, gated by component complexity
 
 **Date:** 2026-06-22
-**Amended:** 2026-07-02
+**Amended:** 2026-07-14
 **Status:** `accepted`
 
 ## Context
@@ -137,3 +137,35 @@ for a deliberate design fix.
   color usage — the same shape as `scripts/a11y-backlog.json`'s discipline, not a new pattern.
 - Two known failures are tracked, not hidden or force-fixed under time pressure; the waiver ledger's
   stale-entry check ensures they can't be silently forgotten once resolved.
+
+## Amendment (2026-07-14) — Zero-maintenance story axe sweep underneath the tiers (issue #72)
+
+Tier 2 covers only the components `a11y-coverage.js` derives as interactive, and only what each
+hand-written test asserts. Every other component's stories — and every new story added to a covered
+component — got no automated axe pass at all. Storybook's portable stories close that gap without a
+per-component test file: one generic test (`src/a11y-stories.sweep.test.tsx`, run by
+`vitest.stories.config.ts` as `npm run a11y:stories`) globs every `*.stories.tsx`, composes each story
+with the preview annotations (theme/brand decorators included), renders it in jsdom, and runs axe.
+
+**Decision:** add the sweep as a third automated layer *underneath* the tiers, in `components-check.yml`
+alongside the existing gates. It is deliberately **not** Option 1 (Storybook test-runner / real
+browser) reopened: it runs in the same jsdom environment as Tier 2, with `color-contrast` disabled for
+the same reason — layout-dependent rules stay with `tokens:contrast-check` and visual review. The
+sweep respects `addon-a11y` story parameters (`parameters.a11y.test: 'off'` skips a story;
+`parameters.a11y.config.rules` overrides rule defaults), so known exclusions live on the story, where
+the addon panel also reads them.
+
+The sweep does not change Tier-2 semantics: it checks each story's *initial render* only, while
+Tier-2 tests assert the dynamic contract (state toggling, focus, keyboard) axe cannot see.
+`a11y-coverage.js` still tracks behavioral-test existence and is untouched. On landing, the sweep
+immediately caught a real violation (DropdownMenu's standalone-listbox story lacking an accessible
+name), confirming it earns its place.
+
+### Consequences
+
+- Baseline axe coverage now grows with every story at zero marginal cost — a new story is axe-checked
+  in CI with no test file written.
+- Story quality becomes load-bearing: a story that renders a component in an invalid isolation (e.g.
+  an unlabelled listbox) now fails CI and must either be fixed or carry an explicit
+  `parameters.a11y` exclusion on the story itself.
+- The sweep runs all stories in one jsdom pass (~2s for 123 stories), so the CI cost is negligible.

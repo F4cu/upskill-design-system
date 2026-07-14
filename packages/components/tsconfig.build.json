@@ -10,6 +10,7 @@
     "src/**/*.stories.tsx",
     "src/**/*.mdx",
     "src/**/*.a11y.test.tsx",
+    "src/a11y-stories.sweep.test.tsx",
     "src/vitest.d.ts",
     "node_modules",
     "dist"
