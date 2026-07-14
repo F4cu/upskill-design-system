@@ -15,11 +15,13 @@ sources:
 
 ## What it is
 
-Accessibility verification runs in three tiers, each deterministic and CI-gated ([ADR-008](decisions/008-behavioral-a11y-tier.md), amended 2026-07-02):
+Accessibility verification runs in three tiers plus a zero-maintenance baseline sweep, each deterministic and CI-gated ([ADR-008](decisions/008-behavioral-a11y-tier.md), amended 2026-07-02 and 2026-07-14):
 
 1. **Tier 1 — static lint, all components.** Every component's markup is checked for accessibility mistakes visible without ever rendering it — missing labels, invalid roles (`npm run lint`, which runs ESLint + `eslint-plugin-jsx-a11y` over `packages/components/src`).
 2. **Tier 2 — behavioral tests, interactive components only.** Each interactive component gets tests proving it actually works the way a keyboard or screen-reader user experiences it — state attributes toggling, focus, keyboard — plus a scan with axe (the industry-standard automated accessibility rule checker). These assertions of the dynamic ARIA contract live in a co-located `<Name>.a11y.test.tsx` (Vitest + Testing Library + `vitest-axe`, jsdom).
 3. **Tier 3 — token-level contrast math.** Every curated text-on-background color pairing is verified to meet WCAG's minimum contrast ratios (`npm run tokens:contrast-check`, which computes WCAG relative-luminance contrast ratios against the *built* theme CSS).
+
+Underneath the tiers, a **story axe sweep** (`npm run a11y:stories`, 2026-07-14 amendment, issue #72) renders *every* Storybook story via portable stories in jsdom and runs axe on its initial render — so baseline coverage grows automatically with each new story, no test file written. It complements Tier 2 rather than replacing it: axe sees only the rendered snapshot, not keyboard, focus, or state changes.
 
 ## Why it's built this way
 
@@ -49,8 +51,11 @@ The three gates a PR runs:
 npm run lint                  # Tier 1 — jsx-a11y static checks, all components
 npm run a11y:coverage         # Tier 2 completeness — fails if an interactive component lacks its test
 npm run a11y:test             # Tier 2 — behavioral tests + axe scan (jsdom)
+npm run a11y:stories          # Baseline sweep — axe over every story's initial render (jsdom)
 npm run tokens:contrast-check # Tier 3 — WCAG contrast math over built theme CSS
 ```
+
+The sweep (`packages/components/src/a11y-stories.sweep.test.tsx`) respects `addon-a11y` story parameters: set `parameters.a11y.test: 'off'` on a story to skip it, or `parameters.a11y.config.rules` to override individual axe rules — exclusions live on the story, where Storybook's a11y panel also reads them. `color-contrast` is disabled for the same jsdom reason as Tier 2; Tier 3 covers it.
 
 New Tier 2 tests are modelled on `packages/components/src/Button/Button.a11y.test.tsx`. Two shrinking ledgers keep known debt visible instead of silently waived:
 
@@ -61,6 +66,6 @@ Tier 2 is also wired into the verified component loop: the [ADR-007](decisions/0
 
 ## Related
 
-- ADRs: [008 — Behavioral a11y tier](decisions/008-behavioral-a11y-tier.md) (+ 2026-07-02 amendment), [007 — Verified component loop](decisions/007-verified-component-loop.md) (gate amendment)
+- ADRs: [008 — Behavioral a11y tier](decisions/008-behavioral-a11y-tier.md) (+ 2026-07-02 and 2026-07-14 amendments), [007 — Verified component loop](decisions/007-verified-component-loop.md) (gate amendment)
 - Scripts: `scripts/a11y-coverage.js`, `scripts/token-contrast-check.js`, `scripts/a11y-backlog.json`, `scripts/token-contrast-waivers.json`
-- Commands: `npm run lint`, `npm run a11y:coverage`, `npm run a11y:test`, `npm run tokens:contrast-check` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Commands: `npm run lint`, `npm run a11y:coverage`, `npm run a11y:test`, `npm run a11y:stories`, `npm run tokens:contrast-check` — see the [npm scripts reference](07-npm-scripts-reference.md)

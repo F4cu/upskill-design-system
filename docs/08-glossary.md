@@ -313,6 +313,9 @@ Supplying a model with relevant, up-to-date material from an external source at 
 **Regression Testing**
 Re-running an existing test suite after a change to confirm the change didn't break something that used to work. This repo's `components-check.yml` does this on every PR touching components — the a11y, typecheck, and build steps all rerun regardless of which file changed, to catch a side effect the diff didn't obviously touch.
 
+**Story axe sweep**
+An automated check that renders every Storybook story and runs axe (the standard automated accessibility rule checker) against the result, so accessibility coverage grows with each new story at no extra maintenance cost. `npm run a11y:stories` does this in this repo via "portable stories" — Storybook's mechanism for reusing story definitions inside a test runner — underneath the three accessibility tiers; it checks each story's initial render only, so the behavioral Tier-2 tests (keyboard, focus, state) remain necessary. See [Accessibility](03-accessibility.md).
+
 **Synthetic Data Generation**
 Programmatically generating artificial data that mimics real data's shape, for testing without needing real records. This repo doesn't currently generate synthetic data; the closest need would be fabricating sample Airtable rows to test `scripts/airtable-pull.js` without touching the real base.
 

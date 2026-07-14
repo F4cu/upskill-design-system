@@ -12,6 +12,7 @@ sources:
 # clock reset 2026-07-13: #70 adds a $deprecated exception note to CLAUDE.md and .claude/rules/tokens.md; the layering/budget mechanics this page describes are unchanged, still accurate
 # verified 2026-07-13 (issue #74): checked against ADR-015 amendment and CLAUDE.md as of #65-#68 + the full/standard rename; handoff-lifecycle section already describes the review-state baseline + checklist derivation from the #64 sweep, "adversarial" survives as the full path's description per ADR-010, still accurate
 # clock reset 2026-07-14: #71 replaces the pending visual-regression line in .claude/rules/components.md with the shipped screenshot-baseline convention (ADR-019); this page describes the instruction ladder, not story/Storybook conventions, still accurate
+# clock reset 2026-07-14: #72 adds the story axe sweep paragraph to .claude/rules/components.md's a11y section; this page describes the instruction ladder, not a11y check content, still accurate
 ---
 # Context engineering
 

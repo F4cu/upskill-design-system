@@ -45,7 +45,7 @@ The suggested reading order is the page order — tokens first, because everythi
 
 - [01 — Token pipeline](01-token-pipeline.md) — the four-layer model, the Style Dictionary build, and why code (not Figma) is the source of truth
 - [02 — Component lifecycle](02-component-lifecycle.md) — the metadata schema, the two-axis lifecycle, and the tests for when a new component is justified
-- [03 — Accessibility](03-accessibility.md) — the three-tier a11y contract and the jsdom trade-off
+- [03 — Accessibility](03-accessibility.md) — the three-tier a11y contract (plus the automatic story axe sweep) and the jsdom trade-off
 - [04 — Layout grammar](04-layout-grammar.md) — the fixed Figma-level → HTML-landmark mapping
 - [05 — Governance](05-governance.md) — the Airtable two-way sync and the "don't downgrade done" guard
 - [06 — Agentic moments](06-agentic-moments.md) — the lite-agentic charter, the nine moments, and the verified `/add-component` loop
