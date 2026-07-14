@@ -7,7 +7,7 @@ The runnable app is **Storybook** — the documentation/dev environment for the
 coded components, served by Vite on port 6006. There is no end-user app; you
 "run" the system by building tokens → components, launching the Storybook dev
 server, then driving its story iframes headlessly with Playwright via
-`.claude/skills/run-upskill-design-system/driver.mjs` (screenshots, console-error
+`.claude/skills/run-storybook/driver.mjs` (screenshots, console-error
 checks). The token build and `metadata:validate`/`typecheck`/`build` are the
 non-visual checks every component change must pass.
 
@@ -68,14 +68,14 @@ Drive it with the committed driver (story ids are the `kebab--variant` ids from
 `http://localhost:6006/index.json`):
 
 ```bash
-cd .claude/skills/run-upskill-design-system
+cd .claude/skills/run-storybook
 node driver.mjs list button                          # list story ids (optional substring filter)
 node driver.mjs shot components-button--default      # screenshot a story (light)
 node driver.mjs shot components-button--all-combinations --theme dark
 node driver.mjs errors components-appheader--default # report console errors only
 ```
 
-Screenshots land in `.claude/skills/run-upskill-design-system/shots/`
+Screenshots land in `.claude/skills/run-storybook/shots/`
 (gitignored), named `<story-id>[.<theme>].png`, or `--out <file>` to override.
 **Actually open the PNG** — `shot` also prints any console errors after saving.
 

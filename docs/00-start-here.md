@@ -53,4 +53,4 @@ The suggested reading order is the page order — tokens first, because everythi
 - [08 — Glossary](08-glossary.md) — terms explained for a non-developer collaborator
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`CLAUDE.md` → rules → commands → snapshots → handoffs) and the CI gates that keep it honest
 
-The eighteen architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
+The nineteen architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
