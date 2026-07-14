@@ -88,6 +88,14 @@
     "path": ".claude/handoff/archive/2026-07-12-lifecycle-stage-model.handoff.md"
   },
   {
+    "name": "2026-07-14-issue71-screenshot-regression",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-07-14",
+    "updated": "2026-07-14",
+    "path": ".claude/handoff/archive/2026-07-14-issue71-screenshot-regression.handoff.md"
+  },
+  {
     "name": "docsify-docs-site",
     "kind": "handoff",
     "status": "done",
