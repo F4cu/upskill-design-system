@@ -13,6 +13,8 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.6.0",
+    "pixelmatch": "^7.2.0",
+    "pngjs": "^7.0.0",
     "storybook": "^10",
     "typescript-eslint": "^8.61.1"
   },
@@ -49,6 +51,8 @@
     "lint": "eslint packages/components/src",
     "metadata:validate": "node scripts/validate-metadata.js",
     "layout:validate": "node scripts/validate-layout.js",
+    "screenshot:check": "node scripts/screenshot.js check",
+    "screenshot:approve": "node scripts/screenshot.js approve",
     "a11y:coverage": "node scripts/a11y-coverage.js",
     "a11y:test": "npm run test:a11y -w @upskill/components"
   }

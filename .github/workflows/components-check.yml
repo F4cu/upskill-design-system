@@ -9,6 +9,7 @@ on:
       - 'scripts/a11y-coverage.js'
       - 'scripts/a11y-backlog.json'
       - 'scripts/generate-pattern-schema.js'
+      - 'scripts/screenshot.js'
       - '.claude/component-patterns.json'
       - 'package.json'
       - 'package-lock.json'
@@ -53,6 +54,20 @@ jobs:
 
       - name: Behavioral a11y tests
         run: npm run a11y:test
+
+      - name: Screenshot baseline check (ADR-019 — advisory while baselines are macOS-generated)
+        continue-on-error: true
+        env:
+          # Baselines are macOS-generated; ubuntu antialiasing differs, so CI
+          # tolerates 1% vs the strict local default. See ADR-019.
+          SCREENSHOT_DIFF_RATIO: "0.01"
+        run: |
+          npm install --no-save playwright
+          npx playwright install chromium --with-deps
+          npm run build:storybook -w @upskill/components
+          npx http-server packages/components/storybook-static -p 6006 &
+          for i in $(seq 1 30); do curl -sf http://localhost:6006/index.json > /dev/null && break; sleep 1; done
+          npm run screenshot:check
 
       - name: Pattern schema staleness check (ADR-013)
         # -I ignores the generatedFrom commit-sha line, which legitimately
