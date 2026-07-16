@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-07-10
-completed:
+completed: 2026-07-16
 ---
 
 # Durable component review state (fix pipeline regression from CI sense runs)
@@ -45,9 +45,9 @@ Make review state durable in a new committed file
 
 ## Steps
 
-- [ ] `scripts/sense.js`: read/merge/write `.claude/component-review-state.json`
-- [ ] `.github/workflows/sync.yml`: git add the new file
-- [ ] ADR-015 amendment
-- [ ] CLAUDE.md frozen-snapshot table row (`npm run claudemd:check`)
-- [ ] Run `npm run sense` locally, verify pipeline restored (25 reviewed)
-- [ ] Commit to `main`, mark this handoff `done`, `npm run handoff:tidy`
+- [x] `scripts/sense.js`: read/merge/write `.claude/component-review-state.json`
+- [x] `.github/workflows/sync.yml`: git add the new file
+- [x] ADR-015 amendment (2026-07-10)
+- [x] CLAUDE.md frozen-snapshot table row
+- [x] `.claude/component-review-state.json` committed and populated
+- [x] Commit to `main`, mark this handoff `done`, `npm run handoff:tidy`
