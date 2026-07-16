@@ -93,6 +93,6 @@ flowchart TD
 
 - ADRs: [013 — Cross-component pattern schema](decisions/013-cross-component-pattern-schema.md), [015 — Handoff artifact lifecycle](decisions/015-handoff-artifact-lifecycle.md), [017 — CLAUDE.md context budget](decisions/017-claude-md-context-budget.md)
 - `CLAUDE.md` sections: "Where knowledge lives", "Frozen-memory snapshots", "Commands and skills"
-- Scripts: `npm run claudemd:check`, `npm run handoff:tidy`, `npm run docs:check`, `npm run sense` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Scripts: `npm run claudemd:check`, `npm run handoff:tidy`, `npm run docs:check`, `npm run sense` — see the [CLI reference](07-cli-reference.md)
 - Glossary entries this page connects: CLAUDE.md, Rules (path-scoped), Progressive disclosure, Frozen snapshot, Handoff, Ledger — [Glossary](08-glossary.md)
 - The lite-agentic charter these mechanics serve: [Agentic moments](06-agentic-moments.md)

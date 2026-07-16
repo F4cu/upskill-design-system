@@ -6,17 +6,40 @@ sources:
   - .github/workflows/*.yml
 # clock reset 2026-07-10: CI-audit workflows (#57-#60) merged; this page's rewrite in #61 already describes the end state (lint gate, sync.yml, weekly pull, showcase-check)
 ---
-# npm scripts reference
+# CLI reference
 
-Every npm script available at the repo root, grouped by what it's for. These cover the full maintenance loop: building tokens into CSS/JS outputs, developing and documenting components, keeping local snapshots fresh, validating, and syncing Airtable with the committed token source.
+Every command here runs via `npm run <name>` — there's no separate mechanism for "CLI scripts" vs. "npm scripts." The distinction that actually matters is **who the output is for**: most commands are pipeline plumbing (they build, sync, or aggregate, and the result is a committed file consumed by CI or the next script in the chain); a smaller set — `status`, `status:board`, `status:component` — renders a terminal view for a human, live, nothing written to disk. Both kinds are grouped together below by subject, since that's how you'll look them up, but the "When it runs" column tells you which kind you're looking at.
 
-None of these require an LLM. For tasks that need judgment — Figma drift reconciliation, token deprecation, component scaffolding, layout generation — see the [agentic moments](06-agentic-moments.md) defined in `.claude/commands/` and indexed in `CLAUDE.md`.
+These cover the full maintenance loop: building tokens into CSS/JS outputs, developing and documenting components, keeping local snapshots fresh, validating, and syncing Airtable with the committed token source. None of these require an LLM. For tasks that need judgment — Figma drift reconciliation, token deprecation, component scaffolding, layout generation — see the [agentic moments](06-agentic-moments.md) defined in `.claude/commands/` and indexed in `CLAUDE.md`.
 
 **When commands run.** Each table has a "When it runs" column. Commands fall into three patterns: **you type it** (a manual step at a specific point in your workflow), **CI runs it** (GitHub Actions executes it automatically on a pull request or on a push to `main` — you only run it locally to catch problems before CI does), or **both**. "PR" below means a pull request on GitHub; "on `main`" means it fires automatically whenever matching files land on the main branch.
 
 **Naming grammar.** The first segment is the system or subject a command acts on. Cross-system operations are namespaced by their **destination** — `airtable:*` writes to or reads from Airtable — so the target is never ambiguous (a hypothetical Figma push would be `figma:*`, distinct from `tokens:*`, which is local token work only). **Composite scripts** (marked 🔶) chain other scripts in order; the "Runs" note lists the children so you can trace them without opening `package.json`.
 
 Airtable commands require `AIRTABLE_API_KEY` in your environment. Copy `.env.example` to `.env` and fill it in for local runs; CI reads it from repository secrets.
+
+---
+
+## Orientation: what you'll actually type
+
+The tables below are the full reference — most entries are composite children, CI-only gates, or rare one-offs you'll look up rather than memorize. If you just need the shortlist of commands you'll run by hand regularly, roughly in the order a normal change touches them:
+
+| Command | When you reach for it |
+|---|---|
+| `npm run storybook` | Start the dev environment. |
+| `npm run tokens:build` | After editing anything in `packages/tokens/src/`. |
+| `npm run build` | Before pushing component or token changes. |
+| `npm run typecheck` / `npm run lint` | Before pushing component changes. |
+| `npm run a11y:coverage` / `npm run a11y:test` / `npm run a11y:stories` | Before pushing a new or changed interactive component. |
+| `npm run metadata:validate` | After editing a `*.metadata.json`. |
+| `npm run layout:validate -- <path>` | After hand-editing a layout file. |
+| `npm run screenshot:check` / `npm run screenshot:approve` | After a visual change, to catch or accept pixel diffs. |
+| `npm run status` / `status:board` / `status:component -- <Name>` | Any time you want a quick read on where things stand. |
+| `npm run sense` | Before kicking off an agent loop. |
+| `npm run docs:check` / `npm run claudemd:check` | After touching a doc's declared source, or `CLAUDE.md`. |
+| `npm run handoff:tidy` | After finishing the work a handoff describes. |
+
+Everything else either runs itself — a composite child chained by one of the commands above, or a step CI fires on every PR/push to `main` — or is a rare, deliberate one-off (`airtable:setup`, `harness:run`). The "When it runs" column in each table below tells you which bucket a given command falls into.
 
 ---
 

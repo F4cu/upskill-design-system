@@ -65,5 +65,5 @@ No diagram here: the grammar table *is* the spatial mapping, and a flowchart wou
 
 - ADRs: [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [016 — Layout output review path](decisions/016-layout-output-review-path.md)
 - Commands: `/layout-generation` (in `.claude/commands/`)
-- Scripts: `scripts/validate-layout.js` via `npm run layout:validate` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Scripts: `scripts/validate-layout.js` via `npm run layout:validate` — see the [CLI reference](07-cli-reference.md)
 - Live examples: the five pages in `apps/showcase/src/pages/` — see [Start here](00-start-here.md)

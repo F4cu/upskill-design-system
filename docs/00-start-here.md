@@ -49,7 +49,7 @@ The suggested reading order is the page order — tokens first, because everythi
 - [04 — Layout grammar](04-layout-grammar.md) — the fixed Figma-level → HTML-landmark mapping
 - [05 — Governance](05-governance.md) — the Airtable two-way sync and the "don't downgrade done" guard
 - [06 — Agentic moments](06-agentic-moments.md) — the lite-agentic charter, the nine moments, and the verified `/add-component` loop
-- [07 — npm scripts reference](07-npm-scripts-reference.md) — every npm script, grouped by purpose
+- [07 — CLI reference](07-cli-reference.md) — every command, grouped by purpose
 - [08 — Glossary](08-glossary.md) — terms explained for a non-developer collaborator
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`CLAUDE.md` → rules → commands → snapshots → handoffs) and the CI gates that keep it honest
 

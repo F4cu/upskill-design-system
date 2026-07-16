@@ -66,4 +66,4 @@ flowchart LR
 
 - ADRs: [010 — Two-axis lifecycle](decisions/010-component-lifecycle-two-axes.md) (the guard), [002 — Three-layer token model](decisions/002-three-layer-token-model.md) (governance direction precedent), [003 — `$root` convention](decisions/003-root-token-convention.md) (supersession as the worked example)
 - Commands: `/airtable-sync`, `/token-deprecation-pass` (in `.claude/commands/`)
-- Scripts: `scripts/airtable-sync.js`, `scripts/airtable-pull.js`; `npm run airtable:pull:governance`, `npm run airtable:sync:all` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Scripts: `scripts/airtable-sync.js`, `scripts/airtable-pull.js`; `npm run airtable:pull:governance`, `npm run airtable:sync:all` — see the [CLI reference](07-cli-reference.md)

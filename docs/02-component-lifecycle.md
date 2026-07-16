@@ -102,4 +102,4 @@ flowchart TB
 
 - ADRs: [001 — Metadata schema](decisions/001-component-metadata-schema.md) (+ amendment), [006 — Carousel as hook](decisions/006-carousel-hook-not-component.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [010 — Two-axis lifecycle](decisions/010-component-lifecycle-two-axes.md)
 - Commands: `/component-scaffold`, `/add-component` (in `.claude/commands/`)
-- Scripts: `npm run metadata:validate`, `npm run sense`, `npm run typecheck`, `npm run build` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Scripts: `npm run metadata:validate`, `npm run sense`, `npm run typecheck`, `npm run build` — see the [CLI reference](07-cli-reference.md)

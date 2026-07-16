@@ -5,7 +5,7 @@
 - [04 — Layout grammar](04-layout-grammar.md)
 - [05 — Governance](05-governance.md)
 - [06 — Agentic moments](06-agentic-moments.md)
-- [07 — npm scripts reference](07-npm-scripts-reference.md)
+- [07 — CLI reference](07-cli-reference.md)
 - [08 — Glossary](08-glossary.md)
 - [09 — Context engineering](09-context-engineering.md)
 - Decision records

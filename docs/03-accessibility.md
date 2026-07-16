@@ -68,4 +68,4 @@ Tier 2 is also wired into the verified component loop: the [ADR-007](decisions/0
 
 - ADRs: [008 — Behavioral a11y tier](decisions/008-behavioral-a11y-tier.md) (+ 2026-07-02 and 2026-07-14 amendments), [007 — Verified component loop](decisions/007-verified-component-loop.md) (gate amendment)
 - Scripts: `scripts/a11y-coverage.js`, `scripts/token-contrast-check.js`, `scripts/a11y-backlog.json`, `scripts/token-contrast-waivers.json`
-- Commands: `npm run lint`, `npm run a11y:coverage`, `npm run a11y:test`, `npm run a11y:stories`, `npm run tokens:contrast-check` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Commands: `npm run lint`, `npm run a11y:coverage`, `npm run a11y:test`, `npm run a11y:stories`, `npm run tokens:contrast-check` — see the [CLI reference](07-cli-reference.md)

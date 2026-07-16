@@ -94,4 +94,4 @@ A full worked example of this loop running on a real component is documented in 
 - ADRs: [007 — Verified component loop](decisions/007-verified-component-loop.md) (+ amendment)
 - All eleven command files in `.claude/commands/`: the nine moments above plus `/tokens-author` (token authoring — see [Token pipeline](01-token-pipeline.md)) and `/airtable-sync` (sync wrapper — see [Governance](05-governance.md)); the read-only reviewer agent definition in `.claude/agents/adversarial-reviewer.md`
 - `CLAUDE.md` sections: "Agentic moments", "MCP tools — when to use vs when to avoid", "Frozen-memory snapshots"
-- Scripts: `npm run sense`, `npm run sense:component` — see the [npm scripts reference](07-npm-scripts-reference.md)
+- Scripts: `npm run sense`, `npm run sense:component` — see the [CLI reference](07-cli-reference.md)
