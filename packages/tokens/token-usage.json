@@ -244,6 +244,8 @@
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/CardHorizontal/index.tsx",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
     "--ds-color-background-button-hover": [
@@ -323,6 +325,7 @@
     ],
     "--ds-color-text-inverted-subtle": [
       "packages/components/src/components/CardHorizontal/index.tsx",
+      "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
     "--ds-space-stack-sm": [
@@ -421,6 +424,10 @@
     "--ds-space-stack-": [
       "packages/components/src/components/Stack/index.tsx"
     ],
+    "--ds-color-text-accent-inverted": [
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    ],
     "--ds-font-weight-regular": [
       "packages/components/src/components/Text/Text.module.css"
     ],
@@ -442,9 +449,6 @@
     "--ds-grid-gutter": [
       "packages/components/src/stories/Carousel.stories.tsx",
       "packages/components/src/styles/grid.css"
-    ],
-    "--ds-color-text-accent-inverted": [
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
     "--ds-color-border-inverted": [
       "packages/components/src/stories/FooterHighlights.stories.tsx"
