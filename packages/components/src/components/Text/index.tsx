@@ -1,7 +1,7 @@
 import type { ElementType, HTMLAttributes, CSSProperties } from 'react'
 import styles from './Text.module.css'
 
-export type TextSize = 'body-default' | 'body-small' | 'metadata' | 'label'
+export type TextSize = 'body-default' | 'body-small' | 'metadata' | 'label' | 'inherit'
 export type TextColor = 'default' | 'subtle' | 'brand' | 'disabled' | 'inverted' | 'inverted-subtle' | 'accent-inverted'
 
 export type TextProps = {

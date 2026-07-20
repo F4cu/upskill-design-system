@@ -316,7 +316,7 @@ export default function CourseOverview() {
                     color="inverted"
                   >
                     Discover the Power of{' '}
-                    <Text as="span" color="accent-inverted">Beginner's Mind</Text>
+                    <Text as="span" size="inherit" color="accent-inverted">Beginner's Mind</Text>
                   </Heading>
                   <Text color="inverted">
                     Beginner's mind means approaching life with openness and curiosity,

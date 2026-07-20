@@ -37,3 +37,10 @@
   font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-font-line-height-none);
 }
+
+.inherit {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}

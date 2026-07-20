@@ -44,6 +44,11 @@
         "scenario": "Passing htmlFor without as=\"label\"",
         "reason": "htmlFor is declared on TextProps but not destructured out, so it always falls into ...rest and is spread onto whatever element as renders \u2014 nothing restricts it to label, so it can render an invalid for attribute on a non-label element.",
         "alternative": "Only pass htmlFor when as=\"label\"; for any other element, omit it."
+      },
+      {
+        "scenario": "Nesting Text as=\"span\" inside a Heading to recolor part of the heading text",
+        "reason": "Every Text size option other than inherit sets its own font-family/font-size/font-weight/line-height, which overrides the Heading's typography instead of just changing color.",
+        "alternative": "Pass size=\"inherit\" so the span only changes color and inherits typography from the Heading."
       }
     ]
   },
@@ -53,14 +58,16 @@
         "body-default",
         "body-small",
         "metadata",
-        "label"
+        "label",
+        "inherit"
       ],
       "default": "body-default",
       "purpose": {
         "body-default": "Standard body copy. 1rem, regular weight, 1.5 line-height.",
         "body-small": "Secondary body text or sidebar content. 0.875rem, 1.4 line-height.",
         "metadata": "Supporting details such as timestamps, counts, tags. 0.875rem.",
-        "label": "UI labels for form fields and controls. 1rem, bold weight, single line-height."
+        "label": "UI labels for form fields and controls. 1rem, bold weight, single line-height.",
+        "inherit": "No typography of its own — font-family/size/weight/line-height inherit from the parent. Use only when nesting Text as=\"span\" inside a Heading (or other typographic ancestor) purely to change color."
       }
     },
     "color": {
