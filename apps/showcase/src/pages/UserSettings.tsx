@@ -27,6 +27,7 @@ import {
   Text,
   TextField,
 } from '@upskill/components'
+import styles from './UserSettings.module.css'
 
 // ─── Sample data ─────────────────────────────────────────────────────────────
 // public/ assets need the Vite base prefix to resolve under GitHub Pages
@@ -50,8 +51,8 @@ const LANGUAGE_OPTIONS = [
 ]
 
 const ACHIEVEMENTS = [
-  { title: 'Color Theory', category: 'Graphic Design', icon: 'pen-tool' as const, background: 'var(--ds-color-background-award-silver)' },
-  { title: 'Effective Communication', category: 'Soft Skills', icon: 'zap' as const, background: 'var(--ds-color-background-award-gold)' },
+  { title: 'Color Theory', category: 'Graphic Design', icon: 'pen-tool' as const, tier: 'silver' as const },
+  { title: 'Effective Communication', category: 'Soft Skills', icon: 'zap' as const, tier: 'gold' as const },
 ]
 
 const STARTED_COURSES = [
@@ -69,6 +70,9 @@ export default function UserSettings() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+    return () => {
+      document.documentElement.dataset.theme = 'light'
+    }
   }, [isDark])
 
   return (
@@ -119,7 +123,7 @@ export default function UserSettings() {
 
                 {/* User Form card — usage.patterns "form-section": Card > Stack > [TextField, TextField, ...]
                     background transparent per design: Card only supplies the border/padding here, not a fill */}
-                <Card padding="lg" style={{ background: 'transparent' }}>
+                <Card padding="lg" className={styles.transparentCard}>
                   {/* Inner Inline wraps independently at a higher minWidth, matching the Tablet/Mobile
                       Figma frames where the avatar block stacks above the fields inside the same card.
                       justify="center" centers the avatar block on its own wrapped line at tablet/mobile;
@@ -147,17 +151,18 @@ export default function UserSettings() {
                 {/* Account Settings */}
                 <Stack gap="md">
                   <Heading as="h2" size="headline">Account Settings</Heading>
-                  <Card padding="lg" style={{ background: 'transparent' }}>
+                  <Card padding="lg" className={styles.transparentCard}>
                     <Stack gap="lg">
                       <Inline wrap gap="lg">
                         <Box style={{ minWidth: '15rem' }}>
                           <Select label="Language" options={LANGUAGE_OPTIONS} defaultValue="en" />
                         </Box>
                         <Stack gap="sm">
-                          <Text as="label" size="label" color="subtle">Theme</Text>
+                          <Text as="label" size="label" color="subtle" htmlFor="theme-toggle">Theme</Text>
                           {/* No Switch/Toggle in the fixed set — Button reproduces the Figma ButtonToggle's
                               outlined+icon+label styling exactly */}
                           <Button
+                            id="theme-toggle"
                             variant="outlined"
                             icon={isDark ? 'moon-star' : 'sun'}
                             aria-pressed={isDark}
@@ -197,15 +202,10 @@ export default function UserSettings() {
                     {ACHIEVEMENTS.map((a) => (
                       <Inline key={a.title} gap="md" align="start">
                         <Box
-                          style={{
-                            width: 'var(--ds-size-600)',
-                            height: 'var(--ds-size-600)',
-                            background: a.background,
-                            borderRadius: 'var(--ds-border-radius-sm)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
+                          className={[
+                            styles.achievementIcon,
+                            a.tier === 'gold' ? styles.achievementIconGold : styles.achievementIconSilver,
+                          ].join(' ')}
                         >
                           <Icon name={a.icon} size="md" />
                         </Box>

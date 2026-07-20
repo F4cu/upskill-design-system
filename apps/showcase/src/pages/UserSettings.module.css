@@ -1,0 +1,20 @@
+.transparentCard {
+  background: transparent;
+}
+
+.achievementIcon {
+  width: var(--ds-size-600);
+  height: var(--ds-size-600);
+  border-radius: var(--ds-border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.achievementIconSilver {
+  background: var(--ds-color-background-award-silver);
+}
+
+.achievementIconGold {
+  background: var(--ds-color-background-award-gold);
+}
