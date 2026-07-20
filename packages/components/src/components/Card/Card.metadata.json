@@ -73,12 +73,14 @@
     "variant": {
       "options": [
         "default",
-        "elevated"
+        "elevated",
+        "transparent"
       ],
       "default": "default",
       "purpose": {
         "default": "Flat surface on the page background. Primary container for form sections and content groups.",
-        "elevated": "Raised surface above the page background. Use for featured content, selected card states, or content that must visually float above siblings."
+        "elevated": "Raised surface above the page background. Use for featured content, selected card states, or content that must visually float above siblings.",
+        "transparent": "No fill — keeps Card's border and padding as a grouping outline without separating its background from the page canvas."
       }
     }
   },

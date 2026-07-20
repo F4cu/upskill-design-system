@@ -1,7 +1,7 @@
 import type { CSSProperties, HTMLAttributes } from 'react'
 import styles from './Card.module.css'
 
-export type CardVariant = 'default' | 'elevated'
+export type CardVariant = 'default' | 'elevated' | 'transparent'
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg'
 
 export type CardProps = {

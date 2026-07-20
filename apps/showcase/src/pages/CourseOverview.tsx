@@ -142,7 +142,7 @@ export default function CourseOverview() {
             <Inline wrap align="start" gap="lg">
 
               {/* ── Left column: video + course description ── */}
-              <Stack gap="md" style={{ flex: '1 0 0', minWidth: '34.5rem' }}>
+              <Stack gap="md" grow={1} minWidth="34.5rem">
 
                 {/* VideoFrame — usage.when: "displaying a video thumbnail with play overlay" */}
                 <VideoFrame src={VIDEO_SRC} alt="The Ten Faces of Innovation — course preview" />
@@ -179,7 +179,7 @@ export default function CourseOverview() {
               </Stack>
 
               {/* ── Right column: course content accordion + CTA ── */}
-              <Stack gap="md" style={{ flex: '1 0 0', minWidth: '34.5rem' }}>
+              <Stack gap="md" grow={1} minWidth="34.5rem">
 
                 <Heading as="h2" size="subheader">Content</Heading>
 
@@ -300,13 +300,13 @@ export default function CourseOverview() {
         as="section"
         aria-labelledby="collection-heading"
         paddingY="xxl"
-        style={{ background: 'var(--ds-color-background-container-inverted)' }}
+        background="inverted"
       >
         <Box className="container">
           <Inline wrap gap="lg" align="start">
 
             {/* ── Left: editorial promo ── */}
-            <Box padding="xxl" style={{ flex: '1 0 0', minWidth: '20rem' }}>
+            <Box padding="xxl" grow={1} minWidth="20rem">
               <Stack gap="lg">
                 <Stack gap="md">
                   <Heading
@@ -329,7 +329,7 @@ export default function CourseOverview() {
             </Box>
 
             {/* ── Right: related reading cards ── */}
-            <Box padding="xxl" style={{ flex: '1 0 0', minWidth: '20rem' }}>
+            <Box padding="xxl" grow={1} minWidth="20rem">
               <Stack gap="md">
                 <CardHorizontal
                   thumbnailSrc={BOOK_IMGS[0]}
@@ -363,10 +363,8 @@ export default function CourseOverview() {
       {/* Uses logo-dark.svg (dark-background variant) from public/ */}
       <Box
         as="footer"
-        style={{
-          background: 'var(--ds-color-background-container-inverted)',
-          borderTop: '1px solid var(--ds-color-border-inverted)',
-        }}
+        background="inverted"
+        style={{ borderTop: '1px solid var(--ds-color-border-inverted)' }}
       >
         <Box className="container" paddingY="md">
           <Inline justify="space-between" align="center">

@@ -11,6 +11,9 @@ export type StackProps = {
   align?: StackAlign
   justify?: StackJustify
   fullWidth?: boolean
+  minWidth?: string | number
+  maxWidth?: string | number
+  grow?: number
   className?: string
   style?: CSSProperties
   children?: React.ReactNode
@@ -39,6 +42,9 @@ export function Stack({
   align,
   justify,
   fullWidth,
+  minWidth,
+  maxWidth,
+  grow,
   className,
   style,
   children,
@@ -48,6 +54,9 @@ export function Stack({
     '--_gap': gap ? `var(--ds-space-stack-${gap})` : undefined,
     '--_align': align ? alignMap[align] : undefined,
     '--_justify': justify ? justifyMap[justify] : undefined,
+    ...(minWidth !== undefined && { minWidth }),
+    ...(maxWidth !== undefined && { maxWidth }),
+    ...(grow !== undefined && { flex: `${grow} 0 0` }),
     ...style,
   }
 

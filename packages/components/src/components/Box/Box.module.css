@@ -2,3 +2,7 @@
   padding-block: var(--_box-py);
   padding-inline: var(--_box-px);
 }
+
+.default { background: var(--ds-color-background-container-default); }
+.inverted { background: var(--ds-color-background-container-inverted); }
+.transparent { background: transparent; }

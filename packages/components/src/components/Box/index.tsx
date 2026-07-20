@@ -3,6 +3,7 @@ import styles from './Box.module.css'
 
 type SpaceInset = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'
 type Overflow = 'hidden' | 'auto' | 'scroll' | 'visible' | 'clip'
+export type BoxBackground = 'default' | 'inverted' | 'transparent'
 
 export type BoxProps = {
   as?: ElementType
@@ -10,8 +11,10 @@ export type BoxProps = {
   paddingX?: SpaceInset
   paddingY?: SpaceInset
   overflow?: Overflow
+  background?: BoxBackground
   minWidth?: string | number
   maxWidth?: string | number
+  grow?: number
   className?: string
   style?: CSSProperties
   children?: React.ReactNode
@@ -23,8 +26,10 @@ export function Box({
   paddingX,
   paddingY,
   overflow,
+  background,
   minWidth,
   maxWidth,
+  grow,
   className,
   style,
   children,
@@ -38,12 +43,13 @@ export function Box({
     ...(overflow && { overflow }),
     ...(minWidth !== undefined && { minWidth }),
     ...(maxWidth !== undefined && { maxWidth }),
+    ...(grow !== undefined && { flex: `${grow} 0 0` }),
     ...style,
   }
 
   return (
     <Tag
-      className={[styles.box, className].filter(Boolean).join(' ')}
+      className={[styles.box, background && styles[background], className].filter(Boolean).join(' ')}
       style={cssVars}
       {...rest}
     >

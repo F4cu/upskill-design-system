@@ -119,18 +119,18 @@ export default function UserSettings() {
               {/* ── Left column: profile form + account settings ── */}
               {/* align="stretch" overrides the flex-start inherited from the parent Inline's --_align
                   custom property, so the Cards below fill this column's full width */}
-              <Stack gap="xl" align="stretch" style={{ flex: '2 0 0', minWidth: '20rem' }}>
+              <Stack gap="xl" align="stretch" grow={2} minWidth="20rem">
 
                 {/* User Form card — usage.patterns "form-section": Card > Stack > [TextField, TextField, ...]
-                    background transparent per design: Card only supplies the border/padding here, not a fill */}
-                <Card padding="lg" className={styles.transparentCard}>
+                    variant="transparent": Card only supplies the border/padding here, not a fill */}
+                <Card padding="lg" variant="transparent">
                   {/* Inner Inline wraps independently at a higher minWidth, matching the Tablet/Mobile
                       Figma frames where the avatar block stacks above the fields inside the same card.
                       justify="center" centers the avatar block on its own wrapped line at tablet/mobile;
                       it's a no-op at desktop and on the form-fields block, which already fills its line
                       via flex: 1 0 0 */}
                   <Inline wrap align="start" justify="center" gap="md">
-                    <Stack gap="sm" align="center" style={{ minWidth: '13rem' }}>
+                    <Stack gap="sm" align="center" minWidth="13rem">
                       {/* Avatar usage.patterns "profile-header": Stack > [Avatar(lg), Stack > [Heading, Text]] */}
                       <Avatar src="https://picsum.photos/seed/sarahjones/128/128" alt="Sarah Jones" size="lg" />
                       <Stack gap="xs" align="center">
@@ -140,7 +140,7 @@ export default function UserSettings() {
                     </Stack>
 
                     {/* align="stretch" so each TextField's root fills this column instead of shrinking to its input's content width */}
-                    <Stack gap="lg" align="stretch" style={{ flex: '1 0 0', minWidth: '18rem' }}>
+                    <Stack gap="lg" align="stretch" grow={1} minWidth="18rem">
                       <TextField label="Name" defaultValue="Sarah" />
                       <TextField label="Surname" defaultValue="Jones" />
                       <TextField label="Job Title" defaultValue="Product Designer" />
@@ -151,10 +151,10 @@ export default function UserSettings() {
                 {/* Account Settings */}
                 <Stack gap="md">
                   <Heading as="h2" size="headline">Account Settings</Heading>
-                  <Card padding="lg" className={styles.transparentCard}>
+                  <Card padding="lg" variant="transparent">
                     <Stack gap="lg">
                       <Inline wrap gap="lg">
-                        <Box style={{ minWidth: '15rem' }}>
+                        <Box minWidth="15rem">
                           <Select label="Language" options={LANGUAGE_OPTIONS} defaultValue="en" />
                         </Box>
                         <Stack gap="sm">
@@ -194,7 +194,7 @@ export default function UserSettings() {
               </Stack>
 
               {/* ── Right column: achievements + course lists sidebar ── */}
-              <Stack gap="xxl" style={{ flex: '1 0 0', minWidth: '20rem', maxWidth: '23rem' }}>
+              <Stack gap="xxl" grow={1} minWidth="20rem" maxWidth="23rem">
 
                 <Stack gap="md">
                   <Heading as="h2" size="subheader">Achievements</Heading>
@@ -265,13 +265,13 @@ export default function UserSettings() {
         as="section"
         aria-labelledby="collection-heading"
         paddingY="xxl"
-        style={{ background: 'var(--ds-color-background-container-inverted)' }}
+        background="inverted"
       >
         <Box className="container">
           <Inline wrap gap="lg" align="start">
 
             {/* ── Left: editorial promo ── */}
-            <Box padding="xxl" style={{ flex: '1 0 0', minWidth: '20rem' }}>
+            <Box padding="xxl" grow={1} minWidth="20rem">
               <Stack gap="lg">
                 <Stack gap="md">
                   <Heading
@@ -294,7 +294,7 @@ export default function UserSettings() {
             </Box>
 
             {/* ── Right: related reading cards ── */}
-            <Box padding="xxl" style={{ flex: '1 0 0', minWidth: '20rem' }}>
+            <Box padding="xxl" grow={1} minWidth="20rem">
               <Stack gap="md">
                 <CardHorizontal
                   thumbnailSrc={BOOK_IMGS[0]}
@@ -327,10 +327,8 @@ export default function UserSettings() {
       {/* ── Footer ── reused verbatim from CourseOverview.tsx */}
       <Box
         as="footer"
-        style={{
-          background: 'var(--ds-color-background-container-inverted)',
-          borderTop: '1px solid var(--ds-color-border-inverted)',
-        }}
+        background="inverted"
+        style={{ borderTop: '1px solid var(--ds-color-border-inverted)' }}
       >
         <Box className="container" paddingY="md">
           <Inline justify="space-between" align="center">

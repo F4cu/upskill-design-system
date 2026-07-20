@@ -1,7 +1,3 @@
-.transparentCard {
-  background: transparent;
-}
-
 .achievementIcon {
   width: var(--ds-size-600);
   height: var(--ds-size-600);
