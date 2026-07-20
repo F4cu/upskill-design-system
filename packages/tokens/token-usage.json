@@ -182,6 +182,16 @@
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
       "packages/components/src/components/Chip/Chip.module.css"
     ],
+    "--ds-color-background-container-default": [
+      "packages/components/src/components/Box/Box.module.css",
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
+    ],
+    "--ds-color-background-container-inverted": [
+      "packages/components/src/components/Box/Box.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.stories.tsx",
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    ],
     "--ds-space-inset-": [
       "packages/components/src/components/Box/index.tsx",
       "packages/components/src/components/Card/index.tsx"
@@ -298,10 +308,6 @@
     "--ds-color-border-subtle": [
       "packages/components/src/components/Card/Card.module.css"
     ],
-    "--ds-color-background-container-default": [
-      "packages/components/src/components/Card/Card.module.css",
-      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
-    ],
     "--ds-color-background-neutral-subtle": [
       "packages/components/src/components/Card/Card.module.css",
       "packages/components/src/components/Inline/Inline.stories.tsx",
@@ -318,10 +324,6 @@
     "--ds-color-icon-subtle": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/CardVertical/CardVertical.module.css"
-    ],
-    "--ds-color-background-container-inverted": [
-      "packages/components/src/components/CardHorizontal/CardHorizontal.stories.tsx",
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
     "--ds-color-text-inverted-subtle": [
       "packages/components/src/components/CardHorizontal/index.tsx",
