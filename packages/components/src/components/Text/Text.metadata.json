@@ -5,7 +5,7 @@
     "type": "display",
     "status": "beta",
     "description": "Renders body-level text using semantic size tokens. Covers body copy, small text, metadata, and label sizes. Polymorphic via the as prop. Does not add margin.",
-    "figmaNodeId": "N/A — Text uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
+    "figmaNodeId": "N/A \u2014 Text uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
   },
   "usage": {
     "keywords": [
@@ -42,7 +42,7 @@
       },
       {
         "scenario": "Passing htmlFor without as=\"label\"",
-        "reason": "htmlFor is declared on TextProps but not destructured out, so it always falls into ...rest and is spread onto whatever element as renders — nothing restricts it to label, so it can render an invalid for attribute on a non-label element.",
+        "reason": "htmlFor is declared on TextProps but not destructured out, so it always falls into ...rest and is spread onto whatever element as renders \u2014 nothing restricts it to label, so it can render an invalid for attribute on a non-label element.",
         "alternative": "Only pass htmlFor when as=\"label\"; for any other element, omit it."
       }
     ]
@@ -68,21 +68,27 @@
         "default",
         "subtle",
         "brand",
-        "disabled"
+        "disabled",
+        "inverted",
+        "inverted-subtle",
+        "accent-inverted"
       ],
       "default": "default",
       "purpose": {
         "default": "Primary reading colour on the page surface.",
         "subtle": "De-emphasised secondary text and supporting metadata.",
         "brand": "Brand-coloured emphasis; use sparingly for accent text.",
-        "disabled": "Text in a disabled or inactive context."
+        "disabled": "Text in a disabled or inactive context.",
+        "inverted": "Primary text colour on an inverted (dark) surface, e.g. a CTA banner or footer.",
+        "inverted-subtle": "De-emphasised text on an inverted (dark) surface.",
+        "accent-inverted": "Accent-coloured emphasis on an inverted (dark) surface."
       }
     }
   },
   "states": [
     {
       "state": "default",
-      "description": "Static text — no interactive states."
+      "description": "Static text \u2014 no interactive states."
     }
   ],
   "tokens": {
@@ -102,14 +108,17 @@
       "color.text.default",
       "color.text.subtle",
       "color.text.brand",
-      "color.text.disabled"
+      "color.text.disabled",
+      "color.text.inverted.default",
+      "color.text.inverted.subtle",
+      "color.text.accent.inverted"
     ]
   },
   "accessibility": {
     "role": "generic",
     "ariaAttributes": [],
     "keyboardInteractions": [],
-    "notes": "Use the as prop to select a semantically meaningful element when needed (e.g. as=span for inline text, as=p for block paragraphs — p is the default)."
+    "notes": "Use the as prop to select a semantically meaningful element when needed (e.g. as=span for inline text, as=p for block paragraphs \u2014 p is the default)."
   },
   "composition": {
     "composedOf": [],

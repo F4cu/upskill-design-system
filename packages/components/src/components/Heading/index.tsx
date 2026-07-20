@@ -3,7 +3,7 @@ import styles from './Heading.module.css'
 
 export type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 export type HeadingSize = 'title-small' | 'subheader' | 'headline' | 'headline-serif' | 'display'
-export type HeadingColor = 'default' | 'subtle' | 'brand'
+export type HeadingColor = 'default' | 'subtle' | 'brand' | 'inverted'
 
 export type HeadingProps = {
   as?: HeadingTag

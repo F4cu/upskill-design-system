@@ -313,12 +313,12 @@ export default function CourseOverview() {
                     id="collection-heading"
                     as="h2"
                     size="display"
-                    style={{ color: 'var(--ds-color-text-inverted-default)' }}
+                    color="inverted"
                   >
                     Discover the Power of{' '}
-                    <span style={{ color: 'var(--ds-color-accent-9)' }}>Beginner's Mind</span>
+                    <Text as="span" color="accent-inverted">Beginner's Mind</Text>
                   </Heading>
-                  <Text style={{ color: 'var(--ds-color-text-inverted-default)' }}>
+                  <Text color="inverted">
                     Beginner's mind means approaching life with openness and curiosity,
                     free from fixed ideas. Embrace learning with fresh eyes—explore how our
                     courses nurture this mindset and unlock new possibilities for your growth.
@@ -371,7 +371,7 @@ export default function CourseOverview() {
         <Box className="container" paddingY="md">
           <Inline justify="space-between" align="center">
             <img src={`${BASE}logo-dark.svg`} alt="UpSkill" height={32} width={84} />
-            <Text size="body-small" style={{ color: 'var(--ds-color-text-inverted-subtle)' }}>
+            <Text size="body-small" color="inverted-subtle">
               Terms and Conditions
             </Text>
           </Inline>

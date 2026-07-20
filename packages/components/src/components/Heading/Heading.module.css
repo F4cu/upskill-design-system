@@ -5,6 +5,7 @@
 
 .subtle { color: var(--ds-color-text-subtle); }
 .brand  { color: var(--ds-color-text-brand); }
+.inverted { color: var(--ds-color-text-inverted-default); }
 
 .title-small {
   font-family: var(--ds-font-family-headline-default);

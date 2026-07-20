@@ -4,8 +4,8 @@
     "category": "atom",
     "type": "display",
     "status": "beta",
-    "description": "Renders heading-level text using title and display size tokens. The as prop controls semantic HTML level (h1–h6); the size prop controls visual appearance independently. Does not add margin.",
-    "figmaNodeId": "N/A — Heading uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
+    "description": "Renders heading-level text using title and display size tokens. The as prop controls semantic HTML level (h1\u2013h6); the size prop controls visual appearance independently. Does not add margin.",
+    "figmaNodeId": "N/A \u2014 Heading uses Figma text styles, not a component set. Code Connect requires Enterprise plan."
   },
   "usage": {
     "keywords": [
@@ -38,7 +38,7 @@
     "antiPatterns": [
       {
         "scenario": "Choosing size to match visual hierarchy instead of semantic level",
-        "reason": "size and as are independent — use as for document structure and size for visual scale",
+        "reason": "size and as are independent \u2014 use as for document structure and size for visual scale",
         "alternative": "Set as to the correct heading level (h1 for the page title, h2 for sections, etc.) then choose size independently"
       },
       {
@@ -70,20 +70,22 @@
       "options": [
         "default",
         "subtle",
-        "brand"
+        "brand",
+        "inverted"
       ],
       "default": "default",
       "purpose": {
         "default": "Primary heading colour on the page surface.",
         "subtle": "De-emphasised heading, e.g. a secondary section label.",
-        "brand": "Brand-coloured heading for accent or featured sections."
+        "brand": "Brand-coloured heading for accent or featured sections.",
+        "inverted": "Primary heading colour on an inverted (dark) surface, e.g. a CTA banner."
       }
     }
   },
   "states": [
     {
       "state": "default",
-      "description": "Static heading — no interactive states."
+      "description": "Static heading \u2014 no interactive states."
     }
   ],
   "tokens": {
@@ -103,7 +105,8 @@
     "color": [
       "color.text.default",
       "color.text.subtle",
-      "color.text.brand"
+      "color.text.brand",
+      "color.text.inverted.default"
     ]
   },
   "accessibility": {
