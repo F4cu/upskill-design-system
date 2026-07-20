@@ -48,6 +48,7 @@
     ],
     "--ds-font-weight-bold": [
       "packages/components/src/components/Accordion/Accordion.module.css",
+      "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/styles/utilities.module.css"
     ],
     "--ds-font-line-height-default": [
@@ -363,8 +364,7 @@
     ],
     "--ds-font-weight-medium": [
       "packages/components/src/components/Chip/Chip.module.css",
-      "packages/components/src/components/Heading/Heading.module.css",
-      "packages/components/src/components/Text/Text.module.css"
+      "packages/components/src/components/Heading/Heading.module.css"
     ],
     "--ds-color-border-selected": [
       "packages/components/src/components/Chip/Chip.module.css",
