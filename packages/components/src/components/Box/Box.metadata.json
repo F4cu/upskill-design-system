@@ -76,6 +76,11 @@
         "scenario": "Setting color via inline style on Box or a child span",
         "reason": "Inline color styles bypass the token system and break dark-mode switching.",
         "alternative": "Use <Text color='…'> or <Heading> with a token-backed color prop. Apply the semantic color token on the element that owns the color context, not on Box."
+      },
+      {
+        "scenario": "Hand-writing style={{ flex: '1 0 0' }}, style={{ minWidth }}, or style={{ maxWidth }} on a Box for column fill or width constraints",
+        "reason": "Box has first-class grow/minWidth/maxWidth props that emit the same CSS through the component's own style resolution — inline style duplicates this and drifts from it over time.",
+        "alternative": "Use the grow prop (flex: n 0 0) for column fill, and minWidth/maxWidth props for width constraints, instead of an inline style object."
       }
     ]
   },

@@ -42,13 +42,14 @@ Every generated page must follow this fixed hierarchy. One abstraction level per
 | **Section** | `<Box as="section" aria-labelledby={headingId}>` + `paddingY` rhythm | `region` | must have accessible name; prefer `aria-labelledby` pointing to the section `Heading`; use `aria-label` only when there is no visible heading |
 | **Container** | `.container` global class applied via `className` | presentational | centers content; max-width + grid margin; never a landmark |
 | **Column (N-column card grid)** | `.grid` global class (CSS Grid, column count auto-reflows via `--ds-grid-columns`) | presentational | use for equal-width card grids (3–4+ items) |
-| **Column (two-column wrapping)** | `Inline wrap` with `style={{ flex: '1 0 0', minWidth }}` on each child | presentational | use for two-panel layouts that stack on mobile; `minWidth` sets the breakpoint |
+| **Column (two-column wrapping)** | `Inline wrap` with `grow`/`minWidth` props on each child `Box` or `Stack` | presentational | use for two-panel layouts that stack on mobile; `minWidth` sets the breakpoint |
 | **Component** | library component from the fixed 26 set | per component | leaf — cite the metadata rule that placed it |
 | **Footer** | `<Box as="footer">` | `contentinfo` | one per page |
 
 **Inline-style reconciliation** (replaces the blanket "no inline styles"):
 
-- **Allowed:** `.container` and `.grid` global classNames; `style={{ flex: '1 0 0' }}` for column fill; `style={{ minWidth }}` for column wrapping threshold; `style={{ maxWidth }}` for content measure.
+- **Allowed:** `.container` and `.grid` global classNames.
+- **Use the prop, not inline style:** column fill, wrapping threshold, and content measure go through Box/Stack's `grow` (flex fill, replaces `style={{ flex: '1 0 0' }}`), `minWidth`, and `maxWidth` props — never hand-write these as `style={{ … }}`.
 - **Forbidden:** raw color via inline style (e.g. `style={{ color: '#d15d50' }}`) — use `<Text color=…>` or `<Heading>` with a token-backed prop; any raw token value outside `var()`; arbitrary CSS properties that belong in a component's CSS Module.
 
 **Figma-to-code translation rules** (when the Figma MCP output is the reference — follow exactly):
@@ -104,7 +105,7 @@ Apply spacing tokens to the structure — never raw values:
 Fonts are referenced via CSS tokens (`--ds-font-family-body`, `--ds-font-family-headline-serif`) but the typefaces must be loaded. Check `apps/showcase/index.html` — if the Google Fonts `<link>` for Roboto / Playfair Display is missing, add it before generating the page. Without it the browser falls back to a system serif.
 
 ### Column inset padding
-When the Figma frame for a column (or card-like region) has an **inset** padding token (all four sides), apply it as `<Box padding="…">` wrapping that column's content. Do not omit column-level padding just because the parent section already has `paddingY` — section rhythm and column inset are independent. Keep the `style={{ flex, minWidth }}` on the `Box`, put the layout primitive (`Stack`/`Inline`) inside it.
+When the Figma frame for a column (or card-like region) has an **inset** padding token (all four sides), apply it as `<Box padding="…">` wrapping that column's content. Do not omit column-level padding just because the parent section already has `paddingY` — section rhythm and column inset are independent. Keep `grow`/`minWidth` as props on the `Box`, put the layout primitive (`Stack`/`Inline`) inside it.
 
 ### Text color on inverted (dark) backgrounds
 On any section with `background: var(--ds-color-background-container-inverted)`:
