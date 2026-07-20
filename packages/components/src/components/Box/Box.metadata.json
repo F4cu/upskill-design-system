@@ -88,6 +88,19 @@
       "purpose": {
         "default": "A generic padded container. Rendered as div by default; override with the as prop for semantic HTML."
       }
+    },
+    "background": {
+      "options": [
+        "default",
+        "inverted",
+        "transparent"
+      ],
+      "default": null,
+      "purpose": {
+        "default": "Flat surface on the page background — same fill as Card's default variant, for a Box standing in as a plain surface.",
+        "inverted": "Dark surface for CTA banners, footers, or other sections that invert against the page's default theme.",
+        "transparent": "Explicitly no fill — lets the parent surface show through."
+      }
     }
   },
   "states": [
@@ -97,6 +110,10 @@
     }
   ],
   "tokens": {
+    "color": [
+      "color.background.container.default",
+      "color.background.container.inverted"
+    ],
     "spacing": [
       "space.inset.xxs",
       "space.inset.xs",
