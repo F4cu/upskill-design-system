@@ -14,10 +14,12 @@
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/CardVertical/CardVertical.module.css",
-      "packages/components/src/components/Checkbox/Checkbox.module.css"
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Inline/Inline.module.css"
     ],
     "--ds-space-inset-md": [
       "packages/components/src/components/Accordion/Accordion.module.css",
+      "packages/components/src/components/Box/Box.module.css",
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/Card/Card.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
@@ -36,7 +38,8 @@
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
-      "packages/components/src/components/Select/Select.module.css"
+      "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Stack/Stack.module.css"
     ],
     "--ds-font-family-headline-default": [
       "packages/components/src/components/Accordion/Accordion.module.css",
@@ -97,11 +100,13 @@
     ],
     "--ds-space-inline-md": [
       "packages/components/src/components/AppHeader/AppHeader.module.css",
-      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/Inline/Inline.module.css"
     ],
     "--ds-space-inset-xs": [
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/Badge/Badge.module.css",
+      "packages/components/src/components/Box/Box.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
@@ -158,6 +163,7 @@
       "packages/components/src/components/Button/Button.stories.tsx",
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/components/Inline/Inline.module.css",
       "packages/components/src/components/Select/Select.module.css"
     ],
     "--ds-size-avatar-lg": [
@@ -175,12 +181,31 @@
       "packages/components/src/components/TextField/TextField.module.css"
     ],
     "--ds-space-inset-xxs": [
-      "packages/components/src/components/Badge/Badge.module.css"
+      "packages/components/src/components/Badge/Badge.module.css",
+      "packages/components/src/components/Box/Box.module.css"
     ],
     "--ds-color-background-neutral-subtlest": [
       "packages/components/src/components/Badge/Badge.module.css",
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
       "packages/components/src/components/Chip/Chip.module.css"
+    ],
+    "--ds-space-inset-sm": [
+      "packages/components/src/components/Box/Box.module.css",
+      "packages/components/src/components/Card/Card.module.css"
+    ],
+    "--ds-space-inset-lg": [
+      "packages/components/src/components/Box/Box.module.css",
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Card/Card.module.css"
+    ],
+    "--ds-space-inset-xl": [
+      "packages/components/src/components/Box/Box.module.css"
+    ],
+    "--ds-space-inset-xxl": [
+      "packages/components/src/components/Box/Box.module.css"
+    ],
+    "--ds-space-inset-xxxl": [
+      "packages/components/src/components/Box/Box.module.css"
     ],
     "--ds-color-background-container-default": [
       "packages/components/src/components/Box/Box.module.css",
@@ -191,10 +216,6 @@
       "packages/components/src/components/Box/Box.module.css",
       "packages/components/src/components/CardHorizontal/CardHorizontal.stories.tsx",
       "packages/components/src/stories/FooterHighlights.stories.tsx"
-    ],
-    "--ds-space-inset-": [
-      "packages/components/src/components/Box/index.tsx",
-      "packages/components/src/components/Card/index.tsx"
     ],
     "--ds-font-family-body": [
       "packages/components/src/components/Button/Button.module.css",
@@ -235,9 +256,6 @@
     "--ds-size-600": [
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
-    ],
-    "--ds-space-inset-lg": [
-      "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-border-radius-full": [
       "packages/components/src/components/Button/Button.module.css",
@@ -333,6 +351,7 @@
     "--ds-space-stack-sm": [
       "packages/components/src/components/CardVertical/CardVertical.module.css",
       "packages/components/src/components/Select/Select.module.css",
+      "packages/components/src/components/Stack/Stack.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
     "--ds-font-size-subheader": [
@@ -400,8 +419,14 @@
     "--ds-color-icon-media": [
       "packages/components/src/components/Image/Image.module.css"
     ],
-    "--ds-space-inline-": [
-      "packages/components/src/components/Inline/index.tsx"
+    "--ds-space-inline-lg": [
+      "packages/components/src/components/Inline/Inline.module.css"
+    ],
+    "--ds-space-inline-xl": [
+      "packages/components/src/components/Inline/Inline.module.css"
+    ],
+    "--ds-space-inline-xxl": [
+      "packages/components/src/components/Inline/Inline.module.css"
     ],
     "--ds-color-background-progress": [
       "packages/components/src/components/ProgressBar/ProgressBar.module.css"
@@ -423,8 +448,17 @@
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
-    "--ds-space-stack-": [
-      "packages/components/src/components/Stack/index.tsx"
+    "--ds-space-stack-md": [
+      "packages/components/src/components/Stack/Stack.module.css"
+    ],
+    "--ds-space-stack-lg": [
+      "packages/components/src/components/Stack/Stack.module.css"
+    ],
+    "--ds-space-stack-xl": [
+      "packages/components/src/components/Stack/Stack.module.css"
+    ],
+    "--ds-space-stack-xxl": [
+      "packages/components/src/components/Stack/Stack.module.css"
     ],
     "--ds-color-text-accent-inverted": [
       "packages/components/src/components/Text/Text.module.css",
