@@ -117,8 +117,8 @@ export default function UserSettings() {
             <Inline wrap align="start" gap="lg">
 
               {/* ── Left column: profile form + account settings ── */}
-              {/* align="stretch" overrides the flex-start inherited from the parent Inline's --_align
-                  custom property, so the Cards below fill this column's full width */}
+              {/* align="stretch" overrides the flex-start inherited from the parent Inline's align="start",
+                  so the Cards below fill this column's full width */}
               <Stack gap="xl" align="stretch" grow={2} minWidth="20rem">
 
                 {/* User Form card — usage.patterns "form-section": Card > Stack > [TextField, TextField, ...]
