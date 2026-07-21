@@ -133,7 +133,7 @@ Every page follows a fixed hierarchy mapping Figma structure to HTML landmarks (
 
 Load-bearing invariants for **any** layout file (hand-edited or generated):
 - Exactly one `<Box as="main">` per route; every `<Box as="section">` has an accessible name (`aria-labelledby` → its `Heading`); every extra `<nav>` has a unique `aria-label`.
-- **Inline styles:** allowed only for `.container`/`.grid` classNames. Column fill and width constraints go through Box/Stack's `grow` / `minWidth` / `maxWidth` props, never hand-written `style={{ flex: … }}`. Forbidden: raw color (use `<Text color=…>` / `<Heading>`), raw token values outside `var()`, arbitrary CSS that belongs in a CSS Module.
+- **Inline styles:** allowed only for `.container`/`.grid` classNames. Column fill and size constraints go through Box/Stack's `grow` / `minWidth` / `maxWidth` / `minHeight` / `maxHeight` props, never hand-written `style={{ flex: … }}`. Forbidden: raw color (use `<Text color=…>` / `<Heading>`), raw token values outside `var()`, arbitrary CSS that belongs in a CSS Module.
 - Rely on device tokens for responsive spacing/typography; reflow via `.grid` or `Inline wrap`. Never hand-write `@media` in layout files.
 
 ## Coding conventions
