@@ -182,12 +182,11 @@ Remaining:
 
 Done: `apps/showcase` workspace scaffolded (Vite + React + TypeScript + `react-router`, all four routes stubbed); Course Overview page (`/showcase/course`) is a real, generated page; `deploy-showcase.yml` publishes to GitHub Pages (https://f4cu.github.io/upskill-design-system/) on every `main` merge touching it (Vite `base` path + SPA fallback in place).
 
-Remaining:
 - [x] Homepage page (`/showcase/homepage`) — real, generated page (Figma node 96:6110). Carries the learner-facing view: a continue-learning chapter stepper, a saved-courses carousel, a discover-courses carousel, and the featured-collection/footer reused from other showcase pages. Uses the default `upskill` brand, same as the rest of the showcase — the multi-brand (`horizon`) demonstration lives on the Pipeline Health Dashboard instead (see below), not here.
-- [ ] Settings page (`/showcase/settings`) — stub; generate from the SettingsForm composed story.
-- [ ] Cross-page navigation via `AppHeader`.
-- [ ] Responsive + theme QA on all three showcase pages (desktop/tablet/mobile × light/dark).
-- [ ] Root build chain extended to include the showcase app.
+- [x] Settings page (`/showcase/settings`) — real, generated page from the SettingsForm composed story.
+- [x] Cross-page navigation via `AppHeader` — `navItems` link Homepage ↔ Course (`active` set per current route), user menu's "Settings" entry navigates to the Settings page; `AppHeader` stays router-agnostic (plain `<a>`/`window.location`, full navigation rather than client-side routing).
+- [x] Responsive + theme QA on all three showcase pages (desktop/tablet/mobile × light/dark).
+- [x] Root build chain extended to include the showcase app — root `npm run build` now runs tokens → components → `@upskill/showcase`; `deploy-showcase.yml`/`showcase-check.yml` build tokens+components directly to avoid double-building the showcase.
 
 **Pipeline Health Dashboard** (`/dashboard`, maintainer-facing) *(done)* — full spec: `.claude/handoff/archive/pipeline-dashboard.handoff.md`. DAG hero (pipeline diagram, own components + inline SVG) at the top of `/dashboard` and standalone at `/pipeline`, with progressive disclosure of which agentic moments touch each node; `.claude/pipeline-status.json` (CI conclusions + open issues, `gh`-captured pre-deploy) joins the existing frozen snapshots at build time only; dashboard views for component lifecycle (both axes), token governance backlog, Figma drift, and open issues, sharing one small chart primitive; QA gate (`layout:validate`, responsive + light/dark, keyboard-only pass) green. Note: the `horizon`-brand (multi-brand outside Storybook) demonstration originally scoped to Homepage belongs here instead — not yet applied; a follow-up, not a Phase 11 blocker.
 

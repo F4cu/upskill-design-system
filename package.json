@@ -19,7 +19,7 @@
     "typescript-eslint": "^8.61.1"
   },
   "scripts": {
-    "build": "npm run tokens:build && npm run build -w @upskill/components",
+    "build": "npm run tokens:build && npm run build -w @upskill/components && npm run build -w @upskill/showcase",
     "tokens:build": "npm run build:tokens -w @upskill/tokens",
     "typecheck": "npm run typecheck -w @upskill/components",
     "storybook": "npm run storybook -w @upskill/components",

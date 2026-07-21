@@ -32,6 +32,15 @@ import styles from './UserSettings.module.css'
 // ─── Sample data ─────────────────────────────────────────────────────────────
 // public/ assets need the Vite base prefix to resolve under GitHub Pages
 const BASE = import.meta.env.BASE_URL
+
+// AppHeader is router-agnostic (plain <a>), so cross-page nav is a full
+// navigation rather than a client-side route change — same for the user menu.
+function handleUserMenuSelect(value: string) {
+  if (value === 'settings') {
+    window.location.href = `${BASE}showcase/settings`
+  }
+}
+
 const CARD_IMGS = [
   `${BASE}image-placeholder.png`,
   `${BASE}image-placeholder.png`,
@@ -85,8 +94,8 @@ export default function UserSettings() {
         logoSrcDark={`${BASE}logo-dark.svg`}
         logoAlt="UpSkill"
         navItems={[
-          { label: 'All Courses', href: '/courses' },
-          { label: 'My Courses', href: '/my-courses', active: true },
+          { label: 'Homepage', href: `${BASE}showcase/homepage` },
+          { label: 'Course', href: `${BASE}showcase/course` },
         ]}
         userAvatarSrc="https://placehold.co/24x24/D15D50/ffffff?text=S"
         userName="Sarah"
@@ -95,6 +104,7 @@ export default function UserSettings() {
           { value: 'settings', label: 'Settings' },
           { value: 'logout', label: 'Log out' },
         ]}
+        onUserMenuSelect={handleUserMenuSelect}
       />
 
       {/* ── Section 1: Profile details ── aria-labelledby points to the visible page heading */}
