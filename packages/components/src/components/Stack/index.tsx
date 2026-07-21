@@ -13,6 +13,8 @@ export type StackProps = {
   fullWidth?: boolean
   minWidth?: string | number
   maxWidth?: string | number
+  minHeight?: string | number
+  maxHeight?: string | number
   grow?: number
   className?: string
   style?: CSSProperties
@@ -44,6 +46,8 @@ export function Stack({
   fullWidth,
   minWidth,
   maxWidth,
+  minHeight,
+  maxHeight,
   grow,
   className,
   style,
@@ -56,6 +60,8 @@ export function Stack({
     '--_justify': justify ? justifyMap[justify] : undefined,
     ...(minWidth !== undefined && { minWidth }),
     ...(maxWidth !== undefined && { maxWidth }),
+    ...(minHeight !== undefined && { minHeight }),
+    ...(maxHeight !== undefined && { maxHeight }),
     ...(grow !== undefined && { flex: `${grow} 0 0` }),
     ...style,
   }

@@ -9,6 +9,7 @@ sources:
 # clock reset 2026-07-12: #64 docs sweep landed (ADR-007/015 gain renamed-path/stage parentheticals); this page carried no stage or review-path vocabulary, still accurate
 # clock reset 2026-07-13: #70 mirrors Airtable deprecation state into DTCG $deprecated on committed token source (ADR-002 amendment); this page describes no token-format detail, still accurate
 # verified 2026-07-13 (issue #74): checked against ADR-010/ADR-015 amendments, CLAUDE.md, and the four lifecycle command files incl. the full/standard rename (e948407); this page carries no stage or review-path vocabulary, ADR and moment counts still correct
+# clock reset 2026-07-21: ROADMAP.md Homepage checkbox marked done and reassigns the horizon-brand demo to the Pipeline Health Dashboard; this page describes no per-page brand assignment, still accurate
 ---
 # Start here
 

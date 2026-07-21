@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "f6818227455044a96333ae1b1781b2edd50760e5",
+  "generatedFrom": "f497016deb14f04439243b35a7e0f0098f14e1c8",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -103,6 +103,7 @@
         {
           "consumers": [
             "apps/showcase/src/pages/CourseOverview.tsx",
+            "apps/showcase/src/pages/Homepage.tsx",
             "packages/components/src/stories/Carousel.stories.tsx"
           ],
           "hook": "useCarousel",

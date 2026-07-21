@@ -10,6 +10,7 @@ sources:
 # clock reset 2026-07-10: sense.js lighter-path review recognition; glossary defines no stage-derivation rules, still accurate
 # clock reset 2026-07-10: four commands gain deterministic-gate steps (PR #58); glossary defines no per-command procedures, still accurate
 # clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
+# clock reset 2026-07-21: layout-generation.md's inline-style column-fill wording changed (grow/minWidth/maxWidth props); glossary defines no per-command prop syntax, still accurate
 ---
 # Glossary
 
