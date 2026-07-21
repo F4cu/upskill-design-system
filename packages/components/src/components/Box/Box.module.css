@@ -1,7 +1,25 @@
 .box {
-  padding-block: var(--_box-py);
-  padding-inline: var(--_box-px);
+  padding-block: 0;
+  padding-inline: 0;
 }
+
+.box[data-px="xxs"] { padding-inline: var(--ds-space-inset-xxs); }
+.box[data-px="xs"] { padding-inline: var(--ds-space-inset-xs); }
+.box[data-px="sm"] { padding-inline: var(--ds-space-inset-sm); }
+.box[data-px="md"] { padding-inline: var(--ds-space-inset-md); }
+.box[data-px="lg"] { padding-inline: var(--ds-space-inset-lg); }
+.box[data-px="xl"] { padding-inline: var(--ds-space-inset-xl); }
+.box[data-px="xxl"] { padding-inline: var(--ds-space-inset-xxl); }
+.box[data-px="xxxl"] { padding-inline: var(--ds-space-inset-xxxl); }
+
+.box[data-py="xxs"] { padding-block: var(--ds-space-inset-xxs); }
+.box[data-py="xs"] { padding-block: var(--ds-space-inset-xs); }
+.box[data-py="sm"] { padding-block: var(--ds-space-inset-sm); }
+.box[data-py="md"] { padding-block: var(--ds-space-inset-md); }
+.box[data-py="lg"] { padding-block: var(--ds-space-inset-lg); }
+.box[data-py="xl"] { padding-block: var(--ds-space-inset-xl); }
+.box[data-py="xxl"] { padding-block: var(--ds-space-inset-xxl); }
+.box[data-py="xxxl"] { padding-block: var(--ds-space-inset-xxxl); }
 
 .default { background: var(--ds-color-background-container-default); }
 .inverted { background: var(--ds-color-background-container-inverted); }

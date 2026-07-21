@@ -1,8 +1,12 @@
 .card {
-  padding: var(--_card-inset, var(--ds-space-inset-md));
   border-radius: var(--ds-border-radius-md);
   border: 1px solid var(--ds-color-border-subtle);
 }
+
+.card[data-padding="none"] { padding: 0; }
+.card[data-padding="sm"] { padding: var(--ds-space-inset-sm); }
+.card[data-padding="md"] { padding: var(--ds-space-inset-md); }
+.card[data-padding="lg"] { padding: var(--ds-space-inset-lg); }
 
 .default {
   background: var(--ds-color-background-container-default);

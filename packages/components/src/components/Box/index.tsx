@@ -41,9 +41,7 @@ export function Box({
 }: BoxProps) {
   const resolvedX = paddingX ?? padding
   const resolvedY = paddingY ?? padding
-  const cssVars: CSSProperties = {
-    '--_box-px': resolvedX ? `var(--ds-space-inset-${resolvedX})` : '0',
-    '--_box-py': resolvedY ? `var(--ds-space-inset-${resolvedY})` : '0',
+  const layoutStyle: CSSProperties = {
     ...(overflow && { overflow }),
     ...(minWidth !== undefined && { minWidth }),
     ...(maxWidth !== undefined && { maxWidth }),
@@ -56,7 +54,9 @@ export function Box({
   return (
     <Tag
       className={[styles.box, background && styles[background], className].filter(Boolean).join(' ')}
-      style={cssVars}
+      data-px={resolvedX}
+      data-py={resolvedY}
+      style={layoutStyle}
       {...rest}
     >
       {children}

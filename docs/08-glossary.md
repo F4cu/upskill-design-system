@@ -6,11 +6,13 @@ sources:
   - scripts/sense.js
   - packages/components/component.schema.json
   - docs/decisions/007-verified-component-loop.md
+  - docs/decisions/020-layout-prop-attribute-selectors.md
 # clock reset 2026-07-08: /extract-learnings routing widened; glossary only lists the moment, still accurate
 # clock reset 2026-07-10: sense.js lighter-path review recognition; glossary defines no stage-derivation rules, still accurate
 # clock reset 2026-07-10: four commands gain deterministic-gate steps (PR #58); glossary defines no per-command procedures, still accurate
 # clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
 # clock reset 2026-07-21: layout-generation.md's inline-style column-fill wording changed (grow/minWidth/maxWidth props); glossary defines no per-command prop syntax, still accurate
+# clock reset 2026-07-21: added Enum entry alongside ADR-020 (layout props → data-attributes); no prior entry went stale
 ---
 # Glossary
 
@@ -31,6 +33,9 @@ Building a complex UI by combining simple, focused components rather than creati
 
 **Coupled**
 Two things are coupled when one depends on the other — changing or using one affects the other. For example, if `useSlider` needed to read the scroll position from a `ScrollArea`, they would be coupled. Coupling is not always bad, but it makes things harder to change independently. The opposite of orthogonal.
+
+**Enum**
+Short for "enumeration" — a value restricted to one of a small, fixed, named set of options, as opposed to a free-form string or number. `Stack`'s `gap` prop is an enum: it only ever accepts `xs | sm | md | lg | xl | xxl`, never an arbitrary string like `"17px"`. TypeScript writes this as a union type (`'xs' | 'sm' | 'md' | ...`), which is what makes passing an unlisted value a compile error rather than a silent bug. Enum-shaped props are the ones ADR-020 renders as `data-*` attributes with a matching CSS attribute selector per option (`[data-gap="lg"]`) — the fixed set of options maps cleanly to a fixed set of CSS rules. Contrast with a continuous-value prop like `minWidth`, which accepts any string/number and so is set as a raw inline style instead (ADR-011). See also Props and variants.
 
 **Hook (Claude Code)**
 A shell command that runs automatically when Claude does something — for example, "run the linter after every file edit." Configured in `.claude/settings.json`. Unrelated to React hooks despite sharing the name.
