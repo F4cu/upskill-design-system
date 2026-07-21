@@ -14,6 +14,8 @@ export type BoxProps = {
   background?: BoxBackground
   minWidth?: string | number
   maxWidth?: string | number
+  minHeight?: string | number
+  maxHeight?: string | number
   grow?: number
   className?: string
   style?: CSSProperties
@@ -29,6 +31,8 @@ export function Box({
   background,
   minWidth,
   maxWidth,
+  minHeight,
+  maxHeight,
   grow,
   className,
   style,
@@ -43,6 +47,8 @@ export function Box({
     ...(overflow && { overflow }),
     ...(minWidth !== undefined && { minWidth }),
     ...(maxWidth !== undefined && { maxWidth }),
+    ...(minHeight !== undefined && { minHeight }),
+    ...(maxHeight !== undefined && { maxHeight }),
     ...(grow !== undefined && { flex: `${grow} 0 0` }),
     ...style,
   }

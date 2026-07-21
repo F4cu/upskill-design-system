@@ -51,9 +51,9 @@
         "alternative": "Use a single Stack and rely on Box with padding to create visual grouping if needed"
       },
       {
-        "scenario": "Hand-writing style={{ flex: '1 0 0' }}, style={{ minWidth }}, or style={{ maxWidth }} on a Stack for column fill or width constraints",
-        "reason": "Stack has first-class grow/minWidth/maxWidth props that emit the same CSS through the component's own style resolution — inline style duplicates this and drifts from it over time.",
-        "alternative": "Use the grow prop (flex: n 0 0) for column fill, and minWidth/maxWidth props for width constraints, instead of an inline style object."
+        "scenario": "Hand-writing style={{ flex: '1 0 0' }}, style={{ minWidth }}, style={{ maxWidth }}, style={{ minHeight }}, or style={{ maxHeight }} on a Stack for column fill or size constraints",
+        "reason": "Stack has first-class grow/minWidth/maxWidth/minHeight/maxHeight props that emit the same CSS through the component's own style resolution — inline style duplicates this and drifts from it over time.",
+        "alternative": "Use the grow prop (flex: n 0 0) for column fill, and minWidth/maxWidth/minHeight/maxHeight props for size constraints, instead of an inline style object."
       }
     ]
   },
