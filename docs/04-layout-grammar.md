@@ -10,6 +10,7 @@ sources:
   - docs/decisions/005-size-vs-space-primitives.md
   - docs/decisions/009-extend-vs-new-vs-internal.md
 # clock reset 2026-07-12: commands gain visual-review step + adversarial/in-session path rename (#64 PR 2); stage-vocabulary sweep for this page follows in the dedicated docs PR
+# rewritten 2026-07-21: layout-generation.md replaced the style={{ flex, minWidth, maxWidth }} column-fill pattern with grow/minWidth/maxWidth props (and now minHeight/maxHeight) — updated the grammar table row and inline-style allowlist to match
 ---
 # Layout grammar
 
@@ -38,13 +39,14 @@ The grammar table from ADR-011 — one abstraction level per Figma wrapper:
 | **Section** | `<Box as="section" aria-labelledby={headingId}>` | `region` | must have an accessible name, `aria-labelledby` → its `Heading` |
 | **Container** | `.container` className | presentational | max-width + grid margin; not a landmark |
 | **Column (N-grid)** | `.grid` className (CSS Grid) | presentational | equal-width card grids (3–4+ items); column count reflows via `--ds-grid-columns` |
-| **Column (two-panel)** | `Inline wrap` + `style={{ flex: '1 0 0', minWidth }}` | presentational | wrapping flex; `minWidth` sets the stack breakpoint |
+| **Column (two-panel)** | `Inline wrap` + `grow`/`minWidth` props on each child `Box` or `Stack` | presentational | wrapping flex; `minWidth` sets the stack breakpoint |
 | **Component** | fixed-set library component | per component | leaf |
 | **Footer** | `<Box as="footer">` | `contentinfo` | one per page |
 
 **The inline-style allowlist** replaced the prior blanket prohibition (the reconciliation of problem 3):
 
-- **Allowed:** `.container` / `.grid` classNames; `style={{ flex: '1 0 0' }}` for column fill; `style={{ minWidth }}` for the wrapping threshold; `style={{ maxWidth }}` for content measure.
+- **Allowed:** `.container` / `.grid` classNames.
+- **Use the prop, not inline style:** column fill, wrapping threshold, and content measure go through Box/Stack's `grow` (flex fill), `minWidth`/`maxWidth`, and `minHeight`/`maxHeight` props — never hand-written as `style={{ … }}`.
 - **Forbidden:** raw color via inline style (use `<Text color=…>` or `<Heading>`); raw token values outside `var()`; arbitrary CSS that belongs in a component's CSS Module.
 
 Responsiveness comes from the token layer, never from layout files: device tokens carry the per-breakpoint values, reflow happens via `.grid` or `Inline wrap`, and hand-written `@media` in a layout file is forbidden. Which spacing tokens a layout may touch is governed by [ADR-004](decisions/004-layout-token-categories.md) (`grid.*` is consumed only by `.container`; components use `space.*`) and [ADR-005](decisions/005-size-vs-space-primitives.md) (`space` for gaps, `size` for element dimensions).
