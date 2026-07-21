@@ -47,7 +47,7 @@ Everything else either runs itself — a composite child chained by one of the c
 
 | Command | What it does | When it runs |
 |---|---|---|
-| `npm run build` 🔶 | Full build in dependency order. **Runs:** `tokens:build` → components build. | You type it before pushing component or token changes; CI runs the same steps on every component PR (`components-check.yml`). |
+| `npm run build` 🔶 | Full build in dependency order. **Runs:** `tokens:build` → components build → `@upskill/showcase` build. | You type it before pushing component, token, or showcase changes. `deploy-showcase.yml` and `showcase-check.yml` call `tokens:build` and the components build directly rather than this composite, then build the showcase themselves with their own `VITE_BASE_PATH`/typecheck steps. They skip the root `build` script's own showcase step so the showcase isn't built twice. |
 | `npm run tokens:build` | Style Dictionary only — transforms DTCG JSON into CSS custom properties and JS/TS constants. | You type it after editing anything in `packages/tokens/src/`, before committing; CI also runs it on every token PR (`tokens-check.yml`). |
 | `npm run typecheck` | TypeScript check on the components package (no emit). | You type it before pushing component changes; CI runs it on every component PR. |
 

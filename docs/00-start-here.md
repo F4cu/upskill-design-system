@@ -10,6 +10,7 @@ sources:
 # clock reset 2026-07-13: #70 mirrors Airtable deprecation state into DTCG $deprecated on committed token source (ADR-002 amendment); this page describes no token-format detail, still accurate
 # verified 2026-07-13 (issue #74): checked against ADR-010/ADR-015 amendments, CLAUDE.md, and the four lifecycle command files incl. the full/standard rename (e948407); this page carries no stage or review-path vocabulary, ADR and moment counts still correct
 # clock reset 2026-07-21: ROADMAP.md Homepage checkbox marked done and reassigns the horizon-brand demo to the Pipeline Health Dashboard; this page describes no per-page brand assignment, still accurate
+# clock reset 2026-07-21: ADR-020 replaces --_gap/--_align/--_box-px style vars with data-attribute selectors; this page carries no CSS-variable detail, still accurate. ROADMAP.md Phase 11 remaining items (Settings page, cross-page nav, responsive QA, root build chain) all marked done; this page already lists Homepage/CourseOverview/UserSettings/Dashboard/Pipeline as existing showcase pages, still accurate
 ---
 # Start here
 
