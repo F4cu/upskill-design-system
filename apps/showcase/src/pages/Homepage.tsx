@@ -78,12 +78,20 @@ const DISCOVER_FILTERS = ['Communication', 'UX', 'Usability', 'Design Thinking']
 const DISCOVER_COURSES = [
   { title: 'Change by Design', duration: '12 Hours', certified: true, category: 'Design Thinking' },
   { title: 'Creative Confidence', duration: '12 Hours', certified: true, category: 'Design Thinking' },
-  { title: 'The Design of Everyday Things', duration: '12 Hours', certified: true, category: 'UX' },
   { title: 'The Design Thinking Playbook', duration: '12 Hours', certified: true, category: 'Design Thinking' },
-  { title: 'Creative Acts for Curious People', duration: '10 Hours', certified: true, category: 'Usability' },
+  { title: 'Designing for Growth', duration: '9 Hours', certified: true, category: 'Design Thinking' },
+  { title: 'The Design of Everyday Things', duration: '12 Hours', certified: true, category: 'UX' },
   { title: 'Sprint', duration: '6 Hours', certified: true, category: 'UX' },
+  { title: "Don't Make Me Think", duration: '5 Hours', certified: true, category: 'UX' },
+  { title: '100 Things Every Designer Needs to Know About People', duration: '7 Hours', certified: true, category: 'UX' },
+  { title: 'Creative Acts for Curious People', duration: '10 Hours', certified: true, category: 'Usability' },
+  { title: 'Rocket Surgery Made Easy', duration: '6 Hours', certified: true, category: 'Usability' },
+  { title: 'A Project Guide to UX Design', duration: '8 Hours', certified: true, category: 'Usability' },
+  { title: 'Lean UX', duration: '7 Hours', certified: true, category: 'Usability' },
   { title: 'The Art of Innovation', duration: '8 Hours', certified: true, category: 'Communication' },
   { title: 'Thinking, Fast and Slow', duration: '14 Hours', certified: true, category: 'Communication' },
+  { title: 'Crucial Conversations', duration: '9 Hours', certified: true, category: 'Communication' },
+  { title: 'Made to Stick', duration: '6 Hours', certified: true, category: 'Communication' },
 ]
 
 const SAVED_CARD_WIDTH = 260
