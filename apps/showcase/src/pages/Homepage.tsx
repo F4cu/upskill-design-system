@@ -76,18 +76,21 @@ const SAVED_COURSES = [
 const DISCOVER_FILTERS = ['Communication', 'UX', 'Usability', 'Design Thinking']
 
 const DISCOVER_COURSES = [
-  { title: 'Change by Design', duration: '12 Hours', certified: true },
-  { title: 'Creative Confidence', duration: '12 Hours', certified: true },
-  { title: 'The Design of Everyday Things', duration: '12 Hours', certified: true },
-  { title: 'The Design Thinking Playbook', duration: '12 Hours', certified: true },
-  { title: 'Creative Acts for Curious People', duration: '10 Hours', certified: true },
-  { title: 'Sprint', duration: '6 Hours', certified: true },
-  { title: 'The Art of Innovation', duration: '8 Hours', certified: true },
-  { title: 'Thinking, Fast and Slow', duration: '14 Hours', certified: true },
+  { title: 'Change by Design', duration: '12 Hours', certified: true, category: 'Design Thinking' },
+  { title: 'Creative Confidence', duration: '12 Hours', certified: true, category: 'Design Thinking' },
+  { title: 'The Design of Everyday Things', duration: '12 Hours', certified: true, category: 'UX' },
+  { title: 'The Design Thinking Playbook', duration: '12 Hours', certified: true, category: 'Design Thinking' },
+  { title: 'Creative Acts for Curious People', duration: '10 Hours', certified: true, category: 'Usability' },
+  { title: 'Sprint', duration: '6 Hours', certified: true, category: 'UX' },
+  { title: 'The Art of Innovation', duration: '8 Hours', certified: true, category: 'Communication' },
+  { title: 'Thinking, Fast and Slow', duration: '14 Hours', certified: true, category: 'Communication' },
 ]
 
 const SAVED_CARD_WIDTH = 260
-const SAVED_VISIBLE_COUNT = 4
+// One less than SAVED_COURSES.length — itemCount === visibleCount would make
+// useCarousel's maxOffset permanently 0, disabling the arrows even when a
+// narrower viewport clips a card that overflow:hidden hides.
+const SAVED_VISIBLE_COUNT = 3
 const DISCOVER_CARD_WIDTH = 280
 const DISCOVER_VISIBLE_COUNT = 4
 
@@ -96,9 +99,16 @@ export default function Homepage() {
   const [activeFilter, setActiveFilter] = useState(DISCOVER_FILTERS[0])
 
   const savedCarousel = useCarousel(SAVED_COURSES.length, SAVED_VISIBLE_COUNT)
-  const discoverCarousel = useCarousel(DISCOVER_COURSES.length, DISCOVER_VISIBLE_COUNT)
+
+  const filteredDiscoverCourses = DISCOVER_COURSES.filter((course) => course.category === activeFilter)
+  const discoverCarousel = useCarousel(filteredDiscoverCourses.length, DISCOVER_VISIBLE_COUNT)
 
   const currentChapter = CHAPTERS[chapter]
+
+  const selectFilter = (filter: string) => {
+    setActiveFilter(filter)
+    discoverCarousel.reset()
+  }
 
   return (
     // ── Page ── grammar: exactly one <main> per route (ADR-011)
@@ -242,7 +252,7 @@ export default function Homepage() {
                 <Chip
                   key={filter}
                   selected={filter === activeFilter}
-                  onClick={() => setActiveFilter(filter)}
+                  onClick={() => selectFilter(filter)}
                 >
                   {filter}
                 </Chip>
@@ -258,7 +268,7 @@ export default function Homepage() {
                   transition: 'transform 300ms ease',
                 }}
               >
-                {DISCOVER_COURSES.map((course, i) => (
+                {filteredDiscoverCourses.map((course, i) => (
                   <div key={course.title} style={{ flexShrink: 0, width: `${DISCOVER_CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
                     <CardVertical
                       thumbnailSrc={CARD_IMGS[i % CARD_IMGS.length]}
