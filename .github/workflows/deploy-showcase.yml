@@ -10,6 +10,7 @@ on:
     paths:
       - "apps/showcase/**"
       - "packages/**"
+      - "docs/**"
       - "package-lock.json"
       - ".github/workflows/deploy-showcase.yml"
 
@@ -51,6 +52,10 @@ jobs:
       # unknown path — copying index.html lets react-router handle deep links
       - name: SPA fallback
         run: cp apps/showcase/dist/index.html apps/showcase/dist/404.html
+
+      # docs/ is a static Docsify site — served at /upskill-design-system/docs/
+      - name: Include docs site
+        run: cp -r docs apps/showcase/dist/docs
 
       - uses: actions/upload-pages-artifact@v3
         with:
