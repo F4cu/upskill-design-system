@@ -23,7 +23,7 @@ The pipeline in one sentence: [design tokens](08-glossary.md) are authored as co
 This repo documents itself in two distinct registers. Knowing which one you're reading saves confusion:
 
 1. **This site** — the reference. "How this system actually works, page by page," written for someone evaluating or maintaining it who wants to browse the architecture. Every claim links to the file, script, or ADR it comes from.
-2. **The live showcase** — `apps/showcase`, a Vite/React app deploying to GitHub Pages (replacing the earlier Vercel plan — one hosting story shared with this docs site), containing built pages, a system-health dashboard, and a pipeline diagram. It is the system *running*, not the system *explained*.
+2. **The live showcase** — `apps/showcase`, a Vite/React app deploying to GitHub Pages (replacing the earlier Vercel plan), containing built pages, a system-health dashboard, and a pipeline diagram. It is the system *running*, not the system *explained*. This reference site is a Docsify app published to the same GitHub Pages deploy, at https://f4cu.github.io/upskill-design-system/docs/ — preview it locally with `npm run docs:serve`.
 
 Where a page on this site describes something the showcase demonstrates live, it links out — for example, the pages produced by the layout grammar and the fixed component set:
 
