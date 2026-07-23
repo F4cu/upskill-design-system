@@ -1,7 +1,7 @@
 # ADR-001 — Component Metadata Schema for Machine-Readable Design System
 
 **Date:** 2026-06-11
-**Amended:** 2026-06-17
+**Amended:** 2026-07-23
 **Status:** `accepted`
 
 ## Context
@@ -69,3 +69,13 @@ A foundation review before Phase 5b found the schema and the committed metadata 
 `accessibility.notes` (optional string) was also added — several components carried guidance the `role`/`ariaAttributes`/`keyboardInteractions` fields could not hold.
 
 The contract warning above still holds: this was a breaking change to the `variants` shape, so all 11 metadata files plus `component.metadata.example.json` and the component-scaffold command prompt were migrated in the same change.
+
+## Amendment (2026-07-23) — `relationships` renamed to `composition` (recorded retroactively)
+
+Commit `d89782a` (2026-06-24) reshaped the relationship section without a matching amendment here; this records it so the ADR prose matches the live schema:
+
+1. **`relationships` → `composition`.** The top-level section is named `composition`; the seven required properties are `component`, `usage`, `variants`, `states`, `tokens`, `accessibility`, `composition`.
+2. **`compositionPatterns` moved to `usage.patterns`.** Named, proven compositions live under `usage` alongside `keywords`/`when`/`antiPatterns` — they are guidance for choosing and combining the component, not structural constraints.
+3. **`neverPairWith` dropped, absorbed into `usage.antiPatterns`.** Five files had populated it (the three Card variants' mutual-exclusion rules, Chip↔Button, Image↔Avatar). Those constraints survive as anti-patterns — e.g. Card's "Using Card as a sibling of CardVertical or CardHorizontal in the same layout group" — where each carries a `reason` and `alternative` instead of a bare name list; self-nesting rules moved to `layoutBehavior.canNest`. Per the "deliberately excluded" convention above, do not re-add it without a new ADR.
+
+`composedOf` (internal library dependencies) has been part of the section since the original schema. References to `relationships` elsewhere in this ADR are preserved as written; read them as `composition`.

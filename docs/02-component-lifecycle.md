@@ -58,7 +58,7 @@ Visual similarity alone is never a reason to create a new component or to merge 
 
 ## How it works, concretely
 
-The metadata schema (`packages/components/component.schema.json`) requires seven top-level properties: `component`, `usage`, `variants`, `states`, `tokens`, `accessibility`, `relationships`. A `variants` block modelled as named axes looks like:
+The metadata schema (`packages/components/component.schema.json`) requires seven top-level properties: `component`, `usage`, `variants`, `states`, `tokens`, `accessibility`, `composition` (originally named `relationships` — see the ADR-001 2026-07-23 amendment). What each section holds, why, and who consumes it is the subject of [10 — Machine-readable metadata](10-machine-readable-metadata.md); this page keeps only the lifecycle-relevant shape. A `variants` block modelled as named axes looks like:
 
 ```json
 "variants": {
