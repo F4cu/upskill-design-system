@@ -1,10 +1,10 @@
 # ADR-007 — Verified component loop: sequential, ≤2 agents, frozen-file handoffs
 
 **Date:** 2026-06-22
-**Amended:** 2026-06-22
-**Status:** `proposed`
+**Amended:** 2026-07-23
+**Status:** `accepted`
 
-> Staked out ahead of Phase 9 implementation. Promote to `accepted` when the loop is built and has run once on a real component (the Phase 9 exit condition).
+> Staked out ahead of Phase 9 implementation as `proposed`, with promotion gated on the loop running once on a real component (the Phase 9 exit condition). Promoted 2026-07-23 — see the amendment below.
 
 ## Context
 
@@ -78,3 +78,12 @@ interactive components. It folds into this loop at two points:
 
 The Phase 9 exit condition is unchanged but now has teeth: `Accordion` ships through the loop only when
 its behavioral a11y test asserts the full Accordion/Disclosure contract and passes.
+
+## Amendment (2026-07-23) — Promoted to `accepted`: exit condition satisfied
+
+The promotion condition was met and then some: `Accordion` shipped through the loop on 2026-07-09
+with its behavioral a11y contract asserted, and the committed run ledger
+(`.claude/handoff/run-ledger.json`) now records 12 completed runs across the component set.
+Downstream docs (`docs/06-agentic-moments.md`, `docs/11-self-improving-loops.md`) have treated the
+loop as settled fact since; this amendment closes the loop on the ADR's own status so the citation
+trail no longer dead-ends on `proposed`. No change to the decision or its binding rules.
