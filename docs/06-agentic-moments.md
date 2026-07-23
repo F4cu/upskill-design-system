@@ -12,6 +12,7 @@ sources:
 # clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
 # clock reset 2026-07-21: layout-generation.md's inline-style column-fill wording changed (grow/minWidth/maxWidth props); this page describes moment invariants, not layout-file prop syntax, still accurate
 # clock reset 2026-07-23: adds docs-scribe rubric summary + declares .claude/agents/docs-scribe.md as a source (was referenced in prose but not gated); see docs/11-self-improving-loops.md
+# clock reset 2026-07-23: ADR-007 promoted proposed→accepted (exit condition met: Accordion 2026-07-09, 12 ledger runs) — status flip + amendment only, loop mechanics unchanged, page still accurate
 ---
 # Agentic moments
 

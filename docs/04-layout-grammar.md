@@ -9,8 +9,10 @@ sources:
   - docs/decisions/004-layout-token-categories.md
   - docs/decisions/005-size-vs-space-primitives.md
   - docs/decisions/009-extend-vs-new-vs-internal.md
+  - docs/decisions/020-layout-prop-attribute-selectors.md
 # clock reset 2026-07-12: commands gain visual-review step + adversarial/in-session path rename (#64 PR 2); stage-vocabulary sweep for this page follows in the dedicated docs PR
 # rewritten 2026-07-21: layout-generation.md replaced the style={{ flex, minWidth, maxWidth }} column-fill pattern with grow/minWidth/maxWidth props (and now minHeight/maxHeight) — updated the grammar table row and inline-style allowlist to match
+# rewritten 2026-07-23: added ADR-020 to sources and a paragraph under the inline-style allowlist explaining how enum props render (data-* attributes + CSS attribute selectors, not style) — the ADR previously had no narrative coverage in any docs page
 ---
 # Layout grammar
 
@@ -49,6 +51,8 @@ The grammar table from ADR-011 — one abstraction level per Figma wrapper:
 - **Use the prop, not inline style:** column fill, wrapping threshold, and content measure go through Box/Stack's `grow` (flex fill), `minWidth`/`maxWidth`, and `minHeight`/`maxHeight` props — never hand-written as `style={{ … }}`.
 - **Forbidden:** raw color via inline style (use `<Text color=…>` or `<Heading>`); raw token values outside `var()`; arbitrary CSS that belongs in a component's CSS Module.
 
+**How the allowed props reach the DOM** ([ADR-020](decisions/020-layout-prop-attribute-selectors.md)): the *enum-valued* layout props (`gap`, `align`, `justify`, `padding`/`paddingX`/`paddingY`) render as `data-*` attributes (`data-gap="lg"`, `data-align="start"`), and each component's CSS Module maps them to token values with attribute selectors (`.stack[data-gap="lg"] { gap: var(--ds-space-stack-lg); }`). They never appear in a `style` attribute — so if you inspect a `<Stack>` or `<Inline>` in devtools and see no inline style, that's the design, not a missing prop. Only the *continuous* props (`grow`, `minWidth`/`maxWidth`, `minHeight`/`maxHeight`) render as inline `style`, because they carry per-instance values with no closed set to select against. Any new prop with a small closed set of string options should follow the `data-*` pattern.
+
 Responsiveness comes from the token layer, never from layout files: device tokens carry the per-breakpoint values, reflow happens via `.grid` or `Inline wrap`, and hand-written `@media` in a layout file is forbidden. Which spacing tokens a layout may touch is governed by [ADR-004](decisions/004-layout-token-categories.md) (`grid.*` is consumed only by `.container`; components use `space.*`) and [ADR-005](decisions/005-size-vs-space-primitives.md) (`space` for gaps, `size` for element dimensions).
 
 The validator enforces the load-bearing invariants without judgment: exactly one `<main>`, every `<section>` named, every extra `<nav>` uniquely labelled, fixed-set component names only.
@@ -65,7 +69,7 @@ No diagram here: the grammar table *is* the spatial mapping, and a flowchart wou
 
 ## Related
 
-- ADRs: [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [016 — Layout output review path](decisions/016-layout-output-review-path.md)
+- ADRs: [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [016 — Layout output review path](decisions/016-layout-output-review-path.md), [020 — Enum props as data-attributes](decisions/020-layout-prop-attribute-selectors.md)
 - Commands: `/layout-generation` (in `.claude/commands/`)
 - Scripts: `scripts/validate-layout.js` via `npm run layout:validate` — see the [CLI reference](07-cli-reference.md)
 - Live examples: the five pages in `apps/showcase/src/pages/` — see [Start here](00-start-here.md)

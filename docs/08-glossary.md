@@ -13,6 +13,8 @@ sources:
 # clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
 # clock reset 2026-07-21: layout-generation.md's inline-style column-fill wording changed (grow/minWidth/maxWidth props); glossary defines no per-command prop syntax, still accurate
 # clock reset 2026-07-21: added Enum entry alongside ADR-020 (layout props → data-attributes); no prior entry went stale
+# clock reset 2026-07-23: ADR-007 promoted proposed→accepted (exit condition met: Accordion 2026-07-09, 12 ledger runs) — status flip + amendment only, loop mechanics unchanged, page still accurate
+# rewritten 2026-07-23: Review checklist entry trimmed to a definition + pointer — 02-component-lifecycle is the single prose owner of checklist mechanics (dedup, ADR audit)
 ---
 # Glossary
 
@@ -59,7 +61,7 @@ Two things are orthogonal when they are fully independent — using or changing 
 Props are the inputs you pass to a component to control its appearance or behavior — similar to settings or options. For example, `<Button size="lg" disabled>Save</Button>` passes a `size` prop and a `disabled` prop. A **variant** is a specific type of prop that switches between named visual styles: `<Button variant="primary">` vs `<Button variant="secondary">`. In this repo's metadata, variants are modelled as named axes — each axis (like `variant` or `size`) lists its options, its default, and the purpose of each option. This is how the scaffold and layout tools know what combinations a component supports.
 
 **Review checklist**
-The four items a component clears while in the `in review` stage, rendered per component in `STATUS_QUO.md` and derived at render time by `sense.js` (no stored checklist state): (1) the automated gate — lint, typecheck, build, metadata, a11y as one pass/fail item; (2) visual review — the human go/no-go; (3) code review — via the adversarial subagent or in-session `/code-review`, depending on the review path; (4) learnings back-fill via `/extract-learnings`. Items a path doesn't require render as an explicit `n/a — reason`, never silently omitted. See also Review path, Visual review.
+The four items a component clears while in the `in review` stage: automated gate, visual review, code review, learnings back-fill. Derivation rules, per-path behavior, and the `n/a — reason` convention live in [Component lifecycle](02-component-lifecycle.md#two-axes-because-one-field-kept-lying) — the single prose owner of the checklist mechanics. See also Review path, Visual review.
 
 **Review path**
 Which review route a component or layout took, recorded as `reviewPath` in the review artifacts. Two values: `full` (`/review-component` — one fresh, read-only adversarial subagent reviews with independent context, followed by the `/extract-learnings` loop) and `standard` (`/code-review` run on the diff inside the working session — no subagent, no separate learnings step, so checklist item 4 is `n/a`). See also Adversarial Review, Subagent.
