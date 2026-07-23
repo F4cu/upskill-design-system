@@ -1,6 +1,6 @@
 # Airtable governance flow, both directions
 
-*Case-study source draft — narrative voice, for `docs/system-case-study.html`. Not yet linked from the docsify sidebar.*
+*Case-study source draft — narrative voice, for `docs/system-case-study.html`. Linked from [05-governance.md](../05-governance.md#related), not the docsify sidebar (case-study-source pages aren't sidebar entries — see the other `Case study:` links in `docs/11-self-improving-loops.md` and `docs/06-agentic-moments.md`).*
 
 ## The problem with one column doing two jobs
 
