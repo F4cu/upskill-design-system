@@ -66,6 +66,7 @@ Moments and loops read the system's status quo from **committed files, never liv
 | `.claude/component-pipeline.json` | Component metadata + review state + sign-off | `scripts/sense.js` (`npm run sense`) |
 | `.claude/component-patterns.json` | Cross-component pattern aggregate (deterministic AST + metadata scan) | `scripts/generate-pattern-schema.js` |
 | `.claude/STATUS_QUO.md` | Aggregate of the above | `scripts/sense.js` (`npm run sense`) |
+| `.claude/pipeline-status.json` | GitHub (CI workflow conclusions on `main` + open issues) | `scripts/pipeline-status.js` (`npm run pipeline:status`, `gh` REST) |
 
 Regenerate `STATUS_QUO.md` with `npm run sense` before a loop run; per-component context is narrowed to `.claude/handoff/runs/<Name>.snapshot.json` by `npm run sense:component <Name>`.
 
@@ -184,6 +185,7 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | In-session review path, no subagent | `/code-review` on the diff + `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test` |
 | Back-fill metadata learnings after a review/bug-fix session | `/extract-learnings <Name>` or `/extract-learnings --all` |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
+| Quick terminal read on where things stand | `npm run status` (dashboard), `npm run status:board` (per-component table), `npm run status:component -- <Name>` (one component's checklist) |
 | Archive done/superseded handoffs, regenerate index | `npm run handoff:tidy` |
 | Rewrite stale `docs/NN-*.md` pages | `/docs-sync` (detection: `npm run docs:check`) |
 | Run a11y checks | `npm run lint` (Tier 1) · `npm run a11y:coverage && npm run a11y:test` (Tier 2 — ADR-008) |

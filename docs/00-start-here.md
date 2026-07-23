@@ -18,12 +18,17 @@ UpSkill is a learning-first, **lite agentic** design system for a small SaaS pro
 
 The pipeline in one sentence: [design tokens](08-glossary.md) are authored as committed DTCG JSON, built by [Style Dictionary](08-glossary.md) into [CSS custom properties](08-glossary.md) and JS/TS constants, consumed by coded React components, governed through Airtable, automated through GitHub Actions — with Figma as a downstream mirror rather than the source of truth. In plain terms: design decisions live as data in this repo, a build step turns them into the values components use, Airtable tracks their status, and Figma reflects them without defining them.
 
-## The two documentation surfaces
+## Documentation map
 
-This repo documents itself in two distinct registers. Knowing which one you're reading saves confusion:
+"Where does what live" spans five surfaces, each for a different audience and question. Knowing which one you're reading (or should be reading) saves confusion:
 
-1. **This site** — the reference. "How this system actually works, page by page," written for someone evaluating or maintaining it who wants to browse the architecture. Every claim links to the file, script, or ADR it comes from.
-2. **The live showcase** — `apps/showcase`, a Vite/React app deploying to GitHub Pages (replacing the earlier Vercel plan), containing built pages, a system-health dashboard, and a pipeline diagram. It is the system *running*, not the system *explained*. This reference site is a Docsify app published to the same GitHub Pages deploy, at https://f4cu.github.io/upskill-design-system/docs/ — preview it locally with `npm run docs:serve`.
+| Surface | Audience / question | Open it |
+|---|---|---|
+| Storybook (`packages/components`) | Anyone asking "how does this component behave, in every variant and theme?" — Storybook is the documentation layer for coded components. | `/run-storybook`, or `npm run storybook` inside `packages/components`. |
+| Airtable | Design/product asking "what's the governance status of this token or component" (owner, successor, sign-off). | Open the base directly; the repo's read-side mirror is `airtable-governance.json` / `.claude/component-signoff.json` (see the observability map below — never a live call from a session). |
+| This site (Docsify, `docs/`) | Someone evaluating or maintaining the system who wants "how this actually works, page by page," with every claim linked to its source file/script/ADR. | `npm run docs:serve` locally; published at https://f4cu.github.io/upskill-design-system/docs/. |
+| `CLAUDE.md` + `.claude/rules/` | An agent asking "what must I know to generate or reuse correctly in this repo?" | Read directly — `CLAUDE.md` for cross-cutting invariants, path-scoped rules for component/token specifics. |
+| The live showcase (`apps/showcase`) | Anyone who wants to see the system *running*, not explained — a Vite/React app deploying to GitHub Pages (replacing the earlier Vercel plan), with built pages, a system-health dashboard, and a pipeline diagram. | `npm run dev -w @upskill/showcase`, or the deployed site. |
 
 Where a page on this site describes something the showcase demonstrates live, it links out — for example, the pages produced by the layout grammar and the fixed component set:
 
@@ -32,6 +37,19 @@ Where a page on this site describes something the showcase demonstrates live, it
 - [UserSettings.tsx](https://github.com/F4cu/upskill-design-system/blob/main/apps/showcase/src/pages/UserSettings.tsx) — Phase 5b components
 - [Dashboard.tsx](https://github.com/F4cu/upskill-design-system/blob/main/apps/showcase/src/pages/Dashboard.tsx) — the system-health dashboard
 - [Pipeline.tsx](https://github.com/F4cu/upskill-design-system/blob/main/apps/showcase/src/pages/Pipeline.tsx) — the interactive pipeline diagram
+
+## Observability map
+
+"Where do I look to know system state" — the frozen-memory files, terminal views, dashboard, and telemetry ledger that answer it, without live API calls:
+
+| Surface | Answers | Open it |
+|---|---|---|
+| Frozen snapshots (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`, `.claude/component-signoff.json`, `.claude/component-review-state.json`, `.claude/component-pipeline.json`, `.claude/component-patterns.json`, `.claude/STATUS_QUO.md`, `.claude/pipeline-status.json`) | "What's the last-captured state of governance, usage, review, and CI/issues — without hitting a live API?" (CLAUDE.md's "Frozen-memory snapshots" table has the full source/capture mapping.) | Read the file directly, or regenerate with `npm run sense` (most files) / `npm run pipeline:status` (`.claude/pipeline-status.json`: CI workflow conclusions + open issues, via `gh`). |
+| `npm run status` | "Component and token totals, governance summary, and the latest five token changes — what does the system look like right now?" | Terminal, no args. |
+| `npm run status:board` | "Every component's stage and review checklist (visual/code/learnings) in one table." | Terminal, no args. |
+| `npm run status:component <Name>` | "Where does this one component stand, and what's the next step?" | `npm run status:component -- <Name>`. |
+| The pipeline dashboard | "The same state, visually, as a maintainer-facing dashboard" — component lifecycle (both axes), token governance backlog, Figma drift, open issues, and a DAG of the pipeline itself. | `npm run pipeline-dashboard`, or the showcase's `/dashboard` and `/pipeline` pages. |
+| `.claude/handoff/run-ledger.json` | "How has the adversarial-review stage actually performed, run over run?" — the committed, append-only per-run review telemetry ledger. | Read the file directly; entries are promoted into it by `npm run handoff:tidy`. |
 
 ## How to read this site
 
