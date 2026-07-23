@@ -4,7 +4,11 @@
 
 ## Methodology, stated once
 
-Every number below carries one of four tags. **Measured** means read directly off a committed artifact in this repo (a file size, a ledger entry, a workflow YAML). **Estimated** means derived from a measured number via a stated assumption. **External** means a published source outside this repo, cited with enough detail to chase down. **Gap** means the architecture claims it and no data substantiates it — those are listed too, deliberately, at the end. Token figures use the rough heuristic of bytes ÷ 4; JSON runs slightly denser in practice, so treat token counts as conservative comparisons, not billing math.
+Every number below is tagged **Measured** (read directly off a committed artifact — a file size, a ledger entry, a workflow YAML), **Estimated** (derived from a measured number via a stated assumption), **External** (a published source outside this repo, cited with enough detail to chase down), or **Gap** (the architecture claims it, nothing yet substantiates it). Token counts use bytes ÷ 4 as a rough, conservative heuristic, not billing math.
+
+## What isn't measured, up front
+
+Before the numbers that are pinned down: three real gaps in this system's own evidence, kept on the record rather than quietly rounded up. The Figma-variables half of the "avoided live fetch" claim has no captured baseline. Escaped-defect rate — did anything a reviewer missed reach production — isn't tracked at all; "no agent code reaches `main` unreviewed" is a verified *process* guarantee, not a defect-rate claim. And the standard in-session review path, 15 of the 27 shipped components, records no findings telemetry, so every ledger number below is honest about covering only the other 12. None of these are fatal to the claims that follow; they're the boundary of what the claims cover. Full list, with what would close each gap, at the end of this chapter.
 
 ## Frozen snapshots: the context economics
 
@@ -61,7 +65,7 @@ The one controlled experiment in the repo (`scripts/pattern-accuracy-harness/`, 
 | Component scaffold (3 tasks) | 19 | 24 | **+26% (regression)** |
 | Total | 32 | 28 | −13% |
 
-(The gate-violations-only subset for scaffold is 11→17; the totals above include the trap checklist.) The split drove the scoped decision — pattern file into `/layout-generation` only, never `/component-scaffold` — and the harness stayed in-repo as the standing instrument. Full narrative: [Rejected alternatives §4](05-rejected-alternatives.md).
+(The gate-violations-only subset for scaffold is 11→17; the totals above include the trap checklist.) The split drove the scoped decision — pattern file into `/layout-generation` only, never `/component-scaffold` — and the harness stayed in-repo as the standing instrument. Full narrative: [Rejected alternatives §1](04-rejected-alternatives.md).
 
 External anchors for the gate-plus-generator architecture generally: the LLM-Modulo position paper (Kambhampati et al., ICML 2024, [arXiv:2402.01817](https://arxiv.org/abs/2402.01817)) — LLMs generate candidates, external sound critics verify, because the models cannot reliably self-verify; Huang et al. (ICLR 2024, [arXiv:2310.01798](https://arxiv.org/abs/2310.01798)) — intrinsic self-correction without external feedback often *degrades* output, which is why the gate is a script and not a "please double-check" prompt. For the fresh-context reviewer specifically, a 2026 controlled study ([arXiv:2603.12123](https://arxiv.org/abs/2603.12123)) found fresh-session review outperformed same-session self-review (F1 28.6% vs 24.6%) on 150 injected errors — a single-author preprint, not yet peer-reviewed, so it's suggestive corroboration paired with the peer-reviewed self-correction result, not settled proof.
 

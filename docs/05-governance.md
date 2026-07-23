@@ -124,7 +124,7 @@ flowchart LR
 ## Related
 
 - ADRs: [010 — Two-axis lifecycle](decisions/010-component-lifecycle-two-axes.md) (the guard), [002 — Three-layer token model](decisions/002-three-layer-token-model.md) (governance direction precedent), [003 — `$root` convention](decisions/003-root-token-convention.md) (supersession as the worked example)
-- Case study: [Airtable governance flow, both directions](case-study-source/03-airtable-governance-flow.md) — narrative walkthrough of why the same-column rule exists, with the `Select`/`Accordion` incident that motivated ADR-010
+- Case study: [Airtable governance flow, both directions](case-study-source/05-airtable-governance-flow.md) — narrative walkthrough of why the same-column rule exists, with the `Select`/`Accordion` incident that motivated ADR-010
 - Commands: `/airtable-sync`, `/token-deprecation-pass` (in `.claude/commands/`)
 - Setup: `scripts/airtable-setup-governance.js` (`npm run airtable:setup`), `.env.example`
 - Scripts: `scripts/airtable-sync.js`, `scripts/airtable-pull.js`; `npm run airtable:pull:governance`, `npm run airtable:sync:all` — see the [CLI reference](07-cli-reference.md)
