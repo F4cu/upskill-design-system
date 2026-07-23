@@ -2,21 +2,7 @@
 
 *Case-study source draft — narrative voice, for `docs/system-case-study.html`. Not yet linked from the docsify sidebar.*
 
-## The gap the plumbing narrative leaves open
-
-The rest of this case study is convincing about the mechanism: seven committed snapshot files stand in for live Airtable/Figma/GitHub calls, and [the numbers](08-measured-impact.md) back that up — 62.1× smaller than a raw Airtable pull, 20 reference points across 7 commands, zero LLM calls in any of the 7 CI workflows. What it doesn't answer is the question a maintainer actually asks day to day: *where is every component in the pipeline, and is anything stale?* Knowing the snapshots exist doesn't tell you how you'd look at them without opening Airtable, without a Figma tab, without starting an agent session just to ask a status question. That's a real, separate gap, and it's the one this section closes.
-
-The answer turns out to be the same file set read three different ways. No new state gets captured, no new API gets called — three read-only lenses over the frozen files the pipeline already commits: a terminal glance, a shareable web view, and an agent-context aggregate.
-
 ## The status CLI — a terminal glance
-
-`scripts/status.js`, wired to three `npm run` entries, is the cheapest of the three: plain Node, no dependencies beyond `child_process` for a couple of `git` reads, no AI. The file's own header comment states the discipline plainly — it's "a dumb renderer: stage logic lives in `sense.js` and is read back from `component-pipeline.json`, never re-derived." The CLI doesn't compute maturity or implementation stage; it formats what `sense.js` already decided.
-
-- `npm run status` — component/token totals plus the five most recent token changes, replayed from git history of `packages/tokens/src` (the frozen files carry no per-token timestamps, so this one command reaches past the snapshot to the commit log — the one place in this trio that isn't a pure snapshot read).
-- `npm run status:board` — the full per-component table, sorted by pipeline stage.
-- `npm run status:component <Name>` — one component's checklist card, with a "next" hint synthesized from which checklist item is still open.
-
-A representative capture of `npm run status:board`, trimmed to the header and a sample of rows:
 
 ```
 27 components — 0 done · 25 in review · 2 in progress · 0 todo
@@ -31,7 +17,15 @@ Button          interactive  in progress (unreviewed)  –         –    –   
 Select          input        in progress (unreviewed)  –         –    –     –
 ```
 
-That table is the whole review-ledger story from [the measured-impact numbers](08-measured-impact.md) rendered as a glance instead of a JSON diff: which components cleared the gate, which review path they took (`full` vs `standard`), which checklist items are still open. It answers "is anything stale" without a single network call.
+That's `npm run status:board`, trimmed to the header and a sample of rows. It's the whole review-ledger story from [the measured-impact numbers](08-measured-impact.md) rendered as a glance instead of a JSON diff: which components cleared the gate, which review path they took (`full` vs `standard`), which checklist items are still open — the question a maintainer actually asks day to day, *where is every component in the pipeline, and is anything stale*, answered without opening Airtable, without a Figma tab, without starting an agent session, without a single network call.
+
+The answer turns out to be the same file set read three different ways: no new state captured, no new API called, three read-only lenses over the frozen files the pipeline already commits — a terminal glance, a shareable web view, and an agent-context aggregate.
+
+`scripts/status.js`, wired to three `npm run` entries, is the cheapest of the three: plain Node, no dependencies beyond `child_process` for a couple of `git` reads, no AI. The file's own header comment states the discipline plainly — it's "a dumb renderer: stage logic lives in `sense.js` and is read back from `component-pipeline.json`, never re-derived." The CLI doesn't compute maturity or implementation stage; it formats what `sense.js` already decided.
+
+- `npm run status` — component/token totals plus the five most recent token changes, replayed from git history of `packages/tokens/src` (the frozen files carry no per-token timestamps, so this one command reaches past the snapshot to the commit log — the one place in this trio that isn't a pure snapshot read).
+- `npm run status:board` — the full per-component table above, sorted by pipeline stage.
+- `npm run status:component <Name>` — one component's checklist card, with a "next" hint synthesized from which checklist item is still open.
 
 ## The Pipeline Health Dashboard — a shareable web view
 
@@ -40,6 +34,8 @@ That table is the whole review-ledger story from [the measured-impact numbers](0
 The page is a straightforward composition of the same fixed component set the rest of the system uses (`Box`, `Stack`, `Card`, `Badge`, `Heading`) plus two small chart primitives (`PipelineDag`, `SplitChart`), reading from `dashboardData.ts` — which itself imports directly from committed JSON: `component-pipeline.json`, `airtable-governance.json`, `token-usage.json`, `figma-variables.json`, and `pipeline-status.json` (CI conclusions and open GitHub issues, captured pre-deploy by a `gh`-backed script, joined at build time only). The standalone `/pipeline` route (`Pipeline.tsx`) reuses the same `PipelineDag` component as a hero, on its own.
 
 Four sections, each reading a distinct snapshot: component lifecycle (maturity/implementation splits plus the full component table — the same data `status:board` renders as text), token governance (deprecated-in-use backlog by layer), Figma drift (variables mirrored, snapshot age), and open issues. None of it calls Airtable, Figma, or GitHub at request time — every render is a build-time read of a file already sitting in the repo, which is the same invariant the rest of the pipeline runs on, just given a UI. *(A screenshot of the live dashboard belongs here in the eventual `system-case-study.html` build; this source file references the live URL instead of attempting one.)*
+
+Visual state gets the same observability treatment, just one layer down: `npm run screenshot:check` (ADR-019) diffs every component's committed screenshot baseline on every PR, advisory rather than blocking today. The last full pass measured 54/54 shots at 0.000% diff — a maintainer doesn't have to open Storybook and eyeball 27 components to know nothing shifted visually; the CI run already answered that question.
 
 ## `.claude/STATUS_QUO.md` — the agent-facing aggregate
 
@@ -56,6 +52,7 @@ The frozen-snapshot mechanism was justified in [the measured-impact section](08-
 - `apps/showcase/src/pages/Dashboard.tsx`, `Pipeline.tsx`, `apps/showcase/src/pipeline/dashboardData.ts`
 - `scripts/status.js`, `package.json` (`status`, `status:board`, `status:component` entries)
 - `.claude/STATUS_QUO.md`, `scripts/sense.js`
+- `docs/decisions/019-screenshot-baseline-visual-regression.md`, `npm run screenshot:check`
 - `ROADMAP.md` — Phase 11 section ("Pivot — Case-study visibility" and "Pipeline Health Dashboard")
 - `.claude/handoff/archive/pipeline-dashboard.handoff.md`
 - [The numbers](08-measured-impact.md) — frozen-snapshot economics cited above, not repeated

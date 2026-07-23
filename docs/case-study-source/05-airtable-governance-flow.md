@@ -28,8 +28,8 @@ The naive alternative — sync in both directions, whoever writes last wins — 
 
 The fix isn't "sync more carefully." It's the same-column rule above, backed by two explicit guards in `airtable-sync.js` (`HUMAN_OWNED_IMPL = new Set(["done", "todo"])`):
 
-1. **Never overwrite a human value.** Before writing `Implementation`, `push:components` reads what's already in Airtable and skips the write entirely if it's already `done` or `todo`. Combined with the partial-upsert behavior, a human value is now doubly protected — the sync won't touch the cell, and even if it did, omission wouldn't clear it.
-2. **Never orphan a human value.** The sync also deletes Airtable rows whose code-side counterpart no longer exists (an "orphan" cleanup) — necessary so deleted components don't linger as ghost rows forever. But a `todo` row might represent a component that's *planned* and doesn't have code yet on purpose. `done`/`todo` rows are explicitly exempted from orphan deletion, so a maintainer can queue a future component in Airtable without a sync run silently deleting the placeholder.
+1. **Never overwrite a human value.** Before writing `Implementation`, `push:components` reads what's already in Airtable and skips the write entirely if it's already `done` or `todo`. Combined with the partial-upsert behavior, a human value is now doubly protected — the sync won't touch the cell, and even if it did, omission wouldn't clear it. Without this guard, marking a component `done` in Airtable would be a false sense of closure — the next merge's derived `in review` would silently overwrite it, and the maintainer would have no reason to suspect their sign-off didn't stick.
+2. **Never orphan a human value.** The sync also deletes Airtable rows whose code-side counterpart no longer exists (an "orphan" cleanup) — necessary so deleted components don't linger as ghost rows forever. But a `todo` row might represent a component that's *planned* and doesn't have code yet on purpose. `done`/`todo` rows are explicitly exempted from orphan deletion. Without this exemption, queuing a future component in Airtable would be pointless — the very next sync run would read "no matching code" and delete the placeholder before it ever got built.
 
 Neither guard is a policy someone has to remember to follow during a PR. Both are `if` statements in `scripts/airtable-sync.js` that run on every merge.
 
@@ -71,7 +71,7 @@ flowchart LR
     GOV --> DEP[/token-deprecation-pass/]
 ```
 
-The guard sits at exactly one point — the write into the shared `Implementation` column — because that's the only place code and human values could otherwise collide. Everywhere else on the diagram, ownership is already unambiguous by construction: a token table's governance columns are never written by code at all, and a component's Maturity column is never written by a human at all.
+The guard sits at exactly one point — the write into the shared `Implementation` column — because that's the only place code and human values could otherwise collide.
 
 ## Why this is a governance story, not just a sync-script story
 
