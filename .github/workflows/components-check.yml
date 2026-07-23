@@ -11,7 +11,9 @@ on:
       - 'scripts/generate-pattern-schema.js'
       - 'scripts/screenshot.js'
       - '.claude/component-patterns.json'
-      - 'package.json'
+      # package.json deliberately absent (#88): dependency/workspace changes always
+      # rewrite the lockfile, and script-only edits don't affect the component build.
+      # Blind spot: editing a script this workflow invokes won't retrigger on that PR.
       - 'package-lock.json'
 
 concurrency:

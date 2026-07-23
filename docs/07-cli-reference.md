@@ -5,6 +5,7 @@ sources:
   - apps/showcase/scripts/copy-pipeline-data.js
   - .github/workflows/*.yml
 # clock reset 2026-07-10: CI-audit workflows (#57-#60) merged; this page's rewrite in #61 already describes the end state (lint gate, sync.yml, weekly pull, showcase-check)
+# clock reset 2026-07-23: components-check.yml paths filter narrowed (#88, package.json dropped); trigger paths aren't described on this page, prose unaffected
 ---
 # CLI reference
 
