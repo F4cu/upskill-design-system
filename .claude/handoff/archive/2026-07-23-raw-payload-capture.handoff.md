@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-07-23
-completed:
+completed: 2026-07-23
 ---
 
 # One-time raw-payload capture: turn the snapshot-savings estimate into a measured ratio
