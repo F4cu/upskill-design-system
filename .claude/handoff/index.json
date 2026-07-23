@@ -16,6 +16,14 @@
     "path": ".claude/handoff/2026-07-07-figma-variable-push-prep.handoff.md"
   },
   {
+    "name": "2026-07-23-raw-payload-capture",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-07-23",
+    "updated": "2026-07-23",
+    "path": ".claude/handoff/2026-07-23-raw-payload-capture.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
@@ -116,7 +124,7 @@
     "kind": "handoff",
     "status": "done",
     "created": "2026-07-07",
-    "updated": "2026-07-08",
+    "updated": "2026-07-21",
     "path": ".claude/handoff/archive/pipeline-dashboard.handoff.md"
   },
   {
