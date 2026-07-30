@@ -81,7 +81,11 @@ No `$extensions` blocks are ever committed — they are stripped when reconcilin
 
 **The invariant that holds it together:** components only ever consume the built output (`var(--token-name)` in CSS Modules, constants in TS) — never the source JSON. The authoring procedure, including when a transform change needs an ADR, lives in the `/tokens-author` command (`.claude/commands/tokens-author.md`).
 
-## Diagram
+## Diagrams
+
+### Token build graph
+
+The resolution order inside the token layers, from source JSON to consumed output:
 
 ```mermaid
 flowchart LR
@@ -96,6 +100,69 @@ flowchart LR
     CSS --> C[Components<br/>CSS Modules, var--token only]
     JS --> C
     P -.->|/figma-variable-push| F
+```
+
+### Full pipeline, end to end
+
+The build graph above is the critical path from source to `var()`. The wider system wraps it in six stages — source, version control + governance, CI, build + deploy, the frozen-snapshot side-channel, and the consuming platforms. This is a **lite** system: the packages are npm-workspace-internal (`"private": true`), so there is no registry publish, CDN, or public API — the one real distribution surface is GitHub Pages.
+
+```mermaid
+flowchart LR
+    subgraph SRC["① Source · DTCG JSON"]
+        direction TB
+        P[primitives.json] --> BR[brands/*.json]
+        BR --> TH[theme/light · dark]
+        P --> DV[device/desktop · tablet · mobile]
+    end
+
+    subgraph VC["② Version control · Governance"]
+        direction TB
+        GIT[Git / main<br/>agent output via PR]
+        AT[(Airtable<br/>token + component<br/>governance)]
+        GIT <-->|sync.yml ⇄ airtable-pull.yml| AT
+    end
+
+    subgraph CI["③ CI · GitHub Actions"]
+        direction TB
+        TC[tokens-check.yml<br/>build · contrast AA · diff]
+        CO[components-check.yml<br/>lint · a11y · metadata · patterns]
+        SH[showcase-check.yml<br/>layout:validate]
+        DK[docs-check.yml<br/>staleness · claudemd gate]
+    end
+
+    subgraph BD["④ Build · Deploy"]
+        direction TB
+        SD[Style Dictionary<br/>tokens:build] --> OUT[CSS custom props + JS/TS constants]
+        GP[[GitHub Pages<br/>deploy-showcase.yml]]
+    end
+
+    subgraph SNAP["⑤ Frozen snapshots · read-not-call"]
+        direction TB
+        SNS[sense.js · pipeline-status · status] --> FZ[STATUS_QUO.md<br/>token-usage · governance<br/>pipeline-status · patterns]
+    end
+
+    subgraph PLAT["⑥ Platform · Consumers"]
+        direction TB
+        CMP[Components<br/>CSS Modules · var--token]
+        SB[Storybook]
+        DOC[Docs site · Docsify]
+        SW[Showcase app]
+        FIG[Figma variables<br/>downstream mirror]
+    end
+
+    SRC --> GIT
+    GIT --> CI
+    CI --> SD
+    OUT --> CMP
+    CMP --> SB
+    CMP --> SW
+    GP --> SW
+    GP --> DOC
+    P -.->|/figma-variable-push| FIG
+    FIG -.->|proposals · /figma-variable-audit| P
+    GIT -.-> SNS
+    CI -.-> SNS
+    FZ -.->|agentic moments · npm run status| PLAT
 ```
 
 ## Related

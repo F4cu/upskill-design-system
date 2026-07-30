@@ -42,6 +42,22 @@ It matters that these are documented as one family rather than four unrelated fa
 
 The docs-scribe critic ([ADR-018](decisions/018-docs-scribe-critic-stage.md)) is the same shape applied to prose instead of code. It is a read-only subagent (`.claude/agents/docs-scribe.md`) spawned once per real-drift `/docs-sync` run, judging the rewritten sections for three audiences — product manager, product designer, software engineer — against `docs/08-glossary.md` as the term canon. Its finding types are a closed set (`undefined-term`, `undefined-prerequisite`, `glossary-gap`, `buried-lead`, `sentence-density`, `missing-example`, `audience-mismatch`) — it cannot invent a new kind of complaint. A `glossary-gap` finding is a proposal only: a human confirms before the glossary actually grows, the same "propose, don't auto-apply" discipline `--all` uses. The prerequisite-chain rule (recurse one level into a definition's own vocabulary, no deeper) exists because of a real failure: a glossary fix for "Glob pattern" once passed review while quietly leaning on an undefined "wildcard," which itself leaned on an undefined "file path." See [Agentic moments](06-agentic-moments.md) for the full moment-9 procedure.
 
+```mermaid
+flowchart LR
+    CHECK["docs:check<br/>CI, staleness detection"] --> TRIGGER(["/docs-sync"]):::command
+    TRIGGER --> REWRITE["Rewrite stale sections<br/>main session"]
+    REWRITE --> SCRIBE["docs-scribe review<br/>read-only subagent"]
+    SCRIBE --> APPLY["Apply accepted findings<br/>+ open PR docs-sync/date"]
+
+    APPLY -.-> PROPOSE["glossary-gap proposal"]
+    PROPOSE -.->|human confirms| GLOSSARY["docs/08-glossary.md<br/>term canon"]
+    GLOSSARY -.-> SCRIBE
+
+    classDef command fill:#fff,stroke:#333,stroke-width:1px
+```
+
+The shape mirrors `/add-component`'s loop in [Agentic moments](06-agentic-moments.md#the-verified-add-component-loop-concretely): a deterministic check hands off to a bounded LLM pipeline, a read-only reviewer stage reports findings rather than fixing anything itself, and the one finding type that can grow a durable contract (`glossary-gap`) loops back — after human confirmation — into the exact artifact (`docs/08-glossary.md`) the next reviewer run reads as its term canon. The difference is what closes the loop: `/extract-learnings` is a separate, later-triggered command, while here the glossary update happens inside the same `/docs-sync` run, gated only by the developer's confirmation before the PR opens.
+
 ### Measurement loops
 
 `.claude/handoff/run-ledger.json` is the receipts drawer. It is append-only and committed, promoted from the gitignored per-run `<Name>.run.json` files by `npm run handoff:tidy` (`scripts/handoff-tidy.js`). Its most load-bearing field is **`reviewerFindingsBeyondGateCount`** — the number of findings a `/review-component` adversarial reviewer caught that the deterministic gate (metadata validation, typecheck, build, a11y) could not. That single number across every logged run is the empirical answer to "does the adversarial stage earn its Claude-Pro usage-window cost," a question [ADR-007](decisions/007-verified-component-loop.md) leaves open on purpose rather than settling by argument. [ADR-018](decisions/018-docs-scribe-critic-stage.md) commits the docs-scribe critic to being judged the identical way once it has 2–3 runs behind it.

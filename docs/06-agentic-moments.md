@@ -80,15 +80,25 @@ The flagship moment (6) is a bounded loop with stages, per ADR-007 — **sequent
 
   The command gates on `metadata:validate` (plus `tokens:contrast-check` when `PAIRS` changed) and writes `.learnings.json`. That file is the "processed" marker: on the `full` review path, `sense.js` reads it to check off item 4 of the [`in review` checklist](02-component-lifecycle.md#two-axes-because-one-field-kept-lying); the component stays `in review` until human sign-off in Airtable. (`standard`-path reviews — the `/code-review` route, marked `"path": "standard"` in `.review.json` — have no learnings step, so the checklist renders item 4 as an explicit `n/a — not required on standard path`.) In `--all` mode it may *propose* (never auto-apply) a `CLAUDE.md` addition when a pattern repeats across components, and runs a consolidation pass over `/layout-generation`'s hand-accreted "Recurring patterns" section — flagging entries now duplicated by metadata or `component-patterns.json` with a prune/move/keep disposition, again applied only on developer confirmation. Scope is deliberately bounded to component, layout, and token contracts; process and tooling mistakes are skipped, not routed. Fixes that land only in code rot; landing them in the system's contracts is what makes it self-improving.
 
+Metadata isn't just another thing the gate checks — it's a **loop-carried input and output** around the LLM stage, distinct from the plain CI checks that only ever look at code:
+
+- **Read, before code exists**: Stage 0 (Sense) freezes committed metadata (`component-pipeline.json`, `component-patterns.json`) into the snapshot; Stage 1 (Scaffold) is fed that snapshot and writes code *and* a first-draft `metadata.json` from it.
+- **Checked and refreshed, inside the gate**: `metadata:validate` and `patterns:generate` are metadata-specific steps in the Stage 2 `&&` chain — validating the draft `metadata.json` against schema and regenerating the cross-component `component-patterns.json` aggregate — sitting alongside, but doing a different job than, the plain CI checks (`typecheck`, `build`, `a11y:coverage`, `a11y:test`) that only verify the code.
+- **Written back, after review**: `/extract-learnings` is the only stage that amends the durable metadata sections (ARIA, keyboard, anti-patterns, token conventions, `PAIRS`) from what the adversarial reviewer found — closing the loop for the *next* component's Sense step.
+
 ```mermaid
 flowchart LR
-    S0[Sense<br/>script] --> S1[Scaffold<br/>main session]
-    S1 --> S2{Gate<br/>script}
-    S2 -->|fail| S1
-    S2 -->|pass| S2b[Visual checkpoint<br/>human, Storybook]
-    S2b --> S3[Adversarial review<br/>one fresh subagent<br/>→ .review.json]
-    S3 --> S4[Fix + re-gate + PR<br/>main session]
-    S4 -.->|separate trigger| EL[/extract-learnings<br/>→ metadata + .learnings.json/]
+    TRIGGER(["/add-component"]):::command --> SENSE["Sense<br/>token usage · pipeline · component status"]
+    SENSE --> SCAFFOLD["Scaffold"]
+    SCAFFOLD --> CI["metadata:validate · typecheck · build<br/>a11y:coverage · a11y:test · patterns:generate"]
+    CI --> HUMAN["Visual review<br/>Checkpoint"]
+    HUMAN --> ADV["Adversarial review"]
+    ADV --> BUGS["Bugs / Fix / PR"]
+    BUGS -.-> EL(["/extract-learnings"]):::command
+    EL -.->|update| META["component + layout<br/>schema metadata"]
+    META -.-> SENSE
+
+    classDef command fill:#fff,stroke:#333,stroke-width:1px
 ```
 
 A full worked example of this loop running on a real component is documented in **[The Add-Component Loop — Accordion Case Study](add-component-loop-case-study.html ':ignore')**, a standalone HTML artifact. It records, among other things, a real ARIA dead-reference bug (`aria-controls` pointing at a non-existent id) that the adversarial reviewer caught and the deterministic gate could not have. Note: `ROADMAP.md` flags that this write-up may be stale relative to the loop's current shape — the stages above (per ADR-007 and its amendment) are authoritative where they differ.

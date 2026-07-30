@@ -10,6 +10,7 @@
 - [09 — Context engineering](09-context-engineering.md)
 - [10 — Machine-readable metadata](10-machine-readable-metadata.md)
 - [11 — Self-improving loops](11-self-improving-loops.md)
+- [12 — Taming non-determinism](12-taming-non-determinism.md)
 - Decision records
   - [001 — Component metadata schema](decisions/001-component-metadata-schema.md)
   - [002 — Three-layer token model](decisions/002-three-layer-token-model.md)
