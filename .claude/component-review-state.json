@@ -2,7 +2,12 @@
   "Accordion": {
     "reviewedAt": "2026-07-09T00:00:00Z",
     "path": "full",
-    "learningsBackfilled": true
+    "learningsBackfilled": true,
+    "visualReview": {
+      "status": "approved",
+      "comments": null,
+      "at": "2026-07-30T00:00:00Z"
+    }
   },
   "AppHeader": {
     "reviewedAt": "2026-07-09T00:00:00Z",

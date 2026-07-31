@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-13T13:59:39.407Z",
+  "generatedAt": "2026-07-30T09:02:53.505Z",
   "components": [
     {
       "name": "Accordion",
@@ -11,7 +11,11 @@
       "reviewedAt": "2026-07-09T00:00:00Z",
       "reviewPath": "full",
       "learningsBackfilled": true,
-      "visualReview": null,
+      "visualReview": {
+        "status": "approved",
+        "comments": null,
+        "at": "2026-07-30T00:00:00Z"
+      },
       "checklist": [
         {
           "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
@@ -19,7 +23,7 @@
         },
         {
           "label": "Visual review — human y/n/other(comments)",
-          "done": false,
+          "done": true,
           "note": null
         },
         {
