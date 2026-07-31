@@ -6,6 +6,25 @@
 
 Every number below is tagged **Measured** (read directly off a committed artifact — a file size, a ledger entry, a workflow YAML), **Estimated** (derived from a measured number via a stated assumption), **External** (a published source outside this repo, cited with enough detail to chase down), or **Gap** (the architecture claims it, nothing yet substantiates it). Token counts use bytes ÷ 4 as a rough, conservative heuristic, not billing math.
 
+## Impact, summarized
+
+**Lower cost.** 22 scripts, 37 npm commands, and 7 GitHub Actions run with zero LLM or MCP calls (measured). Agents handle only the 9 Claude commands reserved for jobs a script cannot do, so there is no per-run model spend on the day-to-day pipeline.
+
+- Governance reads: the frozen `airtable-governance.json` costs 977 bytes instead of the 60,695-byte raw pull it replaces — a 62.1× reduction, for that one file specifically, not the snapshot mechanism generally (measured, 2026-07-23; see "Frozen snapshots" below). This is a per-read payload saving, not a call-frequency count — how often each of the 7 consuming commands actually runs isn't tracked, so no "calls avoided per week" number exists yet.
+- Figma reads: the variables file is one captured MCP read, reused by two commands (`add-component`, `figma-variable-audit`) — each reuse after the first avoids a fresh ~9,600-token MCP response (measured size of the captured file, estimated avoidance — no second raw pull was run to confirm the size holds).
+- Always-on comparison: if the 7 CI workflows ran as agent sessions instead of scripts, a normal week of PR activity would burn roughly 150K–1M tokens of usage window that currently costs zero (estimated — wide range, no baseline experiment; an order-of-magnitude illustration, not comparable to the measured numbers above).
+
+**Reliable visibility.** Committed snapshots replace live API reads at 20 reference points across 7 commands (measured, by grepping the command files) — each reference is one live API call or raw repo scan that never happens.
+
+- The reliability comes from the mechanism, not the file size: a committed snapshot returns identical content on every read, where a live call can vary with timing, rate limits, or partial pagination. A maintainer checks status in one command and reads the same result every time.
+- The governance file's small size (977 bytes vs. 60,695 raw) is a side effect of keeping only the four fields the pipeline needs — it's part of the cost story above, not the source of this reliability guarantee.
+
+**Higher-quality output.** Lint runs on every commit (Tier 1), and coverage plus behavioral accessibility tests run before merge (Tier 2, ADR-008) — designers and developers inherit accessible components rather than auditing them after the fact.
+
+- Gate and review: across `/add-component` runs the deterministic gate passed 12 of 12, and adversarial review caught extra findings in 7 of 12 before a human saw the PR (18 findings total, measured — see "Gates and the adversarial reviewer" below).
+- Learning loop: each finding routes back into component metadata via `/extract-learnings`, so the next generation inherits the fix as a checked rule rather than repeating the mistake — reviewers spend their time on judgment, not on catching regressions the system already knows about.
+- Caveat: the routing mechanism is measured as a process (findings do get written back); no before/after experiment measures whether later generations actually produce fewer of the same mistake, so the compounding-quality effect itself stays a reasoned claim, not a tracked one.
+
 ## What isn't measured, up front
 
 Before the numbers that are pinned down: three real gaps in this system's own evidence, kept on the record rather than quietly rounded up. The Figma-variables half of the "avoided live fetch" claim has no captured baseline. Escaped-defect rate — did anything a reviewer missed reach production — isn't tracked at all; "no agent code reaches `main` unreviewed" is a verified *process* guarantee, not a defect-rate claim. And the standard in-session review path, 15 of the 27 shipped components, records no findings telemetry, so every ledger number below is honest about covering only the other 12. None of these are fatal to the claims that follow; they're the boundary of what the claims cover. Full list, with what would close each gap, at the end of this chapter.
