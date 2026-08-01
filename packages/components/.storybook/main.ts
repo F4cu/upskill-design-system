@@ -2,6 +2,9 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import type { StorybookConfig } from '@storybook/react-vite'
 
+// @types/node is intentionally not a dependency; declare the one field we read.
+declare const process: { env: Record<string, string | undefined> }
+
 function getAbsolutePath(value: string) {
   return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)))
 }
