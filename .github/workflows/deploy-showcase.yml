@@ -57,6 +57,17 @@ jobs:
       - name: Include docs site
         run: cp -r docs apps/showcase/dist/docs
 
+      # Storybook is the component documentation layer — nested at
+      # /upskill-design-system/storybook/; base path set so Vite emits
+      # subpath-relative asset URLs
+      - name: Build Storybook
+        run: npm run build:storybook -w @upskill/components
+        env:
+          STORYBOOK_BASE_PATH: /upskill-design-system/storybook/
+
+      - name: Include Storybook site
+        run: cp -r packages/components/storybook-static apps/showcase/dist/storybook
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/showcase/dist

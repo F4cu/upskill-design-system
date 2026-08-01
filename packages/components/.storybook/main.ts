@@ -14,6 +14,12 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-themes'),
   ],
   framework: getAbsolutePath('@storybook/react-vite') as StorybookConfig['framework'],
+  // Served from a subpath under GitHub Pages in CI (STORYBOOK_BASE_PATH);
+  // local `storybook dev` and root-served builds keep the default '/'.
+  viteFinal: (viteConfig) => ({
+    ...viteConfig,
+    base: process.env.STORYBOOK_BASE_PATH ?? '/',
+  }),
 }
 
 export default config
