@@ -299,7 +299,9 @@ export default function UserSettings() {
                     courses nurture this mindset and unlock new possibilities for your growth.
                   </Text>
                 </Stack>
-                <Button variant="default" className="full-width-mobile">See collection</Button>
+                <Inline justify="start">
+                  <Button variant="default" className="full-width-mobile">See collection</Button>
+                </Inline>
               </Stack>
             </Box>
 
