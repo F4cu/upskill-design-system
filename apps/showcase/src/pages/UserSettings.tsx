@@ -199,7 +199,7 @@ export default function UserSettings() {
 
                 {/* Button metadata "form-actions" pattern (single primary action) */}
                 <Inline justify="start">
-                  <Button variant="default">Save</Button>
+                  <Button variant="default" className="full-width-mobile">Save</Button>
                 </Inline>
               </Stack>
 
@@ -299,7 +299,7 @@ export default function UserSettings() {
                     courses nurture this mindset and unlock new possibilities for your growth.
                   </Text>
                 </Stack>
-                <Button variant="default">See collection</Button>
+                <Button variant="default" className="full-width-mobile">See collection</Button>
               </Stack>
             </Box>
 

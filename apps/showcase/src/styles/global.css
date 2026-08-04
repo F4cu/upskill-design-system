@@ -63,3 +63,10 @@ body,
     display: none;
   }
 }
+
+/* Full width on mobile only — standard width/padding on tablet and up */
+@media (max-width: 767px) {
+  .full-width-mobile {
+    width: 100%;
+  }
+}

@@ -338,7 +338,7 @@ export default function Homepage() {
                     courses nurture this mindset and unlock new possibilities for your growth.
                   </Text>
                 </Stack>
-                <Button variant="default">See collection</Button>
+                <Button variant="default" className="full-width-mobile">See collection</Button>
               </Stack>
             </Box>
 
