@@ -85,21 +85,47 @@ No `$extensions` blocks are ever committed — they are stripped when reconcilin
 
 ### Token build graph
 
-The resolution order inside the token layers, from source JSON to consumed output:
+Every value resolves through the four layers in order, later layers overriding earlier ones — shown here with one real token as it passes through each stage:
 
 ```mermaid
 flowchart LR
-    F[Figma variables<br/>downstream mirror, default brand only] -.->|proposals only,<br/>via /figma-variable-audit| P
-    P[primitives.json] --> B[brands/upskill.json<br/>brands/horizon.json]
-    B --> T[theme/light.json<br/>theme/dark.json]
-    P --> D[device/desktop · tablet · mobile]
-    T --> SD[Style Dictionary build<br/>custom transforms]
+    P["Primitives<br/>color.terracotta.9"] --> B["Brand<br/>color.brand.9"]
+    B --> T["Theme<br/>color.background.brand"]
+    P --> D["Device<br/>space.stack.md"]
+    T --> SD["Style Dictionary build<br/>emit order: primitive → brand → theme → device"]
     D --> SD
-    SD --> CSS[CSS custom properties<br/>:root + data-brand + media blocks]
-    SD --> JS[JS/TS constants]
-    CSS --> C[Components<br/>CSS Modules, var--token only]
-    JS --> C
-    P -.->|/figma-variable-push| F
+    SD --> OUT["CSS custom properties<br/>+ JS/TS constants"]
+    OUT --> C["Components<br/>var(--color-background-brand)"]
+```
+
+Figma and Airtable aren't in this diagram — they're mirrors that sit outside the build, not steps in it. The full pipeline below places them alongside version control and CI.
+
+### Worked example: what the built CSS actually looks like
+
+`--ds-` is a fixed system prefix, not a per-brand one — every layer's Style Dictionary platform config passes the same `prefix: 'ds'` (`packages/tokens/build.js`). Brand identity lives in the CSS **selector** (`[data-brand="upskill"]`), never in the variable name, so `--ds-color-background-brand` is the same name under every brand; only the value it resolves to changes.
+
+Take `color.background.brand` under `data-brand="upskill"` + `data-theme="dark"`. Because theme and brand build with `outputReferences: true`, the browser walks a live 3-hop `var()` chain at paint time — Style Dictionary never flattens it to a hex value:
+
+```css
+/* theme.dark.css — [data-theme="dark"] */
+--ds-color-background-brand: var(--ds-color-brand-dark-9);
+
+/* brand.upskill.css — :root, [data-brand="upskill"] */
+--ds-color-brand-dark-9: var(--ds-color-terracotta-dark-9);
+
+/* primitives.css — :root */
+--ds-color-terracotta-dark-9: #d15d50;
+```
+
+Device tokens don't chain — the device build only ever includes primitives, never brand or theme (its Style Dictionary `include` is `[primitives.json, device/<name>.json]` only), so a mobile value is flat:
+
+```css
+/* device.mobile.css */
+@media (max-width: 767px) {
+  :root {
+    --ds-space-stack-md: 0.75rem;
+  }
+}
 ```
 
 ### Full pipeline, end to end
