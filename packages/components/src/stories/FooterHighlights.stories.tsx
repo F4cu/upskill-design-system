@@ -10,25 +10,18 @@ import { Divider } from '../components/Divider'
 
 function FooterHighlights() {
   return (
-    <Box
-      paddingX="xxl"
-      paddingY="xl"
-      style={{ background: 'var(--ds-color-background-container-inverted)' }}
-    >
-      <Stack gap="xl" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <Box paddingX="xxl" paddingY="xl" background="inverted">
+      <Stack gap="xl" maxWidth="1200px" style={{ margin: '0 auto' }}>
         <Inline gap="xxl" align="start" wrap={false}>
-          <Stack gap="lg" style={{ flex: 1 }}>
+          <Stack gap="lg" grow={1}>
             <Stack gap="md">
-              <Heading
-                size="display"
-                style={{ color: 'var(--ds-color-text-inverted-default)' }}
-              >
+              <Heading size="display" color="inverted">
                 Discover the Power of{' '}
-                <span style={{ color: 'var(--ds-color-text-accent-inverted)' }}>
+                <Text as="span" color="accent-inverted">
                   Beginner's Mind
-                </span>
+                </Text>
               </Heading>
-              <Text style={{ color: 'var(--ds-color-text-inverted-default)' }}>
+              <Text color="inverted">
                 Beginner's mind means approaching life with openness and curiosity, free from
                 fixed ideas. Embrace learning with fresh eyes—explore how our courses nurture
                 this mindset and unlock new possibilities for your growth.
@@ -39,7 +32,7 @@ function FooterHighlights() {
             </Box>
           </Stack>
 
-          <Stack gap="sm" style={{ flex: 1 }}>
+          <Stack gap="sm" grow={1}>
             <CardHorizontal
               variant="inverted"
               title="Zen Mind, Beginner's Mind"
@@ -59,7 +52,7 @@ function FooterHighlights() {
         </Inline>
 
         <Divider style={{ borderColor: 'var(--ds-color-border-inverted)' }} />
-        <Text size="body-small" style={{ color: 'var(--ds-color-text-inverted-subtle)' }}>
+        <Text size="body-small" color="inverted-subtle">
           Course descriptions are curated for learning purposes. Durations are approximate.
           All content is subject to availability.
         </Text>

@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { CardVertical } from './index'
+import { Box } from '../Box'
 
 const meta: Meta<typeof CardVertical> = {
   title: 'Components/CardVertical',
   component: CardVertical,
   decorators: [
     (Story) => (
-      <div style={{ maxWidth: 280 }}>
+      <Box maxWidth={280}>
         <Story />
-      </div>
+      </Box>
     ),
   ],
   argTypes: {

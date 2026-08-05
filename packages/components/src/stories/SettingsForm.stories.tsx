@@ -9,6 +9,7 @@ import { TextField } from '../components/TextField'
 import { Select } from '../components/Select'
 import { Checkbox } from '../components/Checkbox'
 import { Button } from '../components/Button'
+import utilityStyles from '../styles/utilities.module.css'
 
 const TIMEZONE_OPTIONS = [
   { value: 'utc', label: 'UTC' },
@@ -20,14 +21,8 @@ const TIMEZONE_OPTIONS = [
 
 function SettingsForm() {
   return (
-    <Box
-      padding="xl"
-      style={{
-        background: 'var(--ds-color-background-container-page)',
-        minHeight: '100vh',
-      }}
-    >
-      <Stack gap="xl" style={{ maxWidth: '640px', margin: '0 auto' }}>
+    <Box padding="xl" className={utilityStyles.pageSurface}>
+      <Stack gap="xl" maxWidth="640px" style={{ margin: '0 auto' }}>
         <Stack gap="xs">
           <Heading size="headline">Account Settings</Heading>
           <Text color="subtle">Manage your profile and notification preferences.</Text>
@@ -37,10 +32,10 @@ function SettingsForm() {
           <Stack gap="lg">
             <Heading as="h3" size="title-small">Profile</Heading>
             <Inline gap="md" align="start">
-              <Box style={{ flex: 1 }}>
+              <Box grow={1}>
                 <TextField label="First name" placeholder="Jane" />
               </Box>
-              <Box style={{ flex: 1 }}>
+              <Box grow={1}>
                 <TextField label="Last name" placeholder="Smith" />
               </Box>
             </Inline>
@@ -86,14 +81,8 @@ function SettingsForm() {
 
 function SettingsFormWithErrors() {
   return (
-    <Box
-      padding="xl"
-      style={{
-        background: 'var(--ds-color-background-container-page)',
-        minHeight: '100vh',
-      }}
-    >
-      <Stack gap="xl" style={{ maxWidth: '640px', margin: '0 auto' }}>
+    <Box padding="xl" className={utilityStyles.pageSurface}>
+      <Stack gap="xl" maxWidth="640px" style={{ margin: '0 auto' }}>
         <Stack gap="xs">
           <Heading size="headline">Account Settings</Heading>
           <Text color="subtle">Manage your profile and notification preferences.</Text>
@@ -103,10 +92,10 @@ function SettingsFormWithErrors() {
           <Stack gap="lg">
             <Heading as="h3" size="title-small">Profile</Heading>
             <Inline gap="md" align="start">
-              <Box style={{ flex: 1 }}>
+              <Box grow={1}>
                 <TextField label="First name" placeholder="Jane" error="First name is required." />
               </Box>
-              <Box style={{ flex: 1 }}>
+              <Box grow={1}>
                 <TextField label="Last name" placeholder="Smith" />
               </Box>
             </Inline>

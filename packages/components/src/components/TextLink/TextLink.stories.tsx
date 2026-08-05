@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { TextLink } from './index'
+import { Text } from '../Text'
 
 const meta: Meta<typeof TextLink> = {
   title: 'Components/TextLink',
@@ -43,9 +44,13 @@ export const Metadata: Story = {
 
 export const InlineWithText: Story = {
   render: () => (
-    <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-body-default)', lineHeight: 'var(--ds-font-line-height-relaxed)', color: 'var(--ds-color-text-subtle)', margin: 0 }}>
+    <Text
+      as="p"
+      color="subtle"
+      style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 'var(--ds-font-size-body-default)', lineHeight: 'var(--ds-font-line-height-relaxed)', margin: 0 }}
+    >
       <TextLink href="#">Edward Clark</TextLink>
       {', Author and educator, MICA'}
-    </p>
+    </Text>
   ),
 }

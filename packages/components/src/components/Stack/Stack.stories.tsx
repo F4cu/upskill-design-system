@@ -1,18 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { Box } from '../Box'
 import { Stack } from './index'
+import styles from './Stack.stories.module.css'
 
 const Swatch = ({ label }: { label: string }) => (
-  <div
-    style={{
-      background: 'var(--ds-color-background-container-elevated)',
-      padding: '8px 12px',
-      borderRadius: '4px',
-      fontSize: '0.75rem',
-      fontFamily: 'monospace',
-    }}
+  <Box
+    background="elevated"
+    paddingX="sm"
+    paddingY="xs"
+    style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}
   >
     {label}
-  </div>
+  </Box>
 )
 
 const meta = {
@@ -81,12 +80,12 @@ export const AsOrderedList: Story = {
 
 export const FullWidth: Story = {
   render: () => (
-    <div style={{ width: '400px', background: 'var(--ds-color-background-neutral-subtle)', padding: '16px', borderRadius: '4px' }}>
+    <Box className={styles.demoSurface} padding="md">
       <Stack gap="sm" fullWidth align="end">
         <Swatch label="Aligned to right edge" />
         <Swatch label="Also right" />
       </Stack>
-    </div>
+    </Box>
   ),
 }
 
@@ -97,9 +96,13 @@ export const AlignCenter: Story = {
     children: (
       <>
         <Swatch label="Short" />
-        <div style={{ background: 'var(--ds-color-background-container-elevated)', padding: '8px 48px', borderRadius: '4px', fontSize: '0.75rem', fontFamily: 'monospace' }}>
+        <Box
+          background="elevated"
+          paddingY="xs"
+          style={{ paddingLeft: '48px', paddingRight: '48px', fontSize: '0.75rem', fontFamily: 'monospace' }}
+        >
           Wider item
-        </div>
+        </Box>
         <Swatch label="Short" />
       </>
     ),

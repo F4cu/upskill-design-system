@@ -6,6 +6,7 @@ import { Inline } from '../components/Inline'
 import { Heading } from '../components/Heading'
 import { Text } from '../components/Text'
 import { ButtonArrow } from '../components/ButtonArrow'
+import utilityStyles from '../styles/utilities.module.css'
 
 const CHAPTERS = [
   {
@@ -30,18 +31,19 @@ function CourseSliderExample() {
   const chapter = CHAPTERS[slider.currentIndex]
 
   return (
-    <Box style={{ maxWidth: '560px' }}>
+    <Box maxWidth="560px">
       <style>{`@keyframes ds-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }`}</style>
       <Stack gap="lg">
-        <div
+        <Box
           key={slider.currentIndex}
-          style={{ animation: 'ds-fade-in 0.25s ease', minHeight: '180px' }}
+          minHeight="180px"
+          style={{ animation: 'ds-fade-in 0.25s ease' }}
         >
           <Stack gap="xs">
             <Heading as="h2" size="subheader">{chapter.title}</Heading>
             <Text>{chapter.description}</Text>
           </Stack>
-        </div>
+        </Box>
 
         <Inline justify="end" align="center" gap="md">
           <Text size="body-small" color="subtle" as="span">
@@ -58,13 +60,7 @@ function CourseSliderExample() {
 
 function CourseSliderPage() {
   return (
-    <Box
-      padding="xl"
-      style={{
-        background: 'var(--ds-color-background-container-page)',
-        minHeight: '100vh',
-      }}
-    >
+    <Box padding="xl" className={utilityStyles.pageSurface}>
       <CourseSliderExample />
     </Box>
   )

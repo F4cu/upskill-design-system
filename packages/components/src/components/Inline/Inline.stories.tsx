@@ -1,21 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { Box } from '../Box'
 import { Button } from '../Button'
+import { Chip } from '../Chip'
 import { Inline } from './index'
-
-const Chip = ({ label }: { label: string }) => (
-  <div
-    style={{
-      background: 'var(--ds-color-background-container-elevated)',
-      padding: '4px 12px',
-      borderRadius: '100px',
-      fontSize: '0.75rem',
-      fontFamily: 'monospace',
-      whiteSpace: 'nowrap',
-    }}
-  >
-    {label}
-  </div>
-)
+import styles from './Inline.stories.module.css'
 
 const meta = {
   title: 'Layout/Inline',
@@ -47,9 +35,9 @@ export const Default: Story = {
     gap: 'sm',
     children: (
       <>
-        <Chip label="First" />
-        <Chip label="Second" />
-        <Chip label="Third" />
+        <Chip>First</Chip>
+        <Chip>Second</Chip>
+        <Chip>Third</Chip>
       </>
     ),
   },
@@ -62,9 +50,9 @@ export const GapScale: Story = {
         <div key={gap}>
           <div style={{ fontSize: '0.75rem', fontFamily: 'monospace', marginBottom: '4px' }}>gap="{gap}"</div>
           <Inline gap={gap}>
-            <Chip label="Alpha" />
-            <Chip label="Beta" />
-            <Chip label="Gamma" />
+            <Chip>Alpha</Chip>
+            <Chip>Beta</Chip>
+            <Chip>Gamma</Chip>
           </Inline>
         </div>
       ))}
@@ -78,9 +66,9 @@ export const SpaceBetween: Story = {
     justify: 'space-between',
     children: (
       <>
-        <Chip label="Left" />
-        <Chip label="Center" />
-        <Chip label="Right" />
+        <Chip>Left</Chip>
+        <Chip>Center</Chip>
+        <Chip>Right</Chip>
       </>
     ),
   },
@@ -88,23 +76,23 @@ export const SpaceBetween: Story = {
 
 export const JustifyEnd: Story = {
   render: () => (
-    <div style={{ width: '400px', background: 'var(--ds-color-background-neutral-subtle)', padding: '16px', borderRadius: '4px' }}>
+    <Box className={styles.demoSurface} padding="md">
       <Inline fullWidth justify="end" gap="sm">
         <Button variant="outlined" shape="square" icon="bookmark" aria-label="Bookmark" />
         <Button variant="default">Add to your cart</Button>
       </Inline>
-    </div>
+    </Box>
   ),
 }
 
 export const Wrapping: Story = {
   render: () => (
-    <div style={{ width: '300px', border: '1px dashed var(--ds-color-background-neutral-subtle)', padding: '8px' }}>
+    <Box className={styles.wrapDemo} padding="xs">
       <Inline gap="xs" wrap={true}>
         {Array.from({ length: 10 }, (_, i) => (
-          <Chip key={i} label={`Tag ${i + 1}`} />
+          <Chip key={i}>{`Tag ${i + 1}`}</Chip>
         ))}
       </Inline>
-    </div>
+    </Box>
   ),
 }

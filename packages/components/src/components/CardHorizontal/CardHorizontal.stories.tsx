@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { CardHorizontal } from './index'
+import { Box } from '../Box'
 import { Stack } from '../Stack'
 
 const THUMBNAIL = 'https://placehold.co/80x80/D15D50/ffffff?text=Course'
@@ -46,9 +47,9 @@ export const Inverted: Story = {
     variant: 'inverted',
   },
   render: (args) => (
-    <div style={{ background: 'var(--ds-color-background-container-inverted)', padding: '24px', borderRadius: '8px', maxWidth: 480 }}>
+    <Box background="inverted" padding="xl" maxWidth={480}>
       <CardHorizontal {...args} />
-    </div>
+    </Box>
   ),
 }
 
@@ -64,7 +65,7 @@ export const NoThumbnail: Story = {
 export const List: Story = {
   args: { thumbnailSrc: THUMBNAIL, title: 'Course' },
   render: () => (
-    <Stack gap="sm" style={{ maxWidth: 480 }}>
+    <Stack gap="sm" maxWidth={480}>
       <CardHorizontal
         thumbnailSrc={THUMBNAIL}
         title="Introduction to UX Design"

@@ -11,6 +11,8 @@ import { Divider } from '../components/Divider'
 import logoLight from '../assets/logos/brand-logo-light-theme.svg'
 import logoDark from '../assets/logos/brand-logo-dark-theme.svg'
 import '../styles/grid.css'
+import utilityStyles from '../styles/utilities.module.css'
+import styles from './Layout.stories.module.css'
 
 const NAV_ITEMS = [
   { label: 'All Courses', href: '/courses' },
@@ -96,7 +98,7 @@ export const Default: Story = {
     },
   },
   render: () => (
-    <Box style={{ background: 'var(--ds-color-background-container-page)', minHeight: '100vh' }}>
+    <Box className={utilityStyles.pageSurface}>
       <AppHeader
         logoSrc={logoLight}
         logoSrcDark={logoDark}
@@ -110,11 +112,11 @@ export const Default: Story = {
       {/* Hero */}
       <Box paddingY="xxl">
         <div className="container">
-          <Stack gap="lg" style={{ maxWidth: '600px' }}>
+          <Stack gap="lg" maxWidth="600px">
             <Stack gap="md">
               <Heading size="display">
                 Learn by building{' '}
-                <span style={{ color: 'var(--ds-color-text-accent-default)' }}>
+                <span className={styles.accentHighlight}>
                   real things
                 </span>
               </Heading>
@@ -137,7 +139,7 @@ export const Default: Story = {
           <Stack gap="lg">
             <Heading size="headline">Continue learning</Heading>
             <Inline gap="xl" align="start" wrap={false}>
-              <Stack gap="md" style={{ flex: 1 }}>
+              <Stack gap="md" grow={1}>
                 <CardHorizontal
                   title="Design Systems in Practice"
                   duration="Token architecture · 4 hours, 30min"
@@ -149,7 +151,7 @@ export const Default: Story = {
                   progress={20}
                 />
               </Stack>
-              <Stack gap="md" style={{ flex: 1 }}>
+              <Stack gap="md" grow={1}>
                 <CardHorizontal
                   title="Accessibility in Design Systems"
                   duration="ARIA & focus management · 2 hours, 45min"

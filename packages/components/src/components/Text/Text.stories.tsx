@@ -32,7 +32,7 @@ export const SizeScale: Story = {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {(['body-default', 'body-small', 'metadata', 'label'] as const).map((size) => (
         <div key={size}>
-          <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--ds-color-text-subtle)' }}>{size}</span>
+          <Text as="span" color="subtle" style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{size}</Text>
           <Text size={size}>The quick brown fox jumps over the lazy dog.</Text>
         </div>
       ))}

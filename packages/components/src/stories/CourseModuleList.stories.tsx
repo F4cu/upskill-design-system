@@ -6,6 +6,7 @@ import { Heading } from '../components/Heading'
 import { Button } from '../components/Button'
 import { Text } from '../components/Text'
 import { Accordion, AccordionItem } from '../components/Accordion'
+import utilityStyles from '../styles/utilities.module.css'
 
 const ALL_MODULES = [
   {
@@ -44,12 +45,9 @@ function CourseModuleListPage() {
   return (
     <Box
       padding="xl"
-      style={{
-        background: 'var(--ds-color-background-container-page)',
-        minHeight: '100vh',
-        maxWidth: '800px',
-        margin: '0 auto',
-      }}
+      maxWidth="800px"
+      className={utilityStyles.pageSurface}
+      style={{ margin: '0 auto' }}
     >
       <Stack gap="lg">
         <Heading as="h2" size="headline">Course Modules</Heading>

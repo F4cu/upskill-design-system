@@ -9,6 +9,14 @@ label.label {
   color: var(--ds-color-text-subtle);
 }
 
+/* Full-viewport page backdrop used by example/story pages composing a route
+   out of Box/Stack — background-container-page has no Box background= match
+   (it's distinct from the "default"/"elevated"/"inverted"/"transparent" set). */
+.pageSurface {
+  background: var(--ds-color-background-container-page);
+  min-height: 100vh;
+}
+
 .visuallyHidden {
   position: absolute;
   width: 1px;

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Heading } from './index'
+import { Text } from '../Text'
 
 const meta = {
   title: 'Typography/Heading',
@@ -35,7 +36,7 @@ export const SizeScale: Story = {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {(['display', 'headline-serif', 'headline', 'subheader', 'title-small'] as const).map((size) => (
         <div key={size}>
-          <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--ds-color-text-subtle)' }}>{size}</span>
+          <Text as="span" color="subtle" style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{size}</Text>
           <Heading size={size}>Design systems that scale</Heading>
         </div>
       ))}

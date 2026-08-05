@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { VideoFrame } from './index'
+import { Box } from '../Box'
 
 const meta: Meta<typeof VideoFrame> = {
   title: 'Components/VideoFrame',
   component: VideoFrame,
   decorators: [
     (Story) => (
-      <div style={{ maxWidth: 480 }}>
+      <Box maxWidth={480}>
         <Story />
-      </div>
+      </Box>
     ),
   ],
   argTypes: {

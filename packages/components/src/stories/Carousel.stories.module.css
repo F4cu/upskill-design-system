@@ -1,0 +1,6 @@
+/* Equal-width grid item that still shrinks to its content's min-content
+   floor — Box/Stack's grow prop only emits a fixed "N 0 0" flex shorthand,
+   so this basis needs a real class. */
+.gridItem {
+  flex: 1 0 min-content;
+}

@@ -9,6 +9,8 @@ import { Divider } from '../components/Divider'
 import { Chip } from '../components/Chip'
 import { CardVertical } from '../components/CardVertical'
 import { ButtonArrow } from '../components/ButtonArrow'
+import utilityStyles from '../styles/utilities.module.css'
+import styles from './Carousel.stories.module.css'
 
 const FILTERS = ['All Courses', 'Design', 'Development', 'Business', 'Marketing']
 
@@ -32,12 +34,9 @@ function CarouselPage() {
   return (
     <Box
       padding="xl"
-      style={{
-        background: 'var(--ds-color-background-container-page)',
-        minHeight: '100vh',
-        maxWidth: '1280px',
-        margin: '0 auto',
-      }}
+      maxWidth="1280px"
+      className={utilityStyles.pageSurface}
+      style={{ margin: '0 auto' }}
     >
       <Stack gap="xxl">
 
@@ -56,7 +55,7 @@ function CarouselPage() {
           <Box overflow="hidden">
             <div style={{ display: 'flex', gap: 'var(--ds-grid-gutter)' }}>
               {COURSES.slice(0, 4).map((course) => (
-                <div key={course.title} style={{ flex: '1 0 min-content' }}>
+                <div key={course.title} className={styles.gridItem}>
                   <CardVertical title={course.title} duration={course.duration} certified={course.certified} size="lg" />
                 </div>
               ))}

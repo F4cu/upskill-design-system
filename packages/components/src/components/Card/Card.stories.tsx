@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Card } from './index'
+import { Box } from '../Box'
+import { Inline } from '../Inline'
 import { Stack } from '../Stack'
 import { Heading } from '../Heading'
 import { Text } from '../Text'
@@ -78,19 +80,23 @@ export const PaddingVariants: Story = {
 
 export const Variants: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '16px' }}>
-      <Card style={{ flex: 1 }}>
-        <Stack gap="xs">
-          <Heading as="h3" size="title-small">Default</Heading>
-          <Text color="subtle">Flat surface for grouping content.</Text>
-        </Stack>
-      </Card>
-      <Card variant="elevated" style={{ flex: 1 }}>
-        <Stack gap="xs">
-          <Heading as="h3" size="title-small">Elevated</Heading>
-          <Text color="subtle">Raised surface for featured content.</Text>
-        </Stack>
-      </Card>
-    </div>
+    <Inline gap="md">
+      <Box grow={1}>
+        <Card>
+          <Stack gap="xs">
+            <Heading as="h3" size="title-small">Default</Heading>
+            <Text color="subtle">Flat surface for grouping content.</Text>
+          </Stack>
+        </Card>
+      </Box>
+      <Box grow={1}>
+        <Card variant="elevated">
+          <Stack gap="xs">
+            <Heading as="h3" size="title-small">Elevated</Heading>
+            <Text color="subtle">Raised surface for featured content.</Text>
+          </Stack>
+        </Card>
+      </Box>
+    </Inline>
   ),
 }
