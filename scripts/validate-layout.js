@@ -2,8 +2,14 @@
 // Validates generated layout files against the landmark grammar (ADR-011).
 // Checks: one <main> per route, named <section> landmarks, labelled <nav>
 // elements when duplicated, fixed-set component names only, no raw container
-// divs. Exits non-zero on any violation so it can gate the layout-generation
-// skill. Accepts a file path or a directory (scans *.tsx recursively).
+// divs, and the inline-style reconciliation rule (CLAUDE.md "Layout grammar").
+// Exits non-zero on any violation so it can gate the layout-generation skill.
+// Accepts a file path or a directory (scans *.tsx recursively).
+//
+// --style-only restricts to the inline-style check alone (skips the
+// landmark/main/section/nav checks, which assume a full route page) — used to
+// gate component .stories.tsx files, which share the same inline-style ban
+// (CLAUDE.md "Component scope" / .claude/rules/components.md) but aren't pages.
 
 import fs from 'fs'
 import path from 'path'
@@ -15,6 +21,16 @@ const parser = require('@babel/parser')
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
+
+// Shrinking ledger for pre-existing violations, same convention as
+// a11y-backlog.json / token-contrast-waivers.json — never add a new file to
+// this list, only remove entries as they're backfilled (issue #95).
+const WAIVERS_PATH = path.join(__dirname, 'inline-style-waivers.json')
+const WAIVED_FILES = new Set(
+  fs.existsSync(WAIVERS_PATH)
+    ? JSON.parse(fs.readFileSync(WAIVERS_PATH, 'utf8')).map(w => w.file)
+    : []
+)
 
 // Fixed 26-component set (CLAUDE.md "Component scope") + required sub-components
 const FIXED_SET = new Set([
@@ -57,6 +73,31 @@ const HTML_INTRINSICS = new Set([
   'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr',
 ])
 
+// CSS properties with a direct token-backed Box/Text/Stack prop equivalent.
+// Anything in this set hand-written into a style={{ … }} object duplicates a
+// prop's own resolution and drifts from it — the exact mistake fixed in
+// 663ff79 (raw background/borderRadius/borderTop style objects across four
+// files). Dynamic layout math legitimately needed for things like the
+// carousel track transform (transform, transition, display, gap, width) is
+// deliberately not in this list — see the "Card carousel" pattern in
+// layout-generation.md.
+const BLOCKED_STYLE_PROPS = new Map([
+  ['background', 'Box background="…"'],
+  ['backgroundColor', 'Box background="…"'],
+  ['color', '<Text color="…"> / <Heading color="…">'],
+  ['border', 'Box borderTop="…" (or a CSS Module class for other sides)'],
+  ['borderTop', 'Box borderTop="…"'],
+  ['borderBottom', 'a CSS Module class'],
+  ['borderLeft', 'a CSS Module class'],
+  ['borderRight', 'a CSS Module class'],
+  ['borderRadius', 'a CSS Module class (or Box background="elevated")'],
+  ['flex', 'Box/Stack grow="…"'],
+  ['minWidth', 'Box/Stack minWidth="…"'],
+  ['maxWidth', 'Box/Stack maxWidth="…"'],
+  ['minHeight', 'Box/Stack minHeight="…"'],
+  ['maxHeight', 'Box/Stack maxHeight="…"'],
+])
+
 function getAttr(openingEl, name) {
   return openingEl.attributes.find(
     a => a.type === 'JSXAttribute' && a.name?.name === name
@@ -91,7 +132,34 @@ function walkNode(node, fn) {
   }
 }
 
-function validateFile(filePath) {
+// Flags style={{ … }} attributes containing a BLOCKED_STYLE_PROPS key. Only
+// literal (string/numeric) property values are checked — a computed value
+// (identifier, template literal, expression) is left alone since those are
+// usually genuine runtime layout math, not a copy-pasted token.
+function checkInlineStyles(node, errors) {
+  const styleAttr = getAttr(node, 'style')
+  if (!styleAttr) return
+  const expr = styleAttr.value?.type === 'JSXExpressionContainer'
+    ? styleAttr.value.expression
+    : null
+  if (!expr || expr.type !== 'ObjectExpression') return
+
+  for (const prop of expr.properties) {
+    if (prop.type !== 'ObjectProperty') continue
+    const keyName = prop.key?.type === 'Identifier' ? prop.key.name
+      : prop.key?.type === 'StringLiteral' ? prop.key.value
+      : null
+    if (!keyName || !BLOCKED_STYLE_PROPS.has(keyName)) continue
+    const valueType = prop.value?.type
+    if (valueType !== 'StringLiteral' && valueType !== 'NumericLiteral') continue
+
+    errors.push(
+      `Line ${node.loc?.start.line}: inline style property "${keyName}" duplicates a token-backed prop — use ${BLOCKED_STYLE_PROPS.get(keyName)} instead`
+    )
+  }
+}
+
+function validateFile(filePath, { styleOnly = false } = {}) {
   const rel = path.relative(ROOT, filePath)
   let source
   try {
@@ -113,9 +181,13 @@ function validateFile(filePath) {
   const errors = []
   let mainCount = 0
   const navNodes = []
+  const inlineStyleWaived = WAIVED_FILES.has(rel)
 
   walkNode(ast, node => {
     if (node.type !== 'JSXOpeningElement') return
+
+    if (!inlineStyleWaived) checkInlineStyles(node, errors)
+    if (styleOnly) return
 
     const nameNode = node.name
     if (!nameNode) return
@@ -180,20 +252,22 @@ function validateFile(filePath) {
     }
   })
 
-  // ── Main landmark rule ─────────────────────────────────────────────────────
-  if (mainCount === 0) {
-    errors.push('No <main> landmark found — page root must be <Box as="main">')
-  } else if (mainCount > 1) {
-    errors.push(`${mainCount} <main> landmarks found — exactly one per route`)
-  }
+  if (!styleOnly) {
+    // ── Main landmark rule ───────────────────────────────────────────────────
+    if (mainCount === 0) {
+      errors.push('No <main> landmark found — page root must be <Box as="main">')
+    } else if (mainCount > 1) {
+      errors.push(`${mainCount} <main> landmarks found — exactly one per route`)
+    }
 
-  // ── Duplicate nav label rule ───────────────────────────────────────────────
-  if (navNodes.length > 1) {
-    for (const nav of navNodes) {
-      if (!nav.hasLabel) {
-        errors.push(
-          `Line ${nav.line}: <nav> (or <Box as="nav">) is missing aria-label — required when multiple <nav> elements exist`
-        )
+    // ── Duplicate nav label rule ─────────────────────────────────────────────
+    if (navNodes.length > 1) {
+      for (const nav of navNodes) {
+        if (!nav.hasLabel) {
+          errors.push(
+            `Line ${nav.line}: <nav> (or <Box as="nav">) is missing aria-label — required when multiple <nav> elements exist`
+          )
+        }
       }
     }
   }
@@ -218,9 +292,11 @@ function collectTsxFiles(target) {
 
 // ── Main ────────────────────────────────────────────────────────────────────
 
-const target = process.argv[2]
+const cliArgs = process.argv.slice(2)
+const styleOnly = cliArgs.includes('--style-only')
+const target = cliArgs.find(a => !a.startsWith('--'))
 if (!target) {
-  console.error('Usage: npm run layout:validate <file-or-directory>')
+  console.error('Usage: npm run layout:validate <file-or-directory> [--style-only]')
   process.exit(1)
 }
 
@@ -239,7 +315,7 @@ if (files.length === 0) {
 let totalFailures = 0
 for (const file of files) {
   const rel = path.relative(ROOT, file)
-  const errors = validateFile(file)
+  const errors = validateFile(file, { styleOnly })
   if (errors.length) {
     console.error(`✗ ${rel}`)
     for (const msg of errors) console.error(`    ${msg}`)

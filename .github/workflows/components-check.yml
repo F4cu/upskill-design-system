@@ -6,6 +6,7 @@ on:
       - 'packages/components/**'
       - 'packages/tokens/**'
       - 'scripts/validate-metadata.js'
+      - 'scripts/validate-layout.js'
       - 'scripts/a11y-coverage.js'
       - 'scripts/a11y-backlog.json'
       - 'scripts/generate-pattern-schema.js'
@@ -45,6 +46,9 @@ jobs:
 
       - name: Validate component metadata
         run: npm run metadata:validate
+
+      - name: Lint inline styles in component source and stories
+        run: npm run stories:lint-inline-style
 
       - name: Typecheck components
         run: npm run typecheck

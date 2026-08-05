@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "f497016deb14f04439243b35a7e0f0098f14e1c8",
+  "generatedFrom": "7a636082832bffed36d6f4b5b8b93a1ec8991e7e",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",

@@ -1,0 +1,82 @@
+[
+  {
+    "file": "packages/components/src/components/Card/Card.stories.tsx",
+    "reason": "Pre-existing demo-only inline flex style predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/CardHorizontal/CardHorizontal.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (background/borderRadius/maxWidth swatches) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/CardVertical/CardVertical.stories.tsx",
+    "reason": "Pre-existing demo-only inline maxWidth style predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/Heading/Heading.stories.tsx",
+    "reason": "Pre-existing demo-only inline color style predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/Icon/Icon.stories.tsx",
+    "reason": "Pre-existing demo-only inline color styles (icon swatch grid) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/Inline/Inline.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (background/borderRadius/border swatches) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/Stack/Stack.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (background/borderRadius swatches) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/Text/Text.stories.tsx",
+    "reason": "Pre-existing demo-only inline color style predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/TextLink/TextLink.stories.tsx",
+    "reason": "Pre-existing demo-only inline color style predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/components/VideoFrame/VideoFrame.stories.tsx",
+    "reason": "Pre-existing demo-only inline maxWidth style predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/layout/Layout.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (background/minHeight/maxWidth/color/flex) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/stories/Carousel.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (background/minHeight/maxWidth/flex) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/stories/CourseModuleList.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (background/minHeight/maxWidth) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/stories/CourseSlider.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (maxWidth/minHeight/background) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/stories/FooterHighlights.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (background/maxWidth/flex/color) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  },
+  {
+    "file": "packages/components/src/stories/SettingsForm.stories.tsx",
+    "reason": "Pre-existing demo-only style objects (background/minHeight/maxWidth/flex) predating the inline-style check added alongside 663ff79.",
+    "issue": 95
+  }
+]

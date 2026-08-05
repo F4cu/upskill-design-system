@@ -30,6 +30,11 @@
         "name": "footer-recommendations",
         "description": "CardHorizontal items in inverted variant inside the dark footer section. The Box provides the inverted background color; no theme switch is needed — both parent and cards stay in the light theme.",
         "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted), ...]"
+      },
+      {
+        "name": "certified-badge",
+        "description": "The Icon+Text 'Certified' badge in the metadata row is not exclusive to this component's internal layout — reuse the same composition wherever a certified badge appears outside a Card (e.g. a page's course-detail metadata row). Icon gets its color from a `.badge svg { color: var(--ds-color-icon-subtle); }` rule in a co-located CSS Module, targeting the ancestor per the Icon color rule (.claude/rules/components.md) — never an inline `style={{ color }}` on the wrapping element.",
+        "tree": "Inline(as='span', gap='xs', align='center', className=<module>.badge) > [Icon(name='badge-check', size='sm'), Text(as='span', size='metadata', color='subtle')]"
       }
     ],
     "antiPatterns": [

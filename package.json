@@ -52,6 +52,7 @@
     "lint": "eslint packages/components/src",
     "metadata:validate": "node scripts/validate-metadata.js",
     "layout:validate": "node scripts/validate-layout.js",
+    "stories:lint-inline-style": "node scripts/validate-layout.js packages/components/src --style-only",
     "screenshot:check": "node scripts/screenshot.js check",
     "screenshot:approve": "node scripts/screenshot.js approve",
     "a11y:coverage": "node scripts/a11y-coverage.js",
