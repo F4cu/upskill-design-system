@@ -35,6 +35,9 @@ const preview: Preview = {
     },
   },
   initialGlobals: { brand: 'upskill' },
+  argTypes: {
+    children: { table: { disable: true } },
+  },
   parameters: {
     options: {
       storySort: {
