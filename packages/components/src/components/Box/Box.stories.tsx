@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Box } from './index'
+import { Stack } from '../Stack'
 
 const meta = {
   title: 'Layout/Box',
@@ -24,6 +25,14 @@ const meta = {
     },
     minWidth: { control: 'text' },
     maxWidth: { control: 'text' },
+    background: {
+      control: 'select',
+      options: [undefined, 'default', 'inverted', 'transparent', 'elevated'],
+    },
+    borderTop: {
+      control: 'select',
+      options: [undefined, 'default', 'inverted'],
+    },
   },
 } satisfies Meta<typeof Box>
 
@@ -33,32 +42,26 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     padding: 'md',
+    background: 'elevated',
     children: 'Box with md padding',
   },
-  render: (args) => (
-    <Box {...args} style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: '4px' }} />
-  ),
 }
 
 export const PaddingScale: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <Stack gap="sm">
       {(['xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl'] as const).map((size) => (
-        <Box
-          key={size}
-          padding={size}
-          style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: '4px' }}
-        >
+        <Box key={size} padding={size} background="elevated">
           <span style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>padding="{size}"</span>
         </Box>
       ))}
-    </div>
+    </Stack>
   ),
 }
 
 export const MaxWidthContainer: Story = {
   render: () => (
-    <Box maxWidth="32rem" padding="md" style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: '4px' }}>
+    <Box maxWidth="32rem" padding="md" background="elevated">
       <span style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>maxWidth="32rem" — content measure constraint</span>
     </Box>
   ),
@@ -68,9 +71,17 @@ export const AsSection: Story = {
   args: {
     as: 'section',
     padding: 'lg',
+    background: 'elevated',
     children: 'Rendered as <section>',
   },
-  render: (args) => (
-    <Box {...args} style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: '4px' }} />
-  ),
+}
+
+export const FooterSeparator: Story = {
+  args: {
+    as: 'footer',
+    padding: 'md',
+    background: 'inverted',
+    borderTop: 'inverted',
+    children: 'Inverted footer with a top border separating it from the section above',
+  },
 }

@@ -47,8 +47,8 @@
       },
       {
         "name": "page-footer",
-        "description": "Box rendered as the page's <footer> (contentinfo landmark). One per page; a .container div inside handles max-width and grid margins.",
-        "tree": "Box(as='footer') > [div.container > ...]"
+        "description": "Box rendered as the page's <footer> (contentinfo landmark). One per page; a .container div inside handles max-width and grid margins. Pair background='inverted' with borderTop='inverted' for a footer that separates from an inverted-background section above it.",
+        "tree": "Box(as='footer', background='inverted', borderTop='inverted') > [div.container > ...]"
       },
       {
         "name": "container",
@@ -81,6 +81,16 @@
         "scenario": "Hand-writing style={{ flex: '1 0 0' }}, style={{ minWidth }}, style={{ maxWidth }}, style={{ minHeight }}, or style={{ maxHeight }} on a Box for column fill or size constraints",
         "reason": "Box has first-class grow/minWidth/maxWidth/minHeight/maxHeight props that emit the same CSS through the component's own style resolution — inline style duplicates this and drifts from it over time.",
         "alternative": "Use the grow prop (flex: n 0 0) for column fill, and minWidth/maxWidth/minHeight/maxHeight props for size constraints, instead of an inline style object."
+      },
+      {
+        "scenario": "Hand-writing style={{ background: 'var(--ds-color-background-container-elevated)', borderRadius: '4px' }} on a Box",
+        "reason": "Duplicates the background variant's own resolution with a raw radius literal instead of a token reference — drifts the moment the radius scale or elevated background alias changes.",
+        "alternative": "Use background='elevated' on Box."
+      },
+      {
+        "scenario": "Hand-writing style={{ borderTop: '1px solid var(--ds-color-border-inverted)' }} on a Box",
+        "reason": "Duplicates the borderTop variant's own resolution as a raw CSS shorthand string instead of a resolved prop — the same border rule was hand-copied across three page footers before being promoted to a prop.",
+        "alternative": "Use borderTop='inverted' (or borderTop='default') on Box."
       }
     ]
   },
@@ -98,13 +108,26 @@
       "options": [
         "default",
         "inverted",
-        "transparent"
+        "transparent",
+        "elevated"
       ],
       "default": null,
       "purpose": {
         "default": "Flat surface on the page background — same fill as Card's default variant, for a Box standing in as a plain surface.",
         "inverted": "Dark surface for CTA banners, footers, or other sections that invert against the page's default theme.",
-        "transparent": "Explicitly no fill — lets the parent surface show through."
+        "transparent": "Explicitly no fill — lets the parent surface show through.",
+        "elevated": "Raised surface with a token-backed radius, for a Box standing in as a card-like region (e.g. Storybook demo chrome) before Card is warranted."
+      }
+    },
+    "borderTop": {
+      "options": [
+        "default",
+        "inverted"
+      ],
+      "default": null,
+      "purpose": {
+        "default": "A subtle top border for separating a Box from the content above it on the page's default theme.",
+        "inverted": "A top border for separating an inverted-background Box (e.g. a dark footer) from the section above it."
       }
     }
   },
@@ -117,7 +140,13 @@
   "tokens": {
     "color": [
       "color.background.container.default",
-      "color.background.container.inverted"
+      "color.background.container.inverted",
+      "color.background.container.elevated",
+      "color.border.default",
+      "color.border.inverted"
+    ],
+    "borderRadius": [
+      "border-radius.xs"
     ],
     "spacing": [
       "space.inset.xxs",

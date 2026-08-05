@@ -29,6 +29,7 @@ import {
   VideoFrame,
   useCarousel,
 } from '@upskill/components'
+import styles from './CourseOverview.module.css'
 
 // ─── Sample data ─────────────────────────────────────────────────────────────
 // public/ assets need the Vite base prefix to resolve under GitHub Pages
@@ -175,10 +176,10 @@ export default function CourseOverview() {
                     <Text size="metadata" color="subtle">12 Lessons</Text>
                     <span className="dot" aria-hidden />
                     <Text size="metadata" color="subtle">4 hours, 30min</Text>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--ds-space-inline-xs)', color: 'var(--ds-color-icon-subtle)' }}>
+                    <Inline as="span" gap="xs" align="center" className={styles.certifiedBadge}>
                       <Icon name="badge-check" size="sm" />
                       <Text as="span" size="metadata" color="subtle">Certified</Text>
-                    </span>
+                    </Inline>
                   </Inline>
 
                   <Inline gap="sm">
@@ -376,7 +377,7 @@ export default function CourseOverview() {
       <Box
         as="footer"
         background="inverted"
-        style={{ borderTop: '1px solid var(--ds-color-border-inverted)' }}
+        borderTop="inverted"
       >
         <Box className="container" paddingY="md">
           <Inline justify="space-between" align="center">

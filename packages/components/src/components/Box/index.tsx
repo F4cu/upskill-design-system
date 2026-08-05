@@ -3,7 +3,8 @@ import styles from './Box.module.css'
 
 type SpaceInset = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'
 type Overflow = 'hidden' | 'auto' | 'scroll' | 'visible' | 'clip'
-export type BoxBackground = 'default' | 'inverted' | 'transparent'
+export type BoxBackground = 'default' | 'inverted' | 'transparent' | 'elevated'
+export type BoxBorderTop = 'default' | 'inverted'
 
 export type BoxProps = {
   as?: ElementType
@@ -12,6 +13,7 @@ export type BoxProps = {
   paddingY?: SpaceInset
   overflow?: Overflow
   background?: BoxBackground
+  borderTop?: BoxBorderTop
   minWidth?: string | number
   maxWidth?: string | number
   minHeight?: string | number
@@ -29,6 +31,7 @@ export function Box({
   paddingY,
   overflow,
   background,
+  borderTop,
   minWidth,
   maxWidth,
   minHeight,
@@ -56,6 +59,7 @@ export function Box({
       className={[styles.box, background && styles[background], className].filter(Boolean).join(' ')}
       data-px={resolvedX}
       data-py={resolvedY}
+      data-border-top={borderTop}
       style={layoutStyle}
       {...rest}
     >

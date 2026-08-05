@@ -379,7 +379,7 @@ export default function Homepage() {
       <Box
         as="footer"
         background="inverted"
-        style={{ borderTop: '1px solid var(--ds-color-border-inverted)' }}
+        borderTop="inverted"
       >
         <Box className="container" paddingY="md">
           <Inline justify="space-between" align="center">
