@@ -31,9 +31,7 @@
     "--ds-color-background-container-elevated": [
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/Box/Box.module.css",
-      "packages/components/src/components/Card/Card.module.css",
-      "packages/components/src/components/Inline/Inline.stories.tsx",
-      "packages/components/src/components/Stack/Stack.stories.tsx"
+      "packages/components/src/components/Card/Card.module.css"
     ],
     "--ds-space-stack-xs": [
       "packages/components/src/components/Accordion/Accordion.module.css",
@@ -69,7 +67,6 @@
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
-      "packages/components/src/components/Icon/Icon.stories.tsx",
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/components/TextField/TextField.module.css",
@@ -85,12 +82,8 @@
     ],
     "--ds-color-background-container-page": [
       "packages/components/src/components/AppHeader/AppHeader.module.css",
-      "packages/components/src/layout/Layout.stories.tsx",
-      "packages/components/src/stories/Carousel.stories.tsx",
-      "packages/components/src/stories/CourseModuleList.stories.tsx",
-      "packages/components/src/stories/CourseSlider.stories.tsx",
-      "packages/components/src/stories/SettingsForm.stories.tsx",
-      "packages/components/src/styles/reset.css"
+      "packages/components/src/styles/reset.css",
+      "packages/components/src/styles/utilities.module.css"
     ],
     "--ds-color-border-brand": [
       "packages/components/src/components/AppHeader/AppHeader.module.css"
@@ -141,13 +134,9 @@
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
-      "packages/components/src/components/Heading/Heading.stories.tsx",
-      "packages/components/src/components/Icon/Icon.stories.tsx",
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Text/Text.module.css",
-      "packages/components/src/components/Text/Text.stories.tsx",
       "packages/components/src/components/TextField/TextField.module.css",
-      "packages/components/src/components/TextLink/TextLink.stories.tsx",
       "packages/components/src/styles/utilities.module.css"
     ],
     "--ds-color-text-brand": [
@@ -155,7 +144,6 @@
       "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
-      "packages/components/src/components/Icon/Icon.stories.tsx",
       "packages/components/src/components/Text/Text.module.css"
     ],
     "--ds-space-inline-xs": [
@@ -215,13 +203,14 @@
     ],
     "--ds-color-background-container-inverted": [
       "packages/components/src/components/Box/Box.module.css",
-      "packages/components/src/components/CardHorizontal/CardHorizontal.stories.tsx",
       "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
     "--ds-border-radius-xs": [
       "packages/components/src/components/Box/Box.module.css",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
-      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/Inline/Inline.stories.module.css",
+      "packages/components/src/components/Stack/Stack.stories.module.css"
     ],
     "--ds-color-border-inverted": [
       "packages/components/src/components/Box/Box.module.css",
@@ -304,7 +293,6 @@
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
-      "packages/components/src/components/Icon/Icon.stories.tsx",
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
@@ -338,9 +326,9 @@
     ],
     "--ds-color-background-neutral-subtle": [
       "packages/components/src/components/Card/Card.module.css",
-      "packages/components/src/components/Inline/Inline.stories.tsx",
+      "packages/components/src/components/Inline/Inline.stories.module.css",
       "packages/components/src/components/ProgressBar/ProgressBar.module.css",
-      "packages/components/src/components/Stack/Stack.stories.tsx"
+      "packages/components/src/components/Stack/Stack.stories.module.css"
     ],
     "--ds-size-thumbnail-sm": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
@@ -486,6 +474,7 @@
       "packages/components/src/components/VideoFrame/VideoFrame.module.css"
     ],
     "--ds-color-text-accent-default": [
+      "packages/components/src/layout/Layout.stories.module.css",
       "packages/components/src/layout/Layout.stories.tsx"
     ],
     "--ds-grid-gutter": [
