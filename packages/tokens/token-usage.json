@@ -175,7 +175,7 @@
       "packages/components/src/components/Badge/Badge.module.css",
       "packages/components/src/components/Box/Box.module.css"
     ],
-    "--ds-color-background-neutral-subtlest": [
+    "--ds-color-background-overlay-subtlest": [
       "packages/components/src/components/Badge/Badge.module.css",
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
       "packages/components/src/components/Chip/Chip.module.css"
@@ -321,7 +321,7 @@
     "--ds-color-border-subtle": [
       "packages/components/src/components/Card/Card.module.css"
     ],
-    "--ds-color-background-neutral-subtle": [
+    "--ds-color-background-overlay-subtle": [
       "packages/components/src/components/Card/Card.module.css",
       "packages/components/src/components/Inline/Inline.stories.module.css",
       "packages/components/src/components/ProgressBar/ProgressBar.module.css",
@@ -389,7 +389,7 @@
     "--ds-color-text-selected": [
       "packages/components/src/components/Chip/Chip.module.css"
     ],
-    "--ds-color-background-neutral-hover": [
+    "--ds-color-background-overlay-hover": [
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
     ],
     "--ds-font-size-headline": [

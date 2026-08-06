@@ -64,7 +64,7 @@
   "tokens": {
     "color": [
       "color.background.progress",
-      "color.background.neutral.subtle"
+      "color.background.overlay.subtle"
     ],
     "spacing": [],
     "typography": [],

@@ -73,7 +73,7 @@
   ],
   "tokens": {
     "color": [
-      "color.background.neutral.subtlest",
+      "color.background.overlay.subtlest",
       "color.border.default",
       "color.border.strong",
       "color.text.default",

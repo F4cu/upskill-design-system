@@ -1,10 +1,10 @@
 .demoSurface {
   width: 400px;
-  background: var(--ds-color-background-neutral-subtle);
+  background: var(--ds-color-background-overlay-subtle);
   border-radius: var(--ds-border-radius-xs);
 }
 
 .wrapDemo {
   width: 300px;
-  border: 1px dashed var(--ds-color-background-neutral-subtle);
+  border: 1px dashed var(--ds-color-background-overlay-subtle);
 }

@@ -14,5 +14,5 @@
 
 .filled {
   border: 1px solid transparent;
-  background: var(--ds-color-background-neutral-subtlest);
+  background: var(--ds-color-background-overlay-subtlest);
 }

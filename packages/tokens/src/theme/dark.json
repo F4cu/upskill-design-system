@@ -1,7 +1,7 @@
 {
   "color": {
     "background": {
-      "neutral": {
+      "overlay": {
         "subtle": {
           "$type": "color",
           "$value": "{color.white.alpha.4}"

@@ -61,7 +61,7 @@ The sweep (`packages/components/src/a11y-stories.sweep.test.tsx`) respects `addo
 New Tier 2 tests are modelled on `packages/components/src/Button/Button.a11y.test.tsx`. Two shrinking ledgers keep known debt visible instead of silently waived:
 
 - `scripts/a11y-backlog.json` — pre-existing interactive components pending test backfill. New interactive components **cannot** be added to it, and stale entries fail the check. The backfill is complete: the ledger is currently empty, exactly as a shrinking ledger should end up.
-- `scripts/token-contrast-waivers.json` — tracked contrast failures (e.g. the ProgressBar fill `background.progress` on `background.neutral.subtle` at ~1.6–2.8:1 against the 3:1 non-text requirement, across brand/theme combinations, linked to issue #22), same shrinking-ledger convention.
+- `scripts/token-contrast-waivers.json` — tracked contrast failures (e.g. the ProgressBar fill `background.progress` on `background.overlay.subtle` at ~1.6–2.8:1 against the 3:1 non-text requirement, across brand/theme combinations, linked to issue #22), same shrinking-ledger convention.
 
 The screenshot-baseline gate ([ADR-019](decisions/019-screenshot-baseline-visual-regression.md)) sits below these tiers rather than inside them, and it follows the same "trust promoted on evidence" pattern as the shrinking ledgers above: it runs advisory in CI today, with a documented escalation path — CI-generated baselines, then blocking once diff ratios are quiet — rather than being trusted as a hard gate from day one. See [Self-improving loops](11-self-improving-loops.md).
 

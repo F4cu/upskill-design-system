@@ -17,7 +17,7 @@
 }
 
 .chip:hover:not(:disabled) {
-  background: var(--ds-color-background-neutral-subtlest);
+  background: var(--ds-color-background-overlay-subtlest);
 }
 
 .chip:disabled {
@@ -32,5 +32,5 @@
 }
 
 .selected:hover:not(:disabled) {
-  background: var(--ds-color-background-neutral-subtlest);
+  background: var(--ds-color-background-overlay-subtlest);
 }

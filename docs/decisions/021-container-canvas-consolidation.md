@@ -22,3 +22,7 @@ Separately, `page` as a prop value read ambiguously against `Box`'s structural `
 - The contrast checker's "base canvas" composite target moved from the effectively-unrendered `surface.1` to the real `surface.2`, surfacing two genuine near-miss pairs (`text.selected`/`text.brand` on `neutral.subtlest`/`neutral.hover`, ~4.46–4.47:1 vs 4.5:1) that were never actually checked against their true rendering context before. Tracked as waivers, issue #96 — not a regression from this change, the check becoming accurate.
 - Figma's variable is still named "Page" under Color > Background > Container; propagating the `canvas` rename there is a `/figma-variable-push` follow-up, not done as part of this change (code is the source of truth per ADR-002).
 - `background.neutral.*` is unchanged — confirmed as intentionally separate from the container/surface ramp, not folded in.
+
+## Amendment (2026-08-06)
+
+`background.neutral.*` was renamed to `background.overlay.*` in a follow-up pass — "neutral" named a hue family, but these tokens (`subtle`/`subtlest`/`hover`, all alpha-transparent) are functionally overlay/scrim tints, not a resting surface color. Pure rename, no value changes; all CSS/metadata usages and the contrast-waivers ledger were updated to match. Doesn't affect the `container.canvas` decision above.

@@ -14,7 +14,7 @@
 
 .elevated {
   background: var(--ds-color-background-container-elevated);
-  box-shadow: 0 2px 8px var(--ds-color-background-neutral-subtle);
+  box-shadow: 0 2px 8px var(--ds-color-background-overlay-subtle);
 }
 
 .transparent {

@@ -6,7 +6,7 @@
   height: var(--ds-size-400);
   border-radius: var(--ds-border-radius-full);
   border: 1px solid var(--ds-color-border-default);
-  background: var(--ds-color-background-neutral-subtlest);
+  background: var(--ds-color-background-overlay-subtlest);
   color: var(--ds-color-text-default);
   cursor: pointer;
   flex-shrink: 0;

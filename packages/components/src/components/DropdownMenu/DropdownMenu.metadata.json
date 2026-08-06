@@ -82,7 +82,7 @@
   "tokens": {
     "color": [
       "color.background.container.canvas",
-      "color.background.neutral.hover",
+      "color.background.overlay.hover",
       "color.text.default",
       "color.text.brand"
     ],

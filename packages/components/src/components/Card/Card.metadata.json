@@ -94,7 +94,7 @@
     "color": [
       "color.background.container.canvas",
       "color.background.container.elevated",
-      "color.background.neutral.subtle",
+      "color.background.overlay.subtle",
       "color.border.subtle"
     ],
     "spacing": [

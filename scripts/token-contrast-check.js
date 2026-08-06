@@ -98,14 +98,14 @@ const PAIRS = [
     [T("selected"), bg],
     [B("selected"), bg, "border"],
   ]),
-  [T("subtle"), BG("neutral-subtlest")],
-  [T("selected"), BG("neutral-subtlest")],
+  [T("subtle"), BG("overlay-subtlest")],
+  [T("selected"), BG("overlay-subtlest")],
 
-  // DropdownMenu — panel is container.canvas; hover/focus overlays neutral.hover
+  // DropdownMenu — panel is container.canvas; hover/focus overlays overlay.hover
   [T("default"), BG("container-canvas")],
-  [T("default"), BG("neutral-hover")],
+  [T("default"), BG("overlay-hover")],
   [T("brand"), BG("container-canvas")],
-  [T("brand"), BG("neutral-hover")],
+  [T("brand"), BG("overlay-hover")],
 
   // Checkbox — box border/fill sits on background.input; checkmark is a
   // graphic (icon role, not text) drawn on background.brand once checked
@@ -138,7 +138,7 @@ const PAIRS = [
 
   // ButtonArrow — icon-only round button. Border is the shared decorative
   // border.default/strong (not checked — see Button outlined, above).
-  [T("default"), BG("neutral-subtlest"), "icon"],
+  [T("default"), BG("overlay-subtlest"), "icon"],
 
   // AppHeader — fixed background.container.canvas
   [T("subtle"), BG("container-canvas")],
@@ -169,7 +169,7 @@ const PAIRS = [
   // rendered on the track. The media placeholder tokens
   // (background.media.*, icon.media — Image, VideoFrame) are deliberately
   // not paired: the icon is a decorative watermark on an empty surface.
-  [BG("progress"), BG("neutral-subtle"), "icon"],
+  [BG("progress"), BG("overlay-subtle"), "icon"],
 
   // Feedback tokens are not yet composed into a shipped component (no
   // Alert/Toast in the fixed set — see CLAUDE.md "Component scope"), but
