@@ -14,7 +14,7 @@
   gap: var(--ds-space-inline-xl) var(--ds-space-inline-lg);
   padding: var(--ds-space-inset-lg);
   border-radius: var(--ds-border-radius-md);
-  background: var(--ds-color-background-container-default);
+  background: var(--ds-color-background-container-canvas);
   border: 1px solid var(--ds-color-border-subtle);
   overflow-x: auto;
 }

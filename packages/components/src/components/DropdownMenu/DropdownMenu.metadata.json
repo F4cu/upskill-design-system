@@ -81,7 +81,7 @@
   ],
   "tokens": {
     "color": [
-      "color.background.container.default",
+      "color.background.container.canvas",
       "color.background.neutral.hover",
       "color.text.default",
       "color.text.brand"

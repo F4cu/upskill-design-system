@@ -27,7 +27,7 @@ const meta = {
     maxWidth: { control: 'text' },
     background: {
       control: 'select',
-      options: [undefined, 'default', 'inverted', 'transparent', 'elevated'],
+      options: [undefined, 'canvas', 'inverted', 'transparent', 'elevated'],
     },
     borderTop: {
       control: 'select',

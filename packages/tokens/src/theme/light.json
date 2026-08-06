@@ -42,7 +42,7 @@
         "$value": "{color.accent.8}"
       },
       "container": {
-        "page": {
+        "canvas": {
           "$type": "color",
           "$value": "{color.surface.2}"
         },
@@ -53,10 +53,6 @@
         "inverted": {
           "$type": "color",
           "$value": "{color.neutral.dark.2}"
-        },
-        "default": {
-          "$type": "color",
-          "$value": "{color.surface.1}"
         }
       },
       "feedback": {

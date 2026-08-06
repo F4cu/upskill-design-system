@@ -9,7 +9,7 @@
 .card[data-padding="lg"] { padding: var(--ds-space-inset-lg); }
 
 .default {
-  background: var(--ds-color-background-container-default);
+  background: var(--ds-color-background-container-canvas);
 }
 
 .elevated {

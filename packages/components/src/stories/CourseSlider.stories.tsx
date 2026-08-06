@@ -6,7 +6,6 @@ import { Inline } from '../components/Inline'
 import { Heading } from '../components/Heading'
 import { Text } from '../components/Text'
 import { ButtonArrow } from '../components/ButtonArrow'
-import utilityStyles from '../styles/utilities.module.css'
 
 const CHAPTERS = [
   {
@@ -60,7 +59,7 @@ function CourseSliderExample() {
 
 function CourseSliderPage() {
   return (
-    <Box padding="xl" className={utilityStyles.pageSurface}>
+    <Box padding="xl" background="canvas" minHeight="100vh">
       <CourseSliderExample />
     </Box>
   )

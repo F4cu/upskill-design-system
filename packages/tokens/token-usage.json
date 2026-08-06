@@ -80,10 +80,12 @@
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/Icon/Icon.module.css"
     ],
-    "--ds-color-background-container-page": [
+    "--ds-color-background-container-canvas": [
       "packages/components/src/components/AppHeader/AppHeader.module.css",
-      "packages/components/src/styles/reset.css",
-      "packages/components/src/styles/utilities.module.css"
+      "packages/components/src/components/Box/Box.module.css",
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/styles/reset.css"
     ],
     "--ds-color-border-brand": [
       "packages/components/src/components/AppHeader/AppHeader.module.css"
@@ -195,11 +197,6 @@
     ],
     "--ds-space-inset-xxxl": [
       "packages/components/src/components/Box/Box.module.css"
-    ],
-    "--ds-color-background-container-default": [
-      "packages/components/src/components/Box/Box.module.css",
-      "packages/components/src/components/Card/Card.module.css",
-      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
     ],
     "--ds-color-background-container-inverted": [
       "packages/components/src/components/Box/Box.module.css",
@@ -642,9 +639,6 @@
     "color.surface.3": [
       "packages/tokens/src/theme/light.json"
     ],
-    "color.surface.1": [
-      "packages/tokens/src/theme/light.json"
-    ],
     "color.red.3": [
       "packages/tokens/src/theme/light.json"
     ],
@@ -664,6 +658,9 @@
       "packages/tokens/src/theme/light.json"
     ],
     "color.neutral.8": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.surface.1": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.neutral.12": [

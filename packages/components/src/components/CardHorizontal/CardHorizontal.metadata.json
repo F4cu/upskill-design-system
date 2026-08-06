@@ -81,7 +81,7 @@
   ],
   "tokens": {
     "color": [
-      "color.background.container.default",
+      "color.background.container.canvas",
       "color.background.container.inverted",
       "color.border.subtle",
       "color.border.inverted",

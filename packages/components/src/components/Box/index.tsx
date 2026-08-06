@@ -3,7 +3,7 @@ import styles from './Box.module.css'
 
 type SpaceInset = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'
 type Overflow = 'hidden' | 'auto' | 'scroll' | 'visible' | 'clip'
-export type BoxBackground = 'default' | 'inverted' | 'transparent' | 'elevated'
+export type BoxBackground = 'canvas' | 'inverted' | 'transparent' | 'elevated'
 export type BoxBorderTop = 'default' | 'inverted'
 
 export type BoxProps = {

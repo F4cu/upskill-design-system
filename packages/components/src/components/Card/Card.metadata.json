@@ -50,7 +50,7 @@
       {
         "scenario": "Using Card as a full-page background",
         "reason": "Card is a grouping surface, not a page background. A full-page card makes every section a nested container.",
-        "alternative": "Apply page-background colour with the container-page token on the root layout element."
+        "alternative": "Use Box background='canvas' (or the container-canvas token) on the root layout element."
       },
       {
         "scenario": "Using Card to display a course (with image, title, metadata)",
@@ -92,7 +92,7 @@
   ],
   "tokens": {
     "color": [
-      "color.background.container.default",
+      "color.background.container.canvas",
       "color.background.container.elevated",
       "color.background.neutral.subtle",
       "color.border.subtle"

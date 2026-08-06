@@ -9,7 +9,6 @@ import { Divider } from '../components/Divider'
 import { Chip } from '../components/Chip'
 import { CardVertical } from '../components/CardVertical'
 import { ButtonArrow } from '../components/ButtonArrow'
-import utilityStyles from '../styles/utilities.module.css'
 import styles from './Carousel.stories.module.css'
 
 const FILTERS = ['All Courses', 'Design', 'Development', 'Business', 'Marketing']
@@ -35,7 +34,8 @@ function CarouselPage() {
     <Box
       padding="xl"
       maxWidth="1280px"
-      className={utilityStyles.pageSurface}
+      background="canvas"
+      minHeight="100vh"
       style={{ margin: '0 auto' }}
     >
       <Stack gap="xxl">

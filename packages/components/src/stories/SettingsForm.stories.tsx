@@ -9,7 +9,6 @@ import { TextField } from '../components/TextField'
 import { Select } from '../components/Select'
 import { Checkbox } from '../components/Checkbox'
 import { Button } from '../components/Button'
-import utilityStyles from '../styles/utilities.module.css'
 
 const TIMEZONE_OPTIONS = [
   { value: 'utc', label: 'UTC' },
@@ -21,7 +20,7 @@ const TIMEZONE_OPTIONS = [
 
 function SettingsForm() {
   return (
-    <Box padding="xl" className={utilityStyles.pageSurface}>
+    <Box padding="xl" background="canvas" minHeight="100vh">
       <Stack gap="xl" maxWidth="640px" style={{ margin: '0 auto' }}>
         <Stack gap="xs">
           <Heading size="headline">Account Settings</Heading>
@@ -81,7 +80,7 @@ function SettingsForm() {
 
 function SettingsFormWithErrors() {
   return (
-    <Box padding="xl" className={utilityStyles.pageSurface}>
+    <Box padding="xl" background="canvas" minHeight="100vh">
       <Stack gap="xl" maxWidth="640px" style={{ margin: '0 auto' }}>
         <Stack gap="xs">
           <Heading size="headline">Account Settings</Heading>

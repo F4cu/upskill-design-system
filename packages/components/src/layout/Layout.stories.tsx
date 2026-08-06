@@ -11,7 +11,6 @@ import { Divider } from '../components/Divider'
 import logoLight from '../assets/logos/brand-logo-light-theme.svg'
 import logoDark from '../assets/logos/brand-logo-dark-theme.svg'
 import '../styles/grid.css'
-import utilityStyles from '../styles/utilities.module.css'
 import styles from './Layout.stories.module.css'
 
 const NAV_ITEMS = [
@@ -98,7 +97,7 @@ export const Default: Story = {
     },
   },
   render: () => (
-    <Box className={utilityStyles.pageSurface}>
+    <Box background="canvas" minHeight="100vh">
       <AppHeader
         logoSrc={logoLight}
         logoSrcDark={logoDark}

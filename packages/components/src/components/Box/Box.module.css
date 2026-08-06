@@ -21,7 +21,7 @@
 .box[data-py="xxl"] { padding-block: var(--ds-space-inset-xxl); }
 .box[data-py="xxxl"] { padding-block: var(--ds-space-inset-xxxl); }
 
-.default { background: var(--ds-color-background-container-default); }
+.canvas { background: var(--ds-color-background-container-canvas); }
 .inverted { background: var(--ds-color-background-container-inverted); }
 .transparent { background: transparent; }
 .elevated { background: var(--ds-color-background-container-elevated); border-radius: var(--ds-border-radius-xs); }

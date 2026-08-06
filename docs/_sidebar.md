@@ -32,3 +32,4 @@
   - [018 — Docs-scribe critic stage](decisions/018-docs-scribe-critic-stage.md)
   - [019 — Screenshot baseline visual regression](decisions/019-screenshot-baseline-visual-regression.md)
   - [020 — Layout prop attribute selectors](decisions/020-layout-prop-attribute-selectors.md)
+  - [021 — Container canvas consolidation](decisions/021-container-canvas-consolidation.md)

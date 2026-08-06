@@ -42,7 +42,7 @@
         "$value": "{color.accent.dark.8}"
       },
       "container": {
-        "page": {
+        "canvas": {
           "$type": "color",
           "$value": "{color.neutral.dark.2}"
         },
@@ -51,10 +51,6 @@
           "$value": "{color.neutral.dark.2}"
         },
         "inverted": {
-          "$type": "color",
-          "$value": "{color.neutral.dark.1}"
-        },
-        "default": {
           "$type": "color",
           "$value": "{color.neutral.dark.1}"
         }

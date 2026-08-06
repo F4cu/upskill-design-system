@@ -58,12 +58,9 @@ function discoverBrands() {
     .map((f) => f.replace(/^brand\.(.+)\.css$/, "$1"));
 }
 
-// Rendered on whatever ambient surface a component is placed on (page or a
-// default card/container) — the two general-purpose canvas backgrounds.
-const AMBIENT = [
-  "--ds-color-background-container-default",
-  "--ds-color-background-container-page",
-];
+// Rendered on whatever ambient surface a component is placed on — the
+// general-purpose canvas background.
+const AMBIENT = ["--ds-color-background-container-canvas"];
 
 const T = (name) => `--ds-color-text-${name}`;
 const I = (name) => `--ds-color-icon-${name}`;
@@ -104,10 +101,10 @@ const PAIRS = [
   [T("subtle"), BG("neutral-subtlest")],
   [T("selected"), BG("neutral-subtlest")],
 
-  // DropdownMenu — panel is container.default; hover/focus overlays neutral.hover
-  [T("default"), BG("container-default")],
+  // DropdownMenu — panel is container.canvas; hover/focus overlays neutral.hover
+  [T("default"), BG("container-canvas")],
   [T("default"), BG("neutral-hover")],
-  [T("brand"), BG("container-default")],
+  [T("brand"), BG("container-canvas")],
   [T("brand"), BG("neutral-hover")],
 
   // Checkbox — box border/fill sits on background.input; checkmark is a
@@ -143,10 +140,10 @@ const PAIRS = [
   // border.default/strong (not checked — see Button outlined, above).
   [T("default"), BG("neutral-subtlest"), "icon"],
 
-  // AppHeader — fixed background.container.page
-  [T("subtle"), BG("container-page")],
-  [T("brand"), BG("container-page")],
-  [T("default"), BG("container-page"), "icon"], // hamburger icon button
+  // AppHeader — fixed background.container.canvas
+  [T("subtle"), BG("container-canvas")],
+  [T("brand"), BG("container-canvas")],
+  [T("default"), BG("container-canvas"), "icon"], // hamburger icon button
 
   // Breadcrumb — no background of its own (ambient, typically AppHeader)
   ...AMBIENT.flatMap((bg) => [
@@ -157,10 +154,10 @@ const PAIRS = [
   // CardHorizontal — default variant on a default card/container; inverted
   // variant is documented (component metadata) to require
   // background.container.inverted from its parent
-  [T("default"), BG("container-default")],
+  [T("default"), BG("container-canvas")],
   [T("inverted-default"), BG("container-inverted")],
   [T("inverted-subtle"), BG("container-inverted")],
-  [I("subtle"), BG("container-default")],
+  [I("subtle"), BG("container-canvas")],
 
   // CardVertical — badge icon, ambient (composed standalone or in a Card)
   ...AMBIENT.map((bg) => [I("subtle"), bg]),
@@ -283,7 +280,7 @@ function contrastRatio(c1, c2) {
 
 function evaluateTheme(theme, vars) {
   const baseCanvas = parseColor(
-    resolve("--ds-color-background-container-default", vars)
+    resolve("--ds-color-background-container-canvas", vars)
   );
   const seen = new Set();
   const checked = [];
