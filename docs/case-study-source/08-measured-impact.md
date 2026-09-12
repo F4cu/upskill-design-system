@@ -21,7 +21,7 @@ Every number below is tagged **Measured** (read directly off a committed artifac
 
 **Higher-quality output.** Lint runs on every commit (Tier 1), and coverage plus behavioral accessibility tests run before merge (Tier 2, ADR-008) — designers and developers inherit accessible components rather than auditing them after the fact.
 
-- Gate and review: across `/add-component` runs the deterministic gate passed 12 of 12, and adversarial review caught extra findings in 7 of 12 before a human saw the PR (18 findings total, measured — see "Gates and the adversarial reviewer" below).
+- Gate, then human, then reviewer: across `/add-component` runs the deterministic gate passed 12 of 12; a human visual go/no-go (Stage 2b/2c, ADR-007) runs *before* the adversarial reviewer is even spawned, so the fresh-context reviewer only ever sees a component the maintainer has already accepted on sight — and it still caught extra findings in 7 of 12 runs before a human read the code (18 findings total, measured — see "Gates and the adversarial reviewer" below).
 - Learning loop: each finding routes back into component metadata via `/extract-learnings`, so the next generation inherits the fix as a checked rule rather than repeating the mistake — reviewers spend their time on judgment, not on catching regressions the system already knows about.
 - Caveat: the routing mechanism is measured as a process (findings do get written back); no before/after experiment measures whether later generations actually produce fewer of the same mistake, so the compounding-quality effect itself stays a reasoned claim, not a tracked one.
 
@@ -67,8 +67,9 @@ External anchor: Anthropic's ["Building Effective Agents"](https://www.anthropic
 `run-ledger.json` holds **12 full-path component-loop runs** (all 2026-07-09). Measured, recomputed from the raw file:
 
 - **12 of 12** recorded runs passed the deterministic gate (the ledger records post-pass runs only — this is not evidence gates never fail mid-loop, only that no failure survives to the record).
-- The adversarial reviewer found issues **beyond** what the gate could catch in **7 of 12 runs (58%)** — 18 findings total, **1.5 per run on average** (2.6 among the runs that had any).
-- **0 manual rescues** across all 12 runs — the loop never needed human intervention beyond its built-in fix step.
+- **12 of 12** runs then cleared the human visual checkpoint (Stage 2b/2c) before the reviewer was spawned — the order is fixed by the command, not a convention a run could skip: no adversarial review starts on a component the maintainer hasn't looked at first.
+- The adversarial reviewer found issues **beyond** what the gate *and* the visual checkpoint could catch in **7 of 12 runs (58%)** — 18 findings total, **1.5 per run on average** (2.6 among the runs that had any). Those are defects a human eye reading the rendered component missed and a fresh, read-only AI reader reading the code caught — the two checks are catching different classes of error, not duplicating each other.
+- **0 manual rescues** across all 12 runs — the loop never needed human intervention beyond its built-in fix step, and every run still closes with a human PR merge regardless of what either check found.
 
 The per-component split is more informative than the average. The reviewer earned its cost on interactive and composite components — Accordion (4 findings), ButtonArrow (3), DropdownMenu (3), TextField (3), Chip (2), TextLink (2), Text (1) — and found **nothing** on the layout primitives: Box, Stack, Inline, Heading, Checkbox all logged zero findings beyond the gate. That pattern suggests a routing heuristic the ledger itself surfaced: the full adversarial path for interactive components, the cheaper standard path for primitives. Whether to adopt it is a judgment call; that the data exists to make it is the point of keeping the ledger.
 
@@ -76,7 +77,7 @@ Scope caveat, stated plainly: the ledger covers the full-review path only — **
 
 ## The pattern-schema harness: measured, corrected, kept
 
-The one controlled experiment in the repo (`scripts/pattern-accuracy-harness/`, 7 pre-registered tasks × 2 arms, deterministic scoring, corrected rescore per ADR-013's amendment):
+The one controlled experiment in the repo (`scripts/pattern-accuracy-harness/`, 7 pre-registered tasks × 2 arms, deterministic scoring, corrected rescore per ADR-013's amendment). Tasks were locked in before any run — the harness's own honest-outcome rule states plainly, verbatim: *"if Arm B does not reduce violations meaningfully, report that plainly and recommend not shipping the schema. Do not massage tasks to manufacture a win."* Each task ran twice through identical headless prompts, Arm A with per-component metadata only, Arm B with the full pattern file added, scored by the same deterministic gates the system already runs in CI plus a grep/AST trap checklist — no LLM judged the output, a script did:
 
 | Task kind | Metadata only | + pattern file | Delta |
 |---|---:|---:|---|
@@ -84,7 +85,7 @@ The one controlled experiment in the repo (`scripts/pattern-accuracy-harness/`, 
 | Component scaffold (3 tasks) | 19 | 24 | **+26% (regression)** |
 | Total | 32 | 28 | −13% |
 
-(The gate-violations-only subset for scaffold is 11→17; the totals above include the trap checklist.) The split drove the scoped decision — pattern file into `/layout-generation` only, never `/component-scaffold` — and the harness stayed in-repo as the standing instrument. Full narrative: [Rejected alternatives §1](04-rejected-alternatives.md).
+(The gate-violations-only subset for scaffold is 11→17; the totals above include the trap checklist.) The 13% aggregate reduction would read as a modest win on its own — broken out by task kind, it's a split verdict, and the split is what drove the scoped decision: pattern file into `/layout-generation` only, never `/component-scaffold`, on the theory that the ~23K-character aggregate crowds out a scaffold task's attention on its narrower schema and file-contract rules. The harness stayed in-repo as the standing instrument, and later caught a real bug in its own scoring — a false positive on text props passed in attribute position — which was corrected from retained raw outputs with no tasks rerun; the fix sharpened the split rather than changing it. Full narrative: [Rejected alternatives §1](04-rejected-alternatives.md).
 
 External anchors for the gate-plus-generator architecture generally: the LLM-Modulo position paper (Kambhampati et al., ICML 2024, [arXiv:2402.01817](https://arxiv.org/abs/2402.01817)) — LLMs generate candidates, external sound critics verify, because the models cannot reliably self-verify; Huang et al. (ICLR 2024, [arXiv:2310.01798](https://arxiv.org/abs/2310.01798)) — intrinsic self-correction without external feedback often *degrades* output, which is why the gate is a script and not a "please double-check" prompt. For the fresh-context reviewer specifically, a 2026 controlled study ([arXiv:2603.12123](https://arxiv.org/abs/2603.12123)) found fresh-session review outperformed same-session self-review (F1 28.6% vs 24.6%) on 150 injected errors — a single-author preprint, not yet peer-reviewed, so it's suggestive corroboration paired with the peer-reviewed self-correction result, not settled proof.
 
