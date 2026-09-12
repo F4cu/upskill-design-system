@@ -31,6 +31,8 @@ Before the numbers that are pinned down: three real gaps in this system's own ev
 
 ## Frozen snapshots: the context economics
 
+The numbers below are the price side of the memory architecture described in [Giving AI the right context at the right time](10-context-engineering.md) — this section is what that architecture costs, not what it's shaped like.
+
 The seven substantive frozen-snapshot files total **~127 KB, roughly 31,700 tokens** (measured):
 
 | File | Bytes | ≈ tokens |
