@@ -24,6 +24,30 @@ The system draws the line in three tiers, and each tier earns its place by a dif
 
 There are exactly two of them because a spawned subagent does one specific job neither a script nor the main session can do as well: bringing a **fresh, independent context** to a review. The main session, mid-loop, has motivated reasoning about its own work; a subagent that starts cold and reads only the diff and a frozen snapshot doesn't share that bias. That's the entire justification for spending a second agent's worth of usage-window budget — which is why the loop is capped at "sequential, at most two agents" (ADR-007) rather than "as many specialists as there are concerns."
 
+## Calibrated access, not maximal access
+
+The same restraint shows up one level down from *which* agent runs — in what each one is actually wired to touch. `CLAUDE.md`'s "MCP tools — when to use vs when to avoid" table doesn't grant blanket access to four connected MCP servers; it gives each one a column for what it's for and a column for what it's explicitly not for. Figma is wired for reading design context in three named moments and writing variables in one, never for treating Figma as the token source (ADR-002). Airtable is wired for one-off schema debugging, never for reading governance state — that's a committed file, per [the governance flow](05-airtable-governance-flow.md), read by everything except the one script that syncs it. GitHub's MCP entry says, in effect, "rarely — the `gh` CLI already covers this." The rule that closes the table is the whole policy in one line: if a committed file, a script, or the `gh` CLI can do it, that's the answer even when an MCP tool is sitting right there.
+
+The subagents inherit the same discipline at the tool level, not just the server level: `adversarial-reviewer.md` and `docs-scribe.md` get `Read`/`Grep`/`Glob` (the reviewer also gets `Bash`) and nothing that writes, enforced by what the agent definition exposes rather than a prompt instruction a run could ignore. An agent wired into every tool a session has access to is harder to debug after the fact — a bad finding could have come from any of a dozen connections, and there's no way to tell which one. Restrict a reviewer to "read the diff, read the snapshot, report a finding" and there's exactly one place to look when its output is wrong.
+
+Laid out end to end, each restriction traces back to a specific underlying payoff, not a blanket caution:
+
+| Approach | Why |
+|---|---|
+| Per-MCP scoping table in `CLAUDE.md` (use-for / don't-use-for per server) | `debuggability` — one stated purpose per connection, no guessing which server caused a behavior |
+| Figma: read in 3 named moments, write in 1 (clean-missing only) | `stability` — writes can't clobber existing variables; blast radius is additive-only |
+| Airtable MCP: debugging only, never for reading governance | `stability` — governance state can't drift from an uncached live read mid-task |
+| GitHub MCP: "rarely," `gh` CLI preferred | `cost` — one fewer live, quota-consuming path into a shared system |
+| CI workflows: zero MCP/LLM calls, ever | `cost` + `stability` — no model spend, no non-determinism in recurring automation |
+| Loops read frozen snapshots, not live APIs mid-run | `context bloat` + `cost` — no raw API payloads enter context; cache-eligible reads instead of full-price calls |
+| Subagents get an explicit tool allowlist (`tools:` frontmatter) | `security` — no `Edit`/`Write`, structurally enforced, not prompt-enforced |
+| Reviewer's Bash scoped to named read-only commands | `security` — shell access can't reach build/install/commit/push |
+| Subagents: no live API/MCP calls at all | `debuggability` — a bad finding has exactly one possible source: diff + snapshot |
+| `component-patterns.json` restricted to one consumer (ADR-013) | `context bloat` — removed after evidence it hurt a second consumer's output |
+| Loops capped at sequential, ≤2 agents (ADR-007) | `cost` + `debuggability` — bounded usage-window spend, one agent's output to reason about at a time |
+
+This wasn't reasoned out from a security framework — it's the same principle argued from the outside, independently, by two sources unconnected to this repo: "an agent wired into every possible tool at once is harder to reason about and debug, because you can't tell which connection produced which behavior. In both cases, 'more' isn't safer. Calibrated is safer" ([Scaling AI Effort](https://f4cu.github.io/design-systems-101/#/scaling-ai-effort)), and "With MCP, you control exactly what data and tools AI can access. It's not about giving AI free rein, but about creating specific, controlled bridges to the resources that make it genuinely useful for your design work" (Romina Kavcic, ["5 MCP Connections Every Design System Team Needs Right Now"](https://learn.thedesignsystem.guide/p/5-mcp-connections-every-design-system)). The MCP table and the tool-restricted subagents are that principle instantiated twice in one repo — once per server, once per agent — rather than asserted as a philosophy and left unenforced.
+
 ## Where "delegation to cheaper models" actually shows up — and where it doesn't yet
 
 It would be easy to claim this system routes mechanical work to a cheap model and judgment work to a capable one, mirroring the rejected blueprint's router/worker split minus the parallelism. The honest state: **most of the nine moments don't pin a model at all** — they inherit whatever model is driving the session. Two command files declare a model explicitly: `airtable-sync` (a utility wrapper around the sync scripts, not one of the nine moments) runs on `haiku`, and `token-deprecation-pass` (moment 2) and `tokens-author` (also a utility) declare `sonnet`.
@@ -49,4 +73,6 @@ The one-line version, for the reader who still thinks two agents is a modest sys
 - `docs/06-agentic-moments.md`
 - `.claude/commands/*.md` frontmatter (`model:`, `allowed-tools:`)
 - `.claude/agents/adversarial-reviewer.md`, `.claude/agents/docs-scribe.md`
+- [Scaling AI Effort](https://f4cu.github.io/design-systems-101/#/scaling-ai-effort) — "calibrated is safer" framing
+- Romina Kavcic, ["5 MCP Connections Every Design System Team Needs Right Now"](https://learn.thedesignsystem.guide/p/5-mcp-connections-every-design-system) — "controlled bridges" framing
 - [Rejected alternatives](04-rejected-alternatives.md) — full blueprint and Figma-wall detail
