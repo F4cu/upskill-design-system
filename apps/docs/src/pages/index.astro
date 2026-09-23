@@ -1,0 +1,60 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import { Card, CardGrid, LinkCard } from "@astrojs/starlight/components";
+import illustration from "../assets/upskill-illustration.png";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "UpSkill Design System",
+    template: "splash",
+    hero: {
+      tagline:
+        "A design system where AI runs as infrastructure, not as a feature. Agents are called in only where judgment is needed, and they're fed as little context as possible.",
+      image: { file: illustration, alt: "A designer at a desk surrounded by tool palettes, swatches, and a drawing tablet" },
+      actions: [
+        { text: "Start here", link: `${base}/start-here/`, icon: "right-arrow" },
+        { text: "Agentic moments", link: `${base}/06-agentic-moments/`, variant: "minimal" },
+      ],
+    },
+  }}
+>
+  <p>
+    Most agentic setups keep a model running around the clock, re-reading live APIs on every step. UpSkill does
+    the opposite. Scripts and CI handle everything repetitive. Claude is invoked only to interpret design intent,
+    and it reads small frozen snapshots instead of calling Figma or Airtable directly. The result is team-scale
+    rigor that one person can maintain.
+  </p>
+
+  <h2>Three loops</h2>
+    <LinkCard
+      title="Build: Figma to production React"
+      description="/add-component reads the Figma design and component metadata, then scaffolds the component, its styles, stories and metadata. It has to pass typecheck, build and accessibility gates before an adversarial reviewer checks it. Only then does a pull request open."
+      href={`${base}/06-agentic-moments/#the-verified-add-component-loop-concretely`}
+    />
+    <LinkCard
+      title="Learn: every bug becomes a rule"
+      description="/extract-learnings routes each review finding to where it will be read next time: component metadata, token conventions or the contrast-pair list. The same mistake doesn't get scaffolded twice."
+      href={`${base}/11-self-improving-loops/#learning-loops`}
+    />
+    <LinkCard
+      title="Sync: docs that stay current"
+      description="CI flags any page whose sources changed after the page was last updated. /docs-sync rewrites only the stale sections, a second agent critiques the rewrite, and the result lands as a pull request."
+      href={`${base}/06-agentic-moments/#the-nine-moments`}
+    />
+
+  <h2>The numbers</h2>
+  <CardGrid>
+    <Card title="95% fewer API calls" icon="download">One snapshot read replaces 20 live lookups.</Card>
+    <Card title="Up to 1M tokens a week saved" icon="clock">On-demand commands replace always-on agents.</Card>
+    <Card title="9 of 40 workflows use Claude" icon="setting">The rest are scripts and GitHub Actions.</Card>
+    <Card title="58% of bugs caught" icon="approve-check">By a reviewer with no memory of how the component was built.</Card>
+  </CardGrid>
+
+  <p>
+    Open source on <a href="https://github.com/F4cu/upskill-design-system">GitHub</a>, including the ledger that
+    measures whether each agent earns its cost.
+  </p>
+</StarlightPage>

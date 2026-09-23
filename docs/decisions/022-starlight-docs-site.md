@@ -4,6 +4,7 @@ title: "ADR-022 — Starlight replaces Docsify; markdown stays in docs/"
 # ADR-022 — Starlight replaces Docsify; markdown stays in `docs/`
 
 **Date:** 2026-09-23
+**Amended:** 2026-09-23
 **Status:** `accepted`
 
 ## Context
@@ -33,3 +34,10 @@ Option (b). The markdown files stay in `docs/`. `apps/docs/` (`@upskill/docs`) o
 - Deep links change shape, from Docsify hash routes (`#/01-token-pipeline`) to real paths (`/01-token-pipeline/`). Old hash URLs land on the site root.
 - Adding `title:` touches every ADR. Because ADRs are declared `sources:` of reference pages, ADR and page edits like this must land in the same commit (docs-check compares with strict `>`).
 - Trade-off: the docs site is now a build step with npm dependencies (Astro, Starlight, astro-mermaid) instead of a zero-build CDN shell.
+
+## Amendment (2026-09-23) — Splash page owns the site root
+
+The site root is now a Starlight splash page (`apps/docs/src/pages/index.astro`, `template: "splash"`) rather than `00-start-here.md`. The first page a visitor lands on should say what the system is in a few sentences and route them onward; "Start here" is a long orientation page and reads better as the first click than as the landing.
+
+- `generateId` maps `00-start-here` to `start-here`, so it serves at `/start-here/`; the markdown link rewriter and the sidebar's "Start here" entry follow the same route. The file is not renamed, for the same `docs-check` reason as before.
+- The splash lives in `apps/docs/`, not `docs/`, because it is site chrome, not reference content: it declares no `sources:` and is outside `docs-check`. Keep it short and pointer-only so it has nothing to go stale.

@@ -45,7 +45,7 @@ export default defineConfig({
         { tag: "link", attrs: { rel: "apple-touch-icon", href: `${BASE}/apple-touch-icon.png` } },
       ],
       sidebar: [
-        { label: "Start here", link: "/" },
+        { label: "Start here", link: "/start-here/" },
         { label: "Reference", items: referencePages },
         { label: "Decision records", collapsed: true, items: decisionPages },
       ],

@@ -15,3 +15,9 @@
 pre.mermaid {
   overflow-x: auto;
 }
+
+/* Splash hero: Starlight sizes the image 400×400; keep the illustration's own aspect ratio */
+.hero > img {
+  height: auto;
+  border-radius: 0.75rem;
+}

@@ -13,12 +13,12 @@ const HOME = "00-start-here";
 
 export function docsId({ entry }) {
   const id = entry.replace(/\.md$/, "");
-  return id === HOME ? "index" : id;
+  return id === HOME ? "start-here" : id;
 }
 
 function pageHref(rel) {
   const id = rel.replace(/\.md$/, "");
-  return id === HOME ? `${BASE}/` : `${BASE}/${id}/`;
+  return id === HOME ? `${BASE}/start-here/` : `${BASE}/${id}/`;
 }
 
 // Source files keep GitHub-valid relative links (agents and GitHub read them
