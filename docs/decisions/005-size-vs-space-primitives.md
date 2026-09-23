@@ -1,3 +1,6 @@
+---
+title: "ADR-005 — size vs space Primitives"
+---
 # ADR-005 — `size` vs `space` Primitives
 
 **Date:** 2026-06-11

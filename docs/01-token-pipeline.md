@@ -1,4 +1,5 @@
 ---
+title: "Token pipeline"
 sources:
   - packages/tokens/src/**
   - packages/tokens/build.js
@@ -171,7 +172,7 @@ flowchart LR
         direction TB
         CMP[Components<br/>CSS Modules · var--token]
         SB[Storybook]
-        DOC[Docs site · Docsify]
+        DOC[Docs site · Starlight]
         SW[Showcase app]
         FIG[Figma variables<br/>downstream mirror]
     end

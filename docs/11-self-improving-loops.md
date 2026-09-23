@@ -1,4 +1,5 @@
 ---
+title: "Self-improving loops"
 sources:
   - .claude/agents/docs-scribe.md
   - scripts/handoff-tidy.js
@@ -10,6 +11,7 @@ sources:
   - docs/decisions/017-claude-md-context-budget.md
   - docs/decisions/018-docs-scribe-critic-stage.md
   - docs/decisions/019-screenshot-baseline-visual-regression.md
+# clock reset 2026-09-23: ADR-017 amendment (2026-09-08) names the CLAUDE.md split against CoALA memory types, no structural change; this page only cites ADR-017 for capping CLAUDE.md, still accurate
 ---
 # Self-improving loops
 

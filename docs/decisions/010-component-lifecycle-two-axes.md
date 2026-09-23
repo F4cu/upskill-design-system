@@ -1,3 +1,6 @@
+---
+title: "ADR-010 — Component lifecycle: two axes (maturity vs implementation)"
+---
 # ADR-010 — Component lifecycle: two axes (maturity vs implementation)
 
 **Date:** 2026-06-25

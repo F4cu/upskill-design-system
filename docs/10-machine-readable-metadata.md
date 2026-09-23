@@ -1,4 +1,5 @@
 ---
+title: "Machine-readable metadata"
 sources:
   - packages/components/component.schema.json
   - scripts/validate-metadata.js

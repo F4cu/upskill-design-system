@@ -1,3 +1,6 @@
+---
+title: "ADR-003 — $root as the Default Token Convention"
+---
 # ADR-003 — `$root` as the Default Token Convention
 
 **Date:** 2026-06-11

@@ -1,3 +1,6 @@
+---
+title: "ADR-009 — When to extend a component, create a new one, or absorb as a molecule-internal element"
+---
 # ADR-009 — When to extend a component, create a new one, or absorb as a molecule-internal element
 
 **Date:** 2026-06-23

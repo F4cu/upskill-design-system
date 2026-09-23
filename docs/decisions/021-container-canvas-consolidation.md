@@ -1,3 +1,6 @@
+---
+title: "ADR-021 — Consolidate container.default/page into container.canvas"
+---
 # ADR-021 — Consolidate container.default/page into container.canvas
 
 **Date:** 2026-08-06

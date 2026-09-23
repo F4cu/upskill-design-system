@@ -1,3 +1,6 @@
+---
+title: "ADR-018 — Docs-scribe critic stage in the docs-sync moment"
+---
 # ADR-018 — Docs-scribe critic stage in the docs-sync moment
 
 **Date:** 2026-07-09

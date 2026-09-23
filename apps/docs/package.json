@@ -1,0 +1,18 @@
+{
+  "name": "@upskill/docs",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.2",
+    "@astrojs/starlight": "^0.42.3",
+    "astro": "^7.3.4",
+    "astro-mermaid": "^2.1.0",
+    "mermaid": "^11.17.2"
+  }
+}

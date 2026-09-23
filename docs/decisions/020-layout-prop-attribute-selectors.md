@@ -1,3 +1,6 @@
+---
+title: "ADR-020 — Enum layout props render as data-attributes, not inline CSS custom properties"
+---
 # ADR-020 — Enum layout props render as data-attributes, not inline CSS custom properties
 
 **Date:** 2026-07-21

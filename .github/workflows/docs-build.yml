@@ -1,0 +1,35 @@
+name: Docs site build
+
+# Builds the Starlight reference site (ADR-022) on PRs that can break it:
+# a page or ADR missing `title:` frontmatter fails the content schema before
+# the change reaches main and the Pages deploy.
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "apps/docs/**"
+      - "package-lock.json"
+      - ".github/workflows/docs-build.yml"
+
+concurrency:
+  group: docs-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-build:
+    name: Build Starlight docs site
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build docs site
+        run: npm run docs:build

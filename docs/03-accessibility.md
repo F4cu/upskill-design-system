@@ -1,4 +1,5 @@
 ---
+title: "Accessibility"
 sources:
   - scripts/a11y-coverage.js
   - scripts/token-contrast-check.js

@@ -1,3 +1,6 @@
+---
+title: "ADR-007 — Verified component loop: sequential, ≤2 agents, frozen-file handoffs"
+---
 # ADR-007 — Verified component loop: sequential, ≤2 agents, frozen-file handoffs
 
 **Date:** 2026-06-22

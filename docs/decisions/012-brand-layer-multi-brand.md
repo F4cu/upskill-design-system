@@ -1,3 +1,6 @@
+---
+title: "ADR-012 — Brand Layer for Multi-Brand Tokens"
+---
 # ADR-012 — Brand Layer for Multi-Brand Tokens
 
 **Date:** 2026-07-06

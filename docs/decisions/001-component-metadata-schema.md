@@ -1,3 +1,6 @@
+---
+title: "ADR-001 — Component Metadata Schema for Machine-Readable Design System"
+---
 # ADR-001 — Component Metadata Schema for Machine-Readable Design System
 
 **Date:** 2026-06-11

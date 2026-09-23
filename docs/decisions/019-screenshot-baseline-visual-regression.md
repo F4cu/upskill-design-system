@@ -1,3 +1,6 @@
+---
+title: "ADR-019 — Screenshot baseline visual regression"
+---
 # ADR-019 — Screenshot baseline visual regression
 
 **Date:** 2026-07-14

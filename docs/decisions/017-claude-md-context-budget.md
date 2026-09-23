@@ -1,3 +1,6 @@
+---
+title: "ADR-017 — CLAUDE.md context budget and knowledge routing"
+---
 # ADR-017 — CLAUDE.md context budget and knowledge routing
 
 **Date:** 2026-07-08

@@ -1,3 +1,6 @@
+---
+title: "ADR-000 — Title"
+---
 # ADR-000 — Title
 
 **Date:** YYYY-MM-DD

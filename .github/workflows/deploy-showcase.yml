@@ -11,6 +11,7 @@ on:
       - "apps/showcase/**"
       - "packages/**"
       - "docs/**"
+      - "apps/docs/**"
       - "package-lock.json"
       - ".github/workflows/deploy-showcase.yml"
 
@@ -53,9 +54,13 @@ jobs:
       - name: SPA fallback
         run: cp apps/showcase/dist/index.html apps/showcase/dist/404.html
 
-      # docs/ is a static Docsify site — served at /upskill-design-system/docs/
+      # Starlight reference site built from docs/*.md (ADR-022) — served at
+      # /upskill-design-system/docs/; base path is set in apps/docs/astro.config.mjs
+      - name: Build docs site
+        run: npm run docs:build
+
       - name: Include docs site
-        run: cp -r docs apps/showcase/dist/docs
+        run: cp -r apps/docs/dist apps/showcase/dist/docs
 
       # Storybook is the component documentation layer — nested at
       # /upskill-design-system/storybook/; base path set so Vite emits

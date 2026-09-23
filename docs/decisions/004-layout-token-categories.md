@@ -1,3 +1,6 @@
+---
+title: "ADR-004 — Layout Token Categories: space.* vs grid.*"
+---
 # ADR-004 — Layout Token Categories: `space.*` vs `grid.*`
 
 **Date:** 2026-06-11

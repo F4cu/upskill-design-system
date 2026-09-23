@@ -1,4 +1,5 @@
 ---
+title: "Agentic moments"
 sources:
   - .claude/commands/*.md
   - .claude/agents/adversarial-reviewer.md
@@ -101,7 +102,7 @@ flowchart LR
     classDef command fill:#fff,stroke:#333,stroke-width:1px
 ```
 
-A full worked example of this loop running on a real component is documented in **[The Add-Component Loop — Accordion Case Study](add-component-loop-case-study.html ':ignore')**, a standalone HTML artifact. It records, among other things, a real ARIA dead-reference bug (`aria-controls` pointing at a non-existent id) that the adversarial reviewer caught and the deterministic gate could not have. Note: `ROADMAP.md` flags that this write-up may be stale relative to the loop's current shape — the stages above (per ADR-007 and its amendment) are authoritative where they differ.
+A full worked example of this loop running on a real component is documented in **[The Add-Component Loop — Accordion Case Study](add-component-loop-case-study.html)**, a standalone HTML artifact. It records, among other things, a real ARIA dead-reference bug (`aria-controls` pointing at a non-existent id) that the adversarial reviewer caught and the deterministic gate could not have. Note: `ROADMAP.md` flags that this write-up may be stale relative to the loop's current shape — the stages above (per ADR-007 and its amendment) are authoritative where they differ.
 
 ## Related
 

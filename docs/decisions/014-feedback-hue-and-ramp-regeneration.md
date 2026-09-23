@@ -1,3 +1,6 @@
+---
+title: "ADR-014 — Feedback Hue Separation and Terracotta-Luminance-Matched Ramp Regeneration"
+---
 # ADR-014 — Feedback Hue Separation and Terracotta-Luminance-Matched Ramp Regeneration
 
 **Date:** 2026-07-07

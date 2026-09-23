@@ -1,4 +1,5 @@
 ---
+title: "Start here"
 sources:
   - docs/decisions/*.md
   - .claude/commands/*.md
@@ -27,7 +28,7 @@ The pipeline in one sentence: [design tokens](08-glossary.md) are authored as co
 |---|---|---|
 | Storybook (`packages/components`) | Anyone asking "how does this component behave, in every variant and theme?" — Storybook is the documentation layer for coded components. | `/run-storybook`, or `npm run storybook` inside `packages/components`. |
 | Airtable | Design/product asking "what's the governance status of this token or component" (owner, successor, sign-off). | Open the base directly; the repo's read-side mirror is `airtable-governance.json` / `.claude/component-signoff.json` (see the observability map below — never a live call from a session). |
-| This site (Docsify, `docs/`) | Someone evaluating or maintaining the system who wants "how this actually works, page by page," with every claim linked to its source file/script/ADR. | `npm run docs:serve` locally; published at https://f4cu.github.io/upskill-design-system/docs/. |
+| This site (Starlight, `docs/`) | Someone evaluating or maintaining the system who wants "how this actually works, page by page," with every claim linked to its source file/script/ADR. | `npm run docs:serve` locally; published at https://f4cu.github.io/upskill-design-system/docs/. |
 | `CLAUDE.md` + `.claude/rules/` | An agent asking "what must I know to generate or reuse correctly in this repo?" | Read directly — `CLAUDE.md` for cross-cutting invariants, path-scoped rules for component/token specifics. |
 | The live showcase (`apps/showcase`) | Anyone who wants to see the system *running*, not explained — a Vite/React app deploying to GitHub Pages (replacing the earlier Vercel plan), with built pages, a system-health dashboard, and a pipeline diagram. | `npm run dev -w @upskill/showcase`, or the deployed site. |
 

@@ -1,3 +1,6 @@
+---
+title: "ADR-011 — Layout landmark grammar for /layout-generation"
+---
 # ADR-011 — Layout landmark grammar for `/layout-generation`
 
 **Date:** 2026-06-28

@@ -1,4 +1,5 @@
 ---
+title: "Governance"
 sources:
   - scripts/airtable-sync.js
   - scripts/airtable-pull.js

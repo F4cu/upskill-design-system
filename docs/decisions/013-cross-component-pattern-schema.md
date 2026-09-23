@@ -1,3 +1,6 @@
+---
+title: "ADR-013 — Cross-component pattern schema: layout/composition consumer only"
+---
 # ADR-013 — Cross-component pattern schema: layout/composition consumer only
 
 **Date:** 2026-07-06

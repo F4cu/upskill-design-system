@@ -1,3 +1,6 @@
+---
+title: "ADR-015 — Handoff artifact lifecycle convention"
+---
 # ADR-015 — Handoff artifact lifecycle convention
 
 **Date:** 2026-07-08

@@ -1,4 +1,5 @@
 ---
+title: "Glossary"
 sources:
   - .claude/commands/*.md
   - .claude/rules/*.md

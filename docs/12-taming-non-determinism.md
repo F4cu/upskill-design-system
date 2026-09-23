@@ -1,4 +1,5 @@
 ---
+title: "Taming non-determinism"
 sources:
   - packages/components/component.schema.json
   - scripts/validate-metadata.js

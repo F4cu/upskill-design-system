@@ -6,6 +6,8 @@ dist/
 .mcp.json
 
 *storybook.log
+# Astro generated types/cache for the Starlight docs site
+.astro/
 storybook-static
 
 # Handoff docs (active + archive) are committed — durable across sessions/machines.

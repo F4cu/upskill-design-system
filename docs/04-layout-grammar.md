@@ -1,4 +1,5 @@
 ---
+title: "Layout grammar"
 sources:
   - scripts/validate-layout.js
   - .claude/commands/layout-generation.md

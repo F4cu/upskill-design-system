@@ -1,0 +1,17 @@
+/* Accent = the brand terracotta ramp (primitives.json color.terracotta.*) */
+:root {
+  --sl-color-accent-low: #582823; /* terracotta.12 */
+  --sl-color-accent: #d15d50; /* terracotta.9 */
+  --sl-color-accent-high: #f3c2ba; /* terracotta.6 */
+}
+
+:root[data-theme="light"] {
+  --sl-color-accent-low: #fbecea; /* terracotta.3 */
+  --sl-color-accent: #c44f43; /* terracotta.10 */
+  --sl-color-accent-high: #582823; /* terracotta.12 */
+}
+
+/* Mermaid diagrams scroll within their own container, never the page */
+pre.mermaid {
+  overflow-x: auto;
+}

@@ -1,3 +1,6 @@
+---
+title: "ADR-008 — Behavioral a11y verification tier, gated by component complexity"
+---
 # ADR-008 — Behavioral a11y verification tier, gated by component complexity
 
 **Date:** 2026-06-22

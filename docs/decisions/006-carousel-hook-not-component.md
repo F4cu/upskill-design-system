@@ -1,3 +1,6 @@
+---
+title: "ADR-006 — Carousel as hook + pattern, not a DS component"
+---
 # ADR-006 — Carousel as hook + pattern, not a DS component
 
 **Date:** 2026-06-18

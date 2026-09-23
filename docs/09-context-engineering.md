@@ -1,4 +1,5 @@
 ---
+title: "Context engineering"
 sources:
   - CLAUDE.md
   - .claude/rules/components.md

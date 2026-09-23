@@ -1,3 +1,6 @@
+---
+title: "ADR-016 — Layout output review path"
+---
 # ADR-016 — Layout output review path
 
 **Date:** 2026-07-08

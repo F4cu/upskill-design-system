@@ -1,3 +1,6 @@
+---
+title: "ADR-002 — Three-Layer Token Model"
+---
 # ADR-002 — Three-Layer Token Model
 
 **Date:** 2026-06-11

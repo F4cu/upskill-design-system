@@ -1,4 +1,5 @@
 ---
+title: "CLI reference"
 sources:
   - package.json
   - apps/showcase/package.json
@@ -155,7 +156,8 @@ The self-documenting side of the system: two gates that keep the human docs and 
 |---|---|---|
 | `npm run docs:check` | Staleness gate for the `docs/` site. Each `docs/NN-*.md` declares its load-bearing source files in frontmatter; the check fails when any source has a commit newer than the doc — i.e. the thing the doc describes changed after the doc was last touched. Detection only; the rewrite is `/docs-sync`. | CI runs it on every PR; you type it when `/docs-sync` seems warranted or after changing anything a doc declares as a source. |
 | `npm run claudemd:check` | Context-budget gate for `CLAUDE.md` (ADR-017): fails if it exceeds 200 lines / 20KB, and if any `.claude/rules/*.md` lacks `paths:` frontmatter (a rule without paths loads into every session, defeating the budget). | CI runs it on every PR; you type it after editing `CLAUDE.md` or adding a rules file, before committing. |
-| `npm run docs:serve` | Local preview of this Docsify reference site (`npx docsify-cli serve docs`). The published copy ships inside the showcase's Pages artifact — `deploy-showcase.yml` copies `docs/` into the deploy, serving it at `/upskill-design-system/docs/`. | You type it while writing or reviewing docs pages; never CI. |
+| `npm run docs:serve` | Local preview of this Starlight reference site (`apps/docs/`, which loads the markdown straight from `docs/` — ADR-022). | You type it while writing or reviewing docs pages; never CI. |
+| `npm run docs:build` | Static build of the Starlight site into `apps/docs/dist/`. Fails on a page missing `title:` frontmatter or a broken link. The published copy ships inside the showcase's Pages artifact — `deploy-showcase.yml` builds it and copies the output into the deploy, serving it at `/upskill-design-system/docs/`. | CI runs it on PRs touching `docs/**` or `apps/docs/**` (`docs-build.yml`) and on deploy; you type it after adding an ADR or page. |
 
 ---
 
