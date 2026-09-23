@@ -12,7 +12,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     template: "splash",
     hero: {
       tagline:
-        "A design system where AI runs as infrastructure, not as a feature. Agents are called in only where judgment is needed, and they're fed as little context as possible.",
+        "A design system where AI runs as infrastructure, not as a feature. Machine-readable component contracts tell agents what exists and how it composes, so Claude is called in only where judgment is needed, without 24/7 orchestration.",
       image: { file: illustration, alt: "A designer at a desk surrounded by tool palettes, swatches, and a drawing tablet" },
       actions: [
         { text: "Start here", link: `${base}/start-here/`, icon: "right-arrow" },
@@ -23,7 +23,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 >
   <p>
     Most agentic setups keep a model running around the clock, re-reading live APIs on every step. UpSkill does
-    the opposite. Scripts and CI handle everything repetitive. Claude is invoked only to interpret design intent,
+    the opposite. Every component ships a JSON metadata contract covering its role, props, composition rules and
+    accessibility, which gives agents a semantic layer to read instead of guessing. Scripts and CI handle everything repetitive. Claude is invoked only to interpret design intent,
     and it reads small frozen snapshots instead of calling Figma or Airtable directly. The result is team-scale
     rigor that one person can maintain.
   </p>
@@ -31,7 +32,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   <h2>Three loops</h2>
     <LinkCard
       title="Build: Figma to production React"
-      description="/add-component reads the Figma design and component metadata, then scaffolds the component, its styles, stories and metadata. It has to pass typecheck, build and accessibility gates before an adversarial reviewer checks it. Only then does a pull request open."
+      description="/add-component reads the Figma design and the component's metadata contract, then scaffolds the component, its styles, stories and metadata. It has to pass typecheck, build and accessibility gates before an adversarial reviewer checks it. Only then does a pull request open."
       href={`${base}/06-agentic-moments/#the-verified-add-component-loop-concretely`}
     />
     <LinkCard
@@ -44,6 +45,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       description="CI flags any page whose sources changed after the page was last updated. /docs-sync rewrites only the stale sections, a second agent critiques the rewrite, and the result lands as a pull request."
       href={`${base}/06-agentic-moments/#the-nine-moments`}
     />
+
+  <h2>Where people see it</h2>
+  <CardGrid>
+    <Card title="Airtable inventory" icon="list-format">A live register of every token and component, including owner, status, successor and sign-off.</Card>
+    <Card title="CLI status" icon="laptop"><code>npm run status</code> reads the same snapshots the agents use, so what a human sees matches what the agent sees.</Card>
+    <Card title="Storybook" icon="puzzle">The engineer's reference: live components with props, variants, states and usage examples, checked in both light and dark themes.</Card>
+    <Card title="Docs site" icon="document">Architecture, decisions and workflows for designers, PMs and engineers, kept current by CI.</Card>
+  </CardGrid>
 
   <h2>The numbers</h2>
   <CardGrid>
