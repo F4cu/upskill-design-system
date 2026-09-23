@@ -1,6 +1,6 @@
 ---
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
-import { Card, CardGrid, LinkCard } from "@astrojs/starlight/components";
+import { Card, CardGrid } from "@astrojs/starlight/components";
 import illustration from "../assets/upskill-illustration.png";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -29,29 +29,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     rigor that one person can maintain.
   </p>
 
-  <h2>Three loops</h2>
-    <LinkCard
-      title="Build: Figma to production React"
-      description="/add-component reads the Figma design and the component's metadata contract, then scaffolds the component, its styles, stories and metadata. It has to pass typecheck, build and accessibility gates before an adversarial reviewer checks it. Only then does a pull request open."
-      href={`${base}/06-agentic-moments/#the-verified-add-component-loop-concretely`}
-    />
-    <LinkCard
-      title="Learn: every bug becomes a rule"
-      description="/extract-learnings routes each review finding to where it will be read next time: component metadata, token conventions or the contrast-pair list. The same mistake doesn't get scaffolded twice."
-      href={`${base}/11-self-improving-loops/#learning-loops`}
-    />
-    <LinkCard
-      title="Sync: docs that stay current"
-      description="CI flags any page whose sources changed after the page was last updated. /docs-sync rewrites only the stale sections, a second agent critiques the rewrite, and the result lands as a pull request."
-      href={`${base}/06-agentic-moments/#the-nine-moments`}
-    />
-
-  <h2>Where people see it</h2>
   <CardGrid>
-    <Card title="Airtable inventory" icon="list-format">A live register of every token and component, including owner, status, successor and sign-off.</Card>
-    <Card title="CLI status" icon="laptop"><code>npm run status</code> reads the same snapshots the agents use, so what a human sees matches what the agent sees.</Card>
-    <Card title="Storybook" icon="puzzle">The engineer's reference: live components with props, variants, states and usage examples, checked in both light and dark themes.</Card>
-    <Card title="Docs site" icon="document">Architecture, decisions and workflows for designers, PMs and engineers, kept current by CI.</Card>
+    <Card title="Three key loops" icon="random">
+      <ul>
+        <li><a href={`${base}/06-agentic-moments/#the-verified-add-component-loop-concretely`}><strong>Build</strong></a>: Figma to a gated, reviewed React PR.</li>
+        <li><a href={`${base}/11-self-improving-loops/#learning-loops`}><strong>Learn</strong></a>: every review finding becomes a rule.</li>
+        <li><a href={`${base}/06-agentic-moments/#the-nine-moments`}><strong>Sync</strong></a>: CI flags stale docs; only those sections get rewritten.</li>
+      </ul>
+    </Card>
+    <Card title="User touch points" icon="open-book">
+      <ul>
+        <li><strong>Airtable</strong>: live inventory of every token and component.</li>
+        <li><strong>CLI</strong>: system status at hand for developers.</li>
+        <li><strong>Storybook</strong>: the engineer's component reference.</li>
+        <li><strong>Docs site</strong>: architecture and decisions, kept current by CI.</li>
+      </ul>
+    </Card>
   </CardGrid>
 
   <h2>The numbers</h2>
