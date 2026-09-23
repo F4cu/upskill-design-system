@@ -1,7 +1,8 @@
 ---
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 import { Card, CardGrid } from "@astrojs/starlight/components";
-import illustration from "../assets/upskill-illustration.png";
+import illustrationDark from "../assets/upskill-illustration-dark.png";
+import illustrationLight from "../assets/upskill-illustration-light.png";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
@@ -13,7 +14,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     hero: {
       tagline:
         "A design system where AI runs as infrastructure, not as a feature. Machine-readable component contracts tell agents what exists and how it composes, so Claude is called in only where judgment is needed, without 24/7 orchestration.",
-      image: { file: illustration, alt: "A designer at a desk surrounded by tool palettes, swatches, and a drawing tablet" },
+      image: { dark: illustrationDark, light: illustrationLight, alt: "A designer at a desk surrounded by tool palettes, swatches, and a drawing tablet" },
       actions: [
         { text: "Start here", link: `${base}/start-here/`, icon: "right-arrow" },
         { text: "Agentic moments", link: `${base}/06-agentic-moments/`, variant: "minimal" },
