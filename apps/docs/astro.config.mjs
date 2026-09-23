@@ -1,15 +1,24 @@
 import fs from "node:fs";
+import path from "node:path";
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import mermaid from "astro-mermaid";
 import { satteri } from "@astrojs/markdown-satteri";
 import { BASE, DOCS_ROOT, docsMarkdownPlugin } from "./docs-markdown.mjs";
 
-const referencePages = fs
-  .readdirSync(DOCS_ROOT)
-  .filter((file) => /^\d{2}-.+\.md$/.test(file) && !file.startsWith("00-"))
-  .sort()
-  .map((file) => file.replace(/\.md$/, ""));
+// Sidebar lists are derived from filenames. Starlight's `autogenerate` can't be
+// used: it matches entries by path under src/content/docs/, and ours live in
+// the repo-root docs/ folder, so it finds nothing (ADR-022).
+function pagesIn(dir, pattern) {
+  return fs
+    .readdirSync(path.join(DOCS_ROOT, dir))
+    .filter((file) => pattern.test(file))
+    .sort()
+    .map((file) => path.posix.join(dir, file.replace(/\.md$/, "")));
+}
+
+const referencePages = pagesIn("", /^(?!00-)\d{2}-.+\.md$/);
+const decisionPages = pagesIn("decisions", /^(?!000-)\d{3}-.+\.md$/);
 
 export default defineConfig({
   site: "https://f4cu.github.io",
@@ -33,7 +42,7 @@ export default defineConfig({
       sidebar: [
         { label: "Start here", link: "/" },
         { label: "Reference", items: referencePages },
-        { label: "Decision records", collapsed: true, items: [{ autogenerate: { directory: "decisions" } }] },
+        { label: "Decision records", collapsed: true, items: decisionPages },
       ],
     }),
   ],
