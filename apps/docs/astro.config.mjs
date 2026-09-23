@@ -39,6 +39,11 @@ export default defineConfig({
       // Entry paths resolve relative to apps/docs/ (../../docs/…), so the base is this app's folder
       editLink: { baseUrl: "https://github.com/F4cu/upskill-design-system/edit/main/apps/docs/" },
       customCss: ["./src/styles/custom.css"],
+      // favicon.svg is Starlight's default; PNGs cover browsers without SVG favicon support
+      head: [
+        { tag: "link", attrs: { rel: "icon", type: "image/png", sizes: "32x32", href: `${BASE}/favicon-32.png` } },
+        { tag: "link", attrs: { rel: "apple-touch-icon", href: `${BASE}/apple-touch-icon.png` } },
+      ],
       sidebar: [
         { label: "Start here", link: "/" },
         { label: "Reference", items: referencePages },
