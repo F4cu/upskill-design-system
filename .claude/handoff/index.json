@@ -1,19 +1,19 @@
 [
   {
-    "name": "2026-07-02-case-study-refresh",
-    "kind": "handoff",
-    "status": "active",
-    "created": "2026-07-02",
-    "updated": "2026-07-08",
-    "path": ".claude/handoff/2026-07-02-case-study-refresh.handoff.md"
-  },
-  {
     "name": "2026-07-07-figma-variable-push-prep",
     "kind": "handoff",
     "status": "active",
     "created": "2026-07-07",
     "updated": "2026-07-08",
     "path": ".claude/handoff/2026-07-07-figma-variable-push-prep.handoff.md"
+  },
+  {
+    "name": "2026-09-30-cardvertical-subcomponents",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-09-30",
+    "updated": "2026-09-30",
+    "path": ".claude/handoff/2026-09-30-cardvertical-subcomponents.handoff.md"
   },
   {
     "name": "2026-07-03-multi-brand-refactor",
