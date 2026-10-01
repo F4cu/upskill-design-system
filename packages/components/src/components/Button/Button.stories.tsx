@@ -7,8 +7,8 @@ const meta = {
   argTypes: {
     variant: {
       control: 'radio',
-      options: ['default', 'outlined', 'ghost'],
-      table: { type: { summary: "'default' | 'outlined' | 'ghost'" } },
+      options: ['default', 'outlined', 'ghost', 'elevated'],
+      table: { type: { summary: "'default' | 'outlined' | 'ghost' | 'elevated'" } },
     },
     size: {
       control: 'radio',
@@ -24,7 +24,7 @@ const meta = {
       control: 'select',
       options: [
         undefined,
-        'search', 'plus', 'download', 'bookmark', 'heart',
+        'search', 'plus', 'download', 'bookmark', 'heart', 'more-vertical',
         'chevron-right', 'chevron-left', 'zap', 'lightbulb',
       ],
       table: { type: { summary: 'IconName' } },
@@ -33,7 +33,7 @@ const meta = {
       control: 'select',
       options: [
         undefined,
-        'search', 'plus', 'download', 'bookmark', 'heart',
+        'search', 'plus', 'download', 'bookmark', 'heart', 'more-vertical',
         'chevron-right', 'chevron-left', 'zap', 'lightbulb',
       ],
       table: { type: { summary: 'IconName' } },
@@ -97,6 +97,23 @@ export const GhostToggle: Story = {
     <div style={{ display: 'flex', gap: 'var(--ds-space-inline-xs)', alignItems: 'center' }}>
       <Button variant="ghost" size="sm" trailingIcon="chevron-down">Show more</Button>
       <Button variant="ghost" size="sm" trailingIcon="chevron-up">Show less</Button>
+    </div>
+  ),
+}
+
+export const Elevated: Story = {
+  args: {
+    variant: 'elevated',
+    shape: 'round',
+    size: 'sm',
+    icon: 'heart',
+    'aria-label': 'Save',
+  },
+  render: (args) => (
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <Button {...args} />
+      <Button {...args} icon="more-vertical" aria-label="More actions" aria-haspopup="menu" />
+      <Button {...args} disabled />
     </div>
   ),
 }

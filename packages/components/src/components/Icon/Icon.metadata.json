@@ -4,7 +4,7 @@
     "category": "atom",
     "type": "display",
     "status": "beta",
-    "description": "Renders one of 20 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
+    "description": "Renders one of 21 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
     "figmaNodeId": "96:11108"
   },
   "usage": {
@@ -18,7 +18,8 @@
     "when": [
       "Providing a visual cue alongside a label (Button leading icon, form field prefix)",
       "Indicating direction or action in a compact space (chevrons, plus, minus)",
-      "Communicating theme state (sun/moon-star for light/dark toggle)"
+      "Communicating theme state (sun/moon-star for light/dark toggle)",
+      "Opening an overflow menu of secondary actions (more-vertical, the vertical-ellipsis 'kebab'); always inside an icon-only Button with an aria-label and aria-haspopup=\"menu\", never as a bare clickable glyph"
     ],
     "patterns": [
       {

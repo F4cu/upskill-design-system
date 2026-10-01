@@ -48,11 +48,17 @@ describe('Button — a11y behavior', () => {
     expect(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument()
   })
 
+  it('carries an accessible name as an elevated overlay button', () => {
+    render(<Button variant="elevated" shape="round" icon="more-vertical" aria-label="More actions" aria-haspopup="menu" />)
+    expect(screen.getByRole('button', { name: 'More actions' })).toHaveAttribute('aria-haspopup', 'menu')
+  })
+
   it('has no axe violations in default and icon-only modes', async () => {
     const { container } = render(
       <>
         <Button>Save</Button>
         <Button shape="round" icon="search" aria-label="Search" />
+        <Button variant="elevated" shape="round" icon="heart" aria-label="Save" />
       </>,
     )
     // color-contrast is disabled: jsdom can't compute layout/colors, so it's

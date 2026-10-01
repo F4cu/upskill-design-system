@@ -89,6 +89,11 @@ const PAIRS = [
   ...AMBIENT.map((bg) => [T("subtle"), bg]),
   [T("subtle"), BG("button-outline-hover")],
   // Button — ghost variant reuses the interactive text pairs above.
+  // Button — elevated variant (icon-only over media). Checked at text role,
+  // stricter than the icon it actually draws. Its hover is overlay.hover
+  // layered on button.elevated; text.default on overlay.hover is covered by
+  // the DropdownMenu pair below.
+  [T("default"), BG("button-elevated")],
 
   // Chip — border.selected is a real state indicator (checked); the
   // unselected ring is the shared decorative border.default (not checked,

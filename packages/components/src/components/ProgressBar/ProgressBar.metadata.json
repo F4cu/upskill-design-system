@@ -40,7 +40,7 @@
       {
         "scenario": "Omitting the label prop when more than one ProgressBar can appear on a page (e.g. a list of course cards)",
         "reason": "role=\"progressbar\" defaults aria-label to the generic \"Progress\", so screen reader users can't tell which item a given bar belongs to without also relying on nearby text.",
-        "alternative": "Pass label describing what is progressing, e.g. `${title} progress` — see CardHorizontal/CardVertical."
+        "alternative": "Pass label describing what is progressing, e.g. `${title} progress` (see CardHorizontal), or pass aria-labelledby pointing at the visible title's id when the title is already rendered nearby (CardVertical.Progress)."
       }
     ]
   },
@@ -79,7 +79,8 @@
       "aria-valuenow (set to the clamped value)",
       "aria-valuemin=0",
       "aria-valuemax=100",
-      "aria-label (from the label prop, defaults to \"Progress\")"
+      "aria-label (from the label prop, defaults to \"Progress\"); omitted when aria-labelledby is set",
+      "aria-labelledby (alternative to label: id of a visible element that names the bar, e.g. a card title; the two props are mutually exclusive at the type level)"
     ],
     "keyboardInteractions": []
   },

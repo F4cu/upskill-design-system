@@ -101,3 +101,20 @@
 .ghost:disabled {
   --_text: var(--ds-color-text-disabled);
 }
+
+/* Variant: elevated — icon-only actions over media. The hover tint is layered
+   as a background-image because button.elevated and button.outline.hover
+   resolve to the same color in dark mode. */
+
+.elevated {
+  --_bg: var(--ds-color-background-button-elevated);
+  --_text: var(--ds-color-text-default);
+}
+
+.elevated:hover:not(:disabled) {
+  background-image: linear-gradient(var(--ds-color-background-overlay-hover), var(--ds-color-background-overlay-hover));
+}
+
+.elevated:disabled {
+  --_text: var(--ds-color-text-disabled);
+}
