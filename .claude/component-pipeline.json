@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30T09:02:53.505Z",
+  "generatedAt": "2026-10-01T10:06:49.578Z",
   "components": [
     {
       "name": "Accordion",
@@ -299,7 +299,7 @@
     },
     {
       "name": "CardVertical",
-      "type": "display",
+      "type": "interactive",
       "maturity": "beta",
       "implementation": "in review",
       "substate": null,

@@ -13,7 +13,9 @@
   min-width: 160px;
 }
 
-.thumbnail {
+/* No overflow clipping: the Menu panel must be able to extend past the thumbnail */
+.media {
+  position: relative;
   flex-shrink: 0;
 }
 
@@ -21,22 +23,35 @@
   opacity: 0.8;
 }
 
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-stack-sm);
+.action {
+  position: absolute;
+  top: var(--ds-space-inset-xs);
+  right: var(--ds-space-inset-xs);
+  z-index: 1;
+}
+
+.favorite[aria-pressed="true"] {
+  color: var(--ds-color-icon-brand);
+}
+
+.favorite[aria-pressed="true"] svg {
+  fill: currentColor;
+}
+
+.menu {
+  position: relative;
+}
+
+.menuPanel {
+  position: absolute;
+  top: calc(100% + var(--ds-space-stack-xs));
+  right: 0;
+  z-index: 100;
 }
 
 /* headline-serif gives the right family/weight/line-height; only size needs overriding */
 .card .title {
   font-size: var(--ds-font-size-subheader);
-}
-
-.meta {
-  display: flex;
-  align-items: center;
-  gap: var(--ds-space-inline-sm);
-  flex-wrap: wrap;
 }
 
 .badge {

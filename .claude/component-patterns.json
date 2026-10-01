@@ -1,15 +1,16 @@
 {
-  "architecturalStyle": "flat-props: no compound components, no createContext, no static sub-component assignment; all components are plain named exports in packages/components/src/components/<Name>/index.tsx",
+  "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [
     {
       "components": [
         "Accordion",
+        "CardVertical",
         "Checkbox",
         "DropdownMenu",
         "Select",
         "TextField"
       ],
-      "detail": "Accordion uses `onOpenChange`, Checkbox uses `onChange (native)`, DropdownMenu uses `onSelect`, Select uses `onValueChange`, TextField uses `onChange (native)` — different names for the same state-changed axis.",
+      "detail": "Accordion uses `onOpenChange`, CardVertical uses `onPressedChange`, Checkbox uses `onChange (native)`, DropdownMenu uses `onSelect`, Select uses `onValueChange`, TextField uses `onChange (native)` — different names for the same state-changed axis.",
       "issue": "prop-name-mismatch",
       "pattern": "change-callback"
     },
@@ -47,7 +48,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "dec66f7f9e8536d0d9cfe8918d93f946f888ffd8",
+  "generatedFrom": "cad846c6a8ead58543c9475228ca67584de31604",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -516,27 +517,6 @@
           ]
         },
         {
-          "ariaContract": [
-            {
-              "element": "div",
-              "role": "article"
-            }
-          ],
-          "component": "CardVertical",
-          "composition": [
-            "Heading",
-            "Icon",
-            "Image",
-            "ProgressBar",
-            "Text"
-          ],
-          "maturity": "beta",
-          "stage": "in review",
-          "systemSpecificNotes": [
-            "thumbnailAlt — pass a meaningful description of the course image, or empty string if the title already provides sufficient context."
-          ]
-        },
-        {
           "component": "Divider",
           "composition": [],
           "maturity": "beta",
@@ -649,6 +629,82 @@
       "architecturalStyle": "flat-props",
       "description": "A pressable button holding a boolean pressed state (aria-pressed).",
       "implementedBy": [
+        {
+          "architecturalStyle": "compound",
+          "ariaContract": [
+            {
+              "aria-labelledby": "{titleId}",
+              "element": "div",
+              "role": "article"
+            },
+            {
+              "aria-label": "Save",
+              "aria-labelledby": "{`${id} ${titleId}`}",
+              "aria-pressed": "{isPressed}",
+              "element": "Button",
+              "id": "{id}"
+            },
+            {
+              "aria-expanded": "{open}",
+              "aria-haspopup": "menu",
+              "aria-label": "More options",
+              "aria-labelledby": "{`${id} ${titleId}`}",
+              "element": "Button",
+              "id": "{id}"
+            },
+            {
+              "aria-labelledby": "{titleId}",
+              "element": "ProgressBar"
+            }
+          ],
+          "changeCallback": "onPressedChange",
+          "component": "CardVertical",
+          "composition": [
+            "Button",
+            "DropdownMenu",
+            "Heading",
+            "Icon",
+            "Image",
+            "Inline",
+            "ProgressBar",
+            "Stack",
+            "Text"
+          ],
+          "idsFromUseId": [
+            "id",
+            "titleId"
+          ],
+          "maturity": "beta",
+          "parts": [
+            "Root",
+            "Media",
+            "Action",
+            "Favorite",
+            "Menu",
+            "Progress",
+            "Body",
+            "Title",
+            "Meta",
+            "Duration",
+            "Certified"
+          ],
+          "stage": "in review",
+          "state": {
+            "controlled": "optional",
+            "props": [
+              "pressed",
+              "defaultPressed",
+              "onPressedChange"
+            ]
+          },
+          "systemSpecificNotes": [
+            "role=article on Root, aria-labelledby → the Title's id (Title registers it via context)",
+            "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
+            "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
+            "Menu trigger: aria-haspopup=menu, aria-expanded; accessible name 'More options <title>' via aria-labelledby=[self, title]; panel is DropdownMenu listRole=menu",
+            "Progress: ProgressBar aria-labelledby → the Title's id"
+          ]
+        },
         {
           "ariaContract": [
             {
