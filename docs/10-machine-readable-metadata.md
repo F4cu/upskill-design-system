@@ -9,6 +9,7 @@ sources:
   - docs/decisions/013-cross-component-pattern-schema.md
   - docs/decisions/023-subcomponents-compound-components.md
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
+# clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
 ---
 # Machine-readable metadata
 
