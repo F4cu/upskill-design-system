@@ -3,12 +3,12 @@ import { Icon } from '../Icon'
 import type { IconName } from '../Icon'
 import styles from './Button.module.css'
 
-export type ButtonVariant = 'default' | 'outlined' | 'ghost'
+export type ButtonVariant = 'default' | 'outlined' | 'ghost' | 'elevated'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 export type ButtonShape = 'square' | 'round'
 
 export type ButtonProps = {
-  /** Visual style of the button. Use `default` for primary actions, `outlined` for secondary or low-emphasis actions, `ghost` for inline text-link–style actions with no background or border. */
+  /** Visual style of the button. Use `default` for primary actions, `outlined` for secondary or low-emphasis actions, `ghost` for inline text-link–style actions with no background or border, `elevated` for icon-only actions overlaid on media (an opaque raised surface that stays legible on any image). */
   variant?: ButtonVariant
   /** Size of the button. `md` suits most contexts; use `sm` in dense UIs and `lg` for prominent calls to action. */
   size?: ButtonSize

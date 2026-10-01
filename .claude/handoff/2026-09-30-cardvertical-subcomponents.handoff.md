@@ -72,14 +72,20 @@ This PR has no component changes. It makes parts a first-class concept so the la
 
 ## PR 2: prerequisites in existing components (branch `component/card-vertical-prereqs`)
 
-- [ ] **Icon:** add a `more-vertical` glyph to `IconName` + `paths` in `components/Icon/index.tsx`, plus a metadata note.
-- [ ] **Button:** add `variant="elevated"`.
+- [x] **Icon:** add a `more-vertical` glyph to `IconName` + `paths` in `components/Icon/index.tsx`, plus a metadata note.
+- [x] **Button:** add `variant="elevated"`.
   - CSS: bg `color.background.button.elevated`, text `color.text.default`, hover `color.background.button.outline.hover`.
   - Metadata `variants` purpose: "icon-only actions over media".
   - Story.
   - Add the elevated pair to the curated `PAIRS` in `scripts/token-contrast-check.js`.
-- [ ] **ProgressBar:** accept `aria-labelledby` as an alternative to `label` (typed so that one of them is required). Update metadata a11y and the `ProgressBar` a11y test.
+- [x] **ProgressBar:** accept `aria-labelledby` as an alternative to `label` (typed so that one of them is required). Update metadata a11y and the `ProgressBar` a11y test.
 - **Gate:** `npm run metadata:validate && npm run typecheck && npm run build && npm run lint && npm run a11y:coverage && npm run a11y:test && npm run tokens:contrast-check && npm run screenshot:check`. Approve only the new Button baseline; existing baselines must not change.
+  - Passed 2026-10-01: 54/54 baselines identical. No new baseline is needed, because baselines cover `--default` stories only and `Elevated` is a separate story.
+  - **Deviations:**
+    - Elevated hover layers `overlay.hover` instead of `button.outline.hover`, which equals `button.elevated` in dark mode and would give no hover feedback.
+    - ProgressBar `label` and `aria-labelledby` are type-exclusive, but `label` keeps its `"Progress"` default instead of becoming required, because the stories rely on it.
+    - ProgressBar had no a11y test, so a new one was added.
+  - **Known:** in dark mode, `button.elevated` equals the canvas color (`neutral.dark.2`), so the disc only shows over media. There is no shadow token, so the proposal's drop shadow is not implemented.
 - **Review:** `/code-review` (standard path). The changes are small and additive.
 
 ## PR 3: CardVertical parts (branch `component/card-vertical`, via `/review-component CardVertical`, full path)

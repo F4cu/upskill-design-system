@@ -4,7 +4,7 @@
     "category": "atom",
     "type": "interactive",
     "status": "beta",
-    "description": "Triggers an action or navigation. Three visual variants (default brand-fill, outlined, ghost), three sizes, optional leading and/or trailing icon. Fully keyboard-accessible via the native button element.",
+    "description": "Triggers an action or navigation. Four visual variants (default brand-fill, outlined, ghost, elevated), three sizes, optional leading and/or trailing icon. Fully keyboard-accessible via the native button element.",
     "figmaNodeId": "57:1265"
   },
   "usage": {
@@ -20,7 +20,8 @@
       "The primary action on a page or section (use default variant, one per view)",
       "A secondary or supplementary action alongside a primary (use outlined)",
       "Triggering a form submit, modal open, or navigation",
-      "The action is destructive (delete, remove, deactivate) — always use the default variant so the weight signals danger; never outlined"
+      "The action is destructive (delete, remove, deactivate) — always use the default variant so the weight signals danger; never outlined",
+      "An icon-only action sits on top of an image or video thumbnail (use variant=elevated with shape=round)"
     ],
     "patterns": [
       {
@@ -59,6 +60,11 @@
         "scenario": "Building a new native-button-wrapping component without defaulting the type attribute",
         "reason": "An unset <button> type defaults to \"submit\" inside a <form>; Button, Chip, and ButtonArrow all default to type=\"button\" internally for exactly this reason — a new component would silently submit forms without it.",
         "alternative": "Default type to \"button\" internally (as Button does) and let consumers opt in to type=\"submit\" explicitly."
+      },
+      {
+        "scenario": "Using outlined or ghost for an icon button placed over an image",
+        "reason": "Both have a transparent background, so the icon's contrast depends on whatever pixels are underneath and can drop to near zero on a busy or dark photo.",
+        "alternative": "Use variant=elevated (opaque button.elevated surface) with shape=round."
       }
     ]
   },
@@ -67,13 +73,15 @@
       "options": [
         "default",
         "outlined",
-        "ghost"
+        "ghost",
+        "elevated"
       ],
       "default": "default",
       "purpose": {
         "default": "Primary action. Brand-fill background with inverted text. Use once per view section.",
         "outlined": "Secondary action. Transparent background with border. Use for supporting actions.",
-        "ghost": "Inline text-link–style action. No background, no border, link text color. Use for low-emphasis actions inline with content, e.g. 'Show more' in an accordion or card."
+        "ghost": "Inline text-link–style action. No background, no border, link text color. Use for low-emphasis actions inline with content, e.g. 'Show more' in an accordion or card.",
+        "elevated": "Icon-only actions over media (e.g. a favorite or overflow-menu button on a card thumbnail). Opaque raised surface with default text color, so the icon stays legible on any image. Pair with shape=round, an icon, and an aria-label."
       }
     },
     "size": {
@@ -108,7 +116,7 @@
     },
     {
       "state": "hover",
-      "description": "Darker background (default), subtle fill (outlined), or text-color-only shift (ghost) on pointer hover."
+      "description": "Darker background (default), subtle fill (outlined), overlay tint (elevated), or text-color-only shift (ghost) on pointer hover."
     },
     {
       "state": "disabled",
@@ -138,7 +146,10 @@
       "color.text.interactive.default",
       "color.text.interactive.hover",
       "color.border.default",
-      "color.border.disabled"
+      "color.border.disabled",
+      "color.background.button.elevated",
+      "color.background.overlay.hover",
+      "color.text.default"
     ],
     "typography": [
       "font.family.body",

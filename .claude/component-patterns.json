@@ -47,7 +47,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "7b1f8d942d0ab3eede418191b92755b1db54a6ea",
+  "generatedFrom": "dec66f7f9e8536d0d9cfe8918d93f946f888ffd8",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -622,7 +622,8 @@
         {
           "ariaContract": [
             {
-              "aria-label": "{label}",
+              "aria-label": "{labelledBy ? undefined : label}",
+              "aria-labelledby": "{labelledBy}",
               "aria-valuemax": "{100}",
               "aria-valuemin": "{0}",
               "aria-valuenow": "{clamped}",
@@ -638,7 +639,8 @@
             "aria-valuenow (set to the clamped value)",
             "aria-valuemin=0",
             "aria-valuemax=100",
-            "aria-label (from the label prop, defaults to \"Progress\")"
+            "aria-label (from the label prop, defaults to \"Progress\"); omitted when aria-labelledby is set",
+            "aria-labelledby (alternative to label: id of a visible element that names the bar, e.g. a card title; the two props are mutually exclusive at the type level)"
           ]
         }
       ]

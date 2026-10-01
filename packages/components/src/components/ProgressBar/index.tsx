@@ -1,12 +1,31 @@
 import type { CSSProperties, HTMLAttributes } from 'react'
 import styles from './ProgressBar.module.css'
 
+type ProgressBarName =
+  | {
+      /** Accessible name. Defaults to "Progress"; describe what is progressing when several bars share a page. */
+      label?: string
+      'aria-labelledby'?: never
+    }
+  | {
+      /** Id of a visible element that names the bar (e.g. a card title). Replaces `label`. */
+      'aria-labelledby': string
+      label?: never
+    }
+
 export type ProgressBarProps = {
   value: number
-  label?: string
-} & HTMLAttributes<HTMLDivElement>
+} & ProgressBarName &
+  Omit<HTMLAttributes<HTMLDivElement>, 'aria-label' | 'aria-labelledby'>
 
-export function ProgressBar({ value, label = 'Progress', className, style, ...rest }: ProgressBarProps) {
+export function ProgressBar({
+  value,
+  label = 'Progress',
+  'aria-labelledby': labelledBy,
+  className,
+  style,
+  ...rest
+}: ProgressBarProps) {
   const clamped = Math.min(100, Math.max(0, value))
 
   const cssVars = {
@@ -20,7 +39,8 @@ export function ProgressBar({ value, label = 'Progress', className, style, ...re
       aria-valuenow={clamped}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-label={label}
+      aria-label={labelledBy ? undefined : label}
+      aria-labelledby={labelledBy}
       className={[styles.track, className].filter(Boolean).join(' ')}
       style={cssVars}
       {...rest}
