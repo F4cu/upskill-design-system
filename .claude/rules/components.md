@@ -21,6 +21,17 @@ Loaded only when working under `packages/components/`. Cross-cutting policy (com
 - **Component-specific rules:** Before generating a component's JSX, read its `usage.antiPatterns` — they capture both usage mistakes and implementation constraints (e.g. which library component to use for a prop, which token to apply to a specific element).
 - **Type-enforced anti-patterns:** When a component's metadata documents a hard constraint (e.g. "never pass onClick", "never set color directly"), the prop type must make the violation a TypeScript error, not just a documented anti-pattern — narrow the spread native-attributes type (e.g. `Omit<HTMLAttributes<...>, 'onClick' | 'color' | ...>`) to exclude the attributes the component already owns or forbids, rather than only excluding `children`.
 
+## Subcomponents (ADR-023)
+
+Parts (`<Parent.Part>`) are not new components: no folder, not in the fixed set, declared only in the parent's `composition.parts`. Only split into parts when a second real use case would otherwise create invalid prop combinations (ADR-023 test, after ADR-009).
+
+- **Preset + parts:** the plain `<Parent …props />` stays and is rebuilt from the parts; existing props never break. The uncommon case gets parts, not another `*Slot`/`render*`/`hide*` prop.
+- **Namespace + guard:** attach parts with `Object.assign(Preset, { Root, … })`, never export them individually (export their prop types). `Root` provides context; every other part reads it through a hook that throws `"Parent.X must be rendered inside Parent.Root"`.
+- **Kinds:** `fixed` = content/state props only; `slot` = exactly one child from `accepts`; `open` = children from `accepts`, laid out by a primitive with fixed props. Open parts accept `children` only — no `gap`/`align` pass-through, so a layout prop on a part is a type error. Custom spacing = nest a `Stack`/`Inline` inside.
+- **No margins:** parts never set outer margins; the container owns spacing between its children.
+- **Naming contract:** part names are the Figma layer names; Figma props share names, values and defaults with code; booleans name a state and default to `false`.
+- **Metadata:** every part in `composition.parts` (validated by `metadata:validate`); every supported composition as a `usage.patterns` entry + story; Storybook meta lists `subcomponents`. Preset baselines must stay pixel-identical when a component adopts parts.
+
 ## Storybook setup and story conventions
 
 Storybook lives in this package — it is the documentation layer for coded components. Installed: React + Vite framework, `@storybook/addon-themes` toggling `data-theme` (activates `theme/light` vs `theme/dark` token sets), a custom brand toolbar (global `brand`, toggling `data-brand` — `@storybook/addon-themes` only supports one `withThemeByDataAttribute` instance, so brand switching is a separate `globalTypes` + decorator in `.storybook/preview.ts`), MDX token showcase stories (colors by hue, spacing, typography, radii), visual regression baselines (ADR-019: each component's canonical `--default` story in light+dark, committed PNGs in `packages/components/screenshots/`, perceptual diff via `npm run screenshot:check` / re-baseline with `npm run screenshot:approve` or `npm run screenshot:approve -- --component <Name>` after intentional visual change).

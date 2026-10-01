@@ -9,7 +9,9 @@ sources:
   - docs/decisions/006-carousel-hook-not-component.md
   - docs/decisions/009-extend-vs-new-vs-internal.md
   - docs/decisions/010-component-lifecycle-two-axes.md
+  - docs/decisions/023-subcomponents-compound-components.md
 # clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
+# clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 ---
 # Component lifecycle
 
@@ -53,13 +55,19 @@ Which review route a component took is recorded in a `reviewPath` field: `full` 
 
 Visual similarity alone is never a reason to create a new component or to merge two that differ in role.
 
+### Parts are not new components
+
+[ADR-023](decisions/023-subcomponents-compound-components.md) adds one more outcome to the test above. Sometimes a requirement passes question 1 (same role, so extend the existing component), yet covering it with props would need several props that are only valid in certain combinations. `CardVertical` was the trigger: a favorite toggle and an overflow menu that must never appear together, plus consumer-specific content such as an instructor row. In that case the component gains **parts** instead of more props: named subcomponents reachable as `CardVertical.Media`, `CardVertical.Body` and so on.
+
+The existing prop API stays as a **preset**, rebuilt from the parts, so nothing breaks. Parts never enter the fixed component set and have no folder of their own. They are declared only in the parent's metadata (`composition.parts`), and the gate checks them like any other metadata field. "Make the common configurable, make the uncommon composable": the preset covers the common case, and the parts cover the rest.
+
 ### The carousel precedent: sometimes the answer is a hook
 
 [ADR-006](decisions/006-carousel-hook-not-component.md) is the same don't-over-build spirit applied a level up. The Homepage needed a horizontal card carousel; the options were a full `Carousel` component, a hook + documented pattern, or nothing. Prior art split cleanly: Polaris, Atlassian, Radix, and Chakra ship *no* carousel component (primitives + pattern); Carbon, Ant, and Bootstrap ship one but are full product frameworks that accept the maintenance cost; shadcn/ui wraps Embla. The decision: `useCarousel(itemCount, visibleCount)` encapsulates only the error-prone shared logic (offset tracking, `canPrev`/`canNext`, `prev`/`next`/`reset`); layout and markup stay in consuming code, with the `Layout/Examples/Carousel` story as the canonical reference. "Nothing" was rejected because developers would diverge on disabled-state logic and produce off-by-one bugs. The revisit trigger is explicit: 3+ distinct layouts or raised a11y requirements.
 
 ## How it works, concretely
 
-The metadata schema (`packages/components/component.schema.json`) requires seven top-level properties: `component`, `usage`, `variants`, `states`, `tokens`, `accessibility`, `composition` (originally named `relationships` — see the ADR-001 2026-07-23 amendment). What each section holds, why, and who consumes it is the subject of [10 — Machine-readable metadata](10-machine-readable-metadata.md); this page keeps only the lifecycle-relevant shape. A `variants` block modelled as named axes looks like:
+The metadata schema (`packages/components/component.schema.json`) requires seven top-level properties: `component`, `usage`, `variants`, `states`, `tokens`, `accessibility`, `composition` (originally named `relationships` — see the ADR-001 2026-07-23 amendment). What each section holds, why, and who consumes it is the subject of [10 — Machine-readable metadata](10-machine-readable-metadata.md); this page keeps only the lifecycle-relevant shape. `composition` may also carry an optional `parts` list for components with subcomponents (ADR-023); `scripts/validate-metadata.js` cross-checks each part's references against real components and sibling parts. A `variants` block modelled as named axes looks like:
 
 ```json
 "variants": {
@@ -101,6 +109,6 @@ flowchart TB
 
 ## Related
 
-- ADRs: [001 — Metadata schema](decisions/001-component-metadata-schema.md) (+ amendment), [006 — Carousel as hook](decisions/006-carousel-hook-not-component.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [010 — Two-axis lifecycle](decisions/010-component-lifecycle-two-axes.md)
+- ADRs: [001 — Metadata schema](decisions/001-component-metadata-schema.md) (+ amendment), [006 — Carousel as hook](decisions/006-carousel-hook-not-component.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [010 — Two-axis lifecycle](decisions/010-component-lifecycle-two-axes.md), [023 — Subcomponents](decisions/023-subcomponents-compound-components.md)
 - Commands: `/component-scaffold`, `/add-component` (in `.claude/commands/`)
 - Scripts: `npm run metadata:validate`, `npm run sense`, `npm run typecheck`, `npm run build` — see the [CLI reference](07-cli-reference.md)

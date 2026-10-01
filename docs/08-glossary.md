@@ -17,6 +17,7 @@ sources:
 # clock reset 2026-07-23: ADR-007 promoted proposed→accepted (exit condition met: Accordion 2026-07-09, 12 ledger runs) — status flip + amendment only, loop mechanics unchanged, page still accurate
 # rewritten 2026-07-23: Review checklist entry trimmed to a definition + pointer — 02-component-lifecycle is the single prose owner of checklist mechanics (dedup, ADR audit)
 # clock reset 2026-10-01: adds /figma-cli (a command, not a moment) and switches moments 1 and 5 to figma-cli transport; glossary's moment list and definitions unchanged, still accurate
+# rewritten 2026-10-01: added Subcomponent (part), Slot, Open part entries for ADR-023 (composition.parts schema + components.md rule block)
 ---
 # Glossary
 
@@ -56,6 +57,9 @@ A component that carries visual meaning or user interaction: `Button`, `Text`, `
 **Molecule**
 A component built from two or more atoms combined into a small, reusable unit. `Card` is a molecule — it composes `Text`, `Heading`, and layout primitives into a single thing with its own purpose. Molecules are still general enough to be reused across the product. Contrast with atom.
 
+**Open part**
+A subcomponent that accepts several children from a fixed list and lays them out with a layout component whose spacing is set by the part, not by the consumer. `CardVertical.Body` is an open part: it renders a `Stack` with small gaps and accepts `Title`, `Meta`, `Text`, `Badge` and a few others. You can't pass it a `gap`; for different spacing you nest your own `Stack` or `Inline` inside. See also Subcomponent (part), Slot.
+
 **Orthogonal**
 Two things are orthogonal when they are fully independent — using or changing one has no effect on the other. In this repo, `ScrollArea` (native browser scroll), `useCarousel` (JS-animated carousel), and `useSlider` (fade-in step-through) are orthogonal: they solve different problems and share no state or implementation. The opposite of coupled.
 
@@ -71,11 +75,17 @@ Which review route a component or layout took, recorded as `reviewPath` in the r
 **Scaffold**
 To generate the skeleton files for a new component — the `index.tsx`, CSS module, stories file, and `metadata.json` — from a template, before any real logic is written. Scaffolding creates the structure; the developer (or agent) fills in the details afterward. In this repo the `/component-scaffold` command does this.
 
+**Slot**
+A place inside a component that takes exactly one child chosen from a short list. `CardVertical.Action` is a slot: it holds either one `Favorite` button or one `Menu`, never both. In Figma, a slot is an instance-swap property, so the same name and the same choices exist on both sides. See also Subcomponent (part), Open part.
+
 **State (component)**
 The different conditions a component can be in that change its appearance or behavior. Common states: `default`, `hover` (cursor is over it), `focused` (selected via keyboard), `disabled` (not interactive), `loading`, `error`. States are defined in each component's `metadata.json` and are distinct from React state (the internal data a component holds) — though the two are related: a component uses React state to track which visual state it is currently in.
 
 **Sub-state (pipeline)**
 A finer-grained label under the `in progress` implementation stage, recorded only in `.claude/component-pipeline.json` and `STATUS_QUO.md` — never pushed to Airtable. Two values: `unreviewed` (code exists but no loop artifacts at all — this replaces the old `established` stage label) and `scaffold-underway` (a `.run.json` is open but the component hasn't reached its render checkpoint yet). See also Implementation stage.
+
+**Subcomponent (part)**
+A named piece of a component that you can use on its own to assemble that component differently, written with a dot: `CardVertical.Media`, `CardVertical.Title`. Parts are not new components. They have no folder, are not in the fixed component set, and are declared only in the parent's metadata (`composition.parts`). The plain `<CardVertical … />` still works as a ready-made "preset" built from the same parts; you reach for the parts only when the preset can't express what you need. Each part is `fixed` (content and state only), a slot, or an open part. ADR-023 records the convention. See also Slot, Open part, Composition.
 
 **Visual review**
 The human yes/no/other judgment on a freshly rendered component or layout, given in Storybook right after the render checkpoint. `/add-component` and `/layout-generation` record the answer as a `visualReview` record (`status: approved | changes-requested`, `comments`, `at`) in `.claude/component-review-state.json` — it is item 2 of the review checklist. See also Review checklist, Screenshot baseline.

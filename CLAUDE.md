@@ -160,7 +160,7 @@ Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `ButtonArro
 Phase 5d additions (Course Overview page): `Accordion`, `Badge`; `Button` gains a `ghost` variant (no background, link text color); `useSlider` hook (content-stepper state, no component).
 Do not add components outside these lists without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
 
-Before proposing a new component file, apply the three-question test from ADR-009: (1) same semantic role → add a prop/variant to the existing component; (2) different role despite similar shape → new component; (3) single parent, no other consumer in the fixed set → molecule-internal styled element in the parent's CSS Module. Visual similarity alone is not a reason to create or merge components.
+Before proposing a new component file, apply ADR-009: (1) same semantic role → prop/variant on the existing component; (2) different role despite similar shape → new component; (3) single parent, no other consumer → molecule-internal element in the parent's CSS Module. Visual similarity alone never justifies creating or merging components. Parts (`<Parent.Part>`) are not new components: see ADR-023.
 
 ## Architectural decisions (ADRs)
 

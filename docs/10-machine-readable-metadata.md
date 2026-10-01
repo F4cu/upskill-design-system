@@ -7,6 +7,8 @@ sources:
   - scripts/a11y-coverage.js
   - docs/decisions/001-component-metadata-schema.md
   - docs/decisions/013-cross-component-pattern-schema.md
+  - docs/decisions/023-subcomponents-compound-components.md
+# clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 ---
 # Machine-readable metadata
 
@@ -32,6 +34,8 @@ The schema requires all three fields of an anti-pattern — `scenario`, `reason`
 `tokens.*` isn't just an array of strings matching a shape — `scripts/validate-metadata.js` merges every source token file (primitives, all brands, both themes, all three device files) into one tree and resolves every dot-path a component claims to use against a real `$value` node. A component can't reference a token that was renamed or never existed; the check catches it at the same PR that would otherwise ship the drift.
 
 ### `composition` is a machine-checkable graph because layout generation has to cite it
+
+The same graph goes one level down for components with subcomponents. An optional `composition.parts` list declares each part (`CardVertical.Body`, `CardVertical.Action`, …) with its own `accepts` and `containedBy`, so a composed card can be checked the same way a page layout is ([ADR-023](decisions/023-subcomponents-compound-components.md); the block is shown below).
 
 `composition.accepts`/`containedBy` (the section was renamed from ADR-001's original `relationships` when `compositionPatterns` moved to `usage.patterns` and `neverPairWith` was absorbed into `usage.antiPatterns` — see ADR-001's 2026-07-23 amendment) encode which components are valid parents and children. `/layout-generation` must cite one of these fields, plus `usage.patterns`, for every structural choice it makes (see [Layout grammar](04-layout-grammar.md)) — a graph an agent can walk beats prose it has to interpret.
 
@@ -59,9 +63,25 @@ A trimmed anti-pattern from `Accordion.metadata.json` — it encodes an ARIA con
 }
 ```
 
-`scripts/validate-metadata.js` runs two checks beyond the Ajv schema pass: `component.name` must equal the containing directory name, and every dot-path under `tokens.*` must resolve to a `$value` node in the merged primitives+brands+theme+device tree.
+A `composition.parts` block declares a component's subcomponents (ADR-023). Each part has a `kind`: `fixed` (content and state props only), `slot` (exactly one child from `accepts`) or `open` (any children from `accepts`, laid out by the primitive named in `builtOn`). An abridged sketch of the shape CardVertical will use:
 
-`.claude/component-patterns.json`'s top level is `{ generatedFrom, architecturalStyle, patterns, drift }` — `patterns` keyed by the 10 buckets (`controlled-selection`, `disclosure`, `navigation`, `status-indicator`, `toggle-button`, `form-field`, `action-trigger`, `layout-primitive`, `static-display`, `content-stepper`), each holding a `description` and an `implementedBy` list. One real `drift[]` entry:
+```json
+"parts": [
+  { "name": "Action", "kind": "slot", "description": "Top-right overlay; one Favorite or one Menu.", "builtOn": null, "accepts": ["Favorite", "Menu"], "containedBy": ["Media"] },
+  { "name": "Body", "kind": "open", "description": "Text column under the media.", "builtOn": "Stack", "accepts": ["Title", "Meta", "Stack", "Inline", "Text", "Badge", "Avatar"], "containedBy": ["Root"] },
+  { "name": "Title", "kind": "fixed", "description": "Card heading; names the card.", "builtOn": "Heading", "required": true, "containedBy": ["Body"] }
+]
+```
+
+`scripts/validate-metadata.js` runs three checks beyond the Ajv schema pass:
+
+- `component.name` must equal the containing directory name.
+- Every dot-path under `tokens.*` must resolve to a `$value` node in the merged primitives+brands+theme+device tree.
+- Every `composition.parts` entry must be internally consistent: names are unique and don't collide with a component folder, `accepts` appears only on `slot`/`open` parts (and is required there), each `accepts` entry is a component or a sibling part, each `containedBy` entry is a sibling part, and `builtOn` is a component or `null`.
+
+`scripts/validate-layout.js` then uses the same block to check layouts that compose a component from its parts.
+
+`.claude/component-patterns.json`'s top level is `{ generatedFrom, architecturalStyle, patterns, drift }` — `patterns` keyed by the 10 buckets (`controlled-selection`, `disclosure`, `navigation`, `status-indicator`, `toggle-button`, `form-field`, `action-trigger`, `layout-primitive`, `static-display`, `content-stepper`), each holding a `description` and an `implementedBy` list. `architecturalStyle` is `flat-props` everywhere except components that attach parts (ADR-023): their own entry carries `architecturalStyle: "compound"` and their part names, and the top-level string lists them. The scanner reads `<CardVertical.Body>` as a use of `CardVertical`, never as a component of its own. One real `drift[]` entry:
 
 ```json
 {
@@ -75,7 +95,7 @@ A trimmed anti-pattern from `Accordion.metadata.json` — it encodes an ARIA con
 The consumption map — which command reads which section for what:
 
 - `/component-scaffold` reads `component.schema.json` itself (to know the required shape), an existing component's full metadata file as a template, and Figma design context — it *produces* the new metadata file rather than consuming it.
-- `/layout-generation` reads `composition.accepts`/`containedBy`, `usage.patterns`, and (layout/composition tasks only) `component-patterns.json`.
+- `/layout-generation` reads `composition.accepts`/`containedBy` (plus `composition.parts` when composing a component from its parts), `usage.patterns`, and (layout/composition tasks only) `component-patterns.json`.
 - `a11y-coverage.js` derives "interactive" from `component.type`, `accessibility.role`, and `accessibility.keyboardInteractions`, and fails the build if an interactive component has no behavioral a11y test.
 - `/extract-learnings` writes back into `accessibility.*`, `usage.antiPatterns`, and `composition.*`.
 
@@ -98,5 +118,5 @@ flowchart TB
 ## Related
 
 - Docs: [Component lifecycle](02-component-lifecycle.md), [Accessibility](03-accessibility.md), [Layout grammar](04-layout-grammar.md), [Agentic moments](06-agentic-moments.md), [Context engineering](09-context-engineering.md)
-- ADRs: [001 — Component metadata schema](decisions/001-component-metadata-schema.md) (+ amendment), [008 — Behavioral a11y tier](decisions/008-behavioral-a11y-tier.md), [013 — Cross-component pattern schema](decisions/013-cross-component-pattern-schema.md) (+ amendment)
+- ADRs: [001 — Component metadata schema](decisions/001-component-metadata-schema.md) (+ amendment), [008 — Behavioral a11y tier](decisions/008-behavioral-a11y-tier.md), [013 — Cross-component pattern schema](decisions/013-cross-component-pattern-schema.md) (+ amendment), [023 — Subcomponents](decisions/023-subcomponents-compound-components.md)
 - Scripts: `npm run metadata:validate`, `npm run patterns:generate`, `npm run a11y:coverage` — see the [CLI reference](07-cli-reference.md)

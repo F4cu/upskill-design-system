@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Validates every component metadata file against component.schema.json.
-// Also checks each metadata file's component.name matches its folder name, and
-// validates the canonical example file. Exits non-zero on any failure so it can
+// Also checks each metadata file's component.name matches its folder name,
+// resolves tokens.* and composition.parts cross-references, and validates the
+// canonical example file. Exits non-zero on any failure so it can
 // gate CI. This is the contract the component-scaffold and layout-generation
 // agentic moments consume — keep it green.
 
@@ -67,6 +68,50 @@ function tokenExists(dotPath) {
   return node != null && typeof node === "object" && "$value" in node;
 }
 
+const COMPONENT_NAMES = new Set(
+  fs
+    .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name),
+);
+
+// composition.parts cross-references (ADR-023). Part names must not collide
+// with component folders so an `accepts` entry resolves to exactly one thing.
+function checkParts(parts) {
+  const errors = [];
+  const names = parts.map((p) => p.name);
+  const partNames = new Set(names);
+  for (const dup of names.filter((n, i) => names.indexOf(n) !== i)) {
+    errors.push(`composition.parts: duplicate part name "${dup}"`);
+  }
+  for (const part of parts) {
+    const at = `composition.parts["${part.name}"]`;
+    if (COMPONENT_NAMES.has(part.name)) {
+      errors.push(`${at}: name collides with component "${part.name}"`);
+    }
+    if (part.builtOn != null && !COMPONENT_NAMES.has(part.builtOn)) {
+      errors.push(`${at}.builtOn: "${part.builtOn}" is not a component`);
+    }
+    if (part.kind === "fixed" && part.accepts) {
+      errors.push(`${at}.accepts: not allowed on a fixed part`);
+    }
+    if ((part.kind === "slot" || part.kind === "open") && !part.accepts?.length) {
+      errors.push(`${at}.accepts: required on a ${part.kind} part`);
+    }
+    for (const ref of part.accepts ?? []) {
+      if (!COMPONENT_NAMES.has(ref) && !partNames.has(ref)) {
+        errors.push(`${at}.accepts: "${ref}" is neither a component nor a sibling part`);
+      }
+    }
+    for (const ref of part.containedBy ?? []) {
+      if (!partNames.has(ref)) {
+        errors.push(`${at}.containedBy: "${ref}" is not a sibling part`);
+      }
+    }
+  }
+  return errors;
+}
+
 const targets = [];
 for (const dir of fs.readdirSync(COMPONENTS_DIR)) {
   const file = path.join(COMPONENTS_DIR, dir, `${dir}.metadata.json`);
@@ -107,6 +152,8 @@ for (const { file, expectedName } of targets) {
       }
     }
   }
+
+  if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
 
   if (errors.length) {
     console.error(`✗ ${rel}`);

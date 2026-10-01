@@ -183,6 +183,46 @@
           "type": "array",
           "items": { "type": "string" }
         },
+        "parts": {
+          "description": "Subcomponents reachable as <Name>.<Part> (ADR-023). Parts are not components: they have no folder and are declared only here. Cross-references (accepts/containedBy/builtOn) are checked by scripts/validate-metadata.js.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "kind", "description", "builtOn"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Za-z0-9]*$",
+                "description": "PascalCase part name; also the Figma layer name (naming contract, ADR-023)."
+              },
+              "kind": {
+                "type": "string",
+                "enum": ["fixed", "slot", "open"],
+                "description": "fixed = content/state props only, layout owned by the parent's CSS Module; slot = exactly one child from accepts; open = any children from accepts, laid out by a primitive with fixed props."
+              },
+              "description": { "type": "string" },
+              "builtOn": {
+                "type": ["string", "null"],
+                "description": "Library component this part renders (e.g. Stack for an open part), or null when it renders plain elements."
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether every instance of each containedBy part must include this part as a direct child."
+              },
+              "accepts": {
+                "description": "Component or sibling-part names valid as direct children. slot and open parts only.",
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "containedBy": {
+                "description": "Sibling-part names valid as this part's direct parent. Omit when the part may appear anywhere (e.g. Root).",
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
         "layoutBehavior": {
           "description": "How this component behaves inside a layout container. Used by the layout generation moment.",
           "type": "object",

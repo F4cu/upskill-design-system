@@ -61,3 +61,4 @@ Signal: you cannot name a second consumer from the current fixed component set w
 - Agents scaffolding new components should run this test before proposing a new file in `src/components/` — if the answer is "extend" or "internal", no new component is created.
 - When a molecule-internal element later gains a second consumer, extract it then (YAGNI). The CSS Module is the right starting point; promotion to a component is a one-way door with a clear trigger.
 - This rule applies to the fixed set only. It does not constrain consuming product code.
+- When a requirement passes question 1 but a single prop would create invalid prop combinations, the answer may be parts on the existing component rather than more props: see [ADR-023](023-subcomponents-compound-components.md). Parts are never new components.
