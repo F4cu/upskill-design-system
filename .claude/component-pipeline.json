@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T10:12:23.937Z",
+  "generatedAt": "2026-10-01T10:17:08.160Z",
   "components": [
     {
       "name": "Accordion",
@@ -306,7 +306,7 @@
       "signedOff": false,
       "reviewedAt": "2026-10-01T00:00:00Z",
       "reviewPath": "full",
-      "learningsBackfilled": false,
+      "learningsBackfilled": true,
       "visualReview": null,
       "checklist": [
         {
@@ -324,7 +324,7 @@
         },
         {
           "label": "Learnings back-fill (/extract-learnings)",
-          "done": false
+          "done": true
         }
       ]
     },

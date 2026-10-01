@@ -52,7 +52,7 @@
   "CardVertical": {
     "reviewedAt": "2026-10-01T00:00:00Z",
     "path": "full",
-    "learningsBackfilled": false
+    "learningsBackfilled": true
   },
   "Checkbox": {
     "reviewedAt": "2026-07-09T14:25:42Z",

@@ -142,5 +142,19 @@
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 2,
     "manualRescuesCount": 0
+  },
+  {
+    "component": "CardVertical",
+    "ranAt": "2026-10-01T12:30:00Z",
+    "gate": {
+      "passes": 2,
+      "failures": 1,
+      "failureReasons": [
+        "tokens:contrast-check: icon.brand on button.elevated 2.92:1 under horizon/dark — waived under #30 (same brand.dark.9 on neutral.dark.2 shortfall), pressed state also carried by fill + aria-pressed"
+      ]
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 6,
+    "manualRescuesCount": 0
   }
 ]
