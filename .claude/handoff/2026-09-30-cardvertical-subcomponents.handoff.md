@@ -40,7 +40,7 @@ Approved proposal: https://claude.ai/artifact/J2neFtFKcYaGFgeTQ5CY2U (v4). It is
 
 This PR has no component changes. It makes parts a first-class concept so the later PRs pass the gates.
 
-- [ ] **ADR-023 — subcomponents and compound components** (`docs/decisions/023-subcomponents-compound-components.md`, from `000-template.md`). It covers:
+- [x] **ADR-023 — subcomponents and compound components** (`docs/decisions/023-subcomponents-compound-components.md`, from `000-template.md`). It covers:
   - when to split: a second real use case, run through the ADR-009 three-question test
   - dot namespace + context guard
   - preset + parts ("common configurable, uncommon composable")
@@ -48,7 +48,7 @@ This PR has no component changes. It makes parts a first-class concept so the la
   - the naming contract with Figma
   - sources: the ds101 pages, plus Braid and React Spectrum as precedent; no individual authors (Step 0 notes above)
   - one line of cross-reference in ADR-009
-- [ ] **Schema:** `packages/components/component.schema.json` gets an optional `composition.parts[]` with these fields:
+- [x] **Schema:** `packages/components/component.schema.json` gets an optional `composition.parts[]` with these fields:
   - `name` (PascalCase)
   - `kind`: `fixed` | `slot` | `open`
   - `description`
@@ -57,17 +57,17 @@ This PR has no component changes. It makes parts a first-class concept so the la
   - `accepts`: component or sibling-part names; `slot`/`open` only
   - `containedBy`: parent part names
   - `additionalProperties: false`, matching the rest of the schema
-- [ ] **`scripts/validate-metadata.js`:** part names must be unique. Each `accepts` entry must be a fixed-set component or a sibling part. `accepts` is not allowed on `fixed` parts. A `builtOn` value must be a real component folder.
-- [ ] **`scripts/validate-layout.js`:** the fixed-set check (line ~210) currently rejects `<CardVertical.Root>`. Allow `Parent.Part` when `Parent` is in `FIXED_SET` and `Part` is declared in `Parent`'s metadata `composition.parts`. Also enforce each open part's `accepts` for direct children and the one-child rule for `slot`.
-- [ ] **`scripts/generate-pattern-schema.js`:** check that its AST scan handles `JSXMemberExpression` and doesn't count parts as components. Regenerate `.claude/component-patterns.json`.
-- [ ] **Rule pointer:** a short "Subcomponents (ADR-023)" block in `.claude/rules/components.md`. CLAUDE.md gets at most one line under Component scope ("parts are not new components; see ADR-023"). `npm run claudemd:check`.
-- [ ] **Docs (docs-check coupling):** the schema and validator changes make these pages stale, so touch them in this PR.
+- [x] **`scripts/validate-metadata.js`:** part names must be unique. Each `accepts` entry must be a fixed-set component or a sibling part. `accepts` is not allowed on `fixed` parts. A `builtOn` value must be a real component folder.
+- [x] **`scripts/validate-layout.js`:** the fixed-set check (line ~210) currently rejects `<CardVertical.Root>`. Allow `Parent.Part` when `Parent` is in `FIXED_SET` and `Part` is declared in `Parent`'s metadata `composition.parts`. Also enforce each open part's `accepts` for direct children and the one-child rule for `slot`.
+- [x] **`scripts/generate-pattern-schema.js`:** check that its AST scan handles `JSXMemberExpression` and doesn't count parts as components. Regenerate `.claude/component-patterns.json`.
+- [x] **Rule pointer:** a short "Subcomponents (ADR-023)" block in `.claude/rules/components.md`. CLAUDE.md gets at most one line under Component scope ("parts are not new components; see ADR-023"). `npm run claudemd:check`.
+- [x] **Docs (docs-check coupling):** the schema and validator changes make these pages stale, so touch them in this PR.
   - `docs/02-component-lifecycle.md`
   - `docs/10-machine-readable-metadata.md` (parts block)
   - `docs/12-taming-non-determinism.md`
   - `docs/08-glossary.md` (add "subcomponent / part", "slot", "open part")
   - `docs/04-layout-grammar.md` (dotted names are allowed in layouts)
-- **Gate:** `npm run metadata:validate && npm run layout:validate apps/showcase/src/pages/*.tsx && npm run docs:check && npm run claudemd:check`. Add a throwaway fixture layout that uses a dotted part to prove the validator accepts it and rejects an undeclared part, then delete the fixture.
+- **Gate (passed 2026-10-01; fixture proven and deleted; also 00-start-here and 09-context-engineering needed clock resets; part names may not collide with component folders, an addition to the plan):** `npm run metadata:validate && npm run layout:validate apps/showcase/src/pages/*.tsx && npm run docs:check && npm run claudemd:check`. Add a throwaway fixture layout that uses a dotted part to prove the validator accepts it and rejects an undeclared part, then delete the fixture.
 - **Review:** `/code-review` on the diff (standard path).
 
 ## PR 2: prerequisites in existing components (branch `component/card-vertical-prereqs`)
