@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-10-01T10:06:49.578Z**
+Generated: **2026-10-01T10:12:23.937Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -51,7 +51,7 @@ standard path (in-session /code-review).
 | `ButtonArrow` (interactive) | full | ☐ | ✅ | ✅ |
 | `Card` (container) | standard | ☐ | ✅ | n/a |
 | `CardHorizontal` (display) | standard | ☐ | ✅ | n/a |
-| `CardVertical` (interactive) | standard | ☐ | ✅ | n/a |
+| `CardVertical` (interactive) | full | ☐ | ✅ | ☐ |
 | `Checkbox` (input) | full | ☐ | ✅ | ✅ |
 | `Chip` (interactive) | full | ☐ | ✅ | ✅ |
 | `Divider` (display) | standard | ☐ | ✅ | n/a |
@@ -84,7 +84,10 @@ entered the loop (the old "established" backlog) — candidates to harden with
 
 ## Pending extract-learnings
 
-None. All review findings have been back-filled. ✅
+**1** component(s) reviewed but learnings not yet back-filled into metadata.
+Run `/extract-learnings --all` to process all at once, or `/extract-learnings <Name>` individually.
+
+- `CardVertical` — reviewed 2026-10-01 → `/extract-learnings CardVertical`
 
 ## Token usage
 

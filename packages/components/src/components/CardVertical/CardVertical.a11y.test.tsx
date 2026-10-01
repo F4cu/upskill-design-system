@@ -8,8 +8,8 @@ import { CardVertical } from './index'
 // Action slot makes it interactive. Favorite is a toggle button (aria-pressed)
 // named "Save <title>". Menu composes DropdownMenu, which leaves trigger focus
 // management to its owner, so these tests assert the AppHeader-style contract:
-// open moves focus into the menu, Escape and outside click close it, and focus
-// returns to the trigger.
+// open moves focus into the menu; Escape and selection close it and return
+// focus to the trigger; outside click and Tab close it without moving focus.
 
 const TITLE = 'Creative Acts for Curious People'
 
@@ -65,12 +65,17 @@ describe('CardVertical — a11y behavior', () => {
     it('reflects the controlled pressed prop without changing on its own', async () => {
       const user = userEvent.setup()
       const onPressedChange = vi.fn()
-      render(<CardVertical title={TITLE} action={<CardVertical.Favorite pressed onPressedChange={onPressedChange} />} />)
+      const { rerender } = render(
+        <CardVertical title={TITLE} action={<CardVertical.Favorite pressed onPressedChange={onPressedChange} />} />,
+      )
 
       const favorite = screen.getByRole('button', { name: `Save ${TITLE}` })
       await user.click(favorite)
       expect(onPressedChange).toHaveBeenCalledWith(false)
       expect(favorite).toHaveAttribute('aria-pressed', 'true')
+
+      rerender(<CardVertical title={TITLE} action={<CardVertical.Favorite pressed={false} onPressedChange={onPressedChange} />} />)
+      expect(favorite).toHaveAttribute('aria-pressed', 'false')
     })
   })
 
@@ -96,7 +101,28 @@ describe('CardVertical — a11y behavior', () => {
       expect(screen.getByRole('menuitem', { name: 'Share' })).toHaveFocus()
     })
 
-    it('moves between items with ArrowDown / ArrowUp and selects with Enter', async () => {
+    it('names the open menu by its trigger and points aria-controls at it', async () => {
+      const user = userEvent.setup()
+      renderMenuCard()
+      const trigger = screen.getByRole('button', { name: `More options ${TITLE}` })
+
+      await user.click(trigger)
+      const menu = screen.getByRole('menu', { name: `More options ${TITLE}` })
+      expect(trigger).toHaveAttribute('aria-controls', menu.id)
+    })
+
+    it('moves between items with ArrowDown / ArrowUp', async () => {
+      const user = userEvent.setup()
+      renderMenuCard()
+
+      await user.click(screen.getByRole('button', { name: `More options ${TITLE}` }))
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByRole('menuitem', { name: 'Hide course' })).toHaveFocus()
+      await user.keyboard('{ArrowUp}')
+      expect(screen.getByRole('menuitem', { name: 'Share' })).toHaveFocus()
+    })
+
+    it.each(['{Enter}', ' '])('selects the focused item with %s, closes and returns focus to the trigger', async key => {
       const user = userEvent.setup()
       const onSelect = vi.fn()
       renderMenuCard(onSelect)
@@ -104,13 +130,12 @@ describe('CardVertical — a11y behavior', () => {
 
       await user.click(trigger)
       await user.keyboard('{ArrowDown}')
-      expect(screen.getByRole('menuitem', { name: 'Hide course' })).toHaveFocus()
-      await user.keyboard('{ArrowUp}')
-      expect(screen.getByRole('menuitem', { name: 'Share' })).toHaveFocus()
+      await user.keyboard(key)
 
-      await user.keyboard('{ArrowDown}{Enter}')
+      expect(onSelect).toHaveBeenCalledTimes(1)
       expect(onSelect).toHaveBeenCalledWith('hide')
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+      expect(trigger).toHaveAttribute('aria-expanded', 'false')
       expect(trigger).toHaveFocus()
     })
 
@@ -127,15 +152,37 @@ describe('CardVertical — a11y behavior', () => {
       expect(trigger).toHaveFocus()
     })
 
-    it('closes on an outside click', async () => {
+    it('closes on an outside click without pulling focus back to the trigger', async () => {
       const user = userEvent.setup()
       renderMenuCard()
+      const trigger = screen.getByRole('button', { name: `More options ${TITLE}` })
 
-      await user.click(screen.getByRole('button', { name: `More options ${TITLE}` }))
+      await user.click(trigger)
       expect(screen.getByRole('menu')).toBeInTheDocument()
 
-      await user.click(screen.getByRole('button', { name: 'Outside' }))
+      const outside = screen.getByRole('button', { name: 'Outside' })
+      await user.click(outside)
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+      expect(trigger).toHaveAttribute('aria-expanded', 'false')
+      expect(outside).toHaveFocus()
+    })
+
+    it('closes when Tab moves focus out of the menu', async () => {
+      const user = userEvent.setup()
+      renderMenuCard()
+      const trigger = screen.getByRole('button', { name: `More options ${TITLE}` })
+
+      await user.click(trigger)
+      await user.tab()
+
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+      expect(trigger).toHaveAttribute('aria-expanded', 'false')
+      expect(screen.getByRole('button', { name: 'Outside' })).toHaveFocus()
+    })
+
+    it('renders no trigger when there are no items', () => {
+      render(<CardVertical title={TITLE} action={<CardVertical.Menu items={[]} onSelect={vi.fn()} />} />)
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
   })
 
@@ -163,6 +210,20 @@ describe('CardVertical — a11y behavior', () => {
           </CardVertical.Root>,
         ),
       ).toThrow('CardVertical.Action accepts exactly one CardVertical.Favorite or CardVertical.Menu')
+      vi.restoreAllMocks()
+    })
+
+    it('throws when Media holds anything but one Action', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      expect(() =>
+        render(
+          <CardVertical.Root>
+            <CardVertical.Media>
+              <span>overlay</span>
+            </CardVertical.Media>
+          </CardVertical.Root>,
+        ),
+      ).toThrow('CardVertical.Media accepts at most one CardVertical.Action')
       vi.restoreAllMocks()
     })
   })

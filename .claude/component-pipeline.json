@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T10:06:49.578Z",
+  "generatedAt": "2026-10-01T10:12:23.937Z",
   "components": [
     {
       "name": "Accordion",
@@ -304,8 +304,8 @@
       "implementation": "in review",
       "substate": null,
       "signedOff": false,
-      "reviewedAt": "2026-07-09T00:00:00Z",
-      "reviewPath": "standard",
+      "reviewedAt": "2026-10-01T00:00:00Z",
+      "reviewPath": "full",
       "learningsBackfilled": false,
       "visualReview": null,
       "checklist": [
@@ -319,12 +319,12 @@
           "note": null
         },
         {
-          "label": "Code review — in-session /code-review (standard path)",
+          "label": "Code and behavioural a11y review — adversarial subagent",
           "done": true
         },
         {
-          "label": "Learnings back-fill",
-          "na": "not required on standard path"
+          "label": "Learnings back-fill (/extract-learnings)",
+          "done": false
         }
       ]
     },

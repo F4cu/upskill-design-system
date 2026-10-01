@@ -1,5 +1,5 @@
 import { Children, createContext, isValidElement, useContext, useEffect, useId, useRef, useState } from 'react'
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react'
+import type { FocusEvent, HTMLAttributes, ReactElement, ReactNode } from 'react'
 import { Button } from '../Button'
 import { DropdownMenu } from '../DropdownMenu'
 import type { DropdownMenuItem } from '../DropdownMenu'
@@ -52,11 +52,15 @@ function Root({ size = 'lg', className, children, ...rest }: CardVerticalRootPro
 export type CardVerticalMediaProps = {
   src?: string
   alt?: string
-  children?: ReactNode
+  children?: ReactElement<CardVerticalActionProps>
 }
 
 function Media({ src, alt = '', children }: CardVerticalMediaProps) {
   const { size } = useCardVertical('Media')
+  const items = Children.toArray(children)
+  if (items.length > 1 || (items.length === 1 && (!isValidElement(items[0]) || items[0].type !== Action))) {
+    throw new Error('CardVertical.Media accepts at most one CardVertical.Action')
+  }
   return (
     <div className={styles.media}>
       <Image
@@ -128,7 +132,12 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
   const id = useId()
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const prevOpenRef = useRef(false)
+  const menuId = `${id}-menu`
+
+  function close(returnFocus: boolean) {
+    setOpen(false)
+    if (returnFocus) wrapperRef.current?.querySelector('button')?.focus()
+  }
 
   useEffect(() => {
     if (!open) return
@@ -147,20 +156,19 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
     }
   }, [open])
 
-  useEffect(() => {
-    if (prevOpenRef.current && !open) {
-      wrapperRef.current?.querySelector('button')?.focus()
-    }
-    prevOpenRef.current = open
-  }, [open])
+  if (items.length === 0) return null
 
   function handleSelect(value: string) {
     onSelect(value)
-    setOpen(false)
+    close(true)
+  }
+
+  function handleBlur(e: FocusEvent<HTMLDivElement>) {
+    if (open && !e.currentTarget.contains(e.relatedTarget)) setOpen(false)
   }
 
   return (
-    <div ref={wrapperRef} className={styles.menu}>
+    <div ref={wrapperRef} className={styles.menu} onBlur={handleBlur}>
       <Button
         id={id}
         variant="elevated"
@@ -171,13 +179,16 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
         aria-labelledby={`${id} ${titleId}`}
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-controls={open ? menuId : undefined}
         onClick={() => setOpen(prev => !prev)}
       />
       {open && (
         <DropdownMenu
           items={items}
+          id={menuId}
+          aria-labelledby={`${id} ${titleId}`}
           onSelect={handleSelect}
-          onClose={() => setOpen(false)}
+          onClose={() => close(true)}
           className={styles.menuPanel}
         />
       )}

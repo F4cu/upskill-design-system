@@ -110,6 +110,24 @@ export const WithMenu: Story = {
   },
 }
 
+export const FavoriteWithProgress: Story = {
+  args: {
+    title: 'Creative Acts for Curious People',
+    duration: '12 Hours',
+    certified: true,
+    progress: 20,
+    size: 'sm',
+    action: <CardVertical.Favorite defaultPressed onPressedChange={noop} />,
+  },
+}
+
+export const TitleOnly: Story = {
+  args: {
+    title: 'Research Ops, Explained',
+    size: 'sm',
+  },
+}
+
 export const Composed: Story = {
   args: {
     title: 'Facilitation Fundamentals',

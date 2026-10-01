@@ -54,7 +54,7 @@
       },
       {
         "name": "in-progress-card",
-        "description": "Gallery state: compact card for a started course in Saved Courses.",
+        "description": "Gallery state: compact card for a started course in Saved Courses. Story: WithProgress with size=sm.",
         "tree": "CardVertical(size=sm, title, duration, progress=65)"
       },
       {
@@ -214,7 +214,7 @@
       "role=article on Root, aria-labelledby → the Title's id (Title registers it via context)",
       "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
       "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
-      "Menu trigger: aria-haspopup=menu, aria-expanded; accessible name 'More options <title>' via aria-labelledby=[self, title]; panel is DropdownMenu listRole=menu",
+      "Menu trigger: aria-haspopup=menu, aria-expanded, aria-controls → the panel while open; accessible name 'More options <title>' via aria-labelledby=[self, title]. Panel is DropdownMenu listRole=menu, named by the same aria-labelledby. No trigger renders when items is empty.",
       "Progress: ProgressBar aria-labelledby → the Title's id"
     ],
     "keyboardInteractions": [
@@ -240,7 +240,11 @@
       },
       {
         "key": "Escape (Menu)",
-        "action": "Closes the menu and returns focus to the trigger; an outside click also closes it"
+        "action": "Closes the menu and returns focus to the trigger"
+      },
+      {
+        "key": "Tab / Shift+Tab (Menu open)",
+        "action": "Closes the menu and lets focus move on; an outside click also closes it without pulling focus back. Home/End and arrow wrapping are out of scope (DropdownMenu's shared contract)"
       }
     ]
   },
@@ -277,7 +281,7 @@
       {
         "name": "Media",
         "kind": "fixed",
-        "description": "Positioned wrapper around Image (aspect 4/5 for lg, 3/2 for sm, from Root's size). Props: src, alt (''). No overflow clipping so the Menu panel can extend past it.",
+        "description": "Positioned wrapper around Image (aspect 4/5 for lg, 3/2 for sm, from Root's size). Props: src, alt (''), and an optional single Action child (runtime guard throws otherwise — fixed, not slot, because the overlay is optional). No overflow clipping so the Menu panel can extend past it.",
         "builtOn": "Image",
         "required": true,
         "containedBy": [

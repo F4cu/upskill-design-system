@@ -48,7 +48,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "cad846c6a8ead58543c9475228ca67584de31604",
+  "generatedFrom": "ec82c0c3ed53a955bb223680ae24795c318e4287",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -287,6 +287,89 @@
             "aria-controls (trigger → panel id) — the panel element must always be present in the DOM; use hidden={!isOpen} rather than conditional rendering so this id always resolves",
             "aria-labelledby (panel → trigger id)",
             "role='region' (on the panel)"
+          ]
+        },
+        {
+          "architecturalStyle": "compound",
+          "ariaContract": [
+            {
+              "aria-labelledby": "{titleId}",
+              "element": "div",
+              "role": "article"
+            },
+            {
+              "aria-label": "Save",
+              "aria-labelledby": "{`${id} ${titleId}`}",
+              "aria-pressed": "{isPressed}",
+              "element": "Button",
+              "id": "{id}"
+            },
+            {
+              "aria-controls": "{open ? menuId : undefined}",
+              "aria-expanded": "{open}",
+              "aria-haspopup": "menu",
+              "aria-label": "More options",
+              "aria-labelledby": "{`${id} ${titleId}`}",
+              "element": "Button",
+              "id": "{id}"
+            },
+            {
+              "aria-labelledby": "{`${id} ${titleId}`}",
+              "element": "DropdownMenu",
+              "id": "{menuId}"
+            },
+            {
+              "aria-labelledby": "{titleId}",
+              "element": "ProgressBar"
+            }
+          ],
+          "changeCallback": "onPressedChange",
+          "component": "CardVertical",
+          "composition": [
+            "Button",
+            "DropdownMenu",
+            "Heading",
+            "Icon",
+            "Image",
+            "Inline",
+            "ProgressBar",
+            "Stack",
+            "Text"
+          ],
+          "idsFromUseId": [
+            "id",
+            "menuId",
+            "titleId"
+          ],
+          "maturity": "beta",
+          "parts": [
+            "Root",
+            "Media",
+            "Action",
+            "Favorite",
+            "Menu",
+            "Progress",
+            "Body",
+            "Title",
+            "Meta",
+            "Duration",
+            "Certified"
+          ],
+          "stage": "in review",
+          "state": {
+            "controlled": "optional",
+            "props": [
+              "pressed",
+              "defaultPressed",
+              "onPressedChange"
+            ]
+          },
+          "systemSpecificNotes": [
+            "role=article on Root, aria-labelledby → the Title's id (Title registers it via context)",
+            "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
+            "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
+            "Menu trigger: aria-haspopup=menu, aria-expanded, aria-controls → the panel while open; accessible name 'More options <title>' via aria-labelledby=[self, title]. Panel is DropdownMenu listRole=menu, named by the same aria-labelledby. No trigger renders when items is empty.",
+            "Progress: ProgressBar aria-labelledby → the Title's id"
           ]
         }
       ]
@@ -629,82 +712,6 @@
       "architecturalStyle": "flat-props",
       "description": "A pressable button holding a boolean pressed state (aria-pressed).",
       "implementedBy": [
-        {
-          "architecturalStyle": "compound",
-          "ariaContract": [
-            {
-              "aria-labelledby": "{titleId}",
-              "element": "div",
-              "role": "article"
-            },
-            {
-              "aria-label": "Save",
-              "aria-labelledby": "{`${id} ${titleId}`}",
-              "aria-pressed": "{isPressed}",
-              "element": "Button",
-              "id": "{id}"
-            },
-            {
-              "aria-expanded": "{open}",
-              "aria-haspopup": "menu",
-              "aria-label": "More options",
-              "aria-labelledby": "{`${id} ${titleId}`}",
-              "element": "Button",
-              "id": "{id}"
-            },
-            {
-              "aria-labelledby": "{titleId}",
-              "element": "ProgressBar"
-            }
-          ],
-          "changeCallback": "onPressedChange",
-          "component": "CardVertical",
-          "composition": [
-            "Button",
-            "DropdownMenu",
-            "Heading",
-            "Icon",
-            "Image",
-            "Inline",
-            "ProgressBar",
-            "Stack",
-            "Text"
-          ],
-          "idsFromUseId": [
-            "id",
-            "titleId"
-          ],
-          "maturity": "beta",
-          "parts": [
-            "Root",
-            "Media",
-            "Action",
-            "Favorite",
-            "Menu",
-            "Progress",
-            "Body",
-            "Title",
-            "Meta",
-            "Duration",
-            "Certified"
-          ],
-          "stage": "in review",
-          "state": {
-            "controlled": "optional",
-            "props": [
-              "pressed",
-              "defaultPressed",
-              "onPressedChange"
-            ]
-          },
-          "systemSpecificNotes": [
-            "role=article on Root, aria-labelledby → the Title's id (Title registers it via context)",
-            "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
-            "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
-            "Menu trigger: aria-haspopup=menu, aria-expanded; accessible name 'More options <title>' via aria-labelledby=[self, title]; panel is DropdownMenu listRole=menu",
-            "Progress: ProgressBar aria-labelledby → the Title's id"
-          ]
-        },
         {
           "ariaContract": [
             {
