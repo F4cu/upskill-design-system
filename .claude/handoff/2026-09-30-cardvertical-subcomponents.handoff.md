@@ -192,7 +192,7 @@ Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as
     - Cloned variants lose their `componentPropertyReferences` (re-set `icon#59:23`), and `setProperties` instance swaps drop nested paint overrides, so overrides are re-applied after a swap.
   - **Accepted:**
     - Existing instances no longer show the Certified label (default `false`).
-    - The `Menu` `Expanded` panel reuses `Option menu` placeholder items (English/German…).
+    - The `Menu` `Expanded` panel is an `Option menu` instance whose labels are overridden to the proposal's items (Add to collection, Share course, Mark as completed, Hide from recommendations) and widened to fit (275px). The shared `Option menu` is unchanged.
     - `figma-cli verify --measure` was not run; screenshots via `verify` were used instead.
 - **Follow-up pass 2026-10-01 (developer review):**
   - **`Meta` aligned to the code's `Meta`** in all 8 variants: gap and wrap gap bound to `space/inline/sm`, wrap on, fills `Body`. `Certified` uses a `sm/badge-check` instance (`icon/subtle`, gap `space/inline/xs`) instead of the hand-drawn `SealCheck` frame.
