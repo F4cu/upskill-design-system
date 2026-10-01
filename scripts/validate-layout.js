@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Validates generated layout files against the landmark grammar (ADR-011).
 // Checks: one <main> per route, named <section> landmarks, labelled <nav>
-// elements when duplicated, fixed-set component names only, no raw container
+// elements when duplicated, fixed-set component names only (plus declared
+// <Parent.Part> subcomponents and their composition rules, ADR-023), no raw container
 // divs, and the inline-style reconciliation rule (CLAUDE.md "Layout grammar").
 // Exits non-zero on any violation so it can gate the layout-generation skill.
 // Accepts a file path or a directory (scans *.tsx recursively).
@@ -45,6 +46,18 @@ const FIXED_SET = new Set([
   // React built-ins used as wrappers — not user components, so ignored
   'Fragment', 'StrictMode', 'Suspense',
 ])
+
+// Subcomponents (ADR-023): Parent → Map(partName → part), from each fixed-set
+// component's metadata composition.parts. <Parent.Part> is valid only when the
+// part is declared here.
+const COMPONENTS_DIR = path.join(ROOT, 'packages/components/src/components')
+const PARTS = new Map()
+for (const name of FIXED_SET) {
+  const file = path.join(COMPONENTS_DIR, name, `${name}.metadata.json`)
+  if (!fs.existsSync(file)) continue
+  const parts = JSON.parse(fs.readFileSync(file, 'utf8')).composition?.parts
+  if (parts) PARTS.set(name, new Map(parts.map(p => [p.name, p])))
+}
 
 // App-internal composition primitives (ADR-009 question 3: single parent,
 // no other consumer in the fixed set → not a DS component, so they don't
@@ -118,6 +131,116 @@ function hasAttr(openingEl, name) {
   return getAttr(openingEl, name) !== null
 }
 
+function jsxName(nameNode) {
+  if (nameNode?.type === 'JSXIdentifier') return nameNode.name
+  if (nameNode?.type === 'JSXMemberExpression') {
+    return `${jsxName(nameNode.object)}.${nameNode.property.name}`
+  }
+  return null
+}
+
+// 'CardVertical.Body' → { parent: 'CardVertical', name: 'Body', part } when
+// declared; null for anything that isn't a declared part.
+function resolvePart(name) {
+  const segments = name?.split('.') ?? []
+  if (segments.length !== 2) return null
+  const part = PARTS.get(segments[0])?.get(segments[1])
+  return part ? { parent: segments[0], name: segments[1], part } : null
+}
+
+// Direct children of a JSX element, fragments flattened. Whitespace text and
+// empty {/* comments */} are dropped; any other expression is 'dynamic' —
+// statically uncountable, so slot/required checks skip elements that have one.
+function directChildren(el) {
+  const out = []
+  for (const child of el.children) {
+    if (child.type === 'JSXText') {
+      if (child.value.trim()) {
+        const leadingNewlines = child.value.slice(0, child.value.search(/\S/)).split('\n').length - 1
+        out.push({ kind: 'text', line: child.loc?.start.line + leadingNewlines })
+      }
+    } else if (child.type === 'JSXFragment') {
+      out.push(...directChildren(child))
+    } else if (child.type === 'JSXElement') {
+      out.push({ kind: 'element', name: jsxName(child.openingElement.name), line: child.loc?.start.line })
+    } else if (child.type === 'JSXExpressionContainer') {
+      if (child.expression.type !== 'JSXEmptyExpression') out.push({ kind: 'dynamic' })
+    } else {
+      out.push({ kind: 'dynamic' })
+    }
+  }
+  return out
+}
+
+// Part composition rules (ADR-023): containedBy against the nearest JSX
+// parent, accepts and the slot one-child rule against direct children, and
+// required parts inside their container. An element passed through a prop
+// (e.g. action={<CardVertical.Favorite />}) has no JSX parent and is not
+// checked for containedBy — the receiving component places it.
+function checkParts(ast, errors) {
+  function visit(node, jsxParent) {
+    if (!node || typeof node !== 'object') return
+    if (Array.isArray(node)) {
+      for (const n of node) visit(n, jsxParent)
+      return
+    }
+    if (node.type === 'JSXElement') {
+      const name = jsxName(node.openingElement.name)
+      const resolved = resolvePart(name)
+      if (resolved) checkPartElement(node, name, resolved, jsxParent, errors)
+      visit(node.openingElement, null)
+      visit(node.children, name)
+      return
+    }
+    for (const key of Object.keys(node)) {
+      if (key === 'loc' || key === 'start' || key === 'end') continue
+      const child = node[key]
+      if (child && typeof child === 'object') visit(child, jsxParent)
+    }
+  }
+  visit(ast, null)
+}
+
+function checkPartElement(node, name, { parent, part }, jsxParent, errors) {
+  const line = node.loc?.start.line
+  const siblings = PARTS.get(parent)
+
+  if (part.containedBy && jsxParent) {
+    const allowed = part.containedBy.map(p => `${parent}.${p}`)
+    if (!allowed.includes(jsxParent)) {
+      errors.push(`Line ${line}: <${name}> must be a direct child of ${allowed.map(a => `<${a}>`).join(' or ')}, not <${jsxParent}>`)
+    }
+  }
+
+  if (part.kind === 'fixed') return
+  const children = directChildren(node)
+  const hasDynamic = children.some(c => c.kind === 'dynamic')
+
+  if (part.kind === 'slot' && !hasDynamic && children.length !== 1) {
+    errors.push(`Line ${line}: <${name}> is a slot and takes exactly one child, found ${children.length}`)
+  }
+
+  for (const child of children) {
+    if (child.kind === 'text') {
+      errors.push(`Line ${child.line}: <${name}> does not accept raw text — wrap it in one of: ${part.accepts.join(', ')}`)
+    }
+    if (child.kind !== 'element') continue
+    const childPart = resolvePart(child.name)
+    const key = childPart?.parent === parent ? childPart.name : child.name
+    if (!part.accepts.includes(key)) {
+      errors.push(`Line ${child.line}: <${child.name}> is not accepted by <${name}> (accepts: ${part.accepts.join(', ')})`)
+    }
+  }
+
+  if (hasDynamic) return
+  const present = new Set(children.map(c => c.name))
+  for (const [sibling, def] of siblings) {
+    if (def.required && def.containedBy?.includes(part.name) && !present.has(`${parent}.${sibling}`)) {
+      errors.push(`Line ${line}: <${name}> is missing its required <${parent}.${sibling}>`)
+    }
+  }
+}
+
 function walkNode(node, fn) {
   if (!node || typeof node !== 'object' || Array.isArray(node)) return
   if (node.type) fn(node)
@@ -189,14 +312,7 @@ function validateFile(filePath, { styleOnly = false } = {}) {
     if (!inlineStyleWaived) checkInlineStyles(node, errors)
     if (styleOnly) return
 
-    const nameNode = node.name
-    if (!nameNode) return
-
-    const rawName =
-      nameNode.type === 'JSXIdentifier' ? nameNode.name :
-      nameNode.type === 'JSXMemberExpression' ? `${nameNode.object?.name}.${nameNode.property?.name}` :
-      null
-
+    const rawName = jsxName(node.name)
     if (!rawName) return
 
     // Determine effective landmark tag (Box as="…" → effective tag)
@@ -208,8 +324,18 @@ function validateFile(filePath, { styleOnly = false } = {}) {
     }
 
     // ── Fixed-set check ─────────────────────────────────────────────────────
-    // Only check uppercase components (lowercase = HTML intrinsic, allowed)
-    if (/^[A-Z]/.test(rawName) && !FIXED_SET.has(rawName) && !APP_INTERNAL_ELEMENTS.has(rawName)) {
+    // Only check uppercase components (lowercase = HTML intrinsic, allowed).
+    // A dotted name must be a part declared in its parent's metadata (ADR-023).
+    if (rawName.includes('.')) {
+      if (/^[A-Z]/.test(rawName) && !resolvePart(rawName)) {
+        const [parent] = rawName.split('.')
+        errors.push(
+          FIXED_SET.has(parent)
+            ? `Line ${node.loc?.start.line}: <${rawName}> is not a declared part of ${parent} (metadata composition.parts, ADR-023)`
+            : `Line ${node.loc?.start.line}: <${rawName}> — ${parent} is not in the fixed 26-component set`
+        )
+      }
+    } else if (/^[A-Z]/.test(rawName) && !FIXED_SET.has(rawName) && !APP_INTERNAL_ELEMENTS.has(rawName)) {
       errors.push(
         `Line ${node.loc?.start.line}: <${rawName}> is not in the fixed 26-component set`
       )
@@ -253,6 +379,8 @@ function validateFile(filePath, { styleOnly = false } = {}) {
   })
 
   if (!styleOnly) {
+    checkParts(ast, errors)
+
     // ── Main landmark rule ───────────────────────────────────────────────────
     if (mainCount === 0) {
       errors.push('No <main> landmark found — page root must be <Box as="main">')
