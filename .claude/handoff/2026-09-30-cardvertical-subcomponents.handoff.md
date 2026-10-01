@@ -136,28 +136,64 @@ Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as
 
 | Component | Property | Figma type | Values / default | Code counterpart |
 |---|---|---|---|---|
-| Button | `Variant` gains `elevated` | variant | round shape only, with `heart` / `more-vertical` | `variant="elevated"` |
+| Button icon (`54:1192`) | `Style` gains `Elevated` | variant | `Shape=Round` only, 3 sizes × Default/Hover | `variant="elevated" shape="round"` |
 | Favorite | `Pressed` | boolean | `false` | `pressed` / `defaultPressed` |
 | Menu | `Expanded` | boolean | `false` | none (internal state; design-only) |
-| CardVertical | `Size` | variant | `sm` / `lg`, default `lg` | `size` (default `lg`) |
+| CardVertical | `Size` (was `Type`: Feature→`lg`, Default→`sm`) | variant | `sm` / `lg`, default `lg` | `size` (default `lg`) |
 | CardVertical | `Action` | instance swap | preferred instances: Favorite, Menu only | `action` |
-| CardVertical | action visibility | boolean | `false` | `action` omitted. **Name it in the plan step**: Figma property names must be unique, so it can't also be `Action` |
-| CardVertical | `Progress` | boolean (layer visibility) | `false` | `progress` (number). Accepted divergence: Figma toggles the bar, it doesn't carry the value |
+| CardVertical | `Has action` | boolean | `false` | `action` omitted (Figma property names must be unique, so it can't also be `Action`) |
+| CardVertical | `Progress` (was `hasProgressBar` on/off) | variant `true`/`false` (Figma shows a toggle) | `false` | `progress` (number). Accepted divergence: Figma toggles the bar, it doesn't carry the value. Kept a variant (renamed values) so the ~100 instances don't break |
+| CardVertical | `State` (values Active/on-hover → `default`/`hover`) | variant | `default` | none; metadata `states` (design-only) |
 | CardVertical | `Certified` | boolean | `false` | `certified` |
 | CardVertical | `Title`, `Duration` | text | — | `title`, `duration` |
 | CardVertical | Favorite `Pressed`, Menu `Expanded` | exposed from nested instances | — | not redefined on CardVertical |
 
-- [ ] **Read first.** One `figma-cli eval` (`getNodeByIdAsync`) on node `52:4270` and on the Button component set. Return the component property definitions and layer tree (names + ids only), and whether `Favorite` / `Menu` components already exist. Record the current names in this file before changing anything.
-- [ ] **Plan and confirm.** Write the rename map (layer → part name) and fill the open row above (the action-visibility boolean name) in this file. Confirm with the developer before writing, since it touches CardVertical and the shared Button set.
-- [ ] **1. Button `elevated` round variant.** Clone an existing round variant via `eval`, rename it per Button metadata `variants`, and bind its fill to the `color/background/button/elevated` variable (`$bind`). That variable is already in Figma (`figma-variables.json`, 2026-10-01 capture). Never create variables here; that's `/figma-variable-push`.
-- [ ] **2. `Favorite` component.** Nest a Button `elevated` instance (heart) and add `Pressed` (boolean, `false`). The pressed state fills the heart with `color/icon/brand`.
-- [ ] **3. `Menu` component.** Nest a Button `elevated` instance (`more-vertical`) and add `Expanded` (boolean, `false`). It is design-only (ADR-023): use it to spec the menu-open state.
-- [ ] **4. CardVertical layers.** In one `eval`, rename layers to part names: `Media`, `Action`, `Progress`, `Body`, `Title`, `Meta`, `Duration`, `Certified`. Matching names is what preserves overrides on swap or variant change.
-- [ ] **5. CardVertical properties** in one `eval` (`addComponentProperty` / `editComponentProperty`), per the table. Set the `Action` swap's preferred instances to Favorite and Menu only (mirrors `accepts`). Expose Favorite/Menu properties through nested-instance exposure, not new properties. Nothing else bubbles up.
-- [ ] **Verify.**
+- [x] **Read first.** One `figma-cli eval` (`getNodeByIdAsync`) on node `52:4270` and on the Button component set. Return the component property definitions and layer tree (names + ids only), and whether `Favorite` / `Menu` components already exist. Record the current names in this file before changing anything.
+  **Read 2026-10-01 (before any change):**
+  - **`52:4270` is a set named `Card`, 277px wide**, with 8 variants. `Type` = Feature (436px tall, lg) / Default (276px, sm); `hasProgressBar` = on/off (a variant, not a boolean); `State` = Active / on-hover. There are no text or boolean properties.
+  - **Layers (identical in all 8 variants):** `Image placeholder` (frame) > [`Image placeholder` instance (`Size=Large`/`Medium`), `Progress bar` legacy group, hidden in all 8]; `Progress bar` instance (`completion=50`/`20`; visible only when `hasProgressBar=on`); `Description` (vertical auto layout, gap 8) > [title text, `Metadata` > [`12 Hours`, `Ellipse 3`, `Design`, `Ellipse 4` (category + separators, hidden; code has no category), `label` > [`SealCheck`, `Certificate`]]].
+  - **Icon-only buttons are a separate set, `Button icon` (`54:1192`),** not `Button` (`57:1265`, text buttons). Its properties are `size` (Small 32 / Medium 40 / Large 48), `Shape` (Round/Square), `Style` (Default/Outlined), `State` (Default/Hover) and an `icon` swap. It has 24 variants. The code card uses `size="sm" shape="round"`, which is `Button icon` Small Round.
+  - **Icons:** `heart` and `badge-check` exist (Medium + `sm/`). **`more-vertical` is missing.** There are no `Favorite` or `Menu` components. `Option menu` (`155:6261`, 4 `Option item`s) is the closest thing to DropdownMenu.
+  - **~100 instances** across Layout Examples, Carrousels and Mockups. They depend on the current variant names, so the plan renames values; it never deletes variants.
+- [x] **Plan and confirm.** Confirmed 2026-10-01:
+  - Rename the set `Card` → `CardVertical`.
+  - Name the visibility boolean `Has action`.
+  - `Certified` defaults to `false`; accept that existing mockups lose the label.
+  - Delete 32 dead hidden layers (8 legacy `Progress bar` groups, plus 24 hidden `Design` / `Ellipse 3` / `Ellipse 4`), after checking that no instance has unhidden them.
+  - Clone `more-vertical` from `heart` (it's missing in Figma).
+  - Layer rename map: `Image placeholder` frame → `Media`, inner instance → `Image`, `Progress bar` instance → `Progress`, `Description` → `Body`, title text → `Title`, `Metadata` → `Meta`, `12 Hours` → `Duration`, `label` → `Certified`.
+- [x] **1. Button `elevated` round variant.** Clone an existing round variant via `eval`, rename it per Button metadata `variants`, and bind its fill to the `color/background/button/elevated` variable (`$bind`). That variable is already in Figma (`figma-variables.json`, 2026-10-01 capture). Never create variables here; that's `/figma-variable-push`.
+- [x] **2. `Favorite` component.** Nest a Button `elevated` instance (heart) and add `Pressed` (boolean, `false`). The pressed state fills the heart with `color/icon/brand`.
+- [x] **3. `Menu` component.** Nest a Button `elevated` instance (`more-vertical`) and add `Expanded` (boolean, `false`). It is design-only (ADR-023): use it to spec the menu-open state.
+- [x] **4. CardVertical layers.** In one `eval`, rename layers to part names: `Media`, `Action`, `Progress`, `Body`, `Title`, `Meta`, `Duration`, `Certified`. Matching names is what preserves overrides on swap or variant change.
+- [x] **5. CardVertical properties** in one `eval` (`addComponentProperty` / `editComponentProperty`), per the table. Set the `Action` swap's preferred instances to Favorite and Menu only (mirrors `accepts`). Expose Favorite/Menu properties through nested-instance exposure, not new properties. Nothing else bubbles up.
+- [x] **Verify.**
   - Re-read with `eval`. Property names, types and defaults match the table, including the `Size` default `lg`. Layer names match the parts.
   - Run `figma-cli verify 52:4270 --measure`. `figma-cli undo` reverts the last operation if needed.
   - Check that existing CardVertical instances in the Homepage/CourseOverview frames keep their overrides and aren't detached.
+- **Done 2026-10-01.**
+  - **Created:**
+    - Icons `more-vertical` `2852:7644` and `sm/more-vertical` `2852:7657`, cloned from `heart`, with the code SVG geometry.
+    - `Button icon` `Style=Elevated` (Round, Small/Medium/Large × Default/Hover): `2852:7665`–`2852:7680`.
+    - `Favorite` set `2852:7708` (`Pressed`) and `Menu` set `2852:7709` (`Expanded`) on the Cards page.
+  - **`52:4270` is now `CardVertical`:**
+    - Properties: `Size` lg/sm, `Progress` true/false, `State` default/hover, `Has action`, `Action` swap (preferred: Favorite, Menu; exposed nested instance), `Title`, `Duration`, `Certified`.
+    - Layers: `Media` > [`Image`, `Action`], `Progress`, `Body` > [`Title`, `Meta` > [`Duration`, `Certified` > `Label`]].
+    - Cleanup: 32 dead layers deleted; the set resized to fit its children (the `Progress=true` row sat outside its 815px bounds).
+  - **Verified:**
+    - All 92 instances keep their title/duration text.
+    - Scratch instances confirmed the action overlay, the swap to Menu, and `Certified`; then deleted.
+  - **Deviations:**
+    - `Button icon` is the icon-only set, not `Button`.
+    - Favorite/Menu were built via `eval`, not `render`, because `render` can't place component instances.
+    - Elevated hover stacks `overlay/hover` over `button/elevated`, matching the code; the other Figma hover variants use a single swapped fill.
+    - Icon strokes in Favorite/Menu use `color/text/default`, matching the code's `currentColor`; the pressed heart uses `color/icon/brand` for fill and stroke.
+    - The label text was "Certificate"; it is now "Certified", matching the code.
+    - Cloned variants lose their `componentPropertyReferences` (re-set `icon#59:23`), and `setProperties` instance swaps drop nested paint overrides, so overrides are re-applied after a swap.
+  - **Accepted:**
+    - Existing instances no longer show the Certified label (default `false`).
+    - The `Menu` `Expanded` panel reuses `Option menu` placeholder items (English/German…).
+    - `figma-cli verify --measure` was not run; screenshots via `verify` were used instead.
 - Nothing to commit unless drift notes or this file change. Update the `figma-file-variable-drift` memory with the `Progress` boolean/number divergence and any other representational divergence. Code Connect is Enterprise-gated, so it's out of scope.
 - **Deferred:** a Figma native slot for `Body`/`Meta`. Revisit when a designer needs `instructor-row` or `grouped-meta` in Figma and would otherwise detach (ADR-023 amendment).
 
