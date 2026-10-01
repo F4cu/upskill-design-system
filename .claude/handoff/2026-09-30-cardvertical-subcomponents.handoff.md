@@ -194,6 +194,11 @@ Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as
     - Existing instances no longer show the Certified label (default `false`).
     - The `Menu` `Expanded` panel reuses `Option menu` placeholder items (English/German…).
     - `figma-cli verify --measure` was not run; screenshots via `verify` were used instead.
+- **Follow-up pass 2026-10-01 (developer review):**
+  - **`Meta` aligned to the code's `Meta`** in all 8 variants: gap and wrap gap bound to `space/inline/sm`, wrap on, fills `Body`. `Certified` uses a `sm/badge-check` instance (`icon/subtle`, gap `space/inline/xs`) instead of the hand-drawn `SealCheck` frame.
+  - **Cards page:** a `CardVertical` section (`2852:8275`) holds the set plus a nested `CardVertical parts` section (`2852:8276`) with Favorite and Menu. `Metadata`, `Card horizontal` and `Card badge` moved down 760px so nothing overlaps.
+  - **Unhid the 4 `Progress=true` variants,** which had been hidden in the set before this PR (that was why the set was 815px tall, not clipping). The full 8-variant matrix now shows.
+  - **Deleted the stray 24px `Frame` (`2852:7646`)** left by the first failed icon attempt.
 - Nothing to commit unless drift notes or this file change. Update the `figma-file-variable-drift` memory with the `Progress` boolean/number divergence and any other representational divergence. Code Connect is Enterprise-gated, so it's out of scope.
 - **Deferred:** a Figma native slot for `Body`/`Meta`. Revisit when a designer needs `instructor-row` or `grouped-meta` in Figma and would otherwise detach (ADR-023 amendment).
 
@@ -203,6 +208,7 @@ Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as
   - **Read Figma once, then diff with a script.** One `/figma-cli` read captures every component set's property names, types, values, defaults and layer names into a committed snapshot (e.g. `figma-components.json`, same frozen-snapshot pattern as `figma-variables.json`). A script diffs it against the metadata files: cheap reruns, CI-able later. The new snapshot + script is a tooling contract, so it needs an ADR or an ADR-002 amendment.
   - **Fix mostly on the Figma side.** Figma renames are a cheap `/figma-cli` batch. Code prop renames are breaking, so do them only where the code vocabulary itself is inconsistent.
   - **Batch by family** (buttons, form inputs, cards), not all components at once, so each confirmation stays reviewable.
+- [ ] Figma `Metadata` set (`81:2545`, 94 instances: Card horizontal, Footer highlights, Layout Examples, Mockups) is Figma-only. Code has no Metadata component; CardHorizontal's meta row is internal (ADR-009 Q3). Its content also differs (lessons · duration · Certified with separators). Decide in the CardHorizontal / naming-audit pass whether to keep it as a Figma-only helper or fold it into CardHorizontal. Don't make CardVertical's `Meta` an instance of it.
 - [ ] Watch for a second use case (CardHorizontal / Card). The ADR-023 test decides whether another component gets parts.
 - [ ] Refresh the `docs/*-case-study.html` write-ups if they reference CardVertical's API.
 
