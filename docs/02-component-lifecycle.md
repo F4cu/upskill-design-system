@@ -11,6 +11,7 @@ sources:
   - docs/decisions/010-component-lifecycle-two-axes.md
   - docs/decisions/023-subcomponents-compound-components.md
 # clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
+# clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 ---
 # Component lifecycle
 

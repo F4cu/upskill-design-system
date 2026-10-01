@@ -8,6 +8,7 @@ sources:
   - docs/decisions/001-component-metadata-schema.md
   - docs/decisions/013-cross-component-pattern-schema.md
   - docs/decisions/023-subcomponents-compound-components.md
+# clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 ---
 # Machine-readable metadata
 

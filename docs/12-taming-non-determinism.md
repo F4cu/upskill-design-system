@@ -7,6 +7,7 @@ sources:
   - docs/decisions/007-verified-component-loop.md
   - docs/decisions/008-behavioral-a11y-tier.md
   - docs/decisions/011-layout-landmark-grammar.md
+# clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 ---
 # Taming non-determinism
 

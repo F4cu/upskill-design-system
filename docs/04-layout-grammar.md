@@ -15,6 +15,7 @@ sources:
 # clock reset 2026-07-12: commands gain visual-review step + adversarial/in-session path rename (#64 PR 2); stage-vocabulary sweep for this page follows in the dedicated docs PR
 # rewritten 2026-07-21: layout-generation.md replaced the style={{ flex, minWidth, maxWidth }} column-fill pattern with grow/minWidth/maxWidth props (and now minHeight/maxHeight) — updated the grammar table row and inline-style allowlist to match
 # rewritten 2026-07-23: added ADR-020 to sources and a paragraph under the inline-style allowlist explaining how enum props render (data-* attributes + CSS attribute selectors, not style) — the ADR previously had no narrative coverage in any docs page
+# clock reset 2026-10-01: /code-review fixes in validate-layout.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 ---
 # Layout grammar
 

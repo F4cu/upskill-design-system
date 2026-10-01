@@ -68,7 +68,12 @@ function tokenExists(dotPath) {
   return node != null && typeof node === "object" && "$value" in node;
 }
 
-const COMPONENT_NAMES = new Set(fs.readdirSync(COMPONENTS_DIR));
+const COMPONENT_NAMES = new Set(
+  fs
+    .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name),
+);
 
 // composition.parts cross-references (ADR-023). Part names must not collide
 // with component folders so an `accepts` entry resolves to exactly one thing.

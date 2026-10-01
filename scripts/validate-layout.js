@@ -214,6 +214,7 @@ function checkPartElement(node, name, { parent, part }, jsxParent, errors) {
 
   if (part.kind === 'fixed') return
   const children = directChildren(node)
+  if (hasAttr(node.openingElement, 'children')) children.push({ kind: 'dynamic' })
   const hasDynamic = children.some(c => c.kind === 'dynamic')
 
   if (part.kind === 'slot' && !hasDynamic && children.length !== 1) {
