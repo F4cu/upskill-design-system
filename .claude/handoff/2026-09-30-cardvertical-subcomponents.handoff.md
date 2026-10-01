@@ -28,12 +28,12 @@ Approved proposal: https://claude.ai/artifact/J2neFtFKcYaGFgeTQ5CY2U (v4). It is
 ## Step 0: before writing code
 
 - [x] Read Curtis, ["Subcomponents"](https://nathanacurtis.substack.com/p/subcomponents-753ce9f6600a) (2022) and ["Space in Design Systems"](https://nathanacurtis.substack.com/p/space-in-design-systems-188bcbae0d62) (2016). Medium blocks WebFetch, but these Substack copies of the same posts load. Done 2026-10-01: **neither contradicts the open-part / no-gap model.** Background reading only: ADR-023 does not cite either article or its author. It cites the ds101 wiki where a page covers the point, and otherwise states the point as the system's own decision.
-  - **Cite ds101.** [Component API design](https://f4cu.github.io/ds101/component-api-design/): "common configurable, uncommon composable", and ready-made examples as the safeguard (our `usage.patterns` + stories). [Component composition in code](https://f4cu.github.io/ds101/component-composition-in-code/): subcomponent definition, dot namespace via `Object.assign`. [Component composition in Figma](https://f4cu.github.io/ds101/component-composition-in-figma/): slot = swappable nested instance.
+  - **Cite ds101.** [Component API design](https://f4cu.github.io/ds101/component-api-design/): "common configurable, uncommon composable", and ready-made examples as the safeguard (our `usage.patterns` + stories). [Component composition in code](https://f4cu.github.io/ds101/component-composition-in-code/): subcomponent definition, dot namespace via `Object.assign`. [Component composition in Figma](https://f4cu.github.io/ds101/component-composition-in-figma/): code `slot` = instance swap with preferred instances ("Choosing variants, instance swap, or slots"); build base components first; expose only the nested properties each level needs. Code `open` parts are not Figma native slots: Figma mirrors the preset (ADR-023 amendment, 2026-10-01).
   - **State as our own decision (ds101 doesn't cover it).**
     - Part taxonomy: `Media` narrows `Image`, `Action` enumerates allowed children, open parts are typed containers with `accepts`.
     - Spacing ownership: the container owns spacing between parts, never a margin on the child. Braid is the external precedent.
     - Context guard that throws outside `Root`.
-    - Figma instance swap resets overrides unless layer names match; that's the reason for the layer-name half of the naming contract (PR 4).
+    - Figma preserves overrides on an instance swap or variant change only when layer names match. A swap from the Assets panel keeps text overrides only. Source: [Figma Help, "Change preservation"](https://help.figma.com/hc/en-us/articles/360039150733-Apply-changes-to-instances), verified 2026-10-01. This is why the naming contract (PR 4) includes layer names.
   - **Space: already adopted (ADR-004).** inset/stack/inline concepts, t-shirt names, no `padding`/`margin` in token names, grid kept separate. `gap` on `Stack`/`Inline` replaces margin-based stacking, which is what makes the no-margin rule cheap. Component CSS already has no outer margins. Cite ADR-004, not an article. No ADR-004 change.
 
 ## PR 1: convention + tooling (branch `subcomponents/foundations`)
@@ -128,22 +128,87 @@ This PR has no component changes. It makes parts a first-class concept so the la
 
 ## PR 4: Figma alignment (interactive, developer present; `/figma-cli`)
 
-Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as fallback if it can't connect). Its hard rules apply: show the commands, no deletes without naming each node, names come from `CardVertical.metadata.json` (so PR 3 must be merged first).
+Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as fallback if it can't connect). Its hard rules apply: show the commands, no deletes without naming each node, names come from `CardVertical.metadata.json` (PR 3 is merged).
 
-- [ ] **Read first.** One `figma-cli eval` on node `52:4270` (`getNodeByIdAsync`) returning its component property definitions and layer tree (names + ids only). Record the current property and layer names in this file before changing anything.
-- [ ] **Plan and confirm.** Write the rename map (layer → part name) and the property list below into this file; confirm with the developer before writing, since it touches CardVertical and the shared Button set.
-- [ ] **Rename layers** to part names in one `eval`.
-- [ ] **Properties** in one `eval` (`addComponentProperty` / `editComponentProperty`): `Size` variant (sm/lg); `Action` instance swap (None / Favorite / Menu); `Favorite › Pressed` boolean; `Menu › Expanded` boolean (design-only state); `Certified` boolean; `Progress` layer toggle; text properties for `Title` / `Duration`.
-- [ ] **Button `elevated` round variant** with `heart` / `more-vertical`: clone an existing round variant via `eval`, rename it per Button metadata `variants`, and bind its fill to the `color/background/button/elevated` variable (`$bind`). That variable is already in Figma (`figma-variables.json`, 2026-10-01 capture); never create variables here, that's `/figma-variable-push`.
-- [ ] **Verify.** Re-read with `eval` (property names and layer names match the metadata) and `figma-cli verify 52:4270 --measure`. `figma-cli undo` reverts the last operation if needed.
-- Nothing to commit unless drift notes or this file change. Update the `figma-file-variable-drift` memory if any representational divergence appears. Code Connect is Enterprise-gated, so it's out of scope.
+**Scope: Figma mirrors the preset, not the parts** (ADR-023 amendment, 2026-10-01). `Body` and `Meta` stay fixed layers that carry the preset's text and boolean properties. They don't become Figma native slots, because Figma doesn't allow component properties inside a slot. Build base components first, then nest them ([ds101 — Component composition in Figma](https://f4cu.github.io/ds101/component-composition-in-figma/)).
+
+**Target properties** (names match the preset props, Title Case in Figma):
+
+| Component | Property | Figma type | Values / default | Code counterpart |
+|---|---|---|---|---|
+| Button icon (`54:1192`) | `Style` gains `Elevated` | variant | `Shape=Round` only, 3 sizes × Default/Hover | `variant="elevated" shape="round"` |
+| Favorite | `Pressed` | boolean | `false` | `pressed` / `defaultPressed` |
+| Menu | `Expanded` | boolean | `false` | none (internal state; design-only) |
+| CardVertical | `Size` (was `Type`: Feature→`lg`, Default→`sm`) | variant | `sm` / `lg`, default `lg` | `size` (default `lg`) |
+| CardVertical | `Action` | instance swap | preferred instances: Favorite, Menu only | `action` |
+| CardVertical | `Has action` | boolean | `false` | `action` omitted (Figma property names must be unique, so it can't also be `Action`) |
+| CardVertical | `Progress` (was `hasProgressBar` on/off) | variant `true`/`false` (Figma shows a toggle) | `false` | `progress` (number). Accepted divergence: Figma toggles the bar, it doesn't carry the value. Kept a variant (renamed values) so the ~100 instances don't break |
+| CardVertical | `State` (values Active/on-hover → `default`/`hover`) | variant | `default` | none; metadata `states` (design-only) |
+| CardVertical | `Certified` | boolean | `false` | `certified` |
+| CardVertical | `Title`, `Duration` | text | — | `title`, `duration` |
+| CardVertical | Favorite `Pressed`, Menu `Expanded` | exposed from nested instances | — | not redefined on CardVertical |
+
+- [x] **Read first.** One `figma-cli eval` (`getNodeByIdAsync`) on node `52:4270` and on the Button component set. Return the component property definitions and layer tree (names + ids only), and whether `Favorite` / `Menu` components already exist. Record the current names in this file before changing anything.
+  **Read 2026-10-01 (before any change):**
+  - **`52:4270` is a set named `Card`, 277px wide**, with 8 variants. `Type` = Feature (436px tall, lg) / Default (276px, sm); `hasProgressBar` = on/off (a variant, not a boolean); `State` = Active / on-hover. There are no text or boolean properties.
+  - **Layers (identical in all 8 variants):** `Image placeholder` (frame) > [`Image placeholder` instance (`Size=Large`/`Medium`), `Progress bar` legacy group, hidden in all 8]; `Progress bar` instance (`completion=50`/`20`; visible only when `hasProgressBar=on`); `Description` (vertical auto layout, gap 8) > [title text, `Metadata` > [`12 Hours`, `Ellipse 3`, `Design`, `Ellipse 4` (category + separators, hidden; code has no category), `label` > [`SealCheck`, `Certificate`]]].
+  - **Icon-only buttons are a separate set, `Button icon` (`54:1192`),** not `Button` (`57:1265`, text buttons). Its properties are `size` (Small 32 / Medium 40 / Large 48), `Shape` (Round/Square), `Style` (Default/Outlined), `State` (Default/Hover) and an `icon` swap. It has 24 variants. The code card uses `size="sm" shape="round"`, which is `Button icon` Small Round.
+  - **Icons:** `heart` and `badge-check` exist (Medium + `sm/`). **`more-vertical` is missing.** There are no `Favorite` or `Menu` components. `Option menu` (`155:6261`, 4 `Option item`s) is the closest thing to DropdownMenu.
+  - **~100 instances** across Layout Examples, Carrousels and Mockups. They depend on the current variant names, so the plan renames values; it never deletes variants.
+- [x] **Plan and confirm.** Confirmed 2026-10-01:
+  - Rename the set `Card` → `CardVertical`.
+  - Name the visibility boolean `Has action`.
+  - `Certified` defaults to `false`; accept that existing mockups lose the label.
+  - Delete 32 dead hidden layers (8 legacy `Progress bar` groups, plus 24 hidden `Design` / `Ellipse 3` / `Ellipse 4`), after checking that no instance has unhidden them.
+  - Clone `more-vertical` from `heart` (it's missing in Figma).
+  - Layer rename map: `Image placeholder` frame → `Media`, inner instance → `Image`, `Progress bar` instance → `Progress`, `Description` → `Body`, title text → `Title`, `Metadata` → `Meta`, `12 Hours` → `Duration`, `label` → `Certified`.
+- [x] **1. Button `elevated` round variant.** Clone an existing round variant via `eval`, rename it per Button metadata `variants`, and bind its fill to the `color/background/button/elevated` variable (`$bind`). That variable is already in Figma (`figma-variables.json`, 2026-10-01 capture). Never create variables here; that's `/figma-variable-push`.
+- [x] **2. `Favorite` component.** Nest a Button `elevated` instance (heart) and add `Pressed` (boolean, `false`). The pressed state fills the heart with `color/icon/brand`.
+- [x] **3. `Menu` component.** Nest a Button `elevated` instance (`more-vertical`) and add `Expanded` (boolean, `false`). It is design-only (ADR-023): use it to spec the menu-open state.
+- [x] **4. CardVertical layers.** In one `eval`, rename layers to part names: `Media`, `Action`, `Progress`, `Body`, `Title`, `Meta`, `Duration`, `Certified`. Matching names is what preserves overrides on swap or variant change.
+- [x] **5. CardVertical properties** in one `eval` (`addComponentProperty` / `editComponentProperty`), per the table. Set the `Action` swap's preferred instances to Favorite and Menu only (mirrors `accepts`). Expose Favorite/Menu properties through nested-instance exposure, not new properties. Nothing else bubbles up.
+- [x] **Verify.**
+  - Re-read with `eval`. Property names, types and defaults match the table, including the `Size` default `lg`. Layer names match the parts.
+  - Run `figma-cli verify 52:4270 --measure`. `figma-cli undo` reverts the last operation if needed.
+  - Check that existing CardVertical instances in the Homepage/CourseOverview frames keep their overrides and aren't detached.
+- **Done 2026-10-01.**
+  - **Created:**
+    - Icons `more-vertical` `2852:7644` and `sm/more-vertical` `2852:7657`, cloned from `heart`, with the code SVG geometry.
+    - `Button icon` `Style=Elevated` (Round, Small/Medium/Large × Default/Hover): `2852:7665`–`2852:7680`.
+    - `Favorite` set `2852:7708` (`Pressed`) and `Menu` set `2852:7709` (`Expanded`) on the Cards page.
+  - **`52:4270` is now `CardVertical`:**
+    - Properties: `Size` lg/sm, `Progress` true/false, `State` default/hover, `Has action`, `Action` swap (preferred: Favorite, Menu; exposed nested instance), `Title`, `Duration`, `Certified`.
+    - Layers: `Media` > [`Image`, `Action`], `Progress`, `Body` > [`Title`, `Meta` > [`Duration`, `Certified` > `Label`]].
+    - Cleanup: 32 dead layers deleted; the set resized to fit its children (the `Progress=true` row sat outside its 815px bounds).
+  - **Verified:**
+    - All 92 instances keep their title/duration text.
+    - Scratch instances confirmed the action overlay, the swap to Menu, and `Certified`; then deleted.
+  - **Deviations:**
+    - `Button icon` is the icon-only set, not `Button`.
+    - Favorite/Menu were built via `eval`, not `render`, because `render` can't place component instances.
+    - Elevated hover stacks `overlay/hover` over `button/elevated`, matching the code; the other Figma hover variants use a single swapped fill.
+    - Icon strokes in Favorite/Menu use `color/text/default`, matching the code's `currentColor`; the pressed heart uses `color/icon/brand` for fill and stroke.
+    - The label text was "Certificate"; it is now "Certified", matching the code.
+    - Cloned variants lose their `componentPropertyReferences` (re-set `icon#59:23`), and `setProperties` instance swaps drop nested paint overrides, so overrides are re-applied after a swap.
+  - **Accepted:**
+    - Existing instances no longer show the Certified label (default `false`).
+    - The `Menu` `Expanded` panel is an `Option menu` instance whose labels are overridden to the proposal's items (Add to collection, Share course, Mark as completed, Hide from recommendations) and widened to fit (275px). The shared `Option menu` is unchanged.
+    - `figma-cli verify --measure` was not run; screenshots via `verify` were used instead.
+- **Follow-up pass 2026-10-01 (developer review):**
+  - **`Meta` aligned to the code's `Meta`** in all 8 variants: gap and wrap gap bound to `space/inline/sm`, wrap on, fills `Body`. `Certified` uses a `sm/badge-check` instance (`icon/subtle`, gap `space/inline/xs`) instead of the hand-drawn `SealCheck` frame.
+  - **Cards page:** the set and a nested `CardVertical parts` section (`2852:8276`) sit in the developer's `CardVertical` section (`96:10731`; the interim `2852:8275` section was replaced on canvas). `CardVertical parts` holds with Favorite and Menu. `Metadata`, `Card horizontal` and `Card badge` moved down 760px so nothing overlaps.
+  - **Unhid the 4 `Progress=true` variants,** which had been hidden in the set before this PR (that was why the set was 815px tall, not clipping). The full 8-variant matrix now shows.
+  - **Deleted the stray 24px `Frame` (`2852:7646`)** left by the first failed icon attempt.
+- Nothing to commit unless drift notes or this file change. Update the `figma-file-variable-drift` memory with the `Progress` boolean/number divergence and any other representational divergence. Code Connect is Enterprise-gated, so it's out of scope.
+- **Deferred:** a Figma native slot for `Body`/`Meta`. Revisit when a designer needs `instructor-row` or `grouped-meta` in Figma and would otherwise detach (ADR-023 amendment).
 
 ## After: follow-up issues (file, don't do)
 
-- [ ] System-wide property naming audit: one vocabulary (`variant`/`size`/`shape`), plus a deterministic script comparing metadata `variants` with Figma component properties. Start only after PR 4 has tested the naming contract on CardVertical. Shape:
+- [x] Filed as [#103](https://github.com/F4cu/upskill-design-system/issues/103) (2026-10-01; scope adds fixed text that code hardcodes, and warns on TEXT-property defaults). System-wide property naming audit: one vocabulary (`variant`/`size`/`shape`), plus a deterministic script comparing metadata `variants` with Figma component properties. Start only after PR 4 has tested the naming contract on CardVertical. Shape:
   - **Read Figma once, then diff with a script.** One `/figma-cli` read captures every component set's property names, types, values, defaults and layer names into a committed snapshot (e.g. `figma-components.json`, same frozen-snapshot pattern as `figma-variables.json`). A script diffs it against the metadata files: cheap reruns, CI-able later. The new snapshot + script is a tooling contract, so it needs an ADR or an ADR-002 amendment.
   - **Fix mostly on the Figma side.** Figma renames are a cheap `/figma-cli` batch. Code prop renames are breaking, so do them only where the code vocabulary itself is inconsistent.
   - **Batch by family** (buttons, form inputs, cards), not all components at once, so each confirmation stays reviewable.
+- [x] Tracked in #103 (cards batch). Figma `Metadata` set (`81:2545`, 94 instances: Card horizontal, Footer highlights, Layout Examples, Mockups) is Figma-only. Code has no Metadata component; CardHorizontal's meta row is internal (ADR-009 Q3). Its content also differs (lessons · duration · Certified with separators). Decide in the CardHorizontal / naming-audit pass whether to keep it as a Figma-only helper or fold it into CardHorizontal. Don't make CardVertical's `Meta` an instance of it.
 - [ ] Watch for a second use case (CardHorizontal / Card). The ADR-023 test decides whether another component gets parts.
 - [ ] Refresh the `docs/*-case-study.html` write-ups if they reference CardVertical's API.
 

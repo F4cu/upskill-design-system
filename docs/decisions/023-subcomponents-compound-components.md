@@ -4,6 +4,7 @@ title: "ADR-023 — Subcomponents: preset + parts under a dot namespace"
 # ADR-023 — Subcomponents: preset + parts under a dot namespace
 
 **Date:** 2026-10-01
+**Amended:** 2026-10-01
 **Status:** `accepted`
 
 ## Context
@@ -66,8 +67,10 @@ This is the system's existing spacing model applied one level down. [ADR-004](00
 
 Code and Figma use the same names, values and defaults. Casing is the only permitted difference.
 
-- Part names are Figma layer names. Figma's instance swap keeps overrides only when layer names match, so matching names is what keeps a swap from silently dropping content.
-- A `slot` part maps to a Figma instance-swap property ([ds101 — Component composition in Figma](https://f4cu.github.io/ds101/component-composition-in-figma/): slot = swappable nested instance).
+- Part names are Figma layer names. When you swap an instance or select a variant, Figma preserves an override only if the layer names match ([Figma Help — Apply changes to instances](https://help.figma.com/hc/en-us/articles/360039150733-Apply-changes-to-instances), "Change preservation"). Matching names is what keeps a swap from silently dropping content. A swap from the Assets panel preserves text overrides only, whatever the names.
+- A `slot` part maps to a Figma instance-swap property whose preferred instances are the part's `accepts`. Instance swap is the Figma tool for a fixed piece with at most one instance in a fixed place ([ds101 — Component composition in Figma](https://f4cu.github.io/ds101/component-composition-in-figma/), "Choosing variants, instance swap, or slots"). An optional slot needs a separate visibility boolean, because an instance swap has no empty option. Code's `slot` kind is not a Figma native slot.
+- An `open` part is not mirrored as a Figma native slot. Figma mirrors the preset, so `open` parts stay fixed layers carrying the preset's text and boolean properties (see Amendment 2026-10-01).
+- Each part with its own Figma component (`Favorite`, `Menu`) owns its properties. The parent exposes them through "expose properties from nested instances" and does not redefine them. Base components are built first.
 - Booleans name a state and default to `false` (`Pressed`, `Expanded`, `Certified`). An interaction state with no code prop (Menu `Expanded`) may exist in Figma only and is documented as design-only.
 
 Scope: this contract applies to components with parts. The system-wide property-naming audit is a separate follow-up.
@@ -87,3 +90,13 @@ Scope: this contract applies to components with parts. The system-wide property-
 - `Object.assign` statics are invisible to some tooling. Storybook needs `subcomponents` in the story meta to document part props.
 - Fixed spacing inside open parts is a deliberate constraint. A consumer who wants different rhythm nests a primitive instead of overriding the part, which keeps every instance of the component on the same vertical rhythm.
 - Only CardVertical has parts as of this ADR. A second component (CardHorizontal, Card) adopts parts only when its own second use case passes the test above.
+
+## Amendment (2026-10-01) — Figma mirrors the preset; open parts are not Figma slots
+
+The first version cited ds101 for "slot = swappable nested instance". That page now describes the swappable nested instance as the workaround from before Figma had native slots. It separates the three tools by how much the consumer may change: variants for states, instance swap for one fixed piece, native slots for freeform content. The `slot` → instance-swap mapping still holds under that guidance. The open parts needed their own decision.
+
+**Decision.** In Figma, CardVertical mirrors the **preset**, not the composable parts. `Body` and `Meta` stay fixed layers. Figma doesn't allow component properties on layers inside a native slot, so turning `Body` into a slot would cost the `Title`/`Duration` text properties and the `Certified` boolean. Those properties cover the common case. That is "common configurable, uncommon composable" applied to the Figma file.
+
+**Alternatives considered.** Mirroring the parts (`Body`/`Meta` as native slots, with preferred instances from `accepts`) would follow the code more literally. It gives up the preset's properties, and the Plugin API's support for creating slots through figma-cli is unverified.
+
+**Revisit when** a designer needs a composed layout in Figma (the `instructor-row` or `grouped-meta` pattern) and would otherwise detach. Then add a native slot for the open part, with preferred instances from its `accepts`. A slot might live on a separate composed component so the preset keeps its properties.
