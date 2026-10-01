@@ -27,7 +27,14 @@ Approved proposal: https://claude.ai/artifact/J2neFtFKcYaGFgeTQ5CY2U (v4). It is
 
 ## Step 0: before writing code
 
-- [ ] Read Curtis, "Subcomponents" and "Space in Design Systems" (Medium blocked WebFetch, so the developer pastes the text). Adjust the ADR text if either contradicts the open-part / no-gap model.
+- [x] Read Curtis, ["Subcomponents"](https://nathanacurtis.substack.com/p/subcomponents-753ce9f6600a) (2022) and ["Space in Design Systems"](https://nathanacurtis.substack.com/p/space-in-design-systems-188bcbae0d62) (2016). Medium blocks WebFetch, but these Substack copies of the same posts load. Done 2026-10-01: **neither contradicts the open-part / no-gap model.** Background reading only: ADR-023 does not cite either article or its author. It cites the ds101 wiki where a page covers the point, and otherwise states the point as the system's own decision.
+  - **Cite ds101.** [Component API design](https://f4cu.github.io/ds101/component-api-design/): "common configurable, uncommon composable", and ready-made examples as the safeguard (our `usage.patterns` + stories). [Component composition in code](https://f4cu.github.io/ds101/component-composition-in-code/): subcomponent definition, dot namespace via `Object.assign`. [Component composition in Figma](https://f4cu.github.io/ds101/component-composition-in-figma/): slot = swappable nested instance.
+  - **State as our own decision (ds101 doesn't cover it).**
+    - Part taxonomy: `Media` narrows `Image`, `Action` enumerates allowed children, open parts are typed containers with `accepts`.
+    - Spacing ownership: the container owns spacing between parts, never a margin on the child. Braid is the external precedent.
+    - Context guard that throws outside `Root`.
+    - Figma instance swap resets overrides unless layer names match; that's the reason for the layer-name half of the naming contract (PR 4).
+  - **Space: already adopted (ADR-004).** inset/stack/inline concepts, t-shirt names, no `padding`/`margin` in token names, grid kept separate. `gap` on `Stack`/`Inline` replaces margin-based stacking, which is what makes the no-margin rule cheap. Component CSS already has no outer margins. Cite ADR-004, not an article. No ADR-004 change.
 
 ## PR 1: convention + tooling (branch `subcomponents/foundations`)
 
@@ -39,7 +46,7 @@ This PR has no component changes. It makes parts a first-class concept so the la
   - preset + parts ("common configurable, uncommon composable")
   - fixed / slot / open part kinds, and the no-margin rule
   - the naming contract with Figma
-  - sources: Braid, React Spectrum, Curtis slots, the ds101 pages
+  - sources: the ds101 pages, plus Braid and React Spectrum as precedent; no individual authors (Step 0 notes above)
   - one line of cross-reference in ADR-009
 - [ ] **Schema:** `packages/components/component.schema.json` gets an optional `composition.parts[]` with these fields:
   - `name` (PascalCase)
@@ -104,17 +111,24 @@ This PR has no component changes. It makes parts a first-class concept so the la
   - Approve new baselines only for the new stories.
 - **Review:** `/review-component CardVertical` (one adversarial subagent), then `/extract-learnings CardVertical`. Check `scripts/pattern-accuracy-harness/tasks/component-cardvertical.json` still matches the component's props (ADR-013 measures scaffold regressions).
 
-## PR 4: Figma alignment (interactive, developer present; Figma MCP `use_figma`)
+## PR 4: Figma alignment (interactive, developer present; `/figma-cli`)
 
-- [ ] Audit node `52:4270` first (`get_metadata`) and record its current property and layer names in this file before changing anything.
-- [ ] Rename layers to part names.
-- [ ] Properties: `Size` variant (sm/lg); `Action` instance swap (None / Favorite / Menu); `Favorite › Pressed` boolean; `Menu › Expanded` boolean (design-only state); `Certified` boolean; `Progress` layer toggle; text properties for `Title` / `Duration`.
-- [ ] Add a Button `elevated` round variant with `heart` / `more-vertical` in Figma.
-- Nothing to commit unless drift notes change. Update the `figma-file-variable-drift` memory if any representational divergence appears. Code Connect is Enterprise-gated, so it's out of scope.
+Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as fallback if it can't connect). Its hard rules apply: show the commands, no deletes without naming each node, names come from `CardVertical.metadata.json` (so PR 3 must be merged first).
+
+- [ ] **Read first.** One `figma-cli eval` on node `52:4270` (`getNodeByIdAsync`) returning its component property definitions and layer tree (names + ids only). Record the current property and layer names in this file before changing anything.
+- [ ] **Plan and confirm.** Write the rename map (layer → part name) and the property list below into this file; confirm with the developer before writing, since it touches CardVertical and the shared Button set.
+- [ ] **Rename layers** to part names in one `eval`.
+- [ ] **Properties** in one `eval` (`addComponentProperty` / `editComponentProperty`): `Size` variant (sm/lg); `Action` instance swap (None / Favorite / Menu); `Favorite › Pressed` boolean; `Menu › Expanded` boolean (design-only state); `Certified` boolean; `Progress` layer toggle; text properties for `Title` / `Duration`.
+- [ ] **Button `elevated` round variant** with `heart` / `more-vertical`: clone an existing round variant via `eval`, rename it per Button metadata `variants`, and bind its fill to the `color/background/button/elevated` variable (`$bind`). That variable is already in Figma (`figma-variables.json`, 2026-10-01 capture); never create variables here, that's `/figma-variable-push`.
+- [ ] **Verify.** Re-read with `eval` (property names and layer names match the metadata) and `figma-cli verify 52:4270 --measure`. `figma-cli undo` reverts the last operation if needed.
+- Nothing to commit unless drift notes or this file change. Update the `figma-file-variable-drift` memory if any representational divergence appears. Code Connect is Enterprise-gated, so it's out of scope.
 
 ## After: follow-up issues (file, don't do)
 
-- [ ] System-wide property naming audit: one vocabulary (`variant`/`size`/`shape`), plus a deterministic script comparing metadata `variants` with Figma component properties.
+- [ ] System-wide property naming audit: one vocabulary (`variant`/`size`/`shape`), plus a deterministic script comparing metadata `variants` with Figma component properties. Start only after PR 4 has tested the naming contract on CardVertical. Shape:
+  - **Read Figma once, then diff with a script.** One `/figma-cli` read captures every component set's property names, types, values, defaults and layer names into a committed snapshot (e.g. `figma-components.json`, same frozen-snapshot pattern as `figma-variables.json`). A script diffs it against the metadata files: cheap reruns, CI-able later. The new snapshot + script is a tooling contract, so it needs an ADR or an ADR-002 amendment.
+  - **Fix mostly on the Figma side.** Figma renames are a cheap `/figma-cli` batch. Code prop renames are breaking, so do them only where the code vocabulary itself is inconsistent.
+  - **Batch by family** (buttons, form inputs, cards), not all components at once, so each confirmation stays reviewable.
 - [ ] Watch for a second use case (CardHorizontal / Card). The ADR-023 test decides whether another component gets parts.
 - [ ] Refresh the `docs/*-case-study.html` write-ups if they reference CardVertical's API.
 
