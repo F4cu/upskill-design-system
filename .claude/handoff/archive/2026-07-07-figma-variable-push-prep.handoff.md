@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-07-07
-completed: null
+completed: 2026-10-01
 ---
 
 # Figma variable push — prep (2026-07-07)
@@ -44,3 +44,6 @@ horizon-specific changes entirely (e.g. horizon's brand-hue swap to cyan).
 Update `figma-file-variable-drift.md` with a new "Reconciled 2026-07-XX" entry (same
 format as prior entries) and re-run the `figma-variables.json` capture per its own note
 ("update it after any code→Figma push").
+
+## Outcome
+Push completed 2026-07-07 (all expected adds/drift reconciled; see `figma-file-variable-drift.md`). Re-verified 2026-10-01 by a figma-cli `/figma-variable-push` run: Figma fully in sync with code, nothing to write.
