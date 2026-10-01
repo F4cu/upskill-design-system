@@ -135,14 +135,19 @@
         "alternative": "If the card must link, put the link on the Title and stretch it over the card, keeping Action as a sibling on top."
       },
       {
-        "scenario": "Using Heading instead of CardVertical.Title inside CardVertical.Body",
-        "reason": "Title registers the id that names the article, the Favorite/Menu buttons and the progress bar; a plain Heading leaves them unnamed and loses the card's serif size override.",
-        "alternative": "Always use CardVertical.Title (set its `as` for the page outline)."
+        "scenario": "Using Heading instead of CardVertical.Title inside CardVertical.Body, omitting Title from a parts composition, or rendering two Titles",
+        "reason": "Title registers the id that names the article, the Favorite/Menu buttons and the progress bar; a plain Heading leaves them unnamed and loses the card's serif size override. Nothing checks for Title at runtime: without it every aria-labelledby on the card points at a missing id and the buttons read only 'Save' / 'More options'; two Titles duplicate the id. `required` is enforced by layout:validate only.",
+        "alternative": "Always render exactly one CardVertical.Title as the first child of CardVertical.Body (set its `as` for the page outline)."
       },
       {
         "scenario": "Rendering a CardVertical part outside CardVertical.Root",
         "reason": "Parts read size and the title id from Root's context and throw without it.",
         "alternative": "Compose parts only inside CardVertical.Root, or use the preset."
+      },
+      {
+        "scenario": "Putting anything other than a single CardVertical.Action inside CardVertical.Media (e.g. a Badge, text or a second overlay button)",
+        "reason": "Media is a fixed part whose only optional child is the Action overlay; it throws on anything else. The overlay corner is sized and positioned for one round elevated button. Implementors: a fixed part that renders children must narrow and guard them — `children?: ReactNode` silently turns it into an unchecked slot.",
+        "alternative": "Put extra content in CardVertical.Body/Meta; put a second action into CardVertical.Menu's items."
       }
     ]
   },
@@ -246,7 +251,8 @@
         "key": "Tab / Shift+Tab (Menu open)",
         "action": "Closes the menu and lets focus move on; an outside click also closes it without pulling focus back. Home/End and arrow wrapping are out of scope (DropdownMenu's shared contract)"
       }
-    ]
+    ],
+    "notes": "Menu focus: only Escape and item selection return focus to the trigger; pointer dismissal (outside click) and Tab/focusout close the menu without moving focus, so focus is never pulled away from where the user put it. aria-expanded must read false after every close path (Escape, selection, outside click, Tab), and Enter and Space must both be tested on items — Space selects on keydown and focus returns before keyup, the path most likely to re-trigger the button. Favorite is controlled-or-uncontrolled like a native input: when `pressed` is passed, aria-pressed follows the prop only, never internal state."
   },
   "composition": {
     "composedOf": [

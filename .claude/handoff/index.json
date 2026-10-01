@@ -4,7 +4,7 @@
     "kind": "handoff",
     "status": "active",
     "created": "2026-09-30",
-    "updated": "2026-09-30",
+    "updated": "2026-10-01",
     "path": ".claude/handoff/2026-09-30-cardvertical-subcomponents.handoff.md"
   },
   {
@@ -304,12 +304,36 @@
     "path": ".claude/handoff/runs/CardHorizontal.review.json"
   },
   {
+    "name": "CardVertical.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-10-01",
+    "updated": "2026-10-01",
+    "path": ".claude/handoff/runs/CardVertical.learnings.json"
+  },
+  {
     "name": "CardVertical.review",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-07-09",
-    "updated": "2026-07-09",
+    "created": "2026-10-01",
+    "updated": "2026-10-01",
     "path": ".claude/handoff/runs/CardVertical.review.json"
+  },
+  {
+    "name": "CardVertical.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-10-01",
+    "updated": "2026-10-01",
+    "path": ".claude/handoff/runs/CardVertical.run.json"
+  },
+  {
+    "name": "CardVertical.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-10-01",
+    "updated": "2026-10-01",
+    "path": ".claude/handoff/runs/CardVertical.snapshot.json"
   },
   {
     "name": "Checkbox.learnings",

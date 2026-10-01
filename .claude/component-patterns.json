@@ -48,7 +48,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "ec82c0c3ed53a955bb223680ae24795c318e4287",
+  "generatedFrom": "90648bd6ce43d722deaac6f320775f048e24a58e",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -365,6 +365,7 @@
             ]
           },
           "systemSpecificNotes": [
+            "Menu focus: only Escape and item selection return focus to the trigger; pointer dismissal (outside click) and Tab/focusout close the menu without moving focus, so focus is never pulled away from where the user put it. aria-expanded must read false after every close path (Escape, selection, outside click, Tab), and Enter and Space must both be tested on items — Space selects on keydown and focus returns before keyup, the path most likely to re-trigger the button. Favorite is controlled-or-uncontrolled like a native input: when `pressed` is passed, aria-pressed follows the prop only, never internal state.",
             "role=article on Root, aria-labelledby → the Title's id (Title registers it via context)",
             "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
             "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",

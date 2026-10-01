@@ -46,9 +46,9 @@
         "alternative": "Always wrap the trigger and DropdownMenu in a position:relative container."
       },
       {
-        "scenario": "Composing DropdownMenu without handling initial item focus and trigger focus-return",
-        "reason": "All items are tabIndex=-1 by design (single roving focus target, not one Tab stop per item). DropdownMenu does not render its own trigger, so it cannot own focus management — the composing component must programmatically focus the first/selected item when the panel opens and return focus to the trigger when it closes (via onClose), or keyboard/screen-reader users cannot reach the menu or lose their place when it closes.",
-        "alternative": "Mirror Select/index.tsx's pattern: a ref to the trigger element, an effect that focuses the first or selected item when the panel opens, and a prevOpenRef-style effect that refocuses the trigger when open transitions from true to false."
+        "scenario": "Composing DropdownMenu without handling initial item focus, trigger focus-return, Tab-out closing, and the panel's accessible name",
+        "reason": "All items are tabIndex=-1 by design (single roving focus target, not one Tab stop per item). DropdownMenu does not render its own trigger, so it cannot own focus management — the composing component must programmatically focus the first/selected item when the panel opens and return focus to the trigger when it closes (via onClose), or keyboard/screen-reader users cannot reach the menu or lose their place when it closes. DropdownMenu also has no Tab/focusout handling and no name of its own: with tabIndex=-1 items, Tab moves focus out while the menu stays open, and an unnamed role=menu is announced without context (APG menu button).",
+        "alternative": "Mirror Select/index.tsx's pattern: a ref to the trigger element, an effect that focuses the first or selected item when the panel opens, and a prevOpenRef-style effect that refocuses the trigger when open transitions from true to false. Also close on focusout leaving the trigger+panel wrapper (without returning focus), and pass the panel aria-labelledby pointing at the trigger (plus aria-controls on the trigger). CardVertical.Menu is the reference composition."
       }
     ]
   },
