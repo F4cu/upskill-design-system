@@ -33,7 +33,7 @@ Design [tokens](08-glossary.md) are the system's single source of design decisio
 
 ### Code is the source of truth — a reversal forced by plan limits
 
-ADR-002 originally declared primitives Figma-owned ("never hand-edited"). The 2026-06-17 amendment reversed this, and the reason is worth stating plainly because it shapes everything downstream: **automated Figma→code sync is impossible on the available plan.** The Figma Variables REST API is Enterprise-only, Code Connect is Org/Enterprise-only, and Token Studio's free GitHub sync is single-file while this architecture is deliberately six files (primitives + two theme + three device). The only automatable direction is code→Figma, interactively via the Figma plugin/MCP. Consequences:
+ADR-002 originally declared primitives Figma-owned ("never hand-edited"). The 2026-06-17 amendment reversed this, and the reason is worth stating plainly because it shapes everything downstream: **automated Figma→code sync is impossible on the available plan.** The Figma Variables REST API is Enterprise-only, Code Connect is Org/Enterprise-only, and Token Studio's free GitHub sync is single-file while this architecture is deliberately six files (primitives + two theme + three device). The only automatable direction is code→Figma, interactively via the Figma Plugin API — since the 2026-10-01 amendment through `figma-cli` against Figma Desktop, with the Figma MCP as fallback. Consequences:
 
 - `primitives.json` is hand-editable via PR, like every other layer.
 - A value invented in Figma is a *proposal* until it lands in `primitives.json`.
@@ -194,6 +194,6 @@ flowchart LR
 
 ## Related
 
-- ADRs: [002 — Three-layer token model](decisions/002-three-layer-token-model.md) (+ two amendments), [003 — `$root` convention (superseded)](decisions/003-root-token-convention.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [012 — Brand layer](decisions/012-brand-layer-multi-brand.md)
-- Commands: `/tokens-author`, `/figma-variable-audit`, `/figma-variable-push` (all in `.claude/commands/`)
+- ADRs: [002 — Three-layer token model](decisions/002-three-layer-token-model.md) (+ amendments), [003 — `$root` convention (superseded)](decisions/003-root-token-convention.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [012 — Brand layer](decisions/012-brand-layer-multi-brand.md)
+- Commands: `/tokens-author`, `/figma-variable-audit`, `/figma-variable-push`, `/figma-cli` (all in `.claude/commands/`)
 - Config: `packages/tokens/build.js` · Scripts: `npm run tokens:build`, `npm run tokens:usage`, `npm run tokens:contrast-check`, `npm run tokens:deprecations` — see the [CLI reference](07-cli-reference.md)

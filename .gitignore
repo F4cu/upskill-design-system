@@ -5,6 +5,12 @@ dist/
 .env
 .mcp.json
 
+# figma-cli writes its own agent rules into any project it connects from — the
+# repo's figma-cli rules live in .claude/commands/figma-cli.md (ADR-002, 2026-10-01).
+AGENTS.md
+.cursor/
+design.json
+
 *storybook.log
 # Astro generated types/cache for the Starlight docs site
 .astro/

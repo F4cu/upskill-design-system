@@ -1,5 +1,5 @@
 ---
-description: Audit Figma variables against the committed tokens (drift check) — diff Figma variables against code tokens and usage, report drift/renames/broken aliases/scale-mixing, then PR intended Figma changes into the cleaned committed tokens. Use before pulling Figma variable changes into the repo.
+description: Audit Figma variables against the committed tokens (drift check) — read Figma variables via figma-cli (Figma MCP as fallback), diff them against code tokens and usage, report drift/renames/broken aliases/scale-mixing, then PR intended Figma changes into the cleaned committed tokens. Use before pulling Figma variable changes into the repo.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SlashCommand, Skill, ReadMcpResourceTool, mcp__claude_ai_Figma__get_variable_defs, mcp__claude_ai_Figma__get_design_context, mcp__claude_ai_Figma__get_metadata, mcp__claude_ai_Figma__use_figma
 ---
 
@@ -11,7 +11,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SlashCommand, Skill, ReadMcp
 
 ## Inputs (read all before starting)
 
-- Figma variables — read via Figma MCP (`get_variable_defs` or `get_design_context` on the variables page)
+- Figma variables — read via a read-only `figma-cli eval` (`getLocalVariableCollectionsAsync` + `getLocalVariablesAsync`; follow the hard rules in `/figma-cli`). Fallback when figma-cli can't connect: Figma MCP (`get_variable_defs` or `get_design_context` on the variables page). Capture the read into `packages/tokens/figma-variables.json` — never `figma-cli snapshot` or `export dtcg` (ADR-002, 2026-10-01 amendment).
 - Current committed primitives — `packages/tokens/src/primitives.json`
 - Current theme aliases — `packages/tokens/src/theme/light.json`, `packages/tokens/src/theme/dark.json`
 - Token usage map — `packages/tokens/token-usage.json` (run `npm run tokens:usage` first if stale)

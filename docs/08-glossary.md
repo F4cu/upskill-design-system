@@ -16,6 +16,7 @@ sources:
 # clock reset 2026-07-21: added Enum entry alongside ADR-020 (layout props → data-attributes); no prior entry went stale
 # clock reset 2026-07-23: ADR-007 promoted proposed→accepted (exit condition met: Accordion 2026-07-09, 12 ledger runs) — status flip + amendment only, loop mechanics unchanged, page still accurate
 # rewritten 2026-07-23: Review checklist entry trimmed to a definition + pointer — 02-component-lifecycle is the single prose owner of checklist mechanics (dedup, ADR audit)
+# clock reset 2026-10-01: adds /figma-cli (a command, not a moment) and switches moments 1 and 5 to figma-cli transport; glossary's moment list and definitions unchanged, still accurate
 ---
 # Glossary
 

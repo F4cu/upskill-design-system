@@ -9,7 +9,30 @@
       "Bash(npx tsc --noEmit)",
       "Bash(gh label list *)",
       "mcp__claude_ai_Notion__notion-fetch",
-      "mcp__claude_ai_Figma__get_design_context"
+      "mcp__claude_ai_Figma__get_design_context",
+      "Bash(figma-cli --version)",
+      "Bash(figma-cli daemon status *)",
+      "Bash(figma-cli var list *)",
+      "Bash(figma-cli canvas info *)",
+      "Bash(figma-cli find *)",
+      "Bash(figma-cli spec *)",
+      "Bash(figma-cli verify *)"
+    ],
+    "ask": [
+      "Bash(figma-cli eval *)",
+      "Bash(figma-cli render *)",
+      "Bash(figma-cli render-batch *)",
+      "Bash(figma-cli node *)",
+      "Bash(figma-cli variants *)",
+      "Bash(figma-cli prop *)",
+      "Bash(figma-cli undo *)"
+    ],
+    "deny": [
+      "Bash(figma-cli import *)",
+      "Bash(figma-cli tokens *)",
+      "Bash(figma-cli export dtcg *)",
+      "Bash(figma-cli snapshot *)",
+      "Bash(figma-cli init-agent *)"
     ]
   }
 }

@@ -4,7 +4,7 @@ title: "ADR-002 — Three-Layer Token Model"
 # ADR-002 — Three-Layer Token Model
 
 **Date:** 2026-06-11
-**Amended:** 2026-06-17, 2026-07-06, 2026-07-07, 2026-07-13
+**Amended:** 2026-06-17, 2026-07-06, 2026-07-07, 2026-07-13, 2026-10-01
 **Status:** `accepted`
 
 ## Context
@@ -105,3 +105,18 @@ The DTCG Format Module's first stable version (2025.10) defines an optional, fir
 Airtable remains the governance UI — humans still set `status` and `successor` per token in the primitives/semantic tables. But the committed JSON becomes the durable record: `scripts/token-deprecation-mirror.js` mirrors governance into `$deprecated` on the affected leaf after every governance pull (`npm run airtable:pull:governance`), and CI (`npm run tokens:deprecations:check`, wired into `tokens-check.yml`) fails a PR where source and governance have drifted apart. Message convention: `true` when there is no successor, otherwise `"Replaced by {successor.path}."` (the successor's dot-path in curly braces, matching the alias syntax already used elsewhere in source).
 
 `$deprecated` is a spec property, not an `$extensions` block — it does not conflict with the "never commit `$extensions`" rule above. It is machine-managed only; nobody hand-authors it (deprecate via Airtable, then pull). Consumers: `/token-deprecation-pass` now reads `$deprecated` from source as the durable record, using `airtable-governance.json` only as a cross-check.
+
+## Amendment (2026-10-01) — figma-cli is the Figma Plugin API transport
+
+The 2026-06-17 amendment named the Figma plugin/MCP as the only way to reach Figma variables. A second local transport now exists: **figma-cli** (`silships/figma-cli`), which drives Figma Desktop over the Chrome DevTools Protocol and runs the same Plugin API code `use_figma` does — no API key, no REST, no plan gate, and no per-call MCP round-trip, which matters for the repetitive canvas work (renaming, restructuring components, binding variables) that MCP made expensive.
+
+**Decision.** figma-cli becomes the primary transport for both Figma moments — `/figma-variable-audit` (reads) and `/figma-variable-push` (writes) — and for ad-hoc mechanical canvas tasks via `/figma-cli`. The Figma MCP stays as the fallback when figma-cli can't connect (e.g. right after a Figma update reverts the Yolo patch) and remains the tool for design context during scaffolding. Neither moment's invariants change: the push still writes only clean-missing variables through the naming map, nothing is deleted or overwritten without confirmation, representational divergences and the brand layer stay out of scope, and `figma-variables.json` remains the only committed Figma snapshot.
+
+**Constraints that keep it inside the lite model.**
+- It is interactive and local: it needs Figma Desktop running on the maintainer's machine, so it is in the same category as an MCP call — never CI, never a scheduled run, never a `package.json` dependency (installed globally from a local clone).
+- Code stays the source of truth. figma-cli's token-import paths (`import`, `tokens` presets) are bypassed because they ignore the repo's code→Figma naming map and would overwrite drift silently; its Figma→code paths (`export dtcg`) and its own snapshot/contract file (`snapshot` → `design.json`) would create a second source of truth. All are denied in `.claude/settings.json`.
+- figma-cli writes its own agent rules (`AGENTS.md`, `.cursor/rules/`) into any project it connects from; those are gitignored. The repo's rules — which override the tool's bundled ones (e.g. its "never show terminal commands") — live in `.claude/commands/figma-cli.md`, keeping CLAUDE.md within its ADR-017 budget.
+
+**Alternatives considered.** Keeping MCP-only (no new dependency, but repetitive canvas work stays costly and slow); using `figma-cli import tokens.json` for the push (one command, but loses the naming map and the clean-missing-only guarantee). Browser and Safe modes avoid patching the desktop app and are acceptable substitutes for Yolo mode; the choice of connection mode is a machine concern, not a repo one.
+
+**Consequence.** The flatten-and-diff half of the push (steps 2–4) can now become a deterministic script fed by a figma-cli dump, leaving the agent only the drift/extras judgement — a candidate follow-up, not part of this amendment.

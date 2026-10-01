@@ -16,6 +16,7 @@ sources:
 # clock reset 2026-07-14: #72 adds the story axe sweep paragraph to .claude/rules/components.md's a11y section; this page describes the instruction ladder, not a11y check content, still accurate
 # clock reset 2026-07-21: CLAUDE.md's layout-grammar inline-style rule now names minHeight/maxHeight alongside existing props; this page describes no per-prop detail, still accurate
 # clock reset 2026-07-23: issue #84 adds pipeline-status.json to the CLAUDE.md frozen-memory table and status scripts to Common tasks; the layering/budget mechanics this page describes are unchanged, still accurate
+# clock reset 2026-10-01: CLAUDE.md Figma rows reworded for figma-cli, with its rules routed to .claude/commands/figma-cli.md to stay within the ADR-017 budget; layering/budget mechanics unchanged, still accurate
 ---
 # Context engineering
 

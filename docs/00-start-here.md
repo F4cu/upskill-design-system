@@ -15,6 +15,7 @@ sources:
 # clock reset 2026-07-23: ADR-007 promoted proposed→accepted (exit condition met: Accordion 2026-07-09, 12 ledger runs) — status flip + amendment only; this page's ADR list and moment descriptions are unaffected, still accurate
 # clock reset 2026-09-23: ADR-022 sidebar wording corrected (ADR list derived from filenames, not autogenerate); this page does not describe sidebar mechanics, still accurate
 # clock reset 2026-09-23: ADR-022 amendment moves this page to /start-here/ behind a splash root; the published site URL on this page is unchanged, still accurate
+# clock reset 2026-10-01: adds /figma-cli command + ADR-002 amendment (figma-cli as the Plugin API transport for the Figma moments); this page lists no per-command transport detail, still accurate
 ---
 # Start here
 

@@ -17,6 +17,7 @@ sources:
 # clock reset 2026-07-10: /token-deprecation-pass gains a pre-PR deterministic gate; governance flows unchanged, still accurate
 # verified 2026-07-13 (issue #74): checked against ADR-010 amendments (4 broad stages, full/standard rename); derived stages already read `in progress`/`in review` from the #64 sweep, guard and push/pull flows unchanged by design, still accurate
 # clock reset 2026-07-23 (issue #85): added "Base schema & setup" section (tables/columns, env vars, rebuild path); no change to the sync/pull direction rules above
+# clock reset 2026-10-01: ADR-002 amendment adds figma-cli as the Figma transport; Airtable sync/pull direction rules unchanged, still accurate
 ---
 # Governance
 

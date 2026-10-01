@@ -46,7 +46,7 @@ Format is W3C DTCG (`$type`/`$value`, curly-brace aliases, never commit `$extens
 
 **Vocabulary:** A **token** is a committed DTCG JSON value in `packages/tokens/src/` (source of truth, code-side). A **variable** is the downstream representation of a token inside a Figma collection.
 
-**The committed DTCG JSON is the source of truth, not Figma** (ADR-002 amendment). Code-first is forced by plan limits: the Variables REST API and Code Connect are Enterprise/Org-only, so the only automatable sync direction is code→Figma (interactive, via the Figma plugin/MCP). Figma is a downstream mirror and design-exploration surface; a value invented in Figma is a proposal until it lands in `primitives.json` via PR. Before pulling Figma changes into committed tokens, run `/figma-variable-audit` as a drift check — never overwrite primitives without diffing against current usage.
+**The committed DTCG JSON is the source of truth, not Figma** (ADR-002 amendment). Code-first is forced by plan limits: the Variables REST API and Code Connect are Enterprise/Org-only, so the only automatable sync direction is code→Figma (interactive, via figma-cli or Figma MCP). Figma is a downstream mirror and design-exploration surface; a value invented in Figma is a proposal until it lands in `primitives.json` via PR. Before pulling Figma changes into committed tokens, run `/figma-variable-audit` as a drift check — never overwrite primitives without diffing against current usage.
 
 **Representational divergences are not drift.** Figma cannot store unitless values, so line-heights (unitless ratios in code) always differ in Figma. The audit and push moments exclude them; the running list of accepted divergences lives in the drift memory note (`figma-file-variable-drift.md`). See ADR-002.
 
@@ -60,7 +60,7 @@ Moments and loops read the system's status quo from **committed files, never liv
 |---|---|---|
 | `airtable-governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) |
 | `token-usage.json` | Repo scan (`var(--ds-*)` CSS refs + `{alias}` refs) | `scripts/token-usage.js` |
-| `figma-variables.json` | Figma variables (REST API is Enterprise-gated, so captured interactively, not by script) | `/figma-variable-audit` via Figma MCP |
+| `figma-variables.json` | Figma variables (REST API is Enterprise-gated, so captured interactively, not by script) | `/figma-variable-audit` via figma-cli |
 | `.claude/component-signoff.json` | Airtable (`Implementation` = human `done`/`todo`) | `scripts/airtable-pull.js` (REST) |
 | `.claude/component-review-state.json` | Per-component review completion + `visualReview` records (local `runs/` artifacts merged over the committed baseline — never regressed by CI, ADR-015 amendment) | `scripts/sense.js` (`npm run sense`) |
 | `.claude/component-pipeline.json` | Component metadata + review state + sign-off | `scripts/sense.js` (`npm run sense`) |
@@ -82,7 +82,7 @@ General rule: MCP calls are for **interactive, one-off tasks with the developer 
 
 | MCP | Use it for | Do NOT use it for |
 |---|---|---|
-| **Figma** | Reading variables/design context in `/figma-variable-audit`; design context when scaffolding; writing variables in `/figma-variable-push`. | Treating Figma as the token source (ADR-002). Bulk-reading many nodes. |
+| **Figma** | Design context when scaffolding; fallback for the variable moments when figma-cli can't connect (`/figma-cli`). | Treating Figma as the token source (ADR-002). Bulk-reading many nodes. |
 | **Airtable** | One-off schema changes; ad-hoc inspection of a few records when debugging sync. | Token sync (use `scripts/airtable-sync.js`). Reading governance state — read the committed `airtable-governance.json`. Bulk record operations. |
 | **GitHub** | Rarely — cross-repo searches the `gh` CLI handles awkwardly. | Everything else; prefer `gh` CLI. |
 | **Google Drive / Notion** | Fetching a spec or planning note the user explicitly links. | Anything recurring; a docs target — docs live in Storybook (components) and Airtable (tokens). |
@@ -190,8 +190,8 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Rewrite stale `docs/NN-*.md` pages | `/docs-sync` (detection: `npm run docs:check`) |
 | Run a11y checks | `npm run lint` (Tier 1) · `npm run a11y:coverage && npm run a11y:test` (Tier 2 — ADR-008) |
 | Generate a page or section layout | `/layout-generation` |
-| Audit Figma variables against committed tokens | `/figma-variable-audit` |
-| Push committed tokens into Figma as variables | `/figma-variable-push` |
+| Audit / push Figma variables (drift / code → Figma) | `/figma-variable-audit` · `/figma-variable-push` |
+| Mechanical Figma canvas edits (rename, restructure, bind) | `/figma-cli` (local, never CI) |
 | Migrate deprecated token usages to successors | `/token-deprecation-pass` |
 | Build, run, or screenshot Storybook | `/run-storybook` |
 | Add a story to an existing component | Story conventions in `.claude/rules/components.md` |
