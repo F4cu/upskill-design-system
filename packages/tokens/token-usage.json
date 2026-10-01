@@ -62,6 +62,7 @@
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
+      "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
@@ -311,6 +312,13 @@
       "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/reset.css"
     ],
+    "--ds-color-background-button-elevated": [
+      "packages/components/src/components/Button/Button.module.css"
+    ],
+    "--ds-color-background-overlay-hover": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
+    ],
     "--ds-color-border-strong": [
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css"
     ],
@@ -388,9 +396,6 @@
     ],
     "--ds-color-text-selected": [
       "packages/components/src/components/Chip/Chip.module.css"
-    ],
-    "--ds-color-background-overlay-hover": [
-      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
     ],
     "--ds-font-size-headline": [
       "packages/components/src/components/Heading/Heading.module.css"
