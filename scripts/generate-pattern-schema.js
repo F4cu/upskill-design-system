@@ -17,6 +17,8 @@
 //   8. layout-primitive      metadata hint: component.category === "layout"
 //   9. static-display        everything else
 // Hook-based patterns (src/hooks/) form the content-stepper bucket, keyed by hook not component.
+// Bucket-level architecturalStyle is "flat-props"; a component that attaches parts (ADR-023)
+// carries its own architecturalStyle: "compound" plus its metadata part names.
 //
 // ariaContract is derived only from JSX attributes actually present (role / aria-* / id);
 // metadata accessibility strings are quoted verbatim into systemSpecificNotes, never restructured.
@@ -139,8 +141,9 @@ function scanJsx(sf) {
   sf.forEachChild(function visit(node) {
     if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
       const tag = node.tagName.getText(sf);
+      // <Parent.Part> (ADR-023) is a use of Parent, never a component of its own.
       if (/^[a-z]/.test(tag)) renderedTags.add(tag);
-      else usedJsxNames.add(tag);
+      else usedJsxNames.add(tag.split(".")[0]);
 
       const attrs = {};
       let hasAriaOrRole = false;
@@ -234,6 +237,11 @@ function scanComponent(name) {
     if (inputSpread && !/['"]onChange['"]/.test(inputSpread)) changeCallback = "onChange (native)";
   }
 
+  // Preset + parts (ADR-023): parts attached to the exported preset via
+  // Object.assign(Preset, { … }). Part names come from metadata, not the AST.
+  const compound = /\bObject\.assign\(\s*[A-Z]\w*\s*,\s*\{/.test(src);
+  const parts = (metadata.composition?.parts ?? []).map((p) => p.name);
+
   const notes = [];
   if (metadata.accessibility?.notes) notes.push(metadata.accessibility.notes);
   for (const s of metadata.accessibility?.ariaAttributes ?? []) notes.push(s);
@@ -249,6 +257,8 @@ function scanComponent(name) {
     usesUseState,
     state,
     changeCallback,
+    compound,
+    parts,
     idsFromUseId: [...useIdVars].sort(),
     systemSpecificNotes: notes,
   };
@@ -376,6 +386,10 @@ function main() {
       stage: stageByName[c.name] ?? null,
       composition: c.composition,
     };
+    if (c.compound) {
+      entry.architecturalStyle = "compound";
+      entry.parts = c.parts;
+    }
     if (c.state) entry.state = c.state;
     if (c.changeCallback) entry.changeCallback = c.changeCallback;
     if (c.ariaNodes.length) entry.ariaContract = c.ariaNodes;
@@ -399,10 +413,12 @@ function main() {
       .map(scanHook),
   };
 
+  const compoundNames = components.filter((c) => c.compound).map((c) => c.name);
   const output = {
     generatedFrom: execSync("git rev-parse HEAD", { cwd: ROOT }).toString().trim(),
-    architecturalStyle:
-      "flat-props: no compound components, no createContext, no static sub-component assignment; all components are plain named exports in packages/components/src/components/<Name>/index.tsx",
+    architecturalStyle: compoundNames.length
+      ? `flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle "compound"): ${compoundNames.join(", ")}`
+      : "flat-props: no compound components, no createContext, no static sub-component assignment; all components are plain named exports in packages/components/src/components/<Name>/index.tsx",
     patterns,
     drift: detectDrift(components),
   };
