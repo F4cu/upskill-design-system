@@ -196,7 +196,7 @@ Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as
     - `figma-cli verify --measure` was not run; screenshots via `verify` were used instead.
 - **Follow-up pass 2026-10-01 (developer review):**
   - **`Meta` aligned to the code's `Meta`** in all 8 variants: gap and wrap gap bound to `space/inline/sm`, wrap on, fills `Body`. `Certified` uses a `sm/badge-check` instance (`icon/subtle`, gap `space/inline/xs`) instead of the hand-drawn `SealCheck` frame.
-  - **Cards page:** a `CardVertical · preset + parts` section (`2852:8275`, 88px top padding so the section and set labels don't overlap) holds the set plus a nested `CardVertical parts` section (`2852:8276`) with Favorite and Menu. `Metadata`, `Card horizontal` and `Card badge` moved down 760px so nothing overlaps.
+  - **Cards page:** the set and a nested `CardVertical parts` section (`2852:8276`) sit in the developer's `CardVertical` section (`96:10731`; the interim `2852:8275` section was replaced on canvas). `CardVertical parts` holds with Favorite and Menu. `Metadata`, `Card horizontal` and `Card badge` moved down 760px so nothing overlaps.
   - **Unhid the 4 `Progress=true` variants,** which had been hidden in the set before this PR (that was why the set was 815px tall, not clipping). The full 8-variant matrix now shows.
   - **Deleted the stray 24px `Frame` (`2852:7646`)** left by the first failed icon attempt.
 - Nothing to commit unless drift notes or this file change. Update the `figma-file-variable-drift` memory with the `Progress` boolean/number divergence and any other representational divergence. Code Connect is Enterprise-gated, so it's out of scope.
