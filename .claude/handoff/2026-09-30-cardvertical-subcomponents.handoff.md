@@ -33,7 +33,7 @@ Approved proposal: https://claude.ai/artifact/J2neFtFKcYaGFgeTQ5CY2U (v4). It is
     - Part taxonomy: `Media` narrows `Image`, `Action` enumerates allowed children, open parts are typed containers with `accepts`.
     - Spacing ownership: the container owns spacing between parts, never a margin on the child. Braid is the external precedent.
     - Context guard that throws outside `Root`.
-    - Figma instance swap resets overrides unless layer names match; that's the reason for the layer-name half of the naming contract (PR 4).
+    - Figma preserves overrides on an instance swap or variant change only when layer names match. A swap from the Assets panel keeps text overrides only. Source: [Figma Help, "Change preservation"](https://help.figma.com/hc/en-us/articles/360039150733-Apply-changes-to-instances), verified 2026-10-01. This is why the naming contract (PR 4) includes layer names.
   - **Space: already adopted (ADR-004).** inset/stack/inline concepts, t-shirt names, no `padding`/`margin` in token names, grid kept separate. `gap` on `Stack`/`Inline` replaces margin-based stacking, which is what makes the no-margin rule cheap. Component CSS already has no outer margins. Cite ADR-004, not an article. No ADR-004 change.
 
 ## PR 1: convention + tooling (branch `subcomponents/foundations`)

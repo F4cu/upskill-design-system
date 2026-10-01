@@ -66,7 +66,7 @@ This is the system's existing spacing model applied one level down. [ADR-004](00
 
 Code and Figma use the same names, values and defaults. Casing is the only permitted difference.
 
-- Part names are Figma layer names. Figma's instance swap keeps overrides only when layer names match, so matching names is what keeps a swap from silently dropping content.
+- Part names are Figma layer names. When you swap an instance or select a variant, Figma preserves an override only if the layer names match ([Figma Help — Apply changes to instances](https://help.figma.com/hc/en-us/articles/360039150733-Apply-changes-to-instances), "Change preservation"). Matching names is what keeps a swap from silently dropping content. A swap from the Assets panel preserves text overrides only, whatever the names.
 - A `slot` part maps to a Figma instance-swap property ([ds101 — Component composition in Figma](https://f4cu.github.io/ds101/component-composition-in-figma/): slot = swappable nested instance).
 - Booleans name a state and default to `false` (`Pressed`, `Expanded`, `Certified`). An interaction state with no code prop (Menu `Expanded`) may exist in Figma only and is documented as design-only.
 
