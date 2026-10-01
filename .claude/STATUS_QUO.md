@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-10-01T10:12:23.937Z**
+Generated: **2026-10-01T10:16:08.773Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -91,7 +91,7 @@ Run `/extract-learnings --all` to process all at once, or `/extract-learnings <N
 
 ## Token usage
 
-- **98** distinct CSS custom properties referenced in `packages/components/src`
+- **99** distinct CSS custom properties referenced in `packages/components/src`
 - **100** distinct dot-path tokens referenced via `{alias}` syntax in theme/device JSON
 - Full token→files maps: `packages/tokens/token-usage.json`
 

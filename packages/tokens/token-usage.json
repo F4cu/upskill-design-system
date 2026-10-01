@@ -14,7 +14,6 @@
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
-      "packages/components/src/components/CardVertical/CardVertical.module.css",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/Inline/Inline.module.css"
     ],
@@ -37,6 +36,7 @@
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Stack/Stack.module.css"
     ],
@@ -104,6 +104,7 @@
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/Badge/Badge.module.css",
       "packages/components/src/components/Box/Box.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
@@ -356,6 +357,9 @@
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Stack/Stack.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
+    ],
+    "--ds-color-icon-brand": [
+      "packages/components/src/components/CardVertical/CardVertical.module.css"
     ],
     "--ds-font-size-subheader": [
       "packages/components/src/components/CardVertical/CardVertical.module.css",
