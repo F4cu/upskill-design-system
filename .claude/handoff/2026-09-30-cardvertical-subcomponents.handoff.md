@@ -90,31 +90,40 @@ This PR has no component changes. It makes parts a first-class concept so the la
 
 ## PR 3: CardVertical parts (branch `component/card-vertical`, via `/review-component CardVertical`, full path)
 
-- [ ] **`components/CardVertical/index.tsx`:**
+- [x] **`components/CardVertical/index.tsx`:**
   - `CardVerticalContext` holds `size` and `titleId` (`useId`). A `useCardVertical()` guard throws "CardVertical.X must be rendered inside CardVertical.Root".
   - One function per part. `Media` is a relative wrapper around `Image` with no overflow clipping, so the menu panel isn't cut off.
   - `Action` rejects anything other than exactly one child.
   - The preset `CardVertical` composes the parts, with `action?: ReactNode` as its only new prop.
   - `export const CardVertical = Object.assign(CardVerticalPreset, { Root, Media, Action, Favorite, Menu, Progress, Body, Title, Meta, Duration, Certified })`.
   - Part prop types are exported from `src/index.ts`.
-- [ ] **`CardVertical.module.css`:** part classes, the overlay slot (`position:absolute`, inset from space tokens), and the pressed heart (`fill: currentColor` with the brand icon token). No margins and no raw values.
-- [ ] **`CardVertical.metadata.json`:**
+- [x] **`CardVertical.module.css`:** part classes, the overlay slot (`position:absolute`, inset from space tokens), and the pressed heart (`fill: currentColor` with the brand icon token). No margins and no raw values.
+- [x] **`CardVertical.metadata.json`:**
   - `composition.parts` (all 11); `composedOf` += `Button`, `DropdownMenu`, `Stack`, `Inline`.
   - `accessibility` gains the Favorite/Menu keyboard interactions, which makes `a11y:coverage` treat the card as interactive.
   - `states` += `favorite-pressed`, `menu-open`.
   - `usage.patterns`: the 8 gallery states + `instructor-row` + `grouped-meta`.
   - `antiPatterns`: two actions on one card, `gap`/margin on parts, wrapping `Root` in `<a>`, `Heading` instead of `Title`.
-- [ ] **Stories:**
+- [x] **Stories:**
   - Existing stories are unchanged (regression proof).
   - Add `WithFavorite`, `WithMenu`, `Composed`, `InstructorRow`, `GroupedMeta`.
   - Set `subcomponents` in the Storybook meta so Autodocs lists the part props.
-- [ ] **`CardVertical.a11y.test.tsx`:**
+- [x] **`CardVertical.a11y.test.tsx`:**
   - Favorite toggles `aria-pressed` and has a name that includes the title.
   - Menu opens with Enter/Space, arrow keys move between items, Esc closes and returns focus, and an outside click closes it.
   - A part outside `Root` throws.
 - **Gate:** `npm run metadata:validate && npm run typecheck && npm run build && npm run lint && npm run a11y:coverage && npm run a11y:test && npm run a11y:stories && npm run screenshot:check && npm run patterns:generate && npm run sense`.
   - Existing CardVertical baselines and both showcase pages must render pixel-identical. That identity is the proof the preset didn't change.
   - Approve new baselines only for the new stories.
+  - Passed 2026-10-01: 54/54 baselines identical; Homepage + CourseOverview byte-identical PNGs (light+dark) vs main's build. No new baselines (baselines cover `--default` only).
+  - **Deviations:**
+    - Progress is named by the title alone (`aria-labelledby`), not "<title> progress"; the article gains `aria-labelledby` → Title. Accessibility-tree changes only, pixel-neutral.
+    - Media stays `fixed` (not `slot`): its single Action child is optional, and a slot requires exactly one. A runtime guard enforces at most one Action.
+    - Pressed heart `icon.brand` on `button.elevated` is 2.92:1 under horizon/dark; waived under #30 (same shortfall as the SplitChart brand pair).
+    - Review added APG menu-button fixes: Tab/focusout closes, the panel is named by trigger + title, `aria-controls`, and outside click doesn't steal focus.
+    - Stories: plan's five + `FavoriteWithProgress`, `TitleOnly` (review finding).
+  - **Deferred (review lows):** a shared `useMenuButton` hook for AppHeader + CardVertical.Menu (follow-up); no runtime Title-required check (`layout:validate` enforces `required`).
+  - Pattern-accuracy harness task `component-cardvertical.json` is a standalone scaffold brief (its own prop set), so it doesn't depend on the real props. No change.
 - **Review:** `/review-component CardVertical` (one adversarial subagent), then `/extract-learnings CardVertical`. Check `scripts/pattern-accuracy-harness/tasks/component-cardvertical.json` still matches the component's props (ADR-013 measures scaffold regressions).
 
 ## PR 4: Figma alignment (interactive, developer present; `/figma-cli`)

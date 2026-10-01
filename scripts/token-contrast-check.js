@@ -94,6 +94,8 @@ const PAIRS = [
   // layered on button.elevated; text.default on overlay.hover is covered by
   // the DropdownMenu pair below.
   [T("default"), BG("button-elevated")],
+  // CardVertical.Favorite — pressed heart fills with icon.brand on the disc.
+  [I("brand"), BG("button-elevated")],
 
   // Chip — border.selected is a real state indicator (checked); the
   // unselected ring is the shared decorative border.default (not checked,

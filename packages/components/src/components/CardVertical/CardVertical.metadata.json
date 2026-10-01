@@ -2,9 +2,9 @@
   "component": {
     "name": "CardVertical",
     "category": "molecule",
-    "type": "display",
+    "type": "interactive",
     "status": "beta",
-    "description": "A vertical course card with an image thumbnail, optional progress bar, serif title, and metadata row (duration and certified badge). Two image proportions via the size prop: lg uses a portrait 4/5 thumbnail (tall), sm uses a landscape 3/2 thumbnail (short). Used in Saved Courses and Discover carousels. No dark variant — appears on light and elevated backgrounds only.",
+    "description": "A vertical course card with an image thumbnail, an optional overlay action (favorite toggle or overflow menu), optional progress bar, serif title, and metadata row (duration and certified badge). Two image proportions via the size prop: lg uses a portrait 4/5 thumbnail (tall), sm uses a landscape 3/2 thumbnail (short). Used in Saved Courses and Discover carousels. Ships as a preset (`<CardVertical …props />`) built from named parts (`CardVertical.Root`, `.Media`, `.Action`, …) that consumers compose directly for uncommon content (ADR-023). No dark variant — appears on light and elevated backgrounds only.",
     "figmaNodeId": "52:4270"
   },
   "usage": {
@@ -15,13 +15,21 @@
       "carousel card",
       "discover",
       "saved courses",
-      "thumbnail"
+      "thumbnail",
+      "favorite",
+      "save",
+      "overflow menu",
+      "kebab",
+      "compound",
+      "parts"
     ],
     "when": [
       "Displaying course cards in a horizontal carousel (Discover, Saved Courses sections)",
       "Use size='lg' (portrait thumbnail) for feature carousels where image impact matters",
       "Use size='sm' (landscape thumbnail) for compact carousels or narrower layout slots",
-      "Pass progress when the user has started the course — renders a ProgressBar between image and title"
+      "Pass progress when the user has started the course — renders a ProgressBar between image and title",
+      "Pass action={<CardVertical.Favorite …/>} when the user can save the course; action={<CardVertical.Menu …/>} for an overflow menu of course actions. Never both.",
+      "Compose the parts (CardVertical.Root > Media / Progress / Body) only when the preset can't express the content — e.g. an instructor row or custom meta. Start from a named pattern below."
     ],
     "patterns": [
       {
@@ -38,6 +46,56 @@
         "name": "certified-badge",
         "description": "The Icon+Text 'Certified' badge in the metadata row is not exclusive to this component's internal layout — reuse the same composition wherever a certified badge appears outside a Card (e.g. a page's course-detail metadata row). Icon gets its color from a `.badge svg { color: var(--ds-color-icon-subtle); }` rule in a co-located CSS Module, targeting the ancestor per the Icon color rule (.claude/rules/components.md) — never an inline `style={{ color }}` on the wrapping element.",
         "tree": "Inline(as='span', gap='xs', align='center', className=<module>.badge) > [Icon(name='badge-check', size='sm'), Text(as='span', size='metadata', color='subtle')]"
+      },
+      {
+        "name": "default-card",
+        "description": "Gallery state: large card, certified, no action. The preset default.",
+        "tree": "CardVertical(size=lg, title, duration, certified)"
+      },
+      {
+        "name": "in-progress-card",
+        "description": "Gallery state: compact card for a started course in Saved Courses. Story: WithProgress with size=sm.",
+        "tree": "CardVertical(size=sm, title, duration, progress=65)"
+      },
+      {
+        "name": "favorite-saved",
+        "description": "Gallery state: large card the user has saved. Favorite is controlled by the app's saved state.",
+        "tree": "CardVertical(size=lg, title, duration, certified, action=CardVertical.Favorite(pressed, onPressedChange))"
+      },
+      {
+        "name": "overflow-menu",
+        "description": "Gallery state: compact card with a kebab menu of course actions. Items reuse DropdownMenu's items array.",
+        "tree": "CardVertical(size=sm, title, duration, action=CardVertical.Menu(items, onSelect))"
+      },
+      {
+        "name": "placeholder-favorite",
+        "description": "Gallery state: no thumbnailSrc (Image placeholder) with an unsaved favorite.",
+        "tree": "CardVertical(size=lg, title, duration, action=CardVertical.Favorite(pressed=false, onPressedChange))"
+      },
+      {
+        "name": "favorite-progress",
+        "description": "Gallery state: compact card that is both saved and started.",
+        "tree": "CardVertical(size=sm, title, duration, certified, progress=20, action=CardVertical.Favorite(pressed, onPressedChange))"
+      },
+      {
+        "name": "custom-meta",
+        "description": "Gallery state (parts only): Meta holds consumer Text instead of Duration/Certified. The preset deliberately has no metaSlot — compose the parts.",
+        "tree": "CardVertical.Root(size=lg) > [CardVertical.Media > CardVertical.Action > CardVertical.Menu(items, onSelect), CardVertical.Body > [CardVertical.Title, CardVertical.Meta > Text(as=span, size=metadata, color=subtle)]]"
+      },
+      {
+        "name": "title-only",
+        "description": "Gallery state: compact placeholder card with no meta row (no duration, not certified).",
+        "tree": "CardVertical(size=sm, title)"
+      },
+      {
+        "name": "instructor-row",
+        "description": "Parts composition: an instructor row between Title and Meta. Body's Stack owns the spacing around it; the row's own layout comes from nested primitives, never from a margin or a layout prop on a part.",
+        "tree": "CardVertical.Root(size=lg) > [CardVertical.Media > CardVertical.Action > CardVertical.Favorite, CardVertical.Body > [CardVertical.Title, Inline(gap=sm, align=center, wrap=false) > [Avatar(size=sm), Stack(gap=xs) > [Text(as=span, size=metadata), Text(as=span, size=metadata, color=subtle)]], CardVertical.Meta > [CardVertical.Duration, CardVertical.Certified]]]"
+      },
+      {
+        "name": "grouped-meta",
+        "description": "Parts composition: Meta keeps its sm spacing while a nested Inline(gap=xs) groups a badge with its date more tightly.",
+        "tree": "CardVertical.Root(size=sm) > [CardVertical.Media, CardVertical.Body > [CardVertical.Title, CardVertical.Meta > [CardVertical.Duration, Inline(gap=xs, align=center) > [Badge(label=New), Text(as=span, size=metadata, color=subtle)]]]]"
       }
     ],
     "antiPatterns": [
@@ -60,6 +118,31 @@
         "scenario": "Mixing CardVertical and CardHorizontal in the same carousel or grid row",
         "reason": "CardVertical uses portrait or landscape thumbnails; CardHorizontal uses a fixed square thumbnail. Mixing them produces inconsistent heights and visual noise.",
         "alternative": "Use CardVertical for carousel and discover layouts; use CardHorizontal for list and search layouts. Never mix the two in the same visual row."
+      },
+      {
+        "scenario": "Two actions on one card (both a Favorite and a Menu)",
+        "reason": "Action is a slot that accepts exactly one child; it throws at runtime with two, and both buttons would compete for the same corner.",
+        "alternative": "Use CardVertical.Menu and put 'Save' in its items."
+      },
+      {
+        "scenario": "Adding gap or margin to a part (e.g. <CardVertical.Body gap=\"lg\">, or a margin on content inside Body)",
+        "reason": "Parts own the card's rhythm (ADR-023): open parts accept children only, so a layout prop is a TypeScript error, and a margin breaks the shared vertical rhythm.",
+        "alternative": "Nest a Stack or Inline inside the open part for custom spacing."
+      },
+      {
+        "scenario": "Wrapping CardVertical.Root (or the preset) in an <a>",
+        "reason": "The Favorite/Menu buttons would become interactive content nested inside a link, which is invalid and confuses keyboard and screen-reader users.",
+        "alternative": "If the card must link, put the link on the Title and stretch it over the card, keeping Action as a sibling on top."
+      },
+      {
+        "scenario": "Using Heading instead of CardVertical.Title inside CardVertical.Body",
+        "reason": "Title registers the id that names the article, the Favorite/Menu buttons and the progress bar; a plain Heading leaves them unnamed and loses the card's serif size override.",
+        "alternative": "Always use CardVertical.Title (set its `as` for the page outline)."
+      },
+      {
+        "scenario": "Rendering a CardVertical part outside CardVertical.Root",
+        "reason": "Parts read size and the title id from Root's context and throw without it.",
+        "alternative": "Compose parts only inside CardVertical.Root, or use the preset."
       }
     ]
   },
@@ -92,21 +175,33 @@
     {
       "state": "placeholder",
       "description": "No thumbnailSrc provided — Image component renders a neutral grey placeholder with a centred icon."
+    },
+    {
+      "state": "favorite-pressed",
+      "description": "Favorite's aria-pressed is true; the heart fills with color.icon.brand on the elevated disc."
+    },
+    {
+      "state": "menu-open",
+      "description": "Menu trigger has aria-expanded=true and a DropdownMenu panel opens below it, right-aligned; focus moves to the first item."
     }
   ],
   "tokens": {
     "color": [
       "color.text.default",
       "color.text.subtle",
-      "color.icon.default"
+      "color.icon.subtle",
+      "color.icon.brand"
     ],
     "spacing": [
       "space.stack.sm",
+      "space.stack.xs",
       "space.inline.sm",
-      "space.inline.xs"
+      "space.inline.xs",
+      "space.inset.xs"
     ],
     "typography": [
       "font.family.headline-serif",
+      "font.size.subheader",
       "font.weight.medium",
       "font.line-height.tight"
     ],
@@ -116,9 +211,42 @@
   "accessibility": {
     "role": "article",
     "ariaAttributes": [
-      "thumbnailAlt — pass a meaningful description of the course image, or empty string if the title already provides sufficient context."
+      "role=article on Root, aria-labelledby → the Title's id (Title registers it via context)",
+      "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
+      "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
+      "Menu trigger: aria-haspopup=menu, aria-expanded, aria-controls → the panel while open; accessible name 'More options <title>' via aria-labelledby=[self, title]. Panel is DropdownMenu listRole=menu, named by the same aria-labelledby. No trigger renders when items is empty.",
+      "Progress: ProgressBar aria-labelledby → the Title's id"
     ],
-    "keyboardInteractions": []
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Moves focus to the Favorite or Menu button (the card has no other focus stop)"
+      },
+      {
+        "key": "Enter / Space (Favorite)",
+        "action": "Toggles aria-pressed and calls onPressedChange"
+      },
+      {
+        "key": "Enter / Space (Menu trigger)",
+        "action": "Opens the menu and moves focus to the first item"
+      },
+      {
+        "key": "ArrowUp / ArrowDown (Menu)",
+        "action": "Moves focus between menu items"
+      },
+      {
+        "key": "Enter / Space (Menu item)",
+        "action": "Selects the item, closes the menu and returns focus to the trigger"
+      },
+      {
+        "key": "Escape (Menu)",
+        "action": "Closes the menu and returns focus to the trigger"
+      },
+      {
+        "key": "Tab / Shift+Tab (Menu open)",
+        "action": "Closes the menu and lets focus move on; an outside click also closes it without pulling focus back. Home/End and arrow wrapping are out of scope (DropdownMenu's shared contract)"
+      }
+    ]
   },
   "composition": {
     "composedOf": [
@@ -126,7 +254,11 @@
       "Heading",
       "Text",
       "Icon",
-      "ProgressBar"
+      "ProgressBar",
+      "Button",
+      "DropdownMenu",
+      "Stack",
+      "Inline"
     ],
     "accepts": [],
     "containedBy": [
@@ -138,6 +270,128 @@
       "widthBehavior": "fill",
       "displayType": "flex-column",
       "canNest": false
-    }
+    },
+    "parts": [
+      {
+        "name": "Root",
+        "kind": "fixed",
+        "description": "The article container. Provides size and the title id to every part through context; owns the spacing between Media, Progress and Body.",
+        "builtOn": null
+      },
+      {
+        "name": "Media",
+        "kind": "fixed",
+        "description": "Positioned wrapper around Image (aspect 4/5 for lg, 3/2 for sm, from Root's size). Props: src, alt (''), and an optional single Action child (runtime guard throws otherwise — fixed, not slot, because the overlay is optional). No overflow clipping so the Menu panel can extend past it.",
+        "builtOn": "Image",
+        "required": true,
+        "containedBy": [
+          "Root"
+        ]
+      },
+      {
+        "name": "Action",
+        "kind": "slot",
+        "description": "Top-right overlay slot on Media. Exactly one Favorite or Menu; throws otherwise. Maps to the Figma 'Action' instance-swap property.",
+        "builtOn": null,
+        "accepts": [
+          "Favorite",
+          "Menu"
+        ],
+        "containedBy": [
+          "Media"
+        ]
+      },
+      {
+        "name": "Favorite",
+        "kind": "fixed",
+        "description": "Round elevated heart Button toggling aria-pressed. Props: pressed, defaultPressed (false), onPressedChange.",
+        "builtOn": "Button",
+        "containedBy": [
+          "Action"
+        ]
+      },
+      {
+        "name": "Menu",
+        "kind": "fixed",
+        "description": "Round elevated kebab Button that opens a DropdownMenu. Props: items (DropdownMenuItem[]), onSelect. Open state is internal (Figma 'Expanded' is design-only).",
+        "builtOn": "Button",
+        "containedBy": [
+          "Action"
+        ]
+      },
+      {
+        "name": "Progress",
+        "kind": "fixed",
+        "description": "ProgressBar named by the title. Props: value (0–100).",
+        "builtOn": "ProgressBar",
+        "containedBy": [
+          "Root"
+        ]
+      },
+      {
+        "name": "Body",
+        "kind": "open",
+        "description": "Stack gap=sm holding Title and the card's text content. Children only — no layout props.",
+        "builtOn": "Stack",
+        "required": true,
+        "accepts": [
+          "Title",
+          "Meta",
+          "Stack",
+          "Inline",
+          "Text",
+          "Badge",
+          "Avatar"
+        ],
+        "containedBy": [
+          "Root"
+        ]
+      },
+      {
+        "name": "Title",
+        "kind": "fixed",
+        "description": "Heading (headline-serif, subheader size) that registers the title id. Props: as ('h3'), children. Must come first in Body.",
+        "builtOn": "Heading",
+        "required": true,
+        "containedBy": [
+          "Body"
+        ]
+      },
+      {
+        "name": "Meta",
+        "kind": "open",
+        "description": "Inline gap=sm wrap align=center for the metadata row. Children only — nest an Inline to group items more tightly.",
+        "builtOn": "Inline",
+        "accepts": [
+          "Duration",
+          "Certified",
+          "Text",
+          "Badge",
+          "Icon",
+          "Inline"
+        ],
+        "containedBy": [
+          "Body"
+        ]
+      },
+      {
+        "name": "Duration",
+        "kind": "fixed",
+        "description": "Text size=metadata color=subtle. Props: children.",
+        "builtOn": "Text",
+        "containedBy": [
+          "Meta"
+        ]
+      },
+      {
+        "name": "Certified",
+        "kind": "fixed",
+        "description": "badge-check Icon (color.icon.subtle) + 'Certified' Text. No props.",
+        "builtOn": null,
+        "containedBy": [
+          "Meta"
+        ]
+      }
+    ]
   }
 }
