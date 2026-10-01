@@ -204,11 +204,11 @@ Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as
 
 ## After: follow-up issues (file, don't do)
 
-- [ ] System-wide property naming audit: one vocabulary (`variant`/`size`/`shape`), plus a deterministic script comparing metadata `variants` with Figma component properties. Start only after PR 4 has tested the naming contract on CardVertical. Shape:
+- [x] Filed as [#103](https://github.com/F4cu/upskill-design-system/issues/103) (2026-10-01; scope adds fixed text that code hardcodes, and warns on TEXT-property defaults). System-wide property naming audit: one vocabulary (`variant`/`size`/`shape`), plus a deterministic script comparing metadata `variants` with Figma component properties. Start only after PR 4 has tested the naming contract on CardVertical. Shape:
   - **Read Figma once, then diff with a script.** One `/figma-cli` read captures every component set's property names, types, values, defaults and layer names into a committed snapshot (e.g. `figma-components.json`, same frozen-snapshot pattern as `figma-variables.json`). A script diffs it against the metadata files: cheap reruns, CI-able later. The new snapshot + script is a tooling contract, so it needs an ADR or an ADR-002 amendment.
   - **Fix mostly on the Figma side.** Figma renames are a cheap `/figma-cli` batch. Code prop renames are breaking, so do them only where the code vocabulary itself is inconsistent.
   - **Batch by family** (buttons, form inputs, cards), not all components at once, so each confirmation stays reviewable.
-- [ ] Figma `Metadata` set (`81:2545`, 94 instances: Card horizontal, Footer highlights, Layout Examples, Mockups) is Figma-only. Code has no Metadata component; CardHorizontal's meta row is internal (ADR-009 Q3). Its content also differs (lessons · duration · Certified with separators). Decide in the CardHorizontal / naming-audit pass whether to keep it as a Figma-only helper or fold it into CardHorizontal. Don't make CardVertical's `Meta` an instance of it.
+- [x] Tracked in #103 (cards batch). Figma `Metadata` set (`81:2545`, 94 instances: Card horizontal, Footer highlights, Layout Examples, Mockups) is Figma-only. Code has no Metadata component; CardHorizontal's meta row is internal (ADR-009 Q3). Its content also differs (lessons · duration · Certified with separators). Decide in the CardHorizontal / naming-audit pass whether to keep it as a Figma-only helper or fold it into CardHorizontal. Don't make CardVertical's `Meta` an instance of it.
 - [ ] Watch for a second use case (CardHorizontal / Card). The ADR-023 test decides whether another component gets parts.
 - [ ] Refresh the `docs/*-case-study.html` write-ups if they reference CardVertical's API.
 
