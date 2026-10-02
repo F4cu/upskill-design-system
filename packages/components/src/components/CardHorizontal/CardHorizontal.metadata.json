@@ -4,8 +4,8 @@
     "category": "molecule",
     "type": "display",
     "status": "beta",
-    "description": "A horizontal course card (thumbnail-left layout) with an 80×80px square thumbnail and a content column (title, optional ProgressBar, metadata row with duration and certified badge). Two colour contexts: default (light) and inverted (dark footer) via the variant prop. For vertical image-top course cards use CardVertical; for generic surface containers use Card.",
-    "figmaNodeId": "none — no Figma component set exists"
+    "description": "A horizontal course card (thumbnail-left layout) with an 80×80px square thumbnail and a content column: the title and optional ProgressBar (stack xs), then a metadata row (Inline gap sm) at stack sm. The metadata row renders author · duration (a 4px separator dot only between those two, drawn by the component) and the certified badge (no separator; its icon already sets it apart). Two usages: started courses (default variant, progress, duration, optional certified) and footer promotion (inverted variant, author, duration). For vertical image-top course cards use CardVertical; for generic surface containers use Card.",
+    "figmaNodeId": "130:7289"
   },
   "usage": {
     "keywords": [
@@ -23,18 +23,18 @@
     "patterns": [
       {
         "name": "started-courses-list",
-        "description": "A vertical Stack of CardHorizontal items showing in-progress courses.",
-        "tree": "Stack(gap=sm) > [CardHorizontal(progress=65), CardHorizontal(progress=20), ...]"
+        "description": "Courses the learner has started: a vertical Stack of CardHorizontal items with progress, duration and optional certified. No author.",
+        "tree": "Stack(gap=sm) > [CardHorizontal(title, progress=65, duration, certified), CardHorizontal(title, progress=20, duration), ...]"
       },
       {
         "name": "footer-recommendations",
-        "description": "CardHorizontal items in inverted variant inside the dark footer section. The Box provides the inverted background color; no theme switch is needed — both parent and cards stay in the light theme.",
-        "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted), ...]"
+        "description": "Promotional, not-started items in the dark footer: inverted variant with author and duration, no progress. The Box provides the inverted background color; no theme switch is needed — both parent and cards stay in the light theme.",
+        "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted, title, author, duration), ...]"
       },
       {
         "name": "certified-badge",
-        "description": "The Icon+Text 'Certified' badge in the metadata row is not exclusive to this component's internal layout — reuse the same composition wherever a certified badge appears outside a Card (e.g. a page's course-detail metadata row). Icon gets its color from a `.badge svg { color: var(--ds-color-icon-subtle); }` rule in a co-located CSS Module, targeting the ancestor per the Icon color rule (.claude/rules/components.md) — never an inline `style={{ color }}` on the wrapping element.",
-        "tree": "Inline(as='span', gap='xs', align='center', className=<module>.badge) > [Icon(name='badge-check', size='sm'), Text(as='span', size='metadata', color='subtle')]"
+        "description": "The Icon+Text 'Certified' badge in the metadata row is not exclusive to this component's internal layout — reuse the same composition wherever a certified badge appears outside a Card (e.g. a page's course-detail metadata row). Icon gets its color from a `.badge svg { color: var(--ds-color-icon-subtle); }` rule in a co-located CSS Module, targeting the ancestor per the Icon color rule (.claude/rules/components.md) — never an inline `style={{ color }}` on the wrapping element. On an inverted surface, override it with color.icon.inverted.default.",
+        "tree": "span(className=<module>.badge) > [Icon(name='badge-check', size='sm'), Text(as='span', size='metadata', color='subtle')]"
       }
     ],
     "antiPatterns": [
@@ -57,6 +57,26 @@
         "scenario": "Placing CardHorizontal alongside Card or CardVertical in the same visual group",
         "reason": "The three card variants have different aspect ratios, thumbnail shapes, and content structures. Mixing them in the same row or list breaks visual rhythm.",
         "alternative": "Use one card variant consistently per section. CardHorizontal works best in vertical lists (e.g. search results, inverted footer sections); CardVertical in horizontal carousels."
+      },
+      {
+        "scenario": "Setting progress together with variant=\"inverted\"",
+        "reason": "ProgressBar has no inverted treatment: its track (background.overlay-subtle) and fill are not contrast-checked against color.background.container.inverted.",
+        "alternative": "Use progress only on the default variant; inverted footer cards show duration and certified only."
+      },
+      {
+        "scenario": "Colouring the inverted variant with an inline style or a colour rule on the card root",
+        "reason": "Heading and Text own their colour through the color prop; inline colour bypasses the typography API and the no-inline-colour rule.",
+        "alternative": "Pass Heading color=\"inverted\" and Text color=\"inverted-subtle\"; only the badge icon needs a CSS Module override (.inverted .badge svg)."
+      },
+      {
+        "scenario": "Packing the author (or a topic) into duration, e.g. duration=\"Jon Kabat-Zinn · 2 hours, 15min\"",
+        "reason": "Each prop holds one kind of data. A merged string hides the author from consumers, agents and Figma (Author/Duration are separate properties), and hand-typed separators drift from the component's separator dot.",
+        "alternative": "Pass author=\"Jon Kabat-Zinn\" duration=\"2 hours, 15min\"; the component draws the separator."
+      },
+      {
+        "scenario": "Adding a separator before the certified badge, or typing \"·\" in any metadata string",
+        "reason": "The separator sits only between author and duration; the badge icon already separates Certified. Separators are rendered by the component (aria-hidden), never typed.",
+        "alternative": "Pass the plain values; let CardHorizontal decide where separators go."
       }
     ]
   },
@@ -69,7 +89,7 @@
       "default": "default",
       "purpose": {
         "default": "Standard light-theme context. Text uses default and subtle color tokens.",
-        "inverted": "Inverted-background context within the light theme (e.g. the dark footer section). Switches title to color.text.inverted.default and metadata to color.text.inverted.subtle. The parent container must supply the dark background via color.background.container.inverted — do NOT use data-theme='dark'."
+        "inverted": "Inverted-background context within the light theme (e.g. the dark footer section). Switches the title to Heading color=inverted, metadata to Text color=inverted-subtle, and the badge icon to color.icon.inverted.default. The parent container must supply the dark background via color.background.container.inverted — do NOT use data-theme='dark'. Figma: Variant=inverted."
       }
     }
   },
@@ -81,34 +101,37 @@
   ],
   "tokens": {
     "color": [
-      "color.background.container.canvas",
-      "color.background.container.inverted",
-      "color.border.subtle",
-      "color.border.inverted",
       "color.text.default",
-      "color.text.inverted.default",
       "color.text.subtle",
-      "color.text.accent.default"
+      "color.text.inverted.default",
+      "color.text.inverted.subtle",
+      "color.icon.subtle",
+      "color.icon.inverted.default"
     ],
     "spacing": [
       "space.inline.xs",
       "space.inline.sm",
       "space.inline.md",
       "space.stack.xs",
-      "space.inset.sm"
+      "space.stack.sm"
     ],
-    "typography": [],
+    "typography": [
+      "font.line-height.tight"
+    ],
     "borderRadius": [
-      "border-radius.md"
+      "border-radius.full"
     ],
     "other": [
-      "size.thumbnail.sm"
+      "size.thumbnail.sm",
+      "size.separator"
     ]
   },
   "accessibility": {
     "role": "article",
     "ariaAttributes": [
-      "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)"
+      "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
+      "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
+      "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
     ],
     "keyboardInteractions": []
   },
@@ -118,7 +141,9 @@
       "ProgressBar",
       "Icon",
       "Text",
-      "Image"
+      "Image",
+      "Stack",
+      "Inline"
     ],
     "accepts": [],
     "containedBy": [
@@ -128,7 +153,7 @@
     ],
     "layoutBehavior": {
       "widthBehavior": "fill",
-      "displayType": "block",
+      "displayType": "flex-row",
       "canNest": false
     }
   }

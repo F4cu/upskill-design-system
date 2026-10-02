@@ -4,7 +4,7 @@
     "kind": "handoff",
     "status": "active",
     "created": "2026-09-30",
-    "updated": "2026-10-01",
+    "updated": "2026-10-02",
     "path": ".claude/handoff/2026-09-30-cardvertical-subcomponents.handoff.md"
   },
   {
@@ -299,9 +299,25 @@
     "name": "CardHorizontal.review",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-07-09",
-    "updated": "2026-07-09",
+    "created": "2026-10-02",
+    "updated": "2026-10-02",
     "path": ".claude/handoff/runs/CardHorizontal.review.json"
+  },
+  {
+    "name": "CardHorizontal.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-10-02",
+    "updated": "2026-10-02",
+    "path": ".claude/handoff/runs/CardHorizontal.run.json"
+  },
+  {
+    "name": "CardHorizontal.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-10-02",
+    "updated": "2026-10-02",
+    "path": ".claude/handoff/runs/CardHorizontal.snapshot.json"
   },
   {
     "name": "CardVertical.learnings",

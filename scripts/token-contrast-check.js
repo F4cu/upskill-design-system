@@ -165,6 +165,7 @@ const PAIRS = [
   [T("inverted-default"), BG("container-inverted")],
   [T("inverted-subtle"), BG("container-inverted")],
   [I("subtle"), BG("container-canvas")],
+  [I("inverted-default"), BG("container-inverted")],
 
   // CardVertical — badge icon, ambient (composed standalone or in a Card)
   ...AMBIENT.map((bg) => [I("subtle"), bg]),

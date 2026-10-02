@@ -53,6 +53,21 @@ export const Inverted: Story = {
   ),
 }
 
+export const Promotional: Story = {
+  args: {
+    thumbnailSrc: THUMBNAIL,
+    title: 'Zen Mind, Beginner’s Mind',
+    author: 'Shunryu Suzuki',
+    duration: '4 hours, 30min',
+    variant: 'inverted',
+  },
+  render: (args) => (
+    <Box background="inverted" padding="xl" maxWidth={480}>
+      <CardHorizontal {...args} />
+    </Box>
+  ),
+}
+
 export const NoThumbnail: Story = {
   args: {
     title: 'Introduction to UX Design',
@@ -63,28 +78,19 @@ export const NoThumbnail: Story = {
 }
 
 export const List: Story = {
-  args: { thumbnailSrc: THUMBNAIL, title: 'Course' },
-  render: () => (
+  args: {
+    thumbnailSrc: THUMBNAIL,
+    title: 'Introduction to UX Design',
+    duration: '3h 20m',
+    certified: true,
+    progress: 65,
+    variant: 'default',
+  },
+  render: (args) => (
     <Stack gap="sm" maxWidth={480}>
-      <CardHorizontal
-        thumbnailSrc={THUMBNAIL}
-        title="Introduction to UX Design"
-        duration="3h 20m"
-        certified
-        progress={65}
-      />
-      <CardHorizontal
-        thumbnailSrc={THUMBNAIL}
-        title="Advanced CSS Layouts"
-        duration="2h 45m"
-        progress={20}
-      />
-      <CardHorizontal
-        thumbnailSrc={THUMBNAIL}
-        title="React Fundamentals"
-        duration="5h 10m"
-        certified
-      />
+      <CardHorizontal {...args} />
+      <CardHorizontal {...args} title="Advanced CSS Layouts" certified={false} progress={20} />
+      <CardHorizontal {...args} title="React Fundamentals" progress={undefined} />
     </Stack>
   ),
 }

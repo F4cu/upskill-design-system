@@ -4,7 +4,7 @@ title: "ADR-023 — Subcomponents: preset + parts under a dot namespace"
 # ADR-023 — Subcomponents: preset + parts under a dot namespace
 
 **Date:** 2026-10-01
-**Amended:** 2026-10-01
+**Amended:** 2026-10-02
 **Status:** `accepted`
 
 ## Context
@@ -100,3 +100,14 @@ The first version cited ds101 for "slot = swappable nested instance". That page 
 **Alternatives considered.** Mirroring the parts (`Body`/`Meta` as native slots, with preferred instances from `accepts`) would follow the code more literally. It gives up the preset's properties, and the Plugin API's support for creating slots through figma-cli is unverified.
 
 **Revisit when** a designer needs a composed layout in Figma (the `instructor-row` or `grouped-meta` pattern) and would otherwise detach. Then add a native slot for the open part, with preferred instances from its `accepts`. A slot might live on a separate composed component so the preset keeps its properties.
+
+## Amendment (2026-10-02) — One prop per datum; separators belong to the component
+
+CardHorizontal's second use case (promotional footer cards that show an author) arrived as a merged string: `duration="Jon Kabat-Zinn · 2 hours, 15min"`, mirrored in Figma by an author name typed into the old "Lessons" text layer. That breaks the naming contract in a way the property names alone don't show. The name says `duration`, but the value holds two kinds of data and a hand-typed separator.
+
+**Decision.**
+- **One prop holds one kind of data.** A new piece of content gets its own prop named for what it is (`author`), never a prefix on an existing one. Figma mirrors it with its own text property and an `Has <x>` visibility boolean (default `false`), following the `Has action` precedent.
+- **The component draws separators.** Consumers pass plain values. The component decides where separators go and renders them `aria-hidden`, so they never reach the accessible name. In Figma, each separator's visibility is bound to its neighbour's boolean.
+- **Applying the test above:** an optional `author` creates no invalid prop combination, so CardHorizontal stays flat props (ADR-009 question 1), not parts. The two usages (started courses; footer promotion) are documented as `usage.patterns`, not as a mode variant.
+
+**Alternatives considered.** A generic `subtitle` prop would accept topics, authors or anything else, which is the same ambiguity under a vaguer name. A `usage="promo"` variant would bundle content choices into a mode and block reasonable combinations (a promoted course that is also certified).

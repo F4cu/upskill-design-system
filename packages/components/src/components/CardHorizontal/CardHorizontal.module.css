@@ -4,15 +4,6 @@
   gap: var(--ds-space-inline-md);
 }
 
-.default {
-  color: var(--ds-color-text-default);
-}
-
-.inverted {
-  color: var(--ds-color-text-inverted-default);
-}
-
-
 .thumbnail {
   width: var(--ds-size-thumbnail-sm);
   height: var(--ds-size-thumbnail-sm);
@@ -21,9 +12,6 @@
 
 .content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-stack-xs);
   min-width: 0;
 }
 
@@ -34,20 +22,16 @@
   text-overflow: ellipsis;
 }
 
-.meta {
-  display: flex;
-  align-items: center;
-  gap: var(--ds-space-inline-sm);
-  flex-wrap: wrap;
+.separator {
+  width: var(--ds-size-separator);
+  height: var(--ds-size-separator);
+  border-radius: var(--ds-border-radius-full);
+  background: var(--ds-color-text-subtle);
+  flex-shrink: 0;
 }
 
-.dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.4;
-  flex-shrink: 0;
+.inverted .separator {
+  background: var(--ds-color-text-inverted-subtle);
 }
 
 .badge {
@@ -58,4 +42,8 @@
 
 .badge svg {
   color: var(--ds-color-icon-subtle);
+}
+
+.inverted .badge svg {
+  color: var(--ds-color-icon-inverted-default);
 }

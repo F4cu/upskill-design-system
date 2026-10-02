@@ -18,6 +18,7 @@ sources:
 # rewritten 2026-07-23: Review checklist entry trimmed to a definition + pointer — 02-component-lifecycle is the single prose owner of checklist mechanics (dedup, ADR audit)
 # clock reset 2026-10-01: adds /figma-cli (a command, not a moment) and switches moments 1 and 5 to figma-cli transport; glossary's moment list and definitions unchanged, still accurate
 # rewritten 2026-10-01: added Subcomponent (part), Slot, Open part entries for ADR-023 (composition.parts schema + components.md rule block)
+# clock reset 2026-10-02: components.md gains a one-prop-per-datum rule line (ADR-023 amendment 2026-10-02); no new glossary term, still accurate
 ---
 # Glossary
 

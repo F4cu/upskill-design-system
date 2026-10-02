@@ -156,5 +156,17 @@
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 6,
     "manualRescuesCount": 0
+  },
+  {
+    "component": "CardHorizontal",
+    "ranAt": "2026-10-02T09:00:00Z",
+    "gate": {
+      "passes": 1,
+      "failures": 0,
+      "failureReasons": []
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 5,
+    "manualRescuesCount": 1
   }
 ]

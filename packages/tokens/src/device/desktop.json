@@ -215,6 +215,10 @@
         "$type": "number",
         "$value": 340
       }
+    },
+    "separator": {
+      "$type": "number",
+      "$value": "{size.050}"
     }
   }
 }
