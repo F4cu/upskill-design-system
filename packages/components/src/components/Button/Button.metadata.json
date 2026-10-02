@@ -149,7 +149,7 @@
       "color.background.button.hover",
       "color.background.button.disabled",
       "color.background.button.outline.hover",
-      "color.text.inverted.default",
+      "color.text.on-button",
       "color.text.inverted.disabled",
       "color.text.subtle",
       "color.text.disabled",

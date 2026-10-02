@@ -80,8 +80,8 @@ const PAIRS = [
   ]),
 
   // Button — accent variant
-  [T("inverted-default"), BG("button-default")],
-  [T("inverted-default"), BG("button-hover")],
+  [T("on-button"), BG("button-default")],
+  [T("on-button"), BG("button-hover")],
   // Button — neutral variant. Its border (border.default) is the same
   // low-contrast divider token used everywhere as a decorative separator
   // (Accordion, Card, Divider) — not checked here either; the variant is
@@ -90,8 +90,8 @@ const PAIRS = [
   [T("subtle"), BG("button-outline-hover")],
   // Button — transparent variant reuses the interactive text pairs above.
   // Button — danger variant
-  [T("inverted-default"), BG("button-danger-default")],
-  [T("inverted-default"), BG("button-danger-hover")],
+  [T("on-button"), BG("button-danger-default")],
+  [T("on-button"), BG("button-danger-hover")],
   // CardVertical.Favorite / .Menu — transparent icon buttons over a photo.
   // icon.on-media.* sits on arbitrary image pixels, so no pair can check it;
   // the halo carries the contrast and the light/dark-thumbnail stories are
