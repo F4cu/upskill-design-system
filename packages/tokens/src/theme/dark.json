@@ -98,7 +98,8 @@
         },
         "ghost": {
           "$type": "color",
-          "$value": "{color.neutral.dark.1}"
+          "$value": "{color.neutral.dark.1}",
+          "$deprecated": true
         },
         "outline": {
           "hover": {
@@ -108,11 +109,13 @@
         },
         "elevated": {
           "$type": "color",
-          "$value": "{color.neutral.dark.2}"
+          "$value": "{color.neutral.dark.2}",
+          "$deprecated": true
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.neutral.dark.1}"
+          "$value": "{color.neutral.dark.1}",
+          "$deprecated": true
         },
         "danger": {
           "default": {
