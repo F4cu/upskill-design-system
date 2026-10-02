@@ -77,6 +77,16 @@
         "scenario": "Adding a separator before the certified badge, or typing \"·\" in any metadata string",
         "reason": "The separator sits only between author and duration; the badge icon already separates Certified. Separators are rendered by the component (aria-hidden), never typed.",
         "alternative": "Pass the plain values; let CardHorizontal decide where separators go."
+      },
+      {
+        "scenario": "Placing CardHorizontal in a section whose heading is not an h2 (e.g. directly under the page h1, or inside an h3 subsection)",
+        "reason": "The title always renders as an h3 (there is no heading-level prop), so any parent heading other than h2 skips or inverts a level in the document outline.",
+        "alternative": "Put CardHorizontal lists inside a section headed by an h2. If a layout needs another level, raise it as a component change (a titleAs prop) instead of wrapping or restyling the card."
+      },
+      {
+        "scenario": "Passing long course titles and expecting them to wrap",
+        "reason": "The title is a single line with an ellipsis. Sighted users lose the truncated text (screen readers still get the full title), and the risk grows at 200% zoom.",
+        "alternative": "Keep titles short enough to fit the list width. Use CardVertical when titles are long."
       }
     ]
   },

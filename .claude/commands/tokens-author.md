@@ -54,6 +54,7 @@ change — record or amend an ADR (see CLAUDE.md → "Architectural decisions").
 - No trailing commas (strict JSON). No `$extensions` in source. `$deprecated` is the one other allowed `$` key — machine-managed, see `.claude/rules/tokens.md`.
 - Line-heights are unitless ratios (`1`, `1.25`, `1.4`, `1.5`, `1.75`) — never px.
 - Don't mix color sub-scales on one token: `1–12` (light), `dark-1…dark-12`, `alpha-1…alpha-12`.
+- A component dimension with no token (e.g. CardHorizontal's 4px separator dot) gets a `size` primitive on the scale (`size.050` = 4) plus a named device alias (`size.separator`). Never a raw `px` in component CSS, and never a `space.*` token for a filled shape (ADR-005).
 
 ## After authoring — downstream sync
 

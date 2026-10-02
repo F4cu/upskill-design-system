@@ -19,6 +19,7 @@ sources:
 # clock reset 2026-10-01: adds /figma-cli (a command, not a moment) and switches moments 1 and 5 to figma-cli transport; glossary's moment list and definitions unchanged, still accurate
 # rewritten 2026-10-01: added Subcomponent (part), Slot, Open part entries for ADR-023 (composition.parts schema + components.md rule block)
 # clock reset 2026-10-02: components.md gains a one-prop-per-datum rule line (ADR-023 amendment 2026-10-02); no new glossary term, still accurate
+# clock reset 2026-10-02: tokens-author Conventions gains a bullet (component dimension without a token → size primitive + named device alias, never raw px); this page doesn't list the convention bullets, still accurate
 ---
 # Glossary
 

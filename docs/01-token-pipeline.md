@@ -12,6 +12,7 @@ sources:
   - .claude/commands/tokens-author.md
 # clock reset 2026-07-10: /tokens-author adds contrast-check + usage/sense refresh to its procedure; pipeline description unchanged, still accurate
 # clock reset 2026-10-02: adds primitive size.050 (4px) + device alias size.separator for the CardHorizontal separator dot; follows ADR-005 size-vs-space and the existing alias pattern, page still accurate
+# clock reset 2026-10-02: tokens-author Conventions gains a bullet (component dimension without a token → size primitive + named device alias, never raw px); this page doesn't list the convention bullets, still accurate
 ---
 # Token pipeline
 
