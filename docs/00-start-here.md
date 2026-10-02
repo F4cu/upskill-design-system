@@ -20,6 +20,9 @@ sources:
 # clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
 # clock reset 2026-10-02: ADR-023 amendment (one prop per datum; component-drawn separators) + size.050/size.separator tokens; this page lists no component APIs or token steps, still accurate
 # clock reset 2026-10-02: tokens-author Conventions gains a bullet (component dimension without a token → size primitive + named device alias, never raw px); this page doesn't list the convention bullets, still accurate
+# clock reset 2026-10-02: CLAUDE.md renames Button's ghost variant to transparent (ADR-024); this page doesn't list variants, still accurate
+# clock reset 2026-10-02: governance pull deprecates button.ghost/elevated/inverted (ADR-024 cleanup); deprecation mechanism this page describes unchanged, still accurate
+# clock reset 2026-10-02: ADR-024 consequence wording corrected (bare <Button> call sites migrated to explicit accent); page doesn't describe Button variants, still accurate
 ---
 # Start here
 

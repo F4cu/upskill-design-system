@@ -32,7 +32,7 @@
       {
         "scenario": "Using TextLink for an in-page action (e.g. 'Show more', 'Delete')",
         "reason": "TextLink renders an <a> element. In-page actions that do not change the URL must be <button> elements for correct keyboard and screen-reader semantics.",
-        "alternative": "Use Button variant='ghost' for low-emphasis in-page text actions."
+        "alternative": "Use Button variant='transparent' for low-emphasis in-page text actions."
       },
       {
         "scenario": "Using TextLink without an href",

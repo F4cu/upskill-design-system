@@ -109,14 +109,14 @@ function Favorite({ pressed, defaultPressed = false, onPressedChange }: CardVert
   return (
     <Button
       id={id}
-      variant="elevated"
+      variant="transparent"
       size="sm"
       shape="round"
       icon="heart"
       aria-label="Save"
       aria-labelledby={`${id} ${titleId}`}
       aria-pressed={isPressed}
-      className={styles.favorite}
+      className={[styles.onMedia, styles.favorite].join(' ')}
       onClick={handleClick}
     />
   )
@@ -171,10 +171,11 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
     <div ref={wrapperRef} className={styles.menu} onBlur={handleBlur}>
       <Button
         id={id}
-        variant="elevated"
+        variant="transparent"
         size="sm"
         shape="round"
         icon="more-vertical"
+        className={styles.onMedia}
         aria-label="More options"
         aria-labelledby={`${id} ${titleId}`}
         aria-haspopup="menu"

@@ -173,7 +173,7 @@ export default function UserSettings() {
                               outlined+icon+label styling exactly */}
                           <Button
                             id="theme-toggle"
-                            variant="outlined"
+                            variant="neutral"
                             icon={isDark ? 'moon-star' : 'sun'}
                             aria-pressed={isDark}
                             onClick={() => setIsDark((prev) => !prev)}
@@ -199,7 +199,7 @@ export default function UserSettings() {
 
                 {/* Button metadata "form-actions" pattern (single primary action) */}
                 <Inline justify="start">
-                  <Button variant="default" className="full-width-mobile">Save</Button>
+                  <Button variant="accent" className="full-width-mobile">Save</Button>
                 </Inline>
               </Stack>
 
@@ -226,7 +226,7 @@ export default function UserSettings() {
                       </Inline>
                     ))}
                   </Stack>
-                  <Button variant="outlined" size="sm" icon="download">Download All Certificates</Button>
+                  <Button variant="neutral" size="sm" icon="download">Download All Certificates</Button>
                 </Stack>
 
                 {/* CardHorizontal usage.patterns "started-courses-list" */}
@@ -300,7 +300,7 @@ export default function UserSettings() {
                   </Text>
                 </Stack>
                 <Inline justify="start">
-                  <Button variant="default" className="full-width-mobile">See collection</Button>
+                  <Button variant="accent" className="full-width-mobile">See collection</Button>
                 </Inline>
               </Stack>
             </Box>

@@ -98,7 +98,8 @@
         },
         "ghost": {
           "$type": "color",
-          "$value": "{color.neutral.dark.1}"
+          "$value": "{color.neutral.dark.1}",
+          "$deprecated": true
         },
         "outline": {
           "hover": {
@@ -108,11 +109,29 @@
         },
         "elevated": {
           "$type": "color",
-          "$value": "{color.neutral.dark.2}"
+          "$value": "{color.neutral.dark.2}",
+          "$deprecated": true
         },
         "inverted": {
           "$type": "color",
-          "$value": "{color.neutral.dark.1}"
+          "$value": "{color.neutral.dark.1}",
+          "$deprecated": true
+        },
+        "danger": {
+          "default": {
+            "$type": "color",
+            "$value": "{color.red.11}"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{color.red.12}"
+          }
+        }
+      },
+      "on-media": {
+        "hover": {
+          "$type": "color",
+          "$value": "{color.black.alpha.5}"
         }
       }
     },
@@ -291,6 +310,16 @@
         "warning": {
           "$type": "color",
           "$value": "{color.amber.7}"
+        }
+      },
+      "on-media": {
+        "default": {
+          "$type": "color",
+          "$value": "{color.white.1}"
+        },
+        "halo": {
+          "$type": "color",
+          "$value": "{color.black.alpha.9}"
         }
       }
     }

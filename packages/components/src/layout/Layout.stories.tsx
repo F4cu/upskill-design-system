@@ -54,8 +54,8 @@ export const Default: Story = {
         </Text>
       </Stack>
       <Inline gap="md">
-        <Button>Start learning</Button>
-        <Button variant="outlined">Browse courses</Button>
+        <Button variant="accent">Start learning</Button>
+        <Button variant="neutral">Browse courses</Button>
       </Inline>
     </Stack>
   </div>
@@ -125,8 +125,8 @@ export const Default: Story = {
               </Text>
             </Stack>
             <Inline gap="md">
-              <Button>Start learning</Button>
-              <Button variant="outlined">Browse courses</Button>
+              <Button variant="accent">Start learning</Button>
+              <Button variant="neutral">Browse courses</Button>
             </Inline>
           </Stack>
         </div>

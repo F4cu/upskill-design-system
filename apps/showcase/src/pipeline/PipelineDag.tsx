@@ -99,7 +99,7 @@ export function PipelineDag() {
               </Text>
             </Stack>
             <Button
-              variant="outlined"
+              variant="neutral"
               size="sm"
               aria-pressed={showAgentic}
               onClick={() => setShowAgentic((v) => !v)}

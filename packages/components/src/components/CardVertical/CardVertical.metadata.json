@@ -146,7 +146,7 @@
       },
       {
         "scenario": "Putting anything other than a single CardVertical.Action inside CardVertical.Media (e.g. a Badge, text or a second overlay button)",
-        "reason": "Media is a fixed part whose only optional child is the Action overlay; it throws on anything else. The overlay corner is sized and positioned for one round elevated button. Implementors: a fixed part that renders children must narrow and guard them — `children?: ReactNode` silently turns it into an unchecked slot.",
+        "reason": "Media is a fixed part whose only optional child is the Action overlay; it throws on anything else. The overlay corner is sized and positioned for one round icon button. Implementors: a fixed part that renders children must narrow and guard them — `children?: ReactNode` silently turns it into an unchecked slot.",
         "alternative": "Put extra content in CardVertical.Body/Meta; put a second action into CardVertical.Menu's items."
       }
     ]
@@ -183,7 +183,7 @@
     },
     {
       "state": "favorite-pressed",
-      "description": "Favorite's aria-pressed is true; the heart fills with color.icon.brand on the elevated disc."
+      "description": "Favorite's aria-pressed is true; the heart fills with color.icon.brand, keeping the on-media halo."
     },
     {
       "state": "menu-open",
@@ -195,7 +195,10 @@
       "color.text.default",
       "color.text.subtle",
       "color.icon.subtle",
-      "color.icon.brand"
+      "color.icon.brand",
+      "color.icon.on-media.default",
+      "color.icon.on-media.halo",
+      "color.background.on-media.hover"
     ],
     "spacing": [
       "space.stack.sm",
@@ -211,7 +214,9 @@
       "font.line-height.tight"
     ],
     "borderRadius": [],
-    "other": []
+    "other": [
+      "size.halo"
+    ]
   },
   "accessibility": {
     "role": "article",
@@ -310,7 +315,7 @@
       {
         "name": "Favorite",
         "kind": "fixed",
-        "description": "Round elevated heart Button toggling aria-pressed. Props: pressed, defaultPressed (false), onPressedChange.",
+        "description": "Round transparent heart Button with an on-media halo toggling aria-pressed. Props: pressed, defaultPressed (false), onPressedChange.",
         "builtOn": "Button",
         "containedBy": [
           "Action"
@@ -319,7 +324,7 @@
       {
         "name": "Menu",
         "kind": "fixed",
-        "description": "Round elevated kebab Button that opens a DropdownMenu. Props: items (DropdownMenuItem[]), onSelect. Open state is internal (Figma 'Expanded' is design-only).",
+        "description": "Round transparent kebab Button with an on-media halo that opens a DropdownMenu. Props: items (DropdownMenuItem[]), onSelect. Open state is internal (Figma 'Expanded' is design-only).",
         "builtOn": "Button",
         "containedBy": [
           "Action"

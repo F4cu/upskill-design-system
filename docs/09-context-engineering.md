@@ -19,6 +19,7 @@ sources:
 # clock reset 2026-10-01: CLAUDE.md Figma rows reworded for figma-cli, with its rules routed to .claude/commands/figma-cli.md to stay within the ADR-017 budget; layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-01: ADR-023 adds a Subcomponents block to .claude/rules/components.md and a one-line pointer in CLAUDE.md Component scope (ADR-009 sentence tightened to fit the budget); layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-02: components.md gains one rule line (one prop per datum); layering/budget mechanics unchanged, still accurate
+# clock reset 2026-10-02: CLAUDE.md one-line rename (Button ghost → transparent, ADR-024); context-budget structure unchanged, still accurate
 ---
 # Context engineering
 

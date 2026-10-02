@@ -3,12 +3,12 @@ import { Icon } from '../Icon'
 import type { IconName } from '../Icon'
 import styles from './Button.module.css'
 
-export type ButtonVariant = 'default' | 'outlined' | 'ghost' | 'elevated'
+export type ButtonVariant = 'accent' | 'neutral' | 'transparent' | 'danger'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 export type ButtonShape = 'square' | 'round'
 
 export type ButtonProps = {
-  /** Visual style of the button. Use `default` for primary actions, `outlined` for secondary or low-emphasis actions, `ghost` for inline text-link–style actions with no background or border, `elevated` for icon-only actions overlaid on media (an opaque raised surface that stays legible on any image). */
+  /** Visual weight of the button. Names an absolute weight, not a rank — which weight to use depends on the container (ADR-024). `accent`: the one most important action in a decision region (form or dialog footer, hero); never inside a repeated item such as a card. `neutral` (default): everyday and supporting actions, and the lead action inside cards. `transparent`: lowest weight, link-colored, inline with content ("Show more", Close). `danger`: destructive or irreversible actions. */
   variant?: ButtonVariant
   /** Size of the button. `md` suits most contexts; use `sm` in dense UIs and `lg` for prominent calls to action. */
   size?: ButtonSize
@@ -16,14 +16,14 @@ export type ButtonProps = {
   shape?: ButtonShape
   /** Icon to render before the label. When `shape` is set, this is the sole visible content. */
   icon?: IconName
-  /** Icon to render after the label. Use for directional cues (e.g. chevron-down on a ghost toggle). Ignored in icon-only mode. */
+  /** Icon to render after the label. Use for directional cues (e.g. chevron-down on a transparent toggle). Ignored in icon-only mode. */
   trailingIcon?: IconName
   /** Button label. Ignored when `shape` is set (icon-only mode). */
   children?: React.ReactNode
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>
 
 export function Button({
-  variant = 'default',
+  variant = 'neutral',
   size = 'md',
   shape,
   icon,

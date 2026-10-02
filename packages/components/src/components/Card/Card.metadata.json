@@ -38,7 +38,7 @@
       {
         "name": "content-card",
         "description": "A Card presenting a single content item (course, article) with title, metadata, body text, and a CTA Button.",
-        "tree": "Card > Stack(gap=md) > [Stack(gap=xs) > [Heading, Text(size=body-small)], Text, Button(size=sm)]"
+        "tree": "Card > Stack(gap=md) > [Stack(gap=xs) > [Heading, Text(size=body-small)], Text, Button(variant=neutral, size=sm)]"
       }
     ],
     "antiPatterns": [

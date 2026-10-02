@@ -61,7 +61,7 @@ function CourseModuleListPage() {
           </Accordion>
           {ALL_MODULES.length > DEFAULT_VISIBLE && (
             <Button
-              variant="ghost"
+              variant="transparent"
               size="sm"
               trailingIcon={showAll ? 'chevron-up' : 'chevron-down'}
               onClick={() => setShowAll((prev) => !prev)}
@@ -83,7 +83,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Accordion list with progressive disclosure: 3 items visible by default, a ghost Button reveals the remaining items. The button label and icon update to reflect state. Wire the visible count to real data in production.',
+          'Accordion list with progressive disclosure: 3 items visible by default, a transparent Button reveals the remaining items. The button label and icon update to reflect state. Wire the visible count to real data in production.',
       },
     },
   },
@@ -115,7 +115,7 @@ const visible = showAll ? ALL_MODULES : ALL_MODULES.slice(0, DEFAULT_VISIBLE)
     </Accordion>
     {ALL_MODULES.length > DEFAULT_VISIBLE && (
       <Button
-        variant="ghost"
+        variant="transparent"
         size="sm"
         trailingIcon={showAll ? 'chevron-up' : 'chevron-down'}
         onClick={() => setShowAll((prev) => !prev)}

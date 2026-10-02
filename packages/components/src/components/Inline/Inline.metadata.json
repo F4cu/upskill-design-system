@@ -29,7 +29,7 @@
       {
         "name": "form-actions-row",
         "description": "Primary + secondary button pair at the bottom of a form.",
-        "tree": "Inline(gap=sm) > [Button(primary), Button(outlined)]"
+        "tree": "Inline(gap=sm) > [Button(variant=accent), Button(variant=neutral)]"
       },
       {
         "name": "tag-group",
