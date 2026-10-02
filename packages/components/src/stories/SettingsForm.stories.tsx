@@ -71,7 +71,7 @@ function SettingsForm() {
 
         <Inline gap="md" justify="end">
           <Button variant="neutral">Cancel</Button>
-          <Button>Save changes</Button>
+          <Button variant="accent">Save changes</Button>
         </Inline>
       </Stack>
     </Box>
@@ -115,7 +115,7 @@ function SettingsFormWithErrors() {
 
         <Inline gap="md" justify="end">
           <Button variant="neutral">Cancel</Button>
-          <Button>Save changes</Button>
+          <Button variant="accent">Save changes</Button>
         </Inline>
       </Stack>
     </Box>
@@ -179,7 +179,7 @@ export const Default: Story = {
 
   <Inline gap="md" justify="end">
     <Button variant="neutral">Cancel</Button>
-    <Button>Save changes</Button>
+    <Button variant="accent">Save changes</Button>
   </Inline>
 </Stack>
 `.trim(),

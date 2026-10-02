@@ -60,7 +60,7 @@ export const WithAction: Story = {
           <Text size="body-small" color="subtle">12 lessons · 3 hours</Text>
         </Stack>
         <Text>Learn the core principles of user experience design, from research to wireframing and prototyping.</Text>
-        <Button size="sm">Start course</Button>
+        <Button variant="neutral" size="sm">Start course</Button>
       </Stack>
     </Card>
   ),

@@ -39,7 +39,6 @@
 }
 
 .onMedia.onMedia:hover:not(:disabled) {
-  color: var(--ds-color-icon-on-media-default);
   background: var(--ds-color-background-on-media-hover);
 }
 

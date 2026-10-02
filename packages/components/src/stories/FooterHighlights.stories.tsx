@@ -28,7 +28,7 @@ function FooterHighlights() {
               </Text>
             </Stack>
             <Box>
-              <Button>See collection</Button>
+              <Button variant="accent">See collection</Button>
             </Box>
           </Stack>
 
@@ -102,7 +102,7 @@ export const Default: Story = {
           </Text>
         </Stack>
         <Box>
-          <Button>See collection</Button>
+          <Button variant="accent">See collection</Button>
         </Box>
       </Stack>
 
