@@ -18,6 +18,7 @@ sources:
 # clock reset 2026-10-01: adds /figma-cli command + ADR-002 amendment (figma-cli as the Plugin API transport for the Figma moments); this page lists no per-command transport detail, still accurate
 # clock reset 2026-10-01: adds ADR-023 (subcomponents) + ADR-009 cross-reference; this page lists no individual ADRs or component APIs, still accurate
 # clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
+# clock reset 2026-10-02: ADR-023 amendment (one prop per datum; component-drawn separators) + size.050/size.separator tokens; this page lists no component APIs or token steps, still accurate
 ---
 # Start here
 
