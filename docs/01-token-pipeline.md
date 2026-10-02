@@ -15,6 +15,7 @@ sources:
 # clock reset 2026-10-02: tokens-author Conventions gains a bullet (component dimension without a token → size primitive + named device alias, never raw px); this page doesn't list the convention bullets, still accurate
 # clock reset 2026-10-02: theme gains button.danger.*, icon.on-media.*, background.on-media.hover and device gains size.halo (ADR-024); pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-02: $deprecated mirrored onto button.ghost/elevated/inverted via airtable:pull:governance; mechanism unchanged, still accurate
+# clock reset 2026-10-02: theme gains text.on-button and button.default/hover move to brand 10/11; pipeline mechanics unchanged, still accurate
 ---
 # Token pipeline
 

@@ -15,6 +15,7 @@ sources:
 # clock reset 2026-10-01: token-contrast-check.js gains the Button elevated pair (CardVertical prereqs); curation convention unchanged, still accurate. ProgressBar gains an optional a11y test; display components still need none, still accurate
 # clock reset 2026-10-01: CardVertical.Favorite adds an icon.brand on button.elevated pair + a horizon/dark waiver under #30; curation and waiver conventions unchanged, still accurate. CardVertical gains a Tier-2 test (now interactive via its Action slot), same rule
 # clock reset 2026-10-02: token-contrast-check.js gains the CardHorizontal inverted badge-icon pair; curation convention unchanged, page still accurate
+# clock reset 2026-10-02: token-contrast-check.js Button pairs switch to text.on-button; curation convention unchanged, page still accurate
 ---
 # Accessibility
 
