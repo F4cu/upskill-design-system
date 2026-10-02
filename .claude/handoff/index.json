@@ -296,6 +296,14 @@
     "path": ".claude/handoff/runs/Card.review.json"
   },
   {
+    "name": "CardHorizontal.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-10-02",
+    "updated": "2026-10-02",
+    "path": ".claude/handoff/runs/CardHorizontal.learnings.json"
+  },
+  {
     "name": "CardHorizontal.review",
     "kind": "run",
     "status": "in-flight",
