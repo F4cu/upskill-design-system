@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-10-01T10:17:08.160Z**
+Generated: **2026-10-02T08:02:08.398Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -50,7 +50,7 @@ standard path (in-session /code-review).
 | `Breadcrumb` (display) | standard | ☐ | ✅ | n/a |
 | `ButtonArrow` (interactive) | full | ☐ | ✅ | ✅ |
 | `Card` (container) | standard | ☐ | ✅ | n/a |
-| `CardHorizontal` (display) | standard | ☐ | ✅ | n/a |
+| `CardHorizontal` (display) | full | ☐ | ✅ | ☐ |
 | `CardVertical` (interactive) | full | ☐ | ✅ | ✅ |
 | `Checkbox` (input) | full | ☐ | ✅ | ✅ |
 | `Chip` (interactive) | full | ☐ | ✅ | ✅ |
@@ -84,7 +84,10 @@ entered the loop (the old "established" backlog) — candidates to harden with
 
 ## Pending extract-learnings
 
-None. All review findings have been back-filled. ✅
+**1** component(s) reviewed but learnings not yet back-filled into metadata.
+Run `/extract-learnings --all` to process all at once, or `/extract-learnings <Name>` individually.
+
+- `CardHorizontal` — reviewed 2026-10-02 → `/extract-learnings CardHorizontal`
 
 ## Token usage
 
@@ -95,7 +98,7 @@ None. All review findings have been back-filled. ✅
 ## Figma drift
 
 - Snapshot captured: **2026-10-01** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **0 day(s)**
+- Age: **1 day(s)**
 - Variables mirrored: **453** (Primitives 288 · Theme 105 · Device 60)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 

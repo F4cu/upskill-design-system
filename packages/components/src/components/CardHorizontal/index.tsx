@@ -1,8 +1,10 @@
-import { Fragment, type CSSProperties, type HTMLAttributes } from 'react'
+import { useId, type HTMLAttributes } from 'react'
 import { Heading } from '../Heading'
 import { Icon } from '../Icon'
 import { Image } from '../Image'
+import { Inline } from '../Inline'
 import { ProgressBar } from '../ProgressBar'
+import { Stack } from '../Stack'
 import { Text } from '../Text'
 import styles from './CardHorizontal.module.css'
 
@@ -16,7 +18,7 @@ export type CardHorizontalProps = {
   certified?: boolean
   progress?: number
   variant?: CardHorizontalVariant
-} & HTMLAttributes<HTMLDivElement>
+} & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'children' | 'aria-labelledby'>
 
 export function CardHorizontal({
   thumbnailSrc,
@@ -29,46 +31,43 @@ export function CardHorizontal({
   className,
   ...rest
 }: CardHorizontalProps) {
-  const titleStyle: CSSProperties | undefined = variant === 'inverted'
-    ? { color: 'var(--ds-color-text-inverted-default)' }
-    : undefined
-  const metaStyle: CSSProperties | undefined = variant === 'inverted'
-    ? { color: 'var(--ds-color-text-inverted-subtle)' }
-    : undefined
-
-  const metaItems = [
-    duration && (
-      <Text key="duration" as="span" size="metadata" color="subtle" style={metaStyle}>{duration}</Text>
-    ),
-    certified && (
-      <span key="certified" className={styles.badge}>
-        <Icon name="badge-check" size="sm" />
-        <Text as="span" size="metadata" color="subtle" style={metaStyle}>Certified</Text>
-      </span>
-    ),
-  ].filter(Boolean)
+  const titleId = useId()
+  const inverted = variant === 'inverted'
+  const metaColor = inverted ? 'inverted-subtle' : 'subtle'
 
   return (
     <div
-      role="article"
-      className={[styles.card, styles[variant], className].filter(Boolean).join(' ')}
       {...rest}
+      role="article"
+      aria-labelledby={titleId}
+      className={[styles.card, styles[variant], className].filter(Boolean).join(' ')}
     >
       <Image src={thumbnailSrc} alt={thumbnailAlt} aspectRatio="1/1" className={styles.thumbnail} />
-      <div className={styles.content}>
-        <Heading as="h3" size="title-small" className={styles.title} style={titleStyle}>{title}</Heading>
-        {progress !== undefined && <ProgressBar value={progress} label={`${title} progress`} />}
-        {metaItems.length > 0 && (
-          <div className={styles.meta}>
-            {metaItems.map((item, i) => (
-              <Fragment key={i}>
-                {i > 0 && <span className={styles.dot} aria-hidden />}
-                {item}
-              </Fragment>
-            ))}
-          </div>
+      <Stack gap="sm" className={styles.content}>
+        <Stack gap="xs">
+          <Heading
+            as="h3"
+            id={titleId}
+            size="title-small"
+            color={inverted ? 'inverted' : undefined}
+            className={styles.title}
+          >
+            {title}
+          </Heading>
+          {progress !== undefined && <ProgressBar value={progress} aria-labelledby={titleId} />}
+        </Stack>
+        {(duration || certified) && (
+          <Inline gap="sm" wrap align="center">
+            {duration && <Text as="span" size="metadata" color={metaColor}>{duration}</Text>}
+            {certified && (
+              <span className={styles.badge}>
+                <Icon name="badge-check" size="sm" />
+                <Text as="span" size="metadata" color={metaColor}>Certified</Text>
+              </span>
+            )}
+          </Inline>
         )}
-      </div>
+      </Stack>
     </div>
   )
 }

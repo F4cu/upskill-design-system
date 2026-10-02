@@ -48,7 +48,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "90648bd6ce43d722deaac6f320775f048e24a58e",
+  "generatedFrom": "dd31d8c83a7862e723e0df221fc41e7f86724c84",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -578,12 +578,13 @@
         {
           "ariaContract": [
             {
+              "aria-labelledby": "{titleId}",
               "element": "div",
               "role": "article"
             },
             {
-              "aria-hidden": "true",
-              "element": "span"
+              "aria-labelledby": "{titleId}",
+              "element": "ProgressBar"
             }
           ],
           "component": "CardHorizontal",
@@ -591,13 +592,20 @@
             "Heading",
             "Icon",
             "Image",
+            "Inline",
             "ProgressBar",
+            "Stack",
             "Text"
+          ],
+          "idsFromUseId": [
+            "titleId"
           ],
           "maturity": "beta",
           "stage": "in review",
           "systemSpecificNotes": [
-            "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)"
+            "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
+            "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
+            "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
           ]
         },
         {
