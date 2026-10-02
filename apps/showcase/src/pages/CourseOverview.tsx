@@ -194,7 +194,7 @@ export default function CourseOverview() {
 
                 <Heading as="h2" size="subheader">Content</Heading>
 
-                {/* CourseModuleList pattern: Accordion + show-more ghost Button (Layout/Examples/CourseModuleList) */}
+                {/* CourseModuleList pattern: Accordion + show-more transparent Button (Layout/Examples/CourseModuleList) */}
                 {/* showAll state slices ALL_MODULES; button label + icon reflect toggle state */}
                 <div>
                   <Accordion>
@@ -233,7 +233,7 @@ export default function CourseOverview() {
                   </Accordion>
                   {hiddenCount > 0 && (
                     <Button
-                      variant="ghost"
+                      variant="transparent"
                       size="sm"
                       trailingIcon={showAll ? 'chevron-up' : 'chevron-down'}
                       onClick={() => setShowAll((prev) => !prev)}
@@ -247,12 +247,12 @@ export default function CourseOverview() {
                 {/* CTA row — Button metadata "form-actions-row" pattern */}
                 <Inline fullWidth justify="end" gap="sm">
                   <Button
-                    variant="outlined"
+                    variant="neutral"
                     shape="square"
                     icon="bookmark"
                     aria-label="Bookmark course"
                   />
-                  <Button variant="default">Add to your cart</Button>
+                  <Button variant="accent">Add to your cart</Button>
                 </Inline>
               </Stack>
 
@@ -336,7 +336,7 @@ export default function CourseOverview() {
                   </Text>
                 </Stack>
                 <Inline justify="start">
-                  <Button variant="default" className="full-width-mobile">See collection</Button>
+                  <Button variant="accent" className="full-width-mobile">See collection</Button>
                 </Inline>
               </Stack>
             </Box>

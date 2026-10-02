@@ -71,6 +71,8 @@ Dotted names are allowed for subcomponents ([ADR-023](decisions/023-subcomponent
 
 Children rendered from an expression (`{items.map(…)}`) can't be counted statically, so the one-child and required checks skip that element.
 
+It also checks **Button emphasis by context** ([ADR-024](decisions/024-button-variants-by-weight.md)). Button variants name a fixed weight (`accent`, `neutral`, `transparent`, `danger`), so which action is "primary" has to come from the container. A literal `variant="accent"` fails inside `CardVertical`/`CardHorizontal` or a `.map()` callback, where N repeated items would render N primaries, and when a `<section>` holds more than one.
+
 ```bash
 npm run layout:validate -- apps/showcase/src/pages/CourseOverview.tsx
 ```
@@ -83,7 +85,7 @@ No diagram here: the grammar table *is* the spatial mapping, and a flowchart wou
 
 ## Related
 
-- ADRs: [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [016 — Layout output review path](decisions/016-layout-output-review-path.md), [020 — Enum props as data-attributes](decisions/020-layout-prop-attribute-selectors.md), [023 — Subcomponents](decisions/023-subcomponents-compound-components.md)
+- ADRs: [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md), [004 — `space.*` vs `grid.*`](decisions/004-layout-token-categories.md), [005 — `size` vs `space`](decisions/005-size-vs-space-primitives.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [016 — Layout output review path](decisions/016-layout-output-review-path.md), [020 — Enum props as data-attributes](decisions/020-layout-prop-attribute-selectors.md), [023 — Subcomponents](decisions/023-subcomponents-compound-components.md), [024 — Button variants by weight](decisions/024-button-variants-by-weight.md)
 - Commands: `/layout-generation` (in `.claude/commands/`)
 - Scripts: `scripts/validate-layout.js` via `npm run layout:validate` — see the [CLI reference](07-cli-reference.md)
 - Live examples: the five pages in `apps/showcase/src/pages/` — see [Start here](00-start-here.md)

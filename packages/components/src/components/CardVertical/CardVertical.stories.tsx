@@ -121,6 +121,50 @@ export const FavoriteWithProgress: Story = {
   },
 }
 
+export const ActionsOnLightAndDarkMedia: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Visual contrast check for the on-media halo (ADR-024): the token contrast gate cannot see photo pixels, so Favorite and Menu are shown over a near-white and a near-black thumbnail. The glyph must stay legible on both.',
+      },
+    },
+  },
+  decorators: [
+    (Story) => (
+      <Box maxWidth={600}>
+        <Story />
+      </Box>
+    ),
+  ],
+  render: () => (
+    <Inline gap="md" wrap={false}>
+      {[
+        ['https://placehold.co/400x500/F7F7F7/F7F7F7', 'Near-white thumbnail'],
+        ['https://placehold.co/400x500/141414/141414', 'Near-black thumbnail'],
+      ].map(([src, alt]) => (
+        <Stack key={src} gap="md" grow={1}>
+          <CardVertical
+            size="lg"
+            thumbnailSrc={src}
+            thumbnailAlt={alt}
+            title="Designing Calm Interfaces"
+            duration="9 Hours"
+            action={<CardVertical.Favorite onPressedChange={noop} />}
+          />
+          <CardVertical
+            size="lg"
+            thumbnailSrc={src}
+            thumbnailAlt={alt}
+            title="Storytelling with Data"
+            duration="4 Hours"
+            action={<CardVertical.Menu items={MENU_ITEMS} onSelect={noop} />}
+          />
+        </Stack>
+      ))}
+    </Inline>
+  ),
+}
+
 export const TitleOnly: Story = {
   args: {
     title: 'Research Ops, Explained',

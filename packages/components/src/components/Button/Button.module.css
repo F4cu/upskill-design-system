@@ -52,69 +52,68 @@
   border-radius: var(--ds-border-radius-full);
 }
 
-/* Variant: default */
+/* Variant: accent */
 
-.default {
+.accent {
   --_bg: var(--ds-color-background-button-default);
   --_text: var(--ds-color-text-inverted-default);
 }
 
-.default:hover:not(:disabled) {
+.accent:hover:not(:disabled) {
   --_bg: var(--ds-color-background-button-hover);
 }
 
-.default:disabled {
+.accent:disabled {
   --_bg: var(--ds-color-background-button-disabled);
   --_text: var(--ds-color-text-inverted-disabled);
 }
 
-/* Variant: outlined */
+/* Variant: neutral */
 
-.outlined {
+.neutral {
   --_bg: transparent;
   --_text: var(--ds-color-text-subtle);
   --_border-color: var(--ds-color-border-default);
 }
 
-.outlined:hover:not(:disabled) {
+.neutral:hover:not(:disabled) {
   --_bg: var(--ds-color-background-button-outline-hover);
 }
 
-.outlined:disabled {
+.neutral:disabled {
   --_text: var(--ds-color-text-disabled);
   --_border-color: var(--ds-color-border-disabled);
 }
 
-/* Variant: ghost */
+/* Variant: transparent */
 
-.ghost {
+.transparent {
   --_bg: transparent;
   --_text: var(--ds-color-text-interactive-default);
   --_px: 0;
 }
 
-.ghost:hover:not(:disabled) {
+.transparent:hover:not(:disabled) {
   --_bg: transparent;
   --_text: var(--ds-color-text-interactive-hover);
 }
 
-.ghost:disabled {
+.transparent:disabled {
   --_text: var(--ds-color-text-disabled);
 }
 
-/* Variant: elevated — icon-only actions over media. The hover tint is layered
-   as a background-image because button.elevated and button.outline.hover
-   resolve to the same color in dark mode. */
+/* Variant: danger */
 
-.elevated {
-  --_bg: var(--ds-color-background-button-elevated);
-  --_text: var(--ds-color-text-default);
+.danger {
+  --_bg: var(--ds-color-background-button-danger-default);
+  --_text: var(--ds-color-text-inverted-default);
 }
 
-.elevated:hover:not(:disabled) {
-  background-image: linear-gradient(var(--ds-color-background-overlay-hover), var(--ds-color-background-overlay-hover));
+.danger:hover:not(:disabled) {
+  --_bg: var(--ds-color-background-button-danger-hover);
 }
 
-.elevated:disabled {
-  --_text: var(--ds-color-text-disabled);
+.danger:disabled {
+  --_bg: var(--ds-color-background-button-disabled);
+  --_text: var(--ds-color-text-inverted-disabled);
 }

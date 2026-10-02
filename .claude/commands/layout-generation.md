@@ -141,7 +141,7 @@ When the design has an accordion list with a "Show more / Show less" trigger, us
 - Add `const [showAll, setShowAll] = useState(false)` (import `useState` from `'react'`).
 - Slice: `const visible = showAll ? ALL : ALL.slice(0, DEFAULT_COUNT)`.
 - Render only `visible` items inside `<Accordion>`.
-- Below the accordion, render a `<Button variant="ghost" size="sm" trailingIcon={…} onClick={…}>` whose label and icon reflect the toggle state.
+- Below the accordion, render a `<Button variant="transparent" size="sm" trailingIcon={…} onClick={…}>` whose label and icon reflect the toggle state.
 - Wrap the `<Accordion>` + button in a `<div>` (not `<Stack>`) so button indentation via `marginLeft` isn't overridden.
 
 ### Card carousel with arrows
@@ -247,7 +247,7 @@ After generating the file, run:
 npm run layout:validate apps/showcase/src/pages/<Name>.tsx
 ```
 
-The validator checks landmark structure (one `<main>`, named sections, labelled navs), fixed-set usage, and the inline-style reconciliation rules. Fix any violations before declaring the layout done.
+The validator checks landmark structure (one `<main>`, named sections, labelled navs), fixed-set usage, Button emphasis by context (no `accent` inside `CardVertical`/`CardHorizontal` or a `.map()`, at most one `accent` per section — ADR-024), and the inline-style reconciliation rules. Fix any violations before declaring the layout done.
 
 ### Visual review (human answer → review-state)
 

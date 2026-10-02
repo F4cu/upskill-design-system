@@ -219,6 +219,10 @@
     "separator": {
       "$type": "number",
       "$value": "{size.050}"
+    },
+    "halo": {
+      "$type": "number",
+      "$value": "{size.050}"
     }
   }
 }

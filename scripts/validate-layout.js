@@ -3,7 +3,8 @@
 // Checks: one <main> per route, named <section> landmarks, labelled <nav>
 // elements when duplicated, fixed-set component names only (plus declared
 // <Parent.Part> subcomponents and their composition rules, ADR-023), no raw container
-// divs, and the inline-style reconciliation rule (CLAUDE.md "Layout grammar").
+// divs, Button emphasis by context (ADR-024), and the inline-style
+// reconciliation rule (CLAUDE.md "Layout grammar").
 // Exits non-zero on any violation so it can gate the layout-generation skill.
 // Accepts a file path or a directory (scans *.tsx recursively).
 //
@@ -242,6 +243,66 @@ function checkPartElement(node, name, { parent, part }, jsxParent, errors) {
   }
 }
 
+// Button emphasis by context (ADR-024): variant names an absolute weight, so
+// rank has to come from the container. accent is the one action a decision
+// region exists for — never inside a repeated item (CardVertical/CardHorizontal or a .map()
+// callback, where N items would render N primaries), and at most one per
+// <section>. Only literal variant="accent" is checked; a computed variant
+// can't be judged statically.
+function checkButtonEmphasis(ast, errors) {
+  const accentsBySection = new Map()
+  function visit(node, ctx) {
+    if (!node || typeof node !== 'object') return
+    if (Array.isArray(node)) {
+      for (const n of node) visit(n, ctx)
+      return
+    }
+    if (
+      node.type === 'CallExpression' &&
+      node.callee?.type === 'MemberExpression' &&
+      node.callee.property?.name === 'map'
+    ) {
+      visit(node.callee, ctx)
+      visit(node.arguments, { ...ctx, repeated: 'a .map() callback' })
+      return
+    }
+    if (node.type === 'JSXElement') {
+      const opening = node.openingElement
+      const name = jsxName(opening.name)
+      const line = opening.loc?.start.line
+      let next = ctx
+      if (name && /^Card(Vertical|Horizontal)(\.|$)/.test(name)) {
+        next = { ...next, repeated: `<${name.split('.')[0]}>` }
+      }
+      if (name === 'section' || (name === 'Box' && getAttrStringValue(getAttr(opening, 'as')) === 'section')) {
+        next = { ...next, section: line }
+      }
+      if (name === 'Button' && getAttrStringValue(getAttr(opening, 'variant')) === 'accent') {
+        if (ctx.repeated) {
+          errors.push(`Line ${line}: <Button variant="accent"> inside ${ctx.repeated} — repeated items use neutral/transparent; accent is reserved for the region's one decision (ADR-024)`)
+        }
+        const lines = accentsBySection.get(ctx.section) ?? []
+        lines.push(line)
+        accentsBySection.set(ctx.section, lines)
+      }
+      visit(opening, next)
+      visit(node.children, next)
+      return
+    }
+    for (const key of Object.keys(node)) {
+      if (key === 'loc' || key === 'start' || key === 'end') continue
+      const child = node[key]
+      if (child && typeof child === 'object') visit(child, ctx)
+    }
+  }
+  visit(ast, { repeated: null, section: null })
+  for (const [section, lines] of accentsBySection) {
+    if (section !== null && lines.length > 1) {
+      errors.push(`Lines ${lines.join(', ')}: ${lines.length} <Button variant="accent"> in the <section> at line ${section} — at most one per decision region (ADR-024)`)
+    }
+  }
+}
+
 function walkNode(node, fn) {
   if (!node || typeof node !== 'object' || Array.isArray(node)) return
   if (node.type) fn(node)
@@ -381,6 +442,7 @@ function validateFile(filePath, { styleOnly = false } = {}) {
 
   if (!styleOnly) {
     checkParts(ast, errors)
+    checkButtonEmphasis(ast, errors)
 
     // ── Main landmark rule ───────────────────────────────────────────────────
     if (mainCount === 0) {

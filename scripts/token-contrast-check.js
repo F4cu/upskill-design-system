@@ -6,8 +6,8 @@
 // PAIRS below is hand-curated, not derived from CSS co-occurrence. A first
 // pass tried deriving pairs automatically (foreground tokens × background
 // tokens referenced in the same CSS Module) but that over-generates: a
-// single file's mutually-exclusive state variants (e.g. Button's default,
-// disabled, and outlined variants) got cross-multiplied into pairs that never
+// single file's mutually-exclusive state variants (e.g. Button's accent,
+// disabled, and neutral variants) got cross-multiplied into pairs that never
 // actually render together, producing dozens of false failures. Each entry
 // here reflects a real rendered state, checked against every component's
 // CSS Module — see the comment above each group.
@@ -26,7 +26,7 @@
 // dividers and separators — border.subtle, border.strong, border.default,
 //   border.inverted, border.accent, border.brand (AppHeader underline).
 //   border.default/strong are also each control's *only* visible boundary
-//   on Button's outlined variant, Chip, ButtonArrow, and Badge's outline
+//   on Button's neutral variant, Chip, ButtonArrow, and Badge's outline
 //   variant, with no background fill to help — a real WCAG 1.4.11 question,
 //   evaluated and deliberately left decorative/unchecked here (matches how
 //   the token is used everywhere else; those controls also carry text
@@ -79,27 +79,27 @@ const PAIRS = [
     [T("interactive-hover"), bg],
   ]),
 
-  // Button — default (primary) variant
+  // Button — accent variant
   [T("inverted-default"), BG("button-default")],
   [T("inverted-default"), BG("button-hover")],
-  // Button — outlined variant. Its border (border.default) is the same
+  // Button — neutral variant. Its border (border.default) is the same
   // low-contrast divider token used everywhere as a decorative separator
   // (Accordion, Card, Divider) — not checked here either; the variant is
   // still identifiable by its text color and hover fill.
   ...AMBIENT.map((bg) => [T("subtle"), bg]),
   [T("subtle"), BG("button-outline-hover")],
-  // Button — ghost variant reuses the interactive text pairs above.
-  // Button — elevated variant (icon-only over media). Checked at text role,
-  // stricter than the icon it actually draws. Its hover is overlay.hover
-  // layered on button.elevated; text.default on overlay.hover is covered by
-  // the DropdownMenu pair below.
-  [T("default"), BG("button-elevated")],
-  // CardVertical.Favorite — pressed heart fills with icon.brand on the disc.
-  [I("brand"), BG("button-elevated")],
+  // Button — transparent variant reuses the interactive text pairs above.
+  // Button — danger variant
+  [T("inverted-default"), BG("button-danger-default")],
+  [T("inverted-default"), BG("button-danger-hover")],
+  // CardVertical.Favorite / .Menu — transparent icon buttons over a photo.
+  // icon.on-media.* sits on arbitrary image pixels, so no pair can check it;
+  // the halo carries the contrast and the light/dark-thumbnail stories are
+  // the visual check (ADR-024).
 
   // Chip — border.selected is a real state indicator (checked); the
   // unselected ring is the shared decorative border.default (not checked,
-  // same reasoning as Button's outlined variant).
+  // same reasoning as Button's neutral variant).
   ...AMBIENT.flatMap((bg) => [
     [T("subtle"), bg],
     [T("selected"), bg],
@@ -144,7 +144,7 @@ const PAIRS = [
   ]),
 
   // ButtonArrow — icon-only round button. Border is the shared decorative
-  // border.default/strong (not checked — see Button outlined, above).
+  // border.default/strong (not checked — see Button neutral, above).
   [T("default"), BG("overlay-subtlest"), "icon"],
 
   // AppHeader — fixed background.container.canvas
@@ -171,7 +171,7 @@ const PAIRS = [
   ...AMBIENT.map((bg) => [I("subtle"), bg]),
 
   // Badge — outline variant's border is the shared decorative border.default
-  // (not checked — same reasoning as Button's outlined variant, above).
+  // (not checked — same reasoning as Button's neutral variant, above).
 
   // ProgressBar — the fill is a meaningful graphical indicator (WCAG 1.4.11)
   // rendered on the track. The media placeholder tokens

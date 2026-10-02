@@ -30,7 +30,26 @@
   z-index: 1;
 }
 
-.favorite[aria-pressed="true"] {
+/* Transparent icon buttons over a photo: contrast can't come from a background
+   (none at rest, none on touch), so the glyph carries its own dark halo.
+   Doubled class outranks Button's single-class variant rules regardless of
+   stylesheet order (ADR-024). */
+.onMedia.onMedia {
+  color: var(--ds-color-icon-on-media-default);
+}
+
+.onMedia.onMedia:hover:not(:disabled) {
+  color: var(--ds-color-icon-on-media-default);
+  background: var(--ds-color-background-on-media-hover);
+}
+
+.onMedia svg {
+  filter:
+    drop-shadow(0 0 var(--ds-size-halo) var(--ds-color-icon-on-media-halo))
+    drop-shadow(0 0 var(--ds-size-halo) var(--ds-color-icon-on-media-halo));
+}
+
+.favorite.favorite[aria-pressed="true"] {
   color: var(--ds-color-icon-brand);
 }
 

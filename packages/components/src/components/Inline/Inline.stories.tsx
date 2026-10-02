@@ -78,8 +78,8 @@ export const JustifyEnd: Story = {
   render: () => (
     <Box className={styles.demoSurface} padding="md">
       <Inline fullWidth justify="end" gap="sm">
-        <Button variant="outlined" shape="square" icon="bookmark" aria-label="Bookmark" />
-        <Button variant="default">Add to your cart</Button>
+        <Button variant="neutral" shape="square" icon="bookmark" aria-label="Bookmark" />
+        <Button variant="accent">Add to your cart</Button>
       </Inline>
     </Box>
   ),

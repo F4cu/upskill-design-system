@@ -339,7 +339,7 @@ export default function Homepage() {
                   </Text>
                 </Stack>
                 <Inline justify="start">
-                  <Button variant="default" className="full-width-mobile">See collection</Button>
+                  <Button variant="accent" className="full-width-mobile">See collection</Button>
                 </Inline>
               </Stack>
             </Box>

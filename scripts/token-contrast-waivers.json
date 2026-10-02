@@ -102,13 +102,5 @@
     "background": "--ds-color-background-overlay-hover",
     "reason": "4.47:1, needs 4.5:1. Same base-canvas correction as the text.selected waiver above.",
     "issue": 96
-  },
-  {
-    "brand": "horizon",
-    "theme": "dark",
-    "foreground": "--ds-color-icon-brand",
-    "background": "--ds-color-background-button-elevated",
-    "reason": "2.92:1, needs 3:1 (WCAG 1.4.11 graphical mark). CardVertical.Favorite's pressed heart: the same horizon brand.dark.9 on neutral.dark.2 shortfall as the SplitChart brand waiver above (every other brand/theme combo passes). Pressed state is never carried by color alone: the heart switches from outline to filled and the button exposes aria-pressed.",
-    "issue": 30
   }
 ]

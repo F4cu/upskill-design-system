@@ -70,7 +70,7 @@ function SettingsForm() {
         </Card>
 
         <Inline gap="md" justify="end">
-          <Button variant="outlined">Cancel</Button>
+          <Button variant="neutral">Cancel</Button>
           <Button>Save changes</Button>
         </Inline>
       </Stack>
@@ -114,7 +114,7 @@ function SettingsFormWithErrors() {
         </Card>
 
         <Inline gap="md" justify="end">
-          <Button variant="outlined">Cancel</Button>
+          <Button variant="neutral">Cancel</Button>
           <Button>Save changes</Button>
         </Inline>
       </Stack>
@@ -178,7 +178,7 @@ export const Default: Story = {
   </Card>
 
   <Inline gap="md" justify="end">
-    <Button variant="outlined">Cancel</Button>
+    <Button variant="neutral">Cancel</Button>
     <Button>Save changes</Button>
   </Inline>
 </Stack>

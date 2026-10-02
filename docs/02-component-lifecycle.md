@@ -51,7 +51,7 @@ Which review route a component took is recorded in a `reviewPath` field: `full` 
 
 [ADR-009](decisions/009-extend-vs-new-vs-internal.md) is the anti-proliferation rule, applied in order:
 
-1. **Same semantic role** (same role, interaction model, visual family; differs only in a containable presentational detail) → **extend** the existing component with a prop or variant. *Example: `trailingIcon` on Button — the ghost variant already carried the action semantics; icon placement is presentational.*
+1. **Same semantic role** (same role, interaction model, visual family; differs only in a containable presentational detail) → **extend** the existing component with a prop or variant. *Example: `trailingIcon` on Button — the low-weight link-styled variant (`ghost`, now `transparent` — ADR-024) already carried the action semantics; icon placement is presentational.*
 2. **Different semantic role despite similar shape** (different chrome at rest, different icon axis, different state model, different ARIA role or keyboard contract) → **new component**. *Example: `ButtonArrow` (navigation — bordered, `disabled` state, left/right) vs the Accordion disclosure trigger (borderless at rest, `open/collapsed`, up/down). Per the ADR: "they share a circular shape but nothing else load-bearing."*
 3. **Single parent, no other consumer in the fixed set** → **molecule-internal styled element** in the parent's CSS Module, not extracted to `src/components/`. *Example: the Accordion expand trigger — internal to Accordion "the same way `<summary>` is internal to `<details>`."* The signal: you cannot name a second consumer without inventing a hypothetical.
 
@@ -78,7 +78,7 @@ The metadata schema (`packages/components/component.schema.json`) requires seven
 }
 ```
 
-The fixed component scope grows only by explicit phase decision (see `CLAUDE.md` "Component scope"): the Phase 4–5 core (`Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`), then 5b (`Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`), 5c (`CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`), and 5d (`Accordion`, `Badge`, the Button `ghost` variant, the `useSlider` hook). New components enter through the verified `/add-component` loop or the `/component-scaffold` moment — see [Agentic moments](06-agentic-moments.md).
+The fixed component scope grows only by explicit phase decision (see `CLAUDE.md` "Component scope"): the Phase 4–5 core (`Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`), then 5b (`Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`), 5c (`CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`), and 5d (`Accordion`, `Badge`, the Button `ghost` variant — renamed `transparent` in ADR-024 — the `useSlider` hook). New components enter through the verified `/add-component` loop or the `/component-scaffold` moment — see [Agentic moments](06-agentic-moments.md).
 
 After any scaffold or edit, the deterministic gate must pass with no manual fixes: `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test`, plus a render check in both themes in Storybook. `components-check.yml` runs the same gate on every PR.
 

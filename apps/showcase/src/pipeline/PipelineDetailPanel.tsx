@@ -47,7 +47,7 @@ export function PipelineDetailPanel({ node, status, panelId, onClose }: Pipeline
       <Card variant="elevated" padding="lg">
         <Stack gap="md">
           <Stack gap="xs" align="start">
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="transparent" size="sm" onClick={onClose}>
               Close
             </Button>
             <Heading as="h3" size="title-small">
