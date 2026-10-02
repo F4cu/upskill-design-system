@@ -53,6 +53,21 @@ export const Inverted: Story = {
   ),
 }
 
+export const Promotional: Story = {
+  args: {
+    thumbnailSrc: THUMBNAIL,
+    title: 'Zen Mind, Beginner’s Mind',
+    author: 'Shunryu Suzuki',
+    duration: '4 hours, 30min',
+    variant: 'inverted',
+  },
+  render: (args) => (
+    <Box background="inverted" padding="xl" maxWidth={480}>
+      <CardHorizontal {...args} />
+    </Box>
+  ),
+}
+
 export const NoThumbnail: Story = {
   args: {
     title: 'Introduction to UX Design',

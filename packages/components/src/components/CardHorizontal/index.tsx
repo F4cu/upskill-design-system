@@ -14,6 +14,7 @@ export type CardHorizontalProps = {
   thumbnailSrc?: string
   thumbnailAlt?: string
   title: string
+  author?: string
   duration?: string
   certified?: boolean
   progress?: number
@@ -24,6 +25,7 @@ export function CardHorizontal({
   thumbnailSrc,
   thumbnailAlt = '',
   title,
+  author,
   duration,
   certified,
   progress,
@@ -56,8 +58,10 @@ export function CardHorizontal({
           </Heading>
           {progress !== undefined && <ProgressBar value={progress} aria-labelledby={titleId} />}
         </Stack>
-        {(duration || certified) && (
+        {(author || duration || certified) && (
           <Inline gap="sm" wrap align="center">
+            {author && <Text as="span" size="metadata" color={metaColor}>{author}</Text>}
+            {author && duration && <span className={styles.separator} aria-hidden />}
             {duration && <Text as="span" size="metadata" color={metaColor}>{duration}</Text>}
             {certified && (
               <span className={styles.badge}>

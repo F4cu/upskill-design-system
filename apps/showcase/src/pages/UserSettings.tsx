@@ -312,21 +312,24 @@ export default function UserSettings() {
                   thumbnailSrc={BOOK_IMGS[0]}
                   thumbnailAlt="Zen Mind, Beginner's Mind book cover"
                   title="Zen Mind, Beginner's Mind"
-                  duration="Shunryu Suzuki · 4 hours, 30min"
+                  author="Shunryu Suzuki"
+                  duration="4 hours, 30min"
                   variant="inverted"
                 />
                 <CardHorizontal
                   thumbnailSrc={BOOK_IMGS[1]}
                   thumbnailAlt="Wherever You Go, There You Are book cover"
                   title="Wherever You Go, There You Are"
-                  duration="Jon Kabat-Zinn · 2 hours, 15min"
+                  author="Jon Kabat-Zinn"
+                  duration="2 hours, 15min"
                   variant="inverted"
                 />
                 <CardHorizontal
                   thumbnailSrc={BOOK_IMGS[2]}
                   thumbnailAlt="The Miracle of Mindfulness book cover"
                   title="The Miracle of Mindfulness"
-                  duration="Thich Nhat Hanh · 1 hour, 10min"
+                  author="Thich Nhat Hanh"
+                  duration="1 hour, 10min"
                   variant="inverted"
                 />
               </Stack>

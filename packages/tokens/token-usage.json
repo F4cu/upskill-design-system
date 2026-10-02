@@ -13,7 +13,6 @@
     "--ds-space-inline-sm": [
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/Inline/Inline.module.css"
     ],
@@ -35,7 +34,6 @@
     "--ds-space-stack-xs": [
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/AppHeader/AppHeader.module.css",
-      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/CardVertical/CardVertical.module.css",
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/Stack/Stack.module.css"
@@ -64,7 +62,6 @@
       "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
-      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
@@ -136,6 +133,7 @@
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
       "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
       "packages/components/src/components/Select/Select.module.css",
@@ -258,6 +256,7 @@
     "--ds-border-radius-full": [
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
       "packages/components/src/components/ProgressBar/ProgressBar.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
@@ -267,8 +266,6 @@
     ],
     "--ds-color-text-inverted-default": [
       "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
-      "packages/components/src/components/CardHorizontal/index.tsx",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
       "packages/components/src/components/Text/Text.module.css",
@@ -343,14 +340,20 @@
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/Heading/Heading.module.css"
     ],
+    "--ds-size-separator": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
+    ],
+    "--ds-color-text-inverted-subtle": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    ],
     "--ds-color-icon-subtle": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/CardVertical/CardVertical.module.css"
     ],
-    "--ds-color-text-inverted-subtle": [
-      "packages/components/src/components/CardHorizontal/index.tsx",
-      "packages/components/src/components/Text/Text.module.css",
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
+    "--ds-color-icon-inverted-default": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
     ],
     "--ds-space-stack-sm": [
       "packages/components/src/components/CardVertical/CardVertical.module.css",
@@ -822,6 +825,9 @@
       "packages/tokens/src/device/desktop.json"
     ],
     "size.1600": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "size.050": [
       "packages/tokens/src/device/desktop.json"
     ],
     "font.size.5": [

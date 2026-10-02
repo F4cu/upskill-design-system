@@ -48,7 +48,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "dd31d8c83a7862e723e0df221fc41e7f86724c84",
+  "generatedFrom": "94d298eb04832b28c6ab0d9e67cdb4660628817e",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -585,6 +585,10 @@
             {
               "aria-labelledby": "{titleId}",
               "element": "ProgressBar"
+            },
+            {
+              "aria-hidden": "true",
+              "element": "span"
             }
           ],
           "component": "CardHorizontal",

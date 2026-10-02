@@ -4,7 +4,7 @@
     "category": "molecule",
     "type": "display",
     "status": "beta",
-    "description": "A horizontal course card (thumbnail-left layout) with an 80×80px square thumbnail and a content column: the title and optional ProgressBar (stack xs), then a metadata row (duration, certified badge; Inline gap sm, no separators) at stack sm. Two colour contexts: default (light) and inverted (dark footer) via the variant prop. For vertical image-top course cards use CardVertical; for generic surface containers use Card.",
+    "description": "A horizontal course card (thumbnail-left layout) with an 80×80px square thumbnail and a content column: the title and optional ProgressBar (stack xs), then a metadata row (Inline gap sm) at stack sm. The metadata row renders author · duration (a 4px separator dot only between those two, drawn by the component) and the certified badge (no separator; its icon already sets it apart). Two usages: started courses (default variant, progress, duration, optional certified) and footer promotion (inverted variant, author, duration). For vertical image-top course cards use CardVertical; for generic surface containers use Card.",
     "figmaNodeId": "130:7289"
   },
   "usage": {
@@ -23,13 +23,13 @@
     "patterns": [
       {
         "name": "started-courses-list",
-        "description": "A vertical Stack of CardHorizontal items showing in-progress courses.",
-        "tree": "Stack(gap=sm) > [CardHorizontal(progress=65), CardHorizontal(progress=20), ...]"
+        "description": "Courses the learner has started: a vertical Stack of CardHorizontal items with progress, duration and optional certified. No author.",
+        "tree": "Stack(gap=sm) > [CardHorizontal(title, progress=65, duration, certified), CardHorizontal(title, progress=20, duration), ...]"
       },
       {
         "name": "footer-recommendations",
-        "description": "CardHorizontal items in inverted variant inside the dark footer section. The Box provides the inverted background color; no theme switch is needed — both parent and cards stay in the light theme.",
-        "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted), ...]"
+        "description": "Promotional, not-started items in the dark footer: inverted variant with author and duration, no progress. The Box provides the inverted background color; no theme switch is needed — both parent and cards stay in the light theme.",
+        "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted, title, author, duration), ...]"
       },
       {
         "name": "certified-badge",
@@ -67,6 +67,16 @@
         "scenario": "Colouring the inverted variant with an inline style or a colour rule on the card root",
         "reason": "Heading and Text own their colour through the color prop; inline colour bypasses the typography API and the no-inline-colour rule.",
         "alternative": "Pass Heading color=\"inverted\" and Text color=\"inverted-subtle\"; only the badge icon needs a CSS Module override (.inverted .badge svg)."
+      },
+      {
+        "scenario": "Packing the author (or a topic) into duration, e.g. duration=\"Jon Kabat-Zinn · 2 hours, 15min\"",
+        "reason": "Each prop holds one kind of data. A merged string hides the author from consumers, agents and Figma (Author/Duration are separate properties), and hand-typed separators drift from the component's separator dot.",
+        "alternative": "Pass author=\"Jon Kabat-Zinn\" duration=\"2 hours, 15min\"; the component draws the separator."
+      },
+      {
+        "scenario": "Adding a separator before the certified badge, or typing \"·\" in any metadata string",
+        "reason": "The separator sits only between author and duration; the badge icon already separates Certified. Separators are rendered by the component (aria-hidden), never typed.",
+        "alternative": "Pass the plain values; let CardHorizontal decide where separators go."
       }
     ]
   },
@@ -108,9 +118,12 @@
     "typography": [
       "font.line-height.tight"
     ],
-    "borderRadius": [],
+    "borderRadius": [
+      "border-radius.full"
+    ],
     "other": [
-      "size.thumbnail.sm"
+      "size.thumbnail.sm",
+      "size.separator"
     ]
   },
   "accessibility": {

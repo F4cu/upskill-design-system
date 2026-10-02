@@ -22,6 +22,18 @@
   text-overflow: ellipsis;
 }
 
+.separator {
+  width: var(--ds-size-separator);
+  height: var(--ds-size-separator);
+  border-radius: var(--ds-border-radius-full);
+  background: var(--ds-color-text-subtle);
+  flex-shrink: 0;
+}
+
+.inverted .separator {
+  background: var(--ds-color-text-inverted-subtle);
+}
+
 .badge {
   display: flex;
   align-items: center;

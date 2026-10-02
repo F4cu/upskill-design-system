@@ -68,12 +68,12 @@ export const Default: Story = {
       <Heading size="headline">Continue learning</Heading>
       <Inline gap="xl" align="start" wrap={false}>
         <Stack gap="md" style={{ flex: 1 }}>
-          <CardHorizontal title="Design Systems in Practice" duration="Token architecture · 4 hours, 30min" progress={65} />
-          <CardHorizontal title="Component-Driven Development" duration="React + Vite · 3 hours, 15min" progress={20} />
+          <CardHorizontal title="Design Systems in Practice" duration="4 hours, 30min" progress={65} />
+          <CardHorizontal title="Component-Driven Development" duration="3 hours, 15min" progress={20} />
         </Stack>
         <Stack gap="md" style={{ flex: 1 }}>
-          <CardHorizontal title="Accessibility in Design Systems" duration="ARIA & focus management · 2 hours, 45min" progress={80} />
-          <CardHorizontal title="Typography & Spacing Tokens" duration="Style Dictionary · 1 hour, 50min" progress={10} />
+          <CardHorizontal title="Accessibility in Design Systems" duration="2 hours, 45min" progress={80} />
+          <CardHorizontal title="Typography & Spacing Tokens" duration="1 hour, 50min" progress={10} />
         </Stack>
       </Inline>
     </Stack>
@@ -141,24 +141,24 @@ export const Default: Story = {
               <Stack gap="md" grow={1}>
                 <CardHorizontal
                   title="Design Systems in Practice"
-                  duration="Token architecture · 4 hours, 30min"
+                  duration="4 hours, 30min"
                   progress={65}
                 />
                 <CardHorizontal
                   title="Component-Driven Development"
-                  duration="React + Vite · 3 hours, 15min"
+                  duration="3 hours, 15min"
                   progress={20}
                 />
               </Stack>
               <Stack gap="md" grow={1}>
                 <CardHorizontal
                   title="Accessibility in Design Systems"
-                  duration="ARIA & focus management · 2 hours, 45min"
+                  duration="2 hours, 45min"
                   progress={80}
                 />
                 <CardHorizontal
                   title="Typography & Spacing Tokens"
-                  duration="Style Dictionary · 1 hour, 50min"
+                  duration="1 hour, 50min"
                   progress={10}
                 />
               </Stack>

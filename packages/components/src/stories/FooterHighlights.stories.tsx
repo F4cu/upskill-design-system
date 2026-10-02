@@ -36,17 +36,20 @@ function FooterHighlights() {
             <CardHorizontal
               variant="inverted"
               title="Zen Mind, Beginner's Mind"
-              duration="Shunryu Suzuki · 4 hours, 30min"
+              author="Shunryu Suzuki"
+              duration="4 hours, 30min"
             />
             <CardHorizontal
               variant="inverted"
               title="Wherever You Go, There You Are"
-              duration="Jon Kabat-Zinn · 2 hours, 15min"
+              author="Jon Kabat-Zinn"
+              duration="2 hours, 15min"
             />
             <CardHorizontal
               variant="inverted"
               title="The Miracle of Mindfulness"
-              duration="Thich Nhat Hanh · 1 hour, 10min"
+              author="Thich Nhat Hanh"
+              duration="1 hour, 10min"
             />
           </Stack>
         </Inline>
@@ -104,9 +107,9 @@ export const Default: Story = {
       </Stack>
 
       <Stack gap="sm" style={{ flex: 1 }}>
-        <CardHorizontal variant="inverted" title="Zen Mind, Beginner's Mind" duration="Shunryu Suzuki · 4 hours, 30min" />
-        <CardHorizontal variant="inverted" title="Wherever You Go, There You Are" duration="Jon Kabat-Zinn · 2 hours, 15min" />
-        <CardHorizontal variant="inverted" title="The Miracle of Mindfulness" duration="Thich Nhat Hanh · 1 hour, 10min" />
+        <CardHorizontal variant="inverted" title="Zen Mind, Beginner's Mind" author="Shunryu Suzuki" duration="4 hours, 30min" />
+        <CardHorizontal variant="inverted" title="Wherever You Go, There You Are" author="Jon Kabat-Zinn" duration="2 hours, 15min" />
+        <CardHorizontal variant="inverted" title="The Miracle of Mindfulness" author="Thich Nhat Hanh" duration="1 hour, 10min" />
       </Stack>
     </Inline>
 
