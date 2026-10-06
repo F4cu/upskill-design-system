@@ -23,6 +23,9 @@ sources:
 # clock reset 2026-10-02: CLAUDE.md renames Button's ghost variant to transparent (ADR-024); this page doesn't list variants, still accurate
 # clock reset 2026-10-02: governance pull deprecates button.ghost/elevated/inverted (ADR-024 cleanup); deprecation mechanism this page describes unchanged, still accurate
 # clock reset 2026-10-02: ADR-024 consequence wording corrected (bare <Button> call sites migrated to explicit accent); page doesn't describe Button variants, still accurate
+# clock reset 2026-10-06: ADR-024 amendment (transparent becomes a ghost button; per-variant hover tokens); page doesn't describe Button variants, still accurate
+# clock reset 2026-10-06: ADR-024 follow-up marked done (button.accent.* rename, background.disabled); page doesn't describe Button tokens, still accurate
+# clock reset 2026-10-06: figma-variable-push.md example path swapped from the deleted button.ghost to button.danger.default; page still accurate
 ---
 # Start here
 

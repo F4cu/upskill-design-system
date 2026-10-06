@@ -55,12 +55,12 @@
 /* Variant: accent */
 
 .accent {
-  --_bg: var(--ds-color-background-button-default);
+  --_bg: var(--ds-color-background-button-accent-default);
   --_text: var(--ds-color-text-inverted-default);
 }
 
 .accent:hover:not(:disabled) {
-  --_bg: var(--ds-color-background-button-hover);
+  --_bg: var(--ds-color-background-button-accent-hover);
 }
 
 .accent:disabled {
@@ -77,7 +77,7 @@
 }
 
 .neutral:hover:not(:disabled) {
-  --_bg: var(--ds-color-background-button-outline-hover);
+  --_bg: var(--ds-color-background-button-neutral-hover);
 }
 
 .neutral:disabled {
@@ -90,12 +90,10 @@
 .transparent {
   --_bg: transparent;
   --_text: var(--ds-color-text-interactive-default);
-  --_px: 0;
 }
 
 .transparent:hover:not(:disabled) {
-  --_bg: transparent;
-  --_text: var(--ds-color-text-interactive-hover);
+  --_bg: var(--ds-color-background-button-transparent-hover);
 }
 
 .transparent:disabled {

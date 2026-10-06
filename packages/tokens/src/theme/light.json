@@ -19,6 +19,10 @@
         "$type": "color",
         "$value": "{color.black.0}"
       },
+      "disabled": {
+        "$type": "color",
+        "$value": "{color.neutral.8}"
+      },
       "brand": {
         "$type": "color",
         "$value": "{color.brand.9}"
@@ -84,38 +88,31 @@
         }
       },
       "button": {
-        "default": {
-          "$type": "color",
-          "$value": "{color.brand.11}"
-        },
-        "hover": {
-          "$type": "color",
-          "$value": "{color.brand.12}"
-        },
         "disabled": {
           "$type": "color",
-          "$value": "{color.neutral.8}"
+          "$value": "{color.background.disabled}"
         },
-        "ghost": {
-          "$type": "color",
-          "$value": "{color.surface.1}",
-          "$deprecated": true
-        },
-        "outline": {
+        "accent": {
+          "default": {
+            "$type": "color",
+            "$value": "{color.brand.10}"
+          },
           "hover": {
             "$type": "color",
-            "$value": "{color.surface.2}"
+            "$value": "{color.brand.11}"
           }
         },
-        "elevated": {
-          "$type": "color",
-          "$value": "{color.surface.3}",
-          "$deprecated": true
+        "neutral": {
+          "hover": {
+            "$type": "color",
+            "$value": "{color.black.alpha.1}"
+          }
         },
-        "inverted": {
-          "$type": "color",
-          "$value": "{color.neutral.dark.2}",
-          "$deprecated": true
+        "transparent": {
+          "hover": {
+            "$type": "color",
+            "$value": "{color.background.button.neutral.hover}"
+          }
         },
         "danger": {
           "default": {
@@ -175,7 +172,7 @@
       "inverted": {
         "default": {
           "$type": "color",
-          "$value": "{color.neutral.2}"
+          "$value": "{color.neutral.1}"
         },
         "subtle": {
           "$type": "color",

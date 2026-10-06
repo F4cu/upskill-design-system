@@ -16,6 +16,7 @@ sources:
 # clock reset 2026-07-23: ADR-007 promoted proposed→accepted (exit condition met: Accordion 2026-07-09, 12 ledger runs) — status flip + amendment only, loop mechanics unchanged, page still accurate
 # clock reset 2026-10-02: tokens-author Conventions gains a bullet (component dimension without a token → size primitive + named device alias, never raw px); this page doesn't list the convention bullets, still accurate
 # clock reset 2026-10-02: /layout-generation validation text now names the Button emphasis-by-context check (ADR-024); loop mechanics unchanged, still accurate
+# clock reset 2026-10-06: figma-variable-push.md example path swapped (button.ghost deleted → button.danger.default); moment behaviour unchanged, still accurate
 ---
 # Agentic moments
 

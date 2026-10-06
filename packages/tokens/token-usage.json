@@ -260,7 +260,7 @@
       "packages/components/src/components/ProgressBar/ProgressBar.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
-    "--ds-color-background-button-default": [
+    "--ds-color-background-button-accent-default": [
       "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-text-inverted-default": [
@@ -270,17 +270,16 @@
       "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
-    "--ds-color-background-button-hover": [
+    "--ds-color-background-button-accent-hover": [
       "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-background-button-disabled": [
-      "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/Checkbox/Checkbox.module.css"
+      "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-text-inverted-disabled": [
       "packages/components/src/components/Button/Button.module.css"
     ],
-    "--ds-color-background-button-outline-hover": [
+    "--ds-color-background-button-neutral-hover": [
       "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-text-disabled": [
@@ -304,10 +303,8 @@
       "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/reset.css"
     ],
-    "--ds-color-text-interactive-hover": [
-      "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/TextLink/TextLink.module.css",
-      "packages/components/src/styles/reset.css"
+    "--ds-color-background-button-transparent-hover": [
+      "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-background-button-danger-default": [
       "packages/components/src/components/Button/Button.module.css"
@@ -402,6 +399,9 @@
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/tokens/tokenComponents.module.css"
     ],
+    "--ds-color-background-disabled": [
+      "packages/components/src/components/Checkbox/Checkbox.module.css"
+    ],
     "--ds-font-weight-medium": [
       "packages/components/src/components/Chip/Chip.module.css",
       "packages/components/src/components/Heading/Heading.module.css"
@@ -492,6 +492,10 @@
       "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/utilities.module.css"
     ],
+    "--ds-color-text-interactive-hover": [
+      "packages/components/src/components/TextLink/TextLink.module.css",
+      "packages/components/src/styles/reset.css"
+    ],
     "--ds-color-background-media-default": [
       "packages/components/src/components/VideoFrame/VideoFrame.module.css"
     ],
@@ -517,6 +521,9 @@
     "color.black.0": [
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
+    ],
+    "color.neutral.dark.8": [
+      "packages/tokens/src/theme/dark.json"
     ],
     "color.brand.dark.9": [
       "packages/tokens/src/theme/dark.json"
@@ -555,16 +562,21 @@
     "color.terracotta.dark.8": [
       "packages/tokens/src/theme/dark.json"
     ],
+    "color.background.disabled": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.brand.10": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
     "color.brand.11": [
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
-    "color.brand.12": [
+    "color.background.button.neutral.hover": [
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
-    ],
-    "color.neutral.dark.8": [
-      "packages/tokens/src/theme/dark.json"
     ],
     "color.red.11": [
       "packages/tokens/src/theme/dark.json",
@@ -594,7 +606,7 @@
     "color.brand.dark.12": [
       "packages/tokens/src/theme/dark.json"
     ],
-    "color.neutral.2": [
+    "color.neutral.1": [
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
@@ -662,6 +674,9 @@
     "color.black.alpha.1": [
       "packages/tokens/src/theme/light.json"
     ],
+    "color.neutral.8": [
+      "packages/tokens/src/theme/light.json"
+    ],
     "color.brand.9": [
       "packages/tokens/src/theme/light.json"
     ],
@@ -698,12 +713,6 @@
     "color.terracotta.6": [
       "packages/tokens/src/theme/light.json"
     ],
-    "color.neutral.8": [
-      "packages/tokens/src/theme/light.json"
-    ],
-    "color.surface.1": [
-      "packages/tokens/src/theme/light.json"
-    ],
     "color.neutral.12": [
       "packages/tokens/src/theme/light.json"
     ],
@@ -711,6 +720,9 @@
       "packages/tokens/src/theme/light.json"
     ],
     "color.accent.12": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.brand.12": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.neutral.10": [
@@ -735,6 +747,9 @@
       "packages/tokens/src/theme/light.json"
     ],
     "color.amber.6": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.neutral.2": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.neutral.7": [

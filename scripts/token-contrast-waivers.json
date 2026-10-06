@@ -102,5 +102,21 @@
     "background": "--ds-color-background-overlay-hover",
     "reason": "4.47:1, needs 4.5:1. Same base-canvas correction as the text.selected waiver above.",
     "issue": 96
+  },
+  {
+    "brand": "upskill",
+    "theme": "light",
+    "foreground": "--ds-color-text-interactive-default",
+    "background": "--ds-color-background-button-transparent-hover",
+    "reason": "4.46:1, needs 4.5:1. Hover-only: transparent Button's brand-11 text on the black.alpha.1 hover tint (ADR-024 amendment 2026-10-06), the same brand-11-on-alpha.1 shortfall as text.brand on overlay.hover above. Passes at rest.",
+    "issue": 96
+  },
+  {
+    "brand": "horizon",
+    "theme": "light",
+    "foreground": "--ds-color-text-interactive-default",
+    "background": "--ds-color-background-button-transparent-hover",
+    "reason": "4.47:1, needs 4.5:1. Hover-only: transparent Button's brand-11 text on the black.alpha.1 hover tint (ADR-024 amendment 2026-10-06), the same brand-11-on-alpha.1 shortfall as text.brand on overlay.hover above. Passes at rest.",
+    "issue": 96
   }
 ]

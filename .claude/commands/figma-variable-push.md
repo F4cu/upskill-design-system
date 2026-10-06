@@ -25,7 +25,7 @@ This is a one-off, developer-present task — never schedule it, loop it, or put
 Figma names use `/` separators (`group/sub/name`) and these project-specific rules:
 - Color sub-scales are suffixed: `color.terracotta.dark.9` → `color/terracotta/dark-9`; `color.terracotta.alpha.1` → `color/terracotta/alpha-1`.
 - Theme semantic scale steps are **hue-prefixed**: `color.brand.9` → `color/brand/brand-9`, `color.accent.9` → `color/accent/accent-9`, `color.neutral.9` → `color/neutral/neutral-9`. The `default` step stays `color/brand/default`.
-- Other semantic paths map straight through: `color.background.button.ghost` → `color/background/button/ghost`.
+- Other semantic paths map straight through: `color.background.button.danger.default` → `color/background/button/danger/default`.
 - Collections & modes: **Primitives** (single mode `Value`), **Theme** (`Light`/`Dark` from the two theme files), **Device** (`Desktop`/`Tablet`/`Mobile` from the three device files). A token defined only in `desktop.json` is constant across all three device modes.
 
 ## Steps
