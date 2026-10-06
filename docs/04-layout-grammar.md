@@ -18,6 +18,7 @@ sources:
 # clock reset 2026-10-01: /code-review fixes in validate-layout.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 # clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
 # clock reset 2026-10-02: ADR-023 amendment (one prop per datum; separators drawn by the component); no change to dotted-name or landmark grammar, still accurate
+# clock reset 2026-10-06: ADR-023 amendment (Figma-side mirror only); no change to dotted-name or landmark grammar, still accurate
 ---
 # Layout grammar
 

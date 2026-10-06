@@ -4,7 +4,7 @@ title: "ADR-023 — Subcomponents: preset + parts under a dot namespace"
 # ADR-023 — Subcomponents: preset + parts under a dot namespace
 
 **Date:** 2026-10-01
-**Amended:** 2026-10-02
+**Amended:** 2026-10-06
 **Status:** `accepted`
 
 ## Context
@@ -69,7 +69,7 @@ Code and Figma use the same names, values and defaults. Casing is the only permi
 
 - Part names are Figma layer names. When you swap an instance or select a variant, Figma preserves an override only if the layer names match ([Figma Help — Apply changes to instances](https://help.figma.com/hc/en-us/articles/360039150733-Apply-changes-to-instances), "Change preservation"). Matching names is what keeps a swap from silently dropping content. A swap from the Assets panel preserves text overrides only, whatever the names.
 - A `slot` part maps to a Figma instance-swap property whose preferred instances are the part's `accepts`. Instance swap is the Figma tool for a fixed piece with at most one instance in a fixed place ([ds101 — Component composition in Figma](https://f4cu.github.io/ds101/component-composition-in-figma/), "Choosing variants, instance swap, or slots"). An optional slot needs a separate visibility boolean, because an instance swap has no empty option. Code's `slot` kind is not a Figma native slot.
-- An `open` part is not mirrored as a Figma native slot. Figma mirrors the preset, so `open` parts stay fixed layers carrying the preset's text and boolean properties (see Amendment 2026-10-01).
+- An `open` part is not a Figma native slot on the preset: the preset keeps fixed layers carrying its text and boolean properties (Amendment 2026-10-01). It is a native slot on the separate `Parent.Root` component (Amendment 2026-10-06).
 - Each part with its own Figma component (`Favorite`, `Menu`) owns its properties. The parent exposes them through "expose properties from nested instances" and does not redefine them. Base components are built first.
 - Booleans name a state and default to `false` (`Pressed`, `Expanded`, `Certified`). An interaction state with no code prop (Menu `Expanded`) may exist in Figma only and is documented as design-only.
 
@@ -111,3 +111,32 @@ CardHorizontal's second use case (promotional footer cards that show an author) 
 - **Applying the test above:** an optional `author` creates no invalid prop combination, so CardHorizontal stays flat props (ADR-009 question 1), not parts. The two usages (started courses; footer promotion) are documented as `usage.patterns`, not as a mode variant.
 
 **Alternatives considered.** A generic `subtitle` prop would accept topics, authors or anything else, which is the same ambiguity under a vaguer name. A `usage="promo"` variant would bundle content choices into a mode and block reasonable combinations (a promoted course that is also certified).
+
+## Amendment (2026-10-06) — Figma gets a composed `Root` with native slots; one example per pattern
+
+The 2026-10-01 amendment's revisit trigger arrived: ADR-025 added a Completed state, and the `custom-meta`, `instructor-row`, `grouped-meta` and `title-only` patterns had no Figma counterpart, so a designer had to detach to draw them. figma-cli now verifiably drives native slots: `ComponentNode.createSlot()`, a `SLOT` component property with preferred values, and adding or removing slot content inside an instance. The one setting the Plugin API doesn't expose is "Only allow preferred instances".
+
+**Decision.** Figma mirrors both of code's entry points, as two components:
+
+| Code | Figma |
+|---|---|
+| Preset `<Parent …props />` | The existing component set. It keeps its text, boolean and variant properties, and stays the default for the common case. |
+| Parts under `<Parent.Root>` | A `Parent.Root` component with the preset's structural properties (size, action) and its `open` parts as native slots. |
+
+How each part kind maps to Figma:
+
+| Part kind | Figma construct |
+|---|---|
+| `fixed` | A nested layer or instance with its own properties, exposed on the parent (`Progress` → `completion`, `Favorite` → `Pressed`) |
+| `slot` | An instance-swap property with a `Has <x>` visibility boolean (unchanged) |
+| `open` | A native slot on `Parent.Root` only. Its auto-layout gap is bound to the same spacing variable as the code primitive, and that gap is fixed in the main component, which mirrors "no layout props on open parts". |
+
+- **Part components exist only for slot content.** A part that can go into a slot (`Title`, `Meta`, `Duration`, `Certified`, `Completed`) becomes a component named `Parent.Part`, and its instances in slots carry the plain part name as the layer name. The preset uses part instances only where that doesn't cost its properties. A parent can't bind its own text property to a text layer inside a nested instance, and replacing a layer drops existing instance overrides. So text-property parts (`Title`, `Duration`) stay text layers in the preset, with the same text style and variables as the part. (In CardVertical, 47 placed cards had their own title text and 14 had their own duration text.)
+- **Preferred instances = `accepts` where a Figma component exists.** `Stack`, `Inline` and `Text` are auto-layout frames and text layers in Figma, not components. "Only allow preferred instances" is therefore left off. The fixed slot gap still enforces the spacing rule that matters.
+- **Derived state stays with the preset.** ADR-025's derived `Status` controls the derived marker (`Completed`) only in the preset. On `Root` the marker is consumer-placed slot content, the same responsibility the parts API carries in code.
+- **One example per pattern.** Every `usage.patterns` entry that isn't a page layout gets an example frame named with the exact pattern id, captioned with its story and description. The frames go in a `<Parent> examples` section and are built only from instances, never detached: preset patterns from the component set, parts compositions from `Root`. Carousel and page patterns belong on the Layout Examples page.
+
+**Alternatives considered.** Making `Body` a slot on the preset itself would lose the preset's properties, the cost the 2026-10-01 amendment rejected. Making the examples components would add Figma components with no code counterpart, which breaks the one-to-one inventory, so they stay frames that designers copy.
+
+**Consequences.** `Root` has no interaction (`State`) variant until a composition needs a hover preview. A component that adopts parts later gets the same pair, a preset set plus `Parent.Root`, built in that order.
+

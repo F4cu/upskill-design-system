@@ -14,6 +14,7 @@ sources:
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 # clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
 # clock reset 2026-10-02: ADR-023 amendment (CardHorizontal author: one prop per datum, stays flat props under question 1); the ADR-009/023 test described here is unchanged, still accurate
+# clock reset 2026-10-06: ADR-023 amendment (Figma Parent.Root with native slots; example frame per pattern); the ADR-009/023 test described here is unchanged, still accurate
 ---
 # Component lifecycle
 
