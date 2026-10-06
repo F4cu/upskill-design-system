@@ -26,6 +26,7 @@ sources:
 # clock reset 2026-10-06: ADR-024 amendment (transparent becomes a ghost button; per-variant hover tokens); page doesn't describe Button variants, still accurate
 # clock reset 2026-10-06: ADR-024 follow-up marked done (button.accent.* rename, background.disabled); page doesn't describe Button tokens, still accurate
 # clock reset 2026-10-06: figma-variable-push.md example path swapped from the deleted button.ghost to button.danger.default; page still accurate
+# clock reset 2026-10-06: ADR-023 amendment (Figma Parent.Root with native slots; example frame per pattern) + components.md Figma-mirror rule line; this page lists no individual ADRs or component APIs, still accurate
 ---
 # Start here
 

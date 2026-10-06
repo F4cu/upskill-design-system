@@ -46,6 +46,7 @@ Parts (`<Parent.Part>`) are not new components: no folder, not in the fixed set,
 - **Kinds:** `fixed` = content/state props only; `slot` = exactly one child from `accepts`; `open` = children from `accepts`, laid out by a primitive with fixed props. Open parts accept `children` only — no `gap`/`align` pass-through, so a layout prop on a part is a type error. Custom spacing = nest a `Stack`/`Inline` inside.
 - **No margins:** parts never set outer margins; the container owns spacing between its children.
 - **Naming contract:** part names are the Figma layer names; Figma props share names, values and defaults with code; booleans name a state and default to `false`.
+- **Figma mirror:** the preset component set keeps its properties; a separate `Parent.Root` component carries `open` parts as native slots (gap bound to the primitive's spacing variable, preferred instances = `accepts`). `fixed` → nested layer/instance, `slot` → instance swap + `Has <x>`. One example frame per non-layout `usage.patterns` id, built from instances only (ADR-023 amendment 2026-10-06).
 - **Metadata:** every part in `composition.parts` (validated by `metadata:validate`); every supported composition as a `usage.patterns` entry + story; Storybook meta lists `subcomponents`. Preset baselines must stay pixel-identical when a component adopts parts.
 
 ## Storybook setup and story conventions

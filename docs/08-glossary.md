@@ -21,6 +21,7 @@ sources:
 # clock reset 2026-10-02: components.md gains a one-prop-per-datum rule line (ADR-023 amendment 2026-10-02); no new glossary term, still accurate
 # clock reset 2026-10-02: tokens-author Conventions gains a bullet (component dimension without a token → size primitive + named device alias, never raw px); this page doesn't list the convention bullets, still accurate
 # clock reset 2026-10-06: figma-variable-push.md example path swapped (button.ghost → button.danger.default); no term changed, still accurate
+# rewritten 2026-10-06: Slot and Open part entries say how each maps to Figma (ADR-023 amendment 2026-10-06: code slot = instance swap, open part = native slot on Parent.Root)
 ---
 # Glossary
 
@@ -61,7 +62,7 @@ A component that carries visual meaning or user interaction: `Button`, `Text`, `
 A component built from two or more atoms combined into a small, reusable unit. `Card` is a molecule — it composes `Text`, `Heading`, and layout primitives into a single thing with its own purpose. Molecules are still general enough to be reused across the product. Contrast with atom.
 
 **Open part**
-A subcomponent that accepts several children from a fixed list and lays them out with a layout component whose spacing is set by the part, not by the consumer. `CardVertical.Body` is an open part: it renders a `Stack` with small gaps and accepts `Title`, `Meta`, `Text`, `Badge` and a few others. You can't pass it a `gap`; for different spacing you nest your own `Stack` or `Inline` inside. See also Subcomponent (part), Slot.
+A subcomponent that accepts several children from a fixed list and lays them out with a layout component whose spacing is set by the part, not by the consumer. `CardVertical.Body` is an open part: it renders a `Stack` with small gaps and accepts `Title`, `Meta`, `Text`, `Badge` and a few others. You can't pass it a `gap`; for different spacing you nest your own `Stack` or `Inline` inside. In Figma, an open part is a native slot on the separate `CardVertical.Root` component, with the same fixed gap; the preset component set keeps it as a fixed layer so its text properties stay on the top layer. See also Subcomponent (part), Slot.
 
 **Orthogonal**
 Two things are orthogonal when they are fully independent — using or changing one has no effect on the other. In this repo, `ScrollArea` (native browser scroll), `useCarousel` (JS-animated carousel), and `useSlider` (fade-in step-through) are orthogonal: they solve different problems and share no state or implementation. The opposite of coupled.
@@ -79,7 +80,7 @@ Which review route a component or layout took, recorded as `reviewPath` in the r
 To generate the skeleton files for a new component — the `index.tsx`, CSS module, stories file, and `metadata.json` — from a template, before any real logic is written. Scaffolding creates the structure; the developer (or agent) fills in the details afterward. In this repo the `/component-scaffold` command does this.
 
 **Slot**
-A place inside a component that takes exactly one child chosen from a short list. `CardVertical.Action` is a slot: it holds either one `Favorite` button or one `Menu`, never both. In Figma, a slot is an instance-swap property, so the same name and the same choices exist on both sides. See also Subcomponent (part), Open part.
+A place inside a component that takes exactly one child chosen from a short list. `CardVertical.Action` is a slot: it holds either one `Favorite` button or one `Menu`, never both. In Figma, this kind of slot is an instance-swap property, so the same name and the same choices exist on both sides. It is not a Figma native slot: those mirror open parts. See also Subcomponent (part), Open part.
 
 **State (component)**
 The different conditions a component can be in that change its appearance or behavior. Common states: `default`, `hover` (cursor is over it), `focused` (selected via keyboard), `disabled` (not interactive), `loading`, `error`. States are defined in each component's `metadata.json` and are distinct from React state (the internal data a component holds) — though the two are related: a component uses React state to track which visual state it is currently in. The system separates three kinds ([ADR-025](decisions/025-component-state-model.md)):
