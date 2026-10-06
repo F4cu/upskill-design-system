@@ -19,6 +19,7 @@ sources:
 # clock reset 2026-10-06: text.on-button folded into text.inverted.default (now neutral.1) before merge; pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-06: theme gains button.neutral.hover/button.transparent.hover (alpha tint) replacing outline.hover; pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-06: theme gains button.accent.{default,hover} and background.disabled (button.disabled aliases it); pipeline mechanics unchanged, still accurate
+# clock reset 2026-10-06: retired button tokens (default, hover, ghost, elevated, inverted, outline.hover) deleted from theme source; pipeline mechanics unchanged, still accurate
 ---
 # Token pipeline
 
