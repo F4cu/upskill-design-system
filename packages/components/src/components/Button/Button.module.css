@@ -56,7 +56,7 @@
 
 .accent {
   --_bg: var(--ds-color-background-button-default);
-  --_text: var(--ds-color-text-on-button);
+  --_text: var(--ds-color-text-inverted-default);
 }
 
 .accent:hover:not(:disabled) {
@@ -106,7 +106,7 @@
 
 .danger {
   --_bg: var(--ds-color-background-button-danger-default);
-  --_text: var(--ds-color-text-on-button);
+  --_text: var(--ds-color-text-inverted-default);
 }
 
 .danger:hover:not(:disabled) {

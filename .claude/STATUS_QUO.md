@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-10-02T12:19:15.831Z**
+Generated: **2026-10-06T09:43:40.139Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -88,14 +88,14 @@ None. All review findings have been back-filled. ✅
 
 ## Token usage
 
-- **107** distinct CSS custom properties referenced in `packages/components/src`
+- **106** distinct CSS custom properties referenced in `packages/components/src`
 - **105** distinct dot-path tokens referenced via `{alias}` syntax in theme/device JSON
 - Full token→files maps: `packages/tokens/token-usage.json`
 
 ## Figma drift
 
 - Snapshot captured: **2026-10-01** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **1 day(s)**
+- Age: **5 day(s)**
 - Variables mirrored: **453** (Primitives 288 · Theme 105 · Device 60)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 

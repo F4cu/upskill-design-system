@@ -175,7 +175,7 @@
       "inverted": {
         "default": {
           "$type": "color",
-          "$value": "{color.neutral.2}"
+          "$value": "{color.neutral.1}"
         },
         "subtle": {
           "$type": "color",
@@ -185,10 +185,6 @@
           "$type": "color",
           "$value": "{color.neutral.3}"
         }
-      },
-      "on-button": {
-        "$type": "color",
-        "$value": "{color.neutral.1}"
       },
       "disabled": {
         "$type": "color",

@@ -263,8 +263,12 @@
     "--ds-color-background-button-default": [
       "packages/components/src/components/Button/Button.module.css"
     ],
-    "--ds-color-text-on-button": [
-      "packages/components/src/components/Button/Button.module.css"
+    "--ds-color-text-inverted-default": [
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/components/Text/Text.module.css",
+      "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
     "--ds-color-background-button-hover": [
       "packages/components/src/components/Button/Button.module.css"
@@ -397,12 +401,6 @@
     "--ds-color-background-brand": [
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/tokens/tokenComponents.module.css"
-    ],
-    "--ds-color-text-inverted-default": [
-      "packages/components/src/components/Checkbox/Checkbox.module.css",
-      "packages/components/src/components/Heading/Heading.module.css",
-      "packages/components/src/components/Text/Text.module.css",
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
     "--ds-font-weight-medium": [
       "packages/components/src/components/Chip/Chip.module.css",
@@ -596,16 +594,12 @@
     "color.brand.dark.12": [
       "packages/tokens/src/theme/dark.json"
     ],
-    "color.neutral.2": [
+    "color.neutral.1": [
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
     "color.neutral.dark.5": [
       "packages/tokens/src/theme/dark.json"
-    ],
-    "color.neutral.1": [
-      "packages/tokens/src/theme/dark.json",
-      "packages/tokens/src/theme/light.json"
     ],
     "color.red.dark.11": [
       "packages/tokens/src/theme/dark.json"
@@ -744,6 +738,9 @@
       "packages/tokens/src/theme/light.json"
     ],
     "color.amber.6": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.neutral.2": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.neutral.7": [
