@@ -17,6 +17,7 @@ sources:
 # clock reset 2026-10-02: token-contrast-check.js gains the CardHorizontal inverted badge-icon pair; curation convention unchanged, page still accurate
 # clock reset 2026-10-02: token-contrast-check.js Button pairs switch to text.on-button; curation convention unchanged, page still accurate
 # clock reset 2026-10-06: Button pairs switch from text.on-button to text.inverted.default (merged token); curation convention unchanged, page still accurate
+# clock reset 2026-10-06: contrast pairs move to button.neutral/transparent.hover; two hover-only near-misses join the #96 waivers; curation and waiver conventions unchanged, still accurate
 ---
 # Accessibility
 

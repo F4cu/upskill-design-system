@@ -17,6 +17,7 @@ sources:
 # clock reset 2026-10-02: $deprecated mirrored onto button.ghost/elevated/inverted via airtable:pull:governance; mechanism unchanged, still accurate
 # clock reset 2026-10-02: theme gains text.on-button and button.default/hover move to brand 10/11; pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-06: text.on-button folded into text.inverted.default (now neutral.1) before merge; pipeline mechanics unchanged, still accurate
+# clock reset 2026-10-06: theme gains button.neutral.hover/button.transparent.hover (alpha tint) replacing outline.hover; pipeline mechanics unchanged, still accurate
 ---
 # Token pipeline
 
