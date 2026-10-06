@@ -7,6 +7,7 @@ export type IconName =
   | 'chevron-down'
   | 'chevron-up'
   | 'badge-check'
+  | 'check'
   | 'award'
   | 'bookmark'
   | 'search'
@@ -44,6 +45,7 @@ const paths: Record<IconName, React.ReactNode> = {
       <path d="m9 12 2 2 4-4" />
     </>
   ),
+  check: <path d="M20 6 9 17l-5-5" />,
   award: (
     <>
       <circle cx="12" cy="8" r="6" />

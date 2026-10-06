@@ -4,7 +4,7 @@
     "category": "molecule",
     "type": "interactive",
     "status": "beta",
-    "description": "A vertical course card with an image thumbnail, an optional overlay action (favorite toggle or overflow menu), optional progress bar, serif title, and metadata row (duration and certified badge). Two image proportions via the size prop: lg uses a portrait 4/5 thumbnail (tall), sm uses a landscape 3/2 thumbnail (short). Used in Saved Courses and Discover carousels. Ships as a preset (`<CardVertical …props />`) built from named parts (`CardVertical.Root`, `.Media`, `.Action`, …) that consumers compose directly for uncommon content (ADR-023). No dark variant — appears on light and elevated backgrounds only.",
+    "description": "A vertical course card with an image thumbnail, an optional overlay action (favorite toggle or overflow menu), optional progress bar, serif title, and metadata row (duration, certified badge, and a 'Completed' check marker when progress reaches 100). Two image proportions via the size prop: lg uses a portrait 4/5 thumbnail (tall), sm uses a landscape 3/2 thumbnail (short). Used in Saved Courses and Discover carousels. Ships as a preset (`<CardVertical …props />`) built from named parts (`CardVertical.Root`, `.Media`, `.Action`, …) that consumers compose directly for uncommon content (ADR-023). No dark variant — appears on light and elevated backgrounds only.",
     "figmaNodeId": "52:4270"
   },
   "usage": {
@@ -21,13 +21,16 @@
       "overflow menu",
       "kebab",
       "compound",
-      "parts"
+      "parts",
+      "completed",
+      "finished"
     ],
     "when": [
       "Displaying course cards in a horizontal carousel (Discover, Saved Courses sections)",
       "Use size='lg' (portrait thumbnail) for feature carousels where image impact matters",
       "Use size='sm' (landscape thumbnail) for compact carousels or narrower layout slots",
       "Pass progress when the user has started the course — renders a ProgressBar between image and title",
+      "Completed is derived, not a prop: progress >= 100 adds CardVertical.Completed (check Icon + 'Completed') to the meta row after Certified; the full ProgressBar stays. In a parts composition, render <CardVertical.Completed /> inside CardVertical.Meta yourself.",
       "Pass action={<CardVertical.Favorite …/>} when the user can save the course; action={<CardVertical.Menu …/>} for an overflow menu of course actions. Never both.",
       "Compose the parts (CardVertical.Root > Media / Progress / Body) only when the preset can't express the content — e.g. an instructor row or custom meta. Start from a named pattern below."
     ],
@@ -56,6 +59,11 @@
         "name": "in-progress-card",
         "description": "Gallery state: compact card for a started course in Saved Courses. Story: WithProgress with size=sm.",
         "tree": "CardVertical(size=sm, title, duration, progress=65)"
+      },
+      {
+        "name": "completed-card",
+        "description": "Gallery state: a finished course. Story: Completed. The Completed marker is derived from progress — never pass a separate completed flag.",
+        "tree": "CardVertical(size=sm, title, duration, certified, progress=100)"
       },
       {
         "name": "favorite-saved",
@@ -148,6 +156,11 @@
         "scenario": "Putting anything other than a single CardVertical.Action inside CardVertical.Media (e.g. a Badge, text or a second overlay button)",
         "reason": "Media is a fixed part whose only optional child is the Action overlay; it throws on anything else. The overlay corner is sized and positioned for one round icon button. Implementors: a fixed part that renders children must narrow and guard them — `children?: ReactNode` silently turns it into an unchecked slot.",
         "alternative": "Put extra content in CardVertical.Body/Meta; put a second action into CardVertical.Menu's items."
+      },
+      {
+        "scenario": "Adding a completed/status prop to the preset, or using a Badge to signal completion",
+        "reason": "Completion is lifecycle state derived from progress (ADR-025); a separate flag can disagree with the bar (completed with progress=40).",
+        "alternative": "Pass progress={100}. Only in a parts composition render <CardVertical.Completed /> inside CardVertical.Meta."
       }
     ]
   },
@@ -176,6 +189,10 @@
     {
       "state": "with-progress",
       "description": "ProgressBar renders between image and title when the progress prop is provided."
+    },
+    {
+      "state": "completed",
+      "description": "progress >= 100: the ProgressBar renders full and CardVertical.Completed (check Icon in color.icon.subtle + 'Completed' metadata Text) follows Certified in the meta row (derived — no prop)."
     },
     {
       "state": "placeholder",
@@ -376,6 +393,7 @@
         "accepts": [
           "Duration",
           "Certified",
+          "Completed",
           "Text",
           "Badge",
           "Icon",
@@ -398,6 +416,15 @@
         "name": "Certified",
         "kind": "fixed",
         "description": "badge-check Icon (color.icon.subtle) + 'Certified' Text. No props.",
+        "builtOn": null,
+        "containedBy": [
+          "Meta"
+        ]
+      },
+      {
+        "name": "Completed",
+        "kind": "fixed",
+        "description": "check Icon (color.icon.subtle) + 'Completed' Text, same styling as Certified. No props. The preset renders it when progress >= 100.",
         "builtOn": null,
         "containedBy": [
           "Meta"

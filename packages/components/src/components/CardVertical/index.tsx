@@ -257,6 +257,16 @@ function Certified() {
   )
 }
 
+function Completed() {
+  useCardVertical('Completed')
+  return (
+    <span className={styles.badge}>
+      <Icon name="check" size="sm" />
+      <Text as="span" size="metadata" color="subtle">Completed</Text>
+    </span>
+  )
+}
+
 export type CardVerticalProps = {
   thumbnailSrc?: string
   thumbnailAlt?: string
@@ -280,6 +290,7 @@ function CardVerticalPreset({
   action,
   ...rest
 }: CardVerticalProps) {
+  const completed = progress !== undefined && progress >= 100
   return (
     <Root size={size} {...rest}>
       <Media src={thumbnailSrc} alt={thumbnailAlt}>
@@ -288,10 +299,11 @@ function CardVerticalPreset({
       {progress !== undefined && <Progress value={progress} />}
       <Body>
         <Title>{title}</Title>
-        {(duration || certified) && (
+        {(duration || certified || completed) && (
           <Meta>
             {duration && <Duration>{duration}</Duration>}
             {certified && <Certified />}
+            {completed && <Completed />}
           </Meta>
         )}
       </Body>
@@ -311,4 +323,5 @@ export const CardVertical = Object.assign(CardVerticalPreset, {
   Meta,
   Duration,
   Certified,
+  Completed,
 })

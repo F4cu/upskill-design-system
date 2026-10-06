@@ -22,6 +22,21 @@ Loaded only when working under `packages/components/`. Cross-cutting policy (com
 - **One prop per datum:** a new piece of visible content gets its own semantically named prop (`author`), never a prefix packed into an existing string prop. Separators between values are rendered by the component (`aria-hidden`), never typed by consumers (ADR-023 amendment 2026-10-02).
 - **Type-enforced anti-patterns:** When a component's metadata documents a hard constraint (e.g. "never pass onClick", "never set color directly"), the prop type must make the violation a TypeScript error, not just a documented anti-pattern — narrow the spread native-attributes type (e.g. `Omit<HTMLAttributes<...>, 'onClick' | 'color' | ...>`) to exclude the attributes the component already owns or forbids, rather than only excluding `children`.
 
+## State model (ADR-025)
+
+A "state" is one of three kinds; each has a different home. Never collapse them into one `state` prop.
+
+| Kind | Examples | Code | Figma |
+|---|---|---|---|
+| Interaction | hover, focus, active | CSS pseudo-classes only — never a prop | `State` variant property (preview only) |
+| Lifecycle / data | in progress, completed | Derived from a data prop (`progress={100}` → completed); a `status` enum only when not derivable | Property named for its axis (`Status`), never `State` |
+| Content | empty image, no meta, long title | Fallback when a prop is omitted (no `src` → placeholder) — never a `showX`/`empty` flag | One example per fallback |
+
+- **Exception — interaction state that is app data** (`pressed`, `selected`, `disabled`, `open`): a controlled prop with `default*` + `on*Change` (see `CardVertical.Favorite`).
+- **One enum, not several booleans** for mutually exclusive states (`status: 'notStarted' | 'inProgress' | 'completed'`, never `isStarted` + `isCompleted`).
+- **Naming:** enum props are axis nouns (`size`, `variant`, `status`), values camelCase; booleans are bare adjectives (`certified`, `disabled`) defaulting to `false`, never `isX`/`showX`. Figma uses the same names; `State` is reserved for the interaction axis.
+- Every lifecycle and content state appears in metadata `states` and has a story.
+
 ## Subcomponents (ADR-023)
 
 Parts (`<Parent.Part>`) are not new components: no folder, not in the fixed set, declared only in the parent's `composition.parts`. Only split into parts when a second real use case would otherwise create invalid prop combinations (ADR-023 test, after ADR-009).

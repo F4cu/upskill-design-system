@@ -32,6 +32,7 @@ const meta: Meta<typeof CardVertical> = {
     'CardVertical.Meta': CardVertical.Meta,
     'CardVertical.Duration': CardVertical.Duration,
     'CardVertical.Certified': CardVertical.Certified,
+    'CardVertical.Completed': CardVertical.Completed,
   },
   decorators: [
     (Story) => (
@@ -80,6 +81,16 @@ export const WithProgress: Story = {
     certified: true,
     progress: 65,
     size: 'lg',
+  },
+}
+
+export const Completed: Story = {
+  args: {
+    title: 'Creative Acts for Curious People',
+    duration: '12 Hours',
+    certified: true,
+    progress: 100,
+    size: 'sm',
   },
 }
 
