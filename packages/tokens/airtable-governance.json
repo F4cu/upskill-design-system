@@ -32,24 +32,5 @@
       "notes": null
     }
   },
-  "semantic": {
-    "color.background.button.elevated": {
-      "status": "deprecated",
-      "owner": null,
-      "successor": null,
-      "notes": "ADR-024 removed Button variant=elevated; CardVertical overlay buttons use icon.on-media.* with a halo instead."
-    },
-    "color.background.button.ghost": {
-      "status": "deprecated",
-      "owner": null,
-      "successor": null,
-      "notes": "Never read by any component; ADR-024 renamed the ghost variant to transparent, which uses no background token."
-    },
-    "color.background.button.inverted": {
-      "status": "deprecated",
-      "owner": null,
-      "successor": null,
-      "notes": "Never read by any component (found unused during the ADR-024 cleanup)."
-    }
-  }
+  "semantic": {}
 }
