@@ -562,15 +562,15 @@
     "color.terracotta.dark.8": [
       "packages/tokens/src/theme/dark.json"
     ],
+    "color.background.disabled": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
     "color.brand.10": [
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
     "color.brand.11": [
-      "packages/tokens/src/theme/dark.json",
-      "packages/tokens/src/theme/light.json"
-    ],
-    "color.background.disabled": [
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
@@ -711,9 +711,6 @@
       "packages/tokens/src/theme/light.json"
     ],
     "color.terracotta.6": [
-      "packages/tokens/src/theme/light.json"
-    ],
-    "color.surface.1": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.neutral.12": [

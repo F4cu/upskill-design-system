@@ -88,14 +88,6 @@
         }
       },
       "button": {
-        "default": {
-          "$type": "color",
-          "$value": "{color.brand.10}"
-        },
-        "hover": {
-          "$type": "color",
-          "$value": "{color.brand.11}"
-        },
         "disabled": {
           "$type": "color",
           "$value": "{color.background.disabled}"
@@ -110,17 +102,6 @@
             "$value": "{color.brand.11}"
           }
         },
-        "ghost": {
-          "$type": "color",
-          "$value": "{color.neutral.dark.1}",
-          "$deprecated": true
-        },
-        "outline": {
-          "hover": {
-            "$type": "color",
-            "$value": "{color.neutral.dark.2}"
-          }
-        },
         "neutral": {
           "hover": {
             "$type": "color",
@@ -132,16 +113,6 @@
             "$type": "color",
             "$value": "{color.background.button.neutral.hover}"
           }
-        },
-        "elevated": {
-          "$type": "color",
-          "$value": "{color.neutral.dark.2}",
-          "$deprecated": true
-        },
-        "inverted": {
-          "$type": "color",
-          "$value": "{color.neutral.dark.1}",
-          "$deprecated": true
         },
         "danger": {
           "default": {
