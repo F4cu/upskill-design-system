@@ -48,7 +48,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "815b1555f84f690c3520055f33c1533060d6cac1",
+  "generatedFrom": "5b666e2c56cd8bebafa6adb90ebd496029e2b46e",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -353,7 +353,8 @@
             "Title",
             "Meta",
             "Duration",
-            "Certified"
+            "Certified",
+            "Completed"
           ],
           "stage": "in review",
           "state": {
