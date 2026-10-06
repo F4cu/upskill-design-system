@@ -107,6 +107,18 @@
             "$value": "{color.neutral.dark.2}"
           }
         },
+        "neutral": {
+          "hover": {
+            "$type": "color",
+            "$value": "{color.white.alpha.1}"
+          }
+        },
+        "transparent": {
+          "hover": {
+            "$type": "color",
+            "$value": "{color.background.button.neutral.hover}"
+          }
+        },
         "elevated": {
           "$type": "color",
           "$value": "{color.neutral.dark.2}",

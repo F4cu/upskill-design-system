@@ -157,7 +157,7 @@ Canonical list — `/component-scaffold` and `/layout-generation` defer to this 
 Core set (Phases 4–5): `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`.
 Phase 5b additions (User Settings page): `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`.
 Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`.
-Phase 5d additions (Course Overview page): `Accordion`, `Badge`; `Button` gains a `transparent` variant (link-styled, ADR-024); `useSlider` hook (content-stepper state, no component).
+Phase 5d additions (Course Overview page): `Accordion`, `Badge`; `Button` gains a `transparent` variant (ghost, ADR-024); `useSlider` hook (content-stepper state, no component).
 Do not add components outside these lists without the user explicitly expanding the scope — compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
 
 Before proposing a new component file, apply ADR-009: (1) same semantic role → prop/variant on the existing component; (2) different role despite similar shape → new component; (3) single parent, no other consumer → molecule-internal element in the parent's CSS Module. Visual similarity alone never justifies creating or merging components. Parts (`<Parent.Part>`) are not new components: see ADR-023.

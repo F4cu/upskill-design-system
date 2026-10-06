@@ -280,7 +280,7 @@
     "--ds-color-text-inverted-disabled": [
       "packages/components/src/components/Button/Button.module.css"
     ],
-    "--ds-color-background-button-outline-hover": [
+    "--ds-color-background-button-neutral-hover": [
       "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-text-disabled": [
@@ -304,10 +304,8 @@
       "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/reset.css"
     ],
-    "--ds-color-text-interactive-hover": [
-      "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/TextLink/TextLink.module.css",
-      "packages/components/src/styles/reset.css"
+    "--ds-color-background-button-transparent-hover": [
+      "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-background-button-danger-default": [
       "packages/components/src/components/Button/Button.module.css"
@@ -492,6 +490,10 @@
       "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/styles/utilities.module.css"
     ],
+    "--ds-color-text-interactive-hover": [
+      "packages/components/src/components/TextLink/TextLink.module.css",
+      "packages/components/src/styles/reset.css"
+    ],
     "--ds-color-background-media-default": [
       "packages/components/src/components/VideoFrame/VideoFrame.module.css"
     ],
@@ -565,6 +567,10 @@
     ],
     "color.neutral.dark.8": [
       "packages/tokens/src/theme/dark.json"
+    ],
+    "color.background.button.neutral.hover": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
     ],
     "color.red.11": [
       "packages/tokens/src/theme/dark.json",

@@ -87,8 +87,10 @@ const PAIRS = [
   // (Accordion, Card, Divider) — not checked here either; the variant is
   // still identifiable by its text color and hover fill.
   ...AMBIENT.map((bg) => [T("subtle"), bg]),
-  [T("subtle"), BG("button-outline-hover")],
-  // Button — transparent variant reuses the interactive text pairs above.
+  [T("subtle"), BG("button-neutral-hover")],
+  // Button — transparent (ghost) variant: interactive text at rest reuses
+  // the ambient pairs above; on hover it sits on its own hover fill.
+  [T("interactive-default"), BG("button-transparent-hover")],
   // Button — danger variant
   [T("inverted-default"), BG("button-danger-default")],
   [T("inverted-default"), BG("button-danger-hover")],

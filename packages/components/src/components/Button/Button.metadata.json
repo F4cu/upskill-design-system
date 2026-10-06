@@ -4,7 +4,7 @@
     "category": "atom",
     "type": "interactive",
     "status": "beta",
-    "description": "Triggers an action. Four variants that name an absolute visual weight, not a rank (accent brand-fill, neutral bordered, transparent link-styled, danger error-fill) — the container decides which weight an action gets (ADR-024). Three sizes, optional leading and/or trailing icon, icon-only shapes. Fully keyboard-accessible via the native button element.",
+    "description": "Triggers an action. Four variants that name an absolute visual weight, not a rank (accent brand-fill, neutral bordered, transparent ghost, danger error-fill) — the container decides which weight an action gets (ADR-024). Three sizes, optional leading and/or trailing icon, icon-only shapes. Fully keyboard-accessible via the native button element.",
     "figmaNodeId": "57:1265"
   },
   "usage": {
@@ -90,7 +90,7 @@
       "purpose": {
         "accent": "Highest weight. Brand fill with inverted text. The one action a decision region exists for (form/dialog footer, hero). Never inside a repeated item.",
         "neutral": "Default. Bordered, neutral text. Everyday and supporting actions; the lead action inside a card or other repeated item.",
-        "transparent": "Lowest weight. No background, no border, link text color, no inline padding. Inline actions such as 'Show more' or Close.",
+        "transparent": "Lowest weight. Ghost button: no background or border at rest, interactive text color, standard size padding, and a subtle fill on hover (button.transparent.hover). Low-weight actions such as 'Show more' or Close. Its label sits inset from the content edge by the size padding — accepted, no negative-margin bleed (ADR-024 amendment 2026-10-06).",
         "danger": "Destructive or irreversible actions. Error fill with inverted text. Pair with a neutral Cancel."
       }
     },
@@ -126,7 +126,7 @@
     },
     {
       "state": "hover",
-      "description": "Darker fill (accent, danger), subtle fill (neutral), or text-color-only shift (transparent) on pointer hover."
+      "description": "Darker fill (accent, danger) or subtle fill (neutral, transparent) on pointer hover."
     },
     {
       "state": "disabled",
@@ -148,13 +148,13 @@
       "color.background.button.default",
       "color.background.button.hover",
       "color.background.button.disabled",
-      "color.background.button.outline.hover",
+      "color.background.button.neutral.hover",
+      "color.background.button.transparent.hover",
       "color.text.inverted.default",
       "color.text.inverted.disabled",
       "color.text.subtle",
       "color.text.disabled",
       "color.text.interactive.default",
-      "color.text.interactive.hover",
       "color.border.default",
       "color.border.disabled",
       "color.background.button.danger.default",
