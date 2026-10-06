@@ -145,8 +145,8 @@
       "space.inline.sm"
     ],
     "color": [
-      "color.background.button.default",
-      "color.background.button.hover",
+      "color.background.button.accent.default",
+      "color.background.button.accent.hover",
       "color.background.button.disabled",
       "color.background.button.neutral.hover",
       "color.background.button.transparent.hover",

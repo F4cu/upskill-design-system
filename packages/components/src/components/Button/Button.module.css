@@ -55,12 +55,12 @@
 /* Variant: accent */
 
 .accent {
-  --_bg: var(--ds-color-background-button-default);
+  --_bg: var(--ds-color-background-button-accent-default);
   --_text: var(--ds-color-text-inverted-default);
 }
 
 .accent:hover:not(:disabled) {
-  --_bg: var(--ds-color-background-button-hover);
+  --_bg: var(--ds-color-background-button-accent-hover);
 }
 
 .accent:disabled {

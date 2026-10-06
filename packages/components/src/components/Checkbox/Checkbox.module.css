@@ -50,8 +50,8 @@
 }
 
 .checkbox:checked:disabled {
-  background: var(--ds-color-background-button-disabled);
-  border-color: var(--ds-color-background-button-disabled);
+  background: var(--ds-color-background-disabled);
+  border-color: var(--ds-color-border-disabled);
 }
 
 /* .root .label (not .label): the label renders through <Text as="span">, whose

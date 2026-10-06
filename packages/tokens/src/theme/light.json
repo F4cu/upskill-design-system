@@ -19,6 +19,10 @@
         "$type": "color",
         "$value": "{color.black.0}"
       },
+      "disabled": {
+        "$type": "color",
+        "$value": "{color.neutral.8}"
+      },
       "brand": {
         "$type": "color",
         "$value": "{color.brand.9}"
@@ -94,7 +98,17 @@
         },
         "disabled": {
           "$type": "color",
-          "$value": "{color.neutral.8}"
+          "$value": "{color.background.disabled}"
+        },
+        "accent": {
+          "default": {
+            "$type": "color",
+            "$value": "{color.brand.10}"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{color.brand.11}"
+          }
         },
         "ghost": {
           "$type": "color",

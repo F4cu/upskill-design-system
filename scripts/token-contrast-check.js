@@ -80,8 +80,8 @@ const PAIRS = [
   ]),
 
   // Button — accent variant
-  [T("inverted-default"), BG("button-default")],
-  [T("inverted-default"), BG("button-hover")],
+  [T("inverted-default"), BG("button-accent-default")],
+  [T("inverted-default"), BG("button-accent-hover")],
   // Button — neutral variant. Its border (border.default) is the same
   // low-contrast divider token used everywhere as a decorative separator
   // (Accordion, Card, Divider) — not checked here either; the variant is

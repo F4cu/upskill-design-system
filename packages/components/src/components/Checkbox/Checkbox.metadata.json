@@ -85,7 +85,7 @@
     "color": [
       "color.background.input",
       "color.background.brand",
-      "color.background.button.disabled",
+      "color.background.disabled",
       "color.text.default",
       "color.text.disabled",
       "color.text.inverted.default",

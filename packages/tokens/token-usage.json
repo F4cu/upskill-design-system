@@ -260,7 +260,7 @@
       "packages/components/src/components/ProgressBar/ProgressBar.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
-    "--ds-color-background-button-default": [
+    "--ds-color-background-button-accent-default": [
       "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-text-inverted-default": [
@@ -270,12 +270,11 @@
       "packages/components/src/components/Text/Text.module.css",
       "packages/components/src/stories/FooterHighlights.stories.tsx"
     ],
-    "--ds-color-background-button-hover": [
+    "--ds-color-background-button-accent-hover": [
       "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-background-button-disabled": [
-      "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/Checkbox/Checkbox.module.css"
+      "packages/components/src/components/Button/Button.module.css"
     ],
     "--ds-color-text-inverted-disabled": [
       "packages/components/src/components/Button/Button.module.css"
@@ -400,6 +399,9 @@
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/tokens/tokenComponents.module.css"
     ],
+    "--ds-color-background-disabled": [
+      "packages/components/src/components/Checkbox/Checkbox.module.css"
+    ],
     "--ds-font-weight-medium": [
       "packages/components/src/components/Chip/Chip.module.css",
       "packages/components/src/components/Heading/Heading.module.css"
@@ -520,6 +522,9 @@
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
+    "color.neutral.dark.8": [
+      "packages/tokens/src/theme/dark.json"
+    ],
     "color.brand.dark.9": [
       "packages/tokens/src/theme/dark.json"
     ],
@@ -565,8 +570,9 @@
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
-    "color.neutral.dark.8": [
-      "packages/tokens/src/theme/dark.json"
+    "color.background.disabled": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
     ],
     "color.background.button.neutral.hover": [
       "packages/tokens/src/theme/dark.json",
@@ -668,6 +674,9 @@
     "color.black.alpha.1": [
       "packages/tokens/src/theme/light.json"
     ],
+    "color.neutral.8": [
+      "packages/tokens/src/theme/light.json"
+    ],
     "color.brand.9": [
       "packages/tokens/src/theme/light.json"
     ],
@@ -702,9 +711,6 @@
       "packages/tokens/src/theme/light.json"
     ],
     "color.terracotta.6": [
-      "packages/tokens/src/theme/light.json"
-    ],
-    "color.neutral.8": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.surface.1": [
