@@ -21,6 +21,7 @@ sources:
 # clock reset 2026-10-02: components.md gains one rule line (one prop per datum); layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-02: CLAUDE.md one-line rename (Button ghost → transparent, ADR-024); context-budget structure unchanged, still accurate
 # clock reset 2026-10-06: CLAUDE.md one-word edit (transparent link-styled → ghost, ADR-024); context-budget structure unchanged, still accurate
+# clock reset 2026-10-06: components.md gains a State model section (ADR-025); this page describes rule scoping, not rule contents, still accurate
 ---
 # Context engineering
 

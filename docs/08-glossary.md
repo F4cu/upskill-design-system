@@ -82,7 +82,12 @@ To generate the skeleton files for a new component — the `index.tsx`, CSS modu
 A place inside a component that takes exactly one child chosen from a short list. `CardVertical.Action` is a slot: it holds either one `Favorite` button or one `Menu`, never both. In Figma, a slot is an instance-swap property, so the same name and the same choices exist on both sides. See also Subcomponent (part), Open part.
 
 **State (component)**
-The different conditions a component can be in that change its appearance or behavior. Common states: `default`, `hover` (cursor is over it), `focused` (selected via keyboard), `disabled` (not interactive), `loading`, `error`. States are defined in each component's `metadata.json` and are distinct from React state (the internal data a component holds) — though the two are related: a component uses React state to track which visual state it is currently in.
+The different conditions a component can be in that change its appearance or behavior. Common states: `default`, `hover` (cursor is over it), `focused` (selected via keyboard), `disabled` (not interactive), `loading`, `error`. States are defined in each component's `metadata.json` and are distinct from React state (the internal data a component holds) — though the two are related: a component uses React state to track which visual state it is currently in. The system separates three kinds ([ADR-025](decisions/025-component-state-model.md)):
+- **Interaction** state (hover, focus) is handled by CSS and is never a prop.
+- **Lifecycle** state (in progress, completed) is derived from data, such as a course's progress percentage.
+- **Content** state (no image, empty) is what a component shows when an optional prop is left out.
+
+In Figma, the property name `State` is reserved for interaction state.
 
 **Sub-state (pipeline)**
 A finer-grained label under the `in progress` implementation stage, recorded only in `.claude/component-pipeline.json` and `STATUS_QUO.md` — never pushed to Airtable. Two values: `unreviewed` (code exists but no loop artifacts at all — this replaces the old `established` stage label) and `scaffold-underway` (a `.run.json` is open but the component hasn't reached its render checkpoint yet). See also Implementation stage.

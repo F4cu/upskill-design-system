@@ -9,6 +9,7 @@ const allIcons: IconName[] = [
   'chevron-down',
   'chevron-up',
   'badge-check',
+  'check',
   'award',
   'bookmark',
   'search',
