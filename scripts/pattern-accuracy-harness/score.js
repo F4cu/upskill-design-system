@@ -77,6 +77,30 @@ function walkJsx(node, ancestors, fn) {
   }
 }
 
+// ADR-023 parts that render Text or Heading count as typography wrappers, read
+// from composition.parts in the repo's metadata and any emitted metadata. Inside
+// the parent's own folder a part is referenced by its bare name (<Title>);
+// elsewhere as <Parent.Part>.
+function typographyParts(scratchDir) {
+  const files = [
+    ...listFiles(path.join(ROOT, 'packages/components/src/components'), ['.metadata.json']),
+    ...listFiles(scratchDir, ['.metadata.json']),
+  ]
+  const parts = new Set()
+  for (const file of files) {
+    let data
+    try {
+      data = JSON.parse(fs.readFileSync(file, 'utf8'))
+    } catch {
+      continue
+    }
+    for (const part of data.composition?.parts ?? []) {
+      if (part.builtOn === 'Text' || part.builtOn === 'Heading') parts.add(`${data.component?.name}.${part.name}`)
+    }
+  }
+  return parts
+}
+
 function nearestComponent(ancestors) {
   for (let i = ancestors.length - 1; i >= 0; i--) {
     if (ancestors[i] && /^[A-Z]/.test(ancestors[i])) return ancestors[i]
@@ -84,7 +108,9 @@ function nearestComponent(ancestors) {
   return null
 }
 
-function trapChecksTsx(rel, source, violations) {
+function trapChecksTsx(rel, source, violations, partWrappers = new Set()) {
+  const folder = rel.split(path.sep)[0]
+  const isPartWrapper = (name) => partWrappers.has(name) || partWrappers.has(`${folder}.${name}`)
   let ast
   try {
     ast = parseTsx(source)
@@ -162,7 +188,7 @@ function trapChecksTsx(rel, source, violations) {
 
     if (node.type === 'JSXText' && node.value.trim() !== '') {
       const wrapper = nearestComponent(ancestors)
-      if (!wrapper || !TEXT_WRAPPERS.has(wrapper)) {
+      if (!wrapper || !(TEXT_WRAPPERS.has(wrapper) || isPartWrapper(wrapper))) {
         violations.push({
           trap: 'raw-visible-text',
           file: rel,
@@ -180,7 +206,7 @@ function trapChecksTsx(rel, source, violations) {
         null
       if (propName && TEXT_PROP_NAMES.has(propName) && ancestors[ancestors.length - 1] !== '@attr') {
         const wrapper = nearestComponent(ancestors)
-        if (wrapper !== 'Text' && wrapper !== 'Heading') {
+        if (wrapper !== 'Text' && wrapper !== 'Heading' && !isPartWrapper(wrapper)) {
           violations.push({
             trap: 'raw-text-prop-render',
             file: rel,
@@ -380,9 +406,10 @@ export function scoreScratch(scratchDir, task) {
       trapViolations.push({ trap: 'missing-output-file', file: expected, detail: 'expected file was not emitted' })
     }
   }
+  const partWrappers = typographyParts(scratchDir)
   for (const file of listFiles(scratchDir, ['.tsx', '.ts'])) {
     if (/\.test\.tsx?$/.test(file)) continue
-    trapChecksTsx(path.relative(scratchDir, file), fs.readFileSync(file, 'utf8'), trapViolations)
+    trapChecksTsx(path.relative(scratchDir, file), fs.readFileSync(file, 'utf8'), trapViolations, partWrappers)
   }
   for (const file of listFiles(scratchDir, ['.css'])) {
     trapChecksCss(path.relative(scratchDir, file), fs.readFileSync(file, 'utf8'), trapViolations)
