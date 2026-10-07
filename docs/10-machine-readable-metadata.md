@@ -13,6 +13,7 @@ sources:
 # clock reset 2026-10-02: CardHorizontal metadata gains author patterns/anti-patterns + size.separator token; schema and parts model unchanged, still accurate
 # clock reset 2026-10-06: ADR-023 amendment (Figma Parent.Root + one example frame per usage.patterns id); metadata schema unchanged, still accurate
 # rewritten 2026-10-07: drift example replaced (the change-callback rule was retired); paragraph on the ADR-026 naming checks in generate-pattern-schema.js
+# clock reset 2026-10-07: ADR-013 amendment corrects the harness totals after a scorer fix (scaffold 17→22, overall 30→26); decision and split unchanged, and this page cites neither total, still accurate
 ---
 # Machine-readable metadata
 

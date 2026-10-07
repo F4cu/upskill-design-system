@@ -26,10 +26,10 @@ The result wasn't the clean win the intuition predicted:
 
 | Task kind | Arm A violations | Arm B violations | Change |
 |---|---:|---:|---:|
-| Component scaffold (3 tasks) | 19 | 24 | +26% worse |
+| Component scaffold (3 tasks) | 17 | 22 | +29% worse |
 | Composition (2 tasks) | 6 | 1 | −83% |
 | Layout (2 tasks) | 7 | 3 | −57% |
-| **Overall** | **32** | **28** | −13% (masks the split) |
+| **Overall** | **30** | **26** | −13% (masks the split) |
 
 The headline number — a 13% overall reduction — would have read as a modest win if anyone had stopped at the aggregate. Broken out by task kind, it's a split verdict: composition and layout generation improved sharply, one composition task reaching zero violations, while component scaffolds got measurably worse. The likely mechanism, written down rather than left as a shrug: the pattern file is a large aggregate (~23K characters), and it crowds out the model's attention on the narrower schema and file-contract rules a scaffold task actually needs to hit — more context isn't free, it competes for attention with the rules that matter most for that specific task.
 

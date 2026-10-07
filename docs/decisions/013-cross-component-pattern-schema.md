@@ -4,7 +4,7 @@ title: "ADR-013 — Cross-component pattern schema: layout/composition consumer 
 # ADR-013 — Cross-component pattern schema: layout/composition consumer only
 
 **Date:** 2026-07-06
-**Amended:** 2026-07-06
+**Amended:** 2026-10-07
 **Status:** `accepted`
 
 ## Context
@@ -57,3 +57,20 @@ Corrected table (replaces the one above):
 Overall 32 → 28. The false positives were nearly symmetric across arms, so removing them sharpens the split rather than changing it: composition/layout improvement is now 13 → 4 violations, and the component-scaffold regression is slightly larger (+5). **The decision is unchanged** — layout/composition consumer only.
 
 The same pass surfaced a real library finding the false positive had been masquerading as: `Accordion` (`title`), `Select`/`TextField` (`label`), and `Checkbox` (`label`) render text props as raw `<span>`/`<label>` rather than through `<Text>`, contradicting CLAUDE.md's typography rule. Tracked as a separate issue, not fixed here — whether form labels via `utilities.module.css` are an accepted exception or drift is its own decision.
+
+## Amendment (2026-10-07) — second scorer fix: brand tokens in the metadata gate
+
+Calibrating the harness for the ADR-027 spec arm found a false positive in the scorer's `metadata:validate` gate. It is a reimplementation of `scripts/validate-metadata.js`, and its token tree loaded primitives, theme and device files but not `brands/*.json`. Since the brand layer was extracted on 2026-07-03 (ADR-012, `93d06d0`), `font.family.*` lives there, so any metadata that listed `font.family.body` was flagged as referencing an unknown token. The July cells were scored on 2026-07-06, after the extraction, so these were false positives when scored. The gate now merges every brand file, as `validate-metadata.js` does.
+
+Four cells carried exactly one such hit each: `component-accordion` A and B, `component-select` A and B. Removing them gives the corrected table (replaces the 2026-07-06 one):
+
+| Task kind | Arm A violations | Arm B violations |
+|---|---:|---:|
+| component scaffold (3 tasks) | 17 | 22 |
+| composition (2 tasks) | 6 | 1 |
+| layout (2 tasks) | 7 | 3 |
+
+Overall 30 → 26. The hits were exactly symmetric (one per arm on the same two tasks), so every per-kind delta is unchanged: the scaffold regression is still +5 and composition/layout still goes 13 → 4. **The decision is unchanged.**
+
+Unlike the July amendment, the cells were not rescored in place. Rescoring today also picks up unrelated drift since July: tokens renamed after the runs make other metadata references fail. That would move numbers for reasons that have nothing to do with the scorer. The four hits were removed by counting them in each cell's retained `score.json` instead. `scripts/pattern-accuracy-harness/results.md` therefore still shows the original 32/28 totals; this amendment is the correction of record.
+

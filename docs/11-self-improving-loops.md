@@ -17,6 +17,7 @@ sources:
 # clock reset 2026-10-07: run.js gains Arm C (approved spec, ADR-027), --arm, --runs and --dry-run; the A/B experiment this page describes is unchanged and still accurate
 # clock reset 2026-10-07: score.js adds a secondary spec:conformance score (tasks with specTarget only), outside the headline total; the A/B numbers this page cites are unaffected
 # clock reset 2026-10-07: score.js metadata gate now merges brand token files (ADR-012), like validate-metadata.js; 4 July font.family.body hits were false positives (accordion and select, one per arm), so corrected totals are A 30 / B 26, same delta of 4; this page cites the finding, not the totals, so it stays accurate
+# clock reset 2026-10-07: ADR-013 amendment records that correction (scaffold 17→22, overall 30→26, decision unchanged); this page cites the split, not the totals, still accurate
 ---
 # Self-improving loops
 
