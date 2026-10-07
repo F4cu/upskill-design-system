@@ -16,6 +16,14 @@
     "path": ".claude/handoff/2026-10-07-harness-ablation-eval.handoff.md"
   },
   {
+    "name": "2026-10-07-spec-harness-arm",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-10-07",
+    "updated": "2026-10-07",
+    "path": ".claude/handoff/2026-10-07-spec-harness-arm.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",

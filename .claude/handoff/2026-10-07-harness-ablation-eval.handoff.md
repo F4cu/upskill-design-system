@@ -10,13 +10,15 @@ completed:
 
 **Why not extend `pattern-accuracy-harness/`:** that harness is single-shot (`claude -p`, no tools, context pasted into the prompt). It measures *context*. This eval has to measure the *harness*: tools, gates, the retry loop and the reviewer. That needs agentic runs inside a real workspace. The scorer's trap checks are reused.
 
+**Related:** [the spec harness arm](2026-10-07-spec-harness-arm.handoff.md) adds an Arm C to `pattern-accuracy-harness` for the ADR-027 exit condition. It shares this eval's Stage 0 scorer fix and CardVertical reference, and if ADR-027 is accepted, the specs become part of this eval's Arm 1 context.
+
 ## Arms
 
 Every arm gets the same brief and the same model, and runs agentically (`claude -p` with tools) in a fresh workspace.
 
 | Arm | Name | Workspace contains | Prompt |
 |---|---|---|---|
-| 0 | **Bare repo** | Component code, tokens, stories, standard npm scripts (`typecheck`, `lint`, `a11y:test`). **Removed:** `CLAUDE.md`, `.claude/`, `docs/decisions/`, every `*.metadata.json`, `component.schema.json`, `component-patterns.json`, sense/validate-metadata/layout scripts. | brief |
+| 0 | **Bare repo** | Component code, tokens, stories, standard npm scripts (`typecheck`, `lint`, `a11y:test`). **Removed:** `CLAUDE.md`, `.claude/`, `docs/decisions/`, every `*.metadata.json`, `component.schema.json`, `component-patterns.json`, every `*.spec.json`, `component.spec.schema.json`, sense/validate-metadata/validate-spec/layout scripts. | brief |
 | 1 | **Context only** | Arm 0 + `CLAUDE.md`, `.claude/rules/`, ADRs, metadata, schema. **Removed:** `.claude/commands/`, `.claude/agents/`, `.claude/skills/`, so there is no loop and no reviewer. | brief |
 | 1b | **Always-loaded index** | Arm 1, but `.claude/rules/` is removed and its conventions are folded into one compressed, always-loaded index: the candidate `AGENTS.md` (see "Ship AGENTS.md" below), loaded through `CLAUDE.md` → `@AGENTS.md`. Metadata and ADRs unchanged. | brief |
 | 2 | **Full harness** | Everything | `/add-component <Name> --eval` + brief |
@@ -60,7 +62,8 @@ The shipped component is the answer key, so two things must hold before any arm 
    | CardVertical | 1 × `raw-text-prop-render` | `title` rendered inside `CardVertical.Title`, which renders `Heading` | **scorer**: it predates ADR-023 and doesn't know parts |
 
    - **`px-literal` scorer fix:** flag px only on properties that have a token category (`padding*`, `margin*`, `gap`, `border-radius`, `font-size`, `line-height`, `inset`). Border widths and box geometry don't count.
-   - **`raw-text-prop-render` scorer fix:** treat a fixed-set component's parts (`Parent.Part`, read from its metadata `composition.parts`) as typography wrappers when the part renders Text/Heading.
+   - **`raw-text-prop-render` scorer fix:** treat a fixed-set component's parts (`Parent.Part`, read from its metadata `composition.parts`) as typography wrappers when the part renders Text/Heading. The [spec harness arm](2026-10-07-spec-harness-arm.handoff.md) needs the same fix for its CardVertical reference; do it once in `pattern-accuracy-harness/score.js`, since this eval imports those traps.
+   - **CardVertical `px-literal`:** now tracked as #120 (the raw `min-width` values break the component CSS rule). Prefer fixing the component over exempting the property in the scorer.
    - Rerun until all three references score 0. A real violation in a reference gets fixed in the component, through `/review-component` on its own PR, never by loosening the scorer.
 
 **Brief rule:** the brief lists only deliverables any design-system team would expect: component, CSS module, story file. No metadata, no conventions. Arms 1 and 2 discover conventions from their context, and Arm 0 has to infer them from neighbouring components. The same brief file goes to all arms.
@@ -70,7 +73,7 @@ The shipped component is the answer key, so two things must hold before any arm 
 ## Leakage controls
 
 - Workspace = `git archive HEAD` into a tmp dir, then a fresh `git init`, so `git log`/`git show` can't recover the deleted component.
-- Delete the target component directory, its export in `packages/components/src/index.ts`, and any story or doc that imports it. For Arms 1–2, also delete its mentions in other components' metadata (`relationships`) and in `component-patterns.json`.
+- Delete the target component directory (which also removes its co-located `*.spec.json`), its export in `packages/components/src/index.ts`, and any story or doc that imports it. For Arms 1–2, also delete its mentions in other components' metadata (`relationships`) and in `component-patterns.json`.
 - **ADRs and rules give away parts of the answers** (Arms 1, 1b, 2). The ADR-026 amendment spells out Checkbox's Figma property mapping (`Checked` × `State`, `Label`, Disabled states, variable bindings) and Badge's `variant` values. Across `docs/decisions/`, Badge appears in 4 ADRs, Checkbox in 4 and CardVertical in 7. `.claude/rules/components.md` mentions Badge once and CardVertical twice. **Decide before the pilot**, and record the choice here:
   - **(a) Redact:** in `prepare.js`, strip the lines that describe the target's API or Figma properties. Keep the general rules, even where they use the target as an example.
   - **(b) Accept the leak:** keep the files whole and report it as a known advantage for Arms 1/2. The reasoning is that a real team's ADRs would also describe neighbouring components.

@@ -93,6 +93,8 @@ On acceptance:
 
 **Reject** if the harness shows scaffolding gets worse, or if keeping specs up to date costs more than the drift it catches. In that case delete the spec files and the validator; metadata is untouched.
 
+The harness plan (Arm C, two tasks, the `spec:conformance` gate, and what "not worse" means) is in `.claude/handoff/2026-10-07-spec-harness-arm.handoff.md`.
+
 ## Consequences
 
 - Each kind of reader has its own file. Layout generation's context does not grow, and gets smaller once the migration moves three sections out.
