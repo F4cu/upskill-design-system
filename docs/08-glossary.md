@@ -28,6 +28,7 @@ sources:
 # clock reset 2026-10-07: /figma-cli gains a Plugin API pitfalls list; no glossary term changed, still accurate
 # clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; no glossary term changed, still accurate
 # clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; no glossary term changed, still accurate
+# clock reset 2026-10-07: .claude/rules/components.md gains the focus-ring line (ADR-028); the State entry still says interaction focus is CSS-only, still accurate
 ---
 # Glossary
 
