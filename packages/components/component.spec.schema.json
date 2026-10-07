@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "upskill-design-system/component.spec.schema.json",
+  "title": "Component Spec",
+  "description": "The build contract for one component (ADR-027): what it must be, read by the builder moments (/component-scaffold, /review-component). Selection and composition guidance stays in <Name>.metadata.json, which /layout-generation reads. scripts/validate-spec.js checks every spec against the schema, its metadata, its props type and its CSS Module.",
+  "type": "object",
+  "required": ["component", "anatomy", "props", "states", "styles"],
+  "properties": {
+    "component": {
+      "description": "Component name; must match the folder and metadata component.name.",
+      "type": "string"
+    },
+
+    "anatomy": {
+      "description": "Every named part, top to bottom, including internal elements that are not ADR-023 parts. Names follow the ADR-023 naming contract (they are the Figma layer names).",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "element", "role", "required"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+          "element": {
+            "description": "Rendered HTML element, 'text' for a bare text node, or the library component it renders.",
+            "type": "string"
+          },
+          "builtOn": {
+            "description": "Library component this part renders, when it renders one.",
+            "type": "string"
+          },
+          "role": {
+            "description": "Semantic role as exposed to assistive technology, or 'presentation' when hidden from it. An authored fact: design files cannot carry it.",
+            "type": "string"
+          },
+          "action": {
+            "description": "What activating this part does. Interactive parts only.",
+            "type": "string"
+          },
+          "required": { "type": "boolean" },
+          "when": {
+            "description": "Condition under which an optional part renders, in prop terms.",
+            "type": "string"
+          },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "props": {
+      "description": "The approved API proposal (ADR-026), kept. Every prop the component declares itself must appear; native attributes appear only when the contract depends on them.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["kind", "type", "concept", "figma"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["variantAxis", "lifecycle", "content", "controlledState", "event", "native"]
+          },
+          "type": { "type": "string" },
+          "options": {
+            "description": "variantAxis and lifecycle props: the allowed values. Must equal the TypeScript union and the metadata axis.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "default": {
+            "description": "Default value; null when the prop is off unless set.",
+            "type": ["string", "number", "boolean", "null"]
+          },
+          "concept": {
+            "description": "Row of the ADR-026 prop vocabulary, 'native', or 'new term: <reason>'.",
+            "type": "string"
+          },
+          "figma": {
+            "type": "object",
+            "required": ["surface"],
+            "properties": {
+              "surface": { "type": "string", "enum": ["both", "code-only", "figma-only"] },
+              "property": {
+                "description": "Figma property name. Differs from code only by casing or an ADR-026 recorded mapping.",
+                "type": "string"
+              },
+              "set": {
+                "description": "Figma component set, when not the component's main set.",
+                "type": "string"
+              },
+              "note": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "constraints": {
+      "description": "Prop combinations the component requires or forbids. Contextual misuse (where a component is placed) stays in metadata usage.antiPatterns.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "if", "reason", "enforcedBy"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "if": {
+            "description": "Prop → value that triggers the rule; '*' means any value is set.",
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": { "type": ["string", "boolean"] }
+          },
+          "require": { "type": "array", "items": { "type": "string" } },
+          "ignore": {
+            "description": "Props that have no effect while the rule applies.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "forbid": {
+            "type": "object",
+            "additionalProperties": { "type": "array", "items": { "type": "string" } }
+          },
+          "reason": { "type": "string" },
+          "enforcedBy": {
+            "description": "What stops a violation. Empty means documented only: the validator reports it as a backlog item.",
+            "type": "array",
+            "items": { "type": "string", "enum": ["type", "test", "lint"] }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "states": {
+      "description": "Every state, tagged with its ADR-025 kind. appData = the ADR-025 exception (interaction state held as a prop).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "kind", "trigger"],
+        "properties": {
+          "name": { "type": "string" },
+          "kind": { "type": "string", "enum": ["interaction", "appData", "lifecycle", "content"] },
+          "trigger": {
+            "description": "CSS pseudo-class for interaction states; the prop and value otherwise.",
+            "type": "string"
+          },
+          "figma": { "type": "string" },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "styles": {
+      "description": "Part → ordered rules. Each rule sets CSS properties under a condition; later rules win. A value is a token path, a literal with a reason, or a reference to another property's value.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["when", "set"],
+          "properties": {
+            "when": {
+              "description": "Prop → value, plus optional 'state' naming an entry in states. Empty object = always.",
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            },
+            "set": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": { "$ref": "#/$defs/styleValue" }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+
+    "figma": {
+      "type": "object",
+      "properties": {
+        "sets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "nodeId"],
+            "properties": {
+              "name": { "type": "string" },
+              "nodeId": { "type": "string" },
+              "covers": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "divergences": {
+          "description": "Known Figma ↔ code differences and the decision on each.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["what", "decision"],
+            "properties": {
+              "what": { "type": "string" },
+              "decision": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+    "styleValue": {
+      "oneOf": [
+        {
+          "description": "Token dot path, e.g. color.text.subtle.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)+$"
+        },
+        {
+          "type": "object",
+          "required": ["literal", "reason"],
+          "properties": {
+            "literal": { "type": "string" },
+            "reason": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["sameAs"],
+          "properties": {
+            "sameAs": { "description": "Another CSS property of the same part.", "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

@@ -39,6 +39,7 @@ sources:
 # clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; this page describes no Figma property detail, still accurate
 # clock reset 2026-10-07: ADR-026 amendment adds the Select Figma set and the DropdownMenu/Item rename; this page describes no Figma property names, still accurate
 # clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; this page describes no Figma detail, still accurate
+# 2026-10-07: adds ADR-027 (proposed: component spec file, Button pilot); ADR count corrected to twenty-seven (was already one behind after ADR-026); page lists no individual ADRs or per-component files
 ---
 # Start here
 
@@ -102,4 +103,4 @@ The suggested reading order is the page order — tokens first, because everythi
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`CLAUDE.md` → rules → commands → snapshots → handoffs) and the CI gates that keep it honest
 - [10 — Machine-readable metadata](10-machine-readable-metadata.md) — the metadata stack: the per-component contract, its validators, the cross-component pattern aggregate, and the write-back loop (reads naturally right after 02)
 
-The twenty-five architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
+The twenty-seven architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.

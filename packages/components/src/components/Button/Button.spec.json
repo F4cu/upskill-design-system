@@ -1,0 +1,210 @@
+{
+  "component": "Button",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "button",
+      "role": "button",
+      "action": "Runs the consumer's onClick. Submits a form only when type=\"submit\" is passed: type defaults to \"button\".",
+      "required": true
+    },
+    {
+      "name": "Icon",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "role": "presentation",
+      "required": false,
+      "when": "icon is set",
+      "notes": "Icon size sm when size=sm, else md. Color inherits the Root's color (currentColor). In icon-only mode (shape set) it is the only visible content."
+    },
+    {
+      "name": "Label",
+      "element": "text",
+      "role": "Accessible name of the Root",
+      "required": false,
+      "when": "shape is unset",
+      "notes": "Bare children inside the button; not wrapped in Text, since the Root sets the type styles. In icon-only mode the accessible name comes from aria-label instead."
+    },
+    {
+      "name": "TrailingIcon",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "role": "presentation",
+      "required": false,
+      "when": "trailingIcon is set and shape is unset",
+      "notes": "Same size and color rules as Icon."
+    }
+  ],
+  "props": {
+    "variant": {
+      "kind": "variantAxis",
+      "type": "ButtonVariant",
+      "options": ["accent", "neutral", "transparent", "danger"],
+      "default": "neutral",
+      "concept": "Visual weight/style",
+      "figma": { "surface": "both", "property": "Style", "note": "ADR-026 recorded mapping variant ↔ Style; values recased (Accent, Neutral, Transparent, Danger)." }
+    },
+    "size": {
+      "kind": "variantAxis",
+      "type": "ButtonSize",
+      "options": ["sm", "md", "lg"],
+      "default": "md",
+      "concept": "Size",
+      "figma": { "surface": "both", "property": "Size" }
+    },
+    "shape": {
+      "kind": "variantAxis",
+      "type": "ButtonShape",
+      "options": ["square", "round"],
+      "default": null,
+      "concept": "Corners",
+      "figma": { "surface": "both", "set": "Button icon", "note": "Icon-only buttons are a separate Figma set; its shape property name is not yet captured." }
+    },
+    "icon": {
+      "kind": "content",
+      "type": "IconName",
+      "default": null,
+      "concept": "Icon",
+      "figma": { "surface": "both", "property": "Has icon + Icon", "note": "ADR-026 recorded mapping: optional prop omitted ↔ Has <x> (default false), plus the Icon instance swap." }
+    },
+    "trailingIcon": {
+      "kind": "content",
+      "type": "IconName",
+      "default": null,
+      "concept": "Icon",
+      "figma": { "surface": "code-only", "note": "Known gap (ADR-026): the Figma set has one icon slot." }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "property": "Text", "note": "ADR-026 recorded mapping: label children ↔ Text." }
+    },
+    "disabled": {
+      "kind": "native",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": { "surface": "both", "property": "State", "note": "Previewed as a State value. Not verified against node 57:1265 in the pilot." }
+    },
+    "type": {
+      "kind": "native",
+      "type": "'button' | 'submit' | 'reset'",
+      "default": "button",
+      "concept": "native",
+      "figma": { "surface": "code-only" }
+    },
+    "aria-label": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "Accessible name",
+      "figma": { "surface": "code-only" }
+    },
+    "onClick": {
+      "kind": "native",
+      "type": "MouseEventHandler<HTMLButtonElement>",
+      "default": null,
+      "concept": "Discrete event",
+      "figma": { "surface": "code-only" }
+    }
+  },
+  "constraints": [
+    {
+      "id": "icon-only-needs-icon-and-name",
+      "if": { "shape": "*" },
+      "require": ["icon", "aria-label"],
+      "ignore": ["children", "trailingIcon"],
+      "reason": "With shape set, the glyph is the only visible content and nothing renders a label, so the button needs an icon to show and an aria-label to have an accessible name.",
+      "enforcedBy": []
+    }
+  ],
+  "states": [
+    { "name": "default", "kind": "interaction", "trigger": "rest" },
+    { "name": "hover", "kind": "interaction", "trigger": ":hover:not(:disabled)" },
+    {
+      "name": "focus-visible",
+      "kind": "interaction",
+      "trigger": ":focus-visible",
+      "notes": "No component focus style and no focus token: the browser's default ring applies."
+    },
+    {
+      "name": "disabled",
+      "kind": "appData",
+      "trigger": "disabled prop (native attribute)",
+      "notes": "Native disabled, not aria-disabled: removes the button from the tab order and blocks activation."
+    }
+  ],
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.sm",
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-default",
+          "font-weight": "font.weight.semibold",
+          "line-height": "font.line-height.none",
+          "border-radius": "border-radius.sm",
+          "border-width": { "literal": "1px", "reason": "No border-width token scale exists; every module uses a literal width." },
+          "border-color": { "literal": "transparent", "reason": "Keeps the 1px border on fill variants so every variant has the same height." }
+        }
+      },
+      { "when": { "size": "sm" }, "set": { "height": "size.400", "padding-inline": "space.inset.md" } },
+      { "when": { "size": "md" }, "set": { "height": "size.500", "padding-inline": "space.inset.md" } },
+      { "when": { "size": "lg" }, "set": { "height": "size.600", "padding-inline": "space.inset.lg" } },
+      {
+        "when": { "shape": "*" },
+        "set": {
+          "width": { "sameAs": "height" },
+          "padding-inline": { "literal": "0", "reason": "The glyph is centred in a square box." }
+        }
+      },
+      { "when": { "shape": "round" }, "set": { "border-radius": "border-radius.full" } },
+
+      { "when": { "variant": "accent" }, "set": { "background": "color.background.button.accent.default", "color": "color.text.inverted.default" } },
+      { "when": { "variant": "accent", "state": "hover" }, "set": { "background": "color.background.button.accent.hover" } },
+      { "when": { "variant": "accent", "state": "disabled" }, "set": { "background": "color.background.button.disabled", "color": "color.text.inverted.disabled" } },
+
+      {
+        "when": { "variant": "neutral" },
+        "set": {
+          "background": { "literal": "transparent", "reason": "Bordered look: no fill at rest." },
+          "color": "color.text.subtle",
+          "border-color": "color.border.default"
+        }
+      },
+      { "when": { "variant": "neutral", "state": "hover" }, "set": { "background": "color.background.button.neutral.hover" } },
+      { "when": { "variant": "neutral", "state": "disabled" }, "set": { "color": "color.text.disabled", "border-color": "color.border.disabled" } },
+
+      {
+        "when": { "variant": "transparent" },
+        "set": {
+          "background": { "literal": "transparent", "reason": "Ghost button: no fill or border at rest (ADR-024)." },
+          "color": "color.text.interactive.default"
+        }
+      },
+      { "when": { "variant": "transparent", "state": "hover" }, "set": { "background": "color.background.button.transparent.hover" } },
+      { "when": { "variant": "transparent", "state": "disabled" }, "set": { "color": "color.text.disabled" } },
+
+      { "when": { "variant": "danger" }, "set": { "background": "color.background.button.danger.default", "color": "color.text.inverted.default" } },
+      { "when": { "variant": "danger", "state": "hover" }, "set": { "background": "color.background.button.danger.hover" } },
+      { "when": { "variant": "danger", "state": "disabled" }, "set": { "background": "color.background.button.disabled", "color": "color.text.inverted.disabled" } }
+    ]
+  },
+  "figma": {
+    "sets": [
+      { "name": "Button", "nodeId": "57:1265", "covers": "Buttons with a label (shape unset)" },
+      { "name": "Button icon", "nodeId": "54:1192", "covers": "Icon-only buttons (shape set)" }
+    ],
+    "divergences": [
+      { "what": "trailingIcon has no Figma property.", "decision": "Known gap, ADR-026." },
+      { "what": "The Button icon set has no Danger style.", "decision": "Accepted 2026-10-02: no icon-only danger button is used anywhere." },
+      {
+        "what": "ADR-026 lists shape as a code prop with no Figma property, but icon-only buttons exist as the Button icon set.",
+        "decision": "Recorded as a set mapping, not a gap. Correct the ADR-026 known-gaps line if ADR-027 is accepted."
+      }
+    ]
+  }
+}

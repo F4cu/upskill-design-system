@@ -34,6 +34,7 @@ The tables below are the full reference — most entries are composite children,
 | `npm run typecheck` / `npm run lint` | Before pushing component changes. |
 | `npm run a11y:coverage` / `npm run a11y:test` / `npm run a11y:stories` | Before pushing a new or changed interactive component. |
 | `npm run metadata:validate` | After editing a `*.metadata.json`. |
+| `npm run spec:validate` | After editing a `*.spec.json`, or a component that has one. |
 | `npm run layout:validate -- <path>` | After hand-editing a layout file. |
 | `npm run screenshot:check` / `npm run screenshot:approve` | After a visual change, to catch or accept pixel diffs. |
 | `npm run status` / `status:board` / `status:component -- <Name>` | Any time you want a quick read on where things stand. |
@@ -136,6 +137,7 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 | Command | What it does | When it runs |
 |---|---|---|
 | `npm run metadata:validate` | Validate all `*.metadata.json` files against `component.schema.json`. | CI runs it on every component PR; you type it after editing any metadata file. |
+| `npm run spec:validate` | Validate each `*.spec.json` (ADR-027 pilot, Button only so far) against `component.spec.schema.json`, then against the code: props match the props type, metadata axes and defaults; style tokens match the CSS Module's `--ds-*` reads and the built token CSS. Lists constraints with no enforcement as backlog. Needs built tokens. | CI runs it on every component PR (`components-check.yml`); you type it after editing a spec or a component that has one. |
 | `npm run layout:validate` | Validate layout files against the [landmark grammar](04-layout-grammar.md) (ADR-011): one `<main>`, named `<section>`s, labelled `<nav>`s, fixed-set components only, Button emphasis by context (ADR-024). Accepts a file or directory: `npm run layout:validate -- <path>`. | You type it after creating or hand-editing a layout file; `/layout-generation` runs it as its gate, and CI runs it over `apps/showcase/src/pages` on every showcase PR (`showcase-check.yml`). |
 | `npm run lint` | ESLint over `packages/components/src` (includes Tier-1 `jsx-a11y` static checks). | CI runs it on every component PR (`components-check.yml`); you type it before pushing component changes. |
 | `npm run a11y:coverage` | Tier-2 completeness gate (ADR-008): fails if any interactive component lacks its behavioral `<Name>.a11y.test.tsx`. | CI runs it on every component PR; you type it before pushing a new interactive component. |
@@ -144,7 +146,7 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 | `npm run screenshot:check` | Perceptual diff of fresh component screenshots against committed baselines (ADR-019). Enumerates every component's canonical `--default` story in light + dark (viewport 1440×900, full-page), diffs via pixelmatch (threshold 0.1; 0.01% pixel tolerance locally where renders are deterministic, `SCREENSHOT_DIFF_RATIO` overrides — CI uses 1% for cross-OS antialiasing), prints per-story results, writes diff PNGs to gitignored `.diff/`. Requires a running Storybook (`STORYBOOK_URL`, default `http://localhost:6006`). Fails (exit 1) on any FAIL, missing/orphaned baseline, story count mismatch, or console error. | Advisory step in `components-check.yml` on every component PR (`continue-on-error: true`) — ubuntu antialiasing may exceed local threshold until baselines are tuned. You type it locally after building Storybook to verify a component change hasn't shifted pixels unintentionally. |
 | `npm run screenshot:approve [-- --component <Name>]` | Regenerate baseline PNGs (all 54, or one component's light+dark pair) and prune orphaned baselines. Intended for use after an intentional visual change to re-baseline. | You type it after a visual change is approved (e.g. a token value edit, a component style fix) to update the reference. Use `-- --component Button` to re-baseline a single component's pair instead of all. |
 
-`metadata:validate`, `typecheck`, `build`, `a11y:coverage`, `a11y:test`, and `a11y:stories` run automatically in `components-check.yml` on every PR. Run them locally before pushing a new component. `screenshot:check` runs advisory on the same gate at a loosened 1% ratio; promote to blocking only once CI diff ratios prove quiet against ubuntu antialiasing drift (see ADR-019 escalation path).
+`metadata:validate`, `spec:validate`, `typecheck`, `build`, `a11y:coverage`, `a11y:test`, and `a11y:stories` run automatically in `components-check.yml` on every PR. Run them locally before pushing a new component. `screenshot:check` runs advisory on the same gate at a loosened 1% ratio; promote to blocking only once CI diff ratios prove quiet against ubuntu antialiasing drift (see ADR-019 escalation path).
 
 ---
 

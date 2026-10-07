@@ -6,6 +6,7 @@ on:
       - 'packages/components/**'
       - 'packages/tokens/**'
       - 'scripts/validate-metadata.js'
+      - 'scripts/validate-spec.js'
       - 'scripts/validate-layout.js'
       - 'scripts/a11y-coverage.js'
       - 'scripts/a11y-backlog.json'
@@ -46,6 +47,9 @@ jobs:
 
       - name: Validate component metadata
         run: npm run metadata:validate
+
+      - name: Validate component specs (ADR-027 pilot)
+        run: npm run spec:validate
 
       - name: Lint inline styles in component source and stories
         run: npm run stories:lint-inline-style
