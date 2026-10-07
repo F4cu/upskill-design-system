@@ -31,6 +31,7 @@ sources:
 # clock reset 2026-10-07: adds ADR-026 (prop vocabulary + scaffold API proposal step); this page lists no individual ADRs or component APIs, still accurate
 # clock reset 2026-10-07: ADR-026 drift table marks the TextField/AppHeader/DropdownMenu migrations done; this page lists no component APIs, still accurate
 # clock reset 2026-10-07: ADR-026 records the Chip pressed/selected and default-value decisions; this page lists no component APIs, still accurate
+# clock reset 2026-10-07: ADR-026 amendment records the Figma alignment pass (mappings, Figma-only properties, set renames); this page describes no Figma property names, still accurate
 ---
 # Start here
 

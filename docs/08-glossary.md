@@ -24,6 +24,7 @@ sources:
 # rewritten 2026-10-06: Slot and Open part entries say how each maps to Figma (ADR-023 amendment 2026-10-06: code slot = instance swap, open part = native slot on Parent.Root)
 # clock reset 2026-10-07: /component-scaffold gains an API proposal step and /add-component Stage 1 names it (ADR-026); Scaffold entry stays accurate at its level of detail, no new term
 # clock reset 2026-10-07: components.md vocabulary adds pressed-for-filter-chips and the default-value rule; no glossary term changed, still accurate
+# clock reset 2026-10-07: components.md Figma line lists two more recorded mappings (Text, Status); no glossary term changed, still accurate
 ---
 # Glossary
 

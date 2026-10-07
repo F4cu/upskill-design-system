@@ -25,6 +25,7 @@ sources:
 # clock reset 2026-10-06: components.md Subcomponents block gains a Figma-mirror rule line (ADR-023 amendment 2026-10-06); layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-07: components.md gains a Prop vocabulary section (ADR-026); this page describes rule scoping, not rule contents, still accurate
 # clock reset 2026-10-07: components.md vocabulary rows refined (Chip pressed, default values); this page describes rule scoping, not rule contents, still accurate
+# clock reset 2026-10-07: components.md Figma line lists two more recorded mappings; this page describes rule scoping, not rule contents, still accurate
 ---
 # Context engineering
 

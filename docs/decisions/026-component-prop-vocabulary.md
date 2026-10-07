@@ -76,8 +76,9 @@ Figma-only properties with no code counterpart, recorded 2026-10-07:
 | Component set | Property | Why it stays |
 |---|---|---|
 | Chip | `Has dropdown` | Legacy dropdown-arrow look. Out of scope in code (Chip metadata "do not use"); kept because placed instances use it. |
+| Accordion list | The whole set, `Show more` = `false` / `true` | A stack of `Accordion` instances plus a Show more link, for page mock-ups. Code composes Accordions directly and has no list component. |
 | Select | `Style` = `Outlined` / `Filled` | Design exploration; code ships one look and has no `variant`. |
-| Image placeholder | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
+| Image | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
 
 Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`.
 
@@ -118,5 +119,6 @@ The file was brought in line with the vocabulary by renaming properties in place
 - **Accordion list item:** `isExpanded=on|off|isExpanded3` → `Open` (`true`/`false`, default `false`) × `State` (`Default`/`Hover`). The third variant was the collapsed hover state.
 - **Button:** `Size` values `Small`/`Default`/`Large` → `sm`/`md`/`lg`. The default variant is now `md` + `Neutral`, matching code. `Trailing icon` (default `true`) toggled the *leading* icon; it is renamed `Has icon`, defaults to `false`, and the instance swap is renamed `Icon`. The 7 instances that showed the icon through the old default were pinned to `true`, so nothing changed visually.
 - **CardHorizontal:** `Progress` → `Has progress`. **Button arrow:** `State=Active` → `Default` (`Active` reads as the `:active` pseudo-class). **CardVertical:** `State` values recased to `Default`/`Hover`.
+- **Component set names match code:** `Accordion list item` → `Accordion`; the former `Accordion` composite → `Accordion list`, with its `State=Expanded|Collapsed` axis renamed `Show more` (default `false`), since `State` is reserved for interaction; `Button arrow` → `ButtonArrow`; `Image placeholder` → `Image`; `Option menu` → `DropdownMenu`.
 - Figma picks a set's default variant by canvas position (top-left), not layer order, so defaults were set by moving variants.
 - ADR-024's Figma follow-ups were already done: the Button `Style` values, the CardVertical halo (two drop shadows bound to `color/icon/on-media/halo`), and the variables.
