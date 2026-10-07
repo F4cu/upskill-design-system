@@ -71,7 +71,9 @@ Same two-bucket idea as the ablation eval, so Arm C isn't credited for repeating
 ## Pre-registration (write before the first real run)
 
 - **"Not worse"** (ADR-027's accept bar): over N = 3 runs, Arm C's median headline total ≤ Arm A's on **each** of the two tasks.
-- **Prediction:** write the actual guess here before running, without hedging it.
+- **Prediction (developer, 2026-10-07, before any run):** "Arm C will perform better than A, especially in prop and accessibility compliance."
+  - How it's read against the scores: **better** = Arm C's median headline total < Arm A's on both tasks (a strict win, beyond the ≤ accept bar). **Prop compliance** = the `spec:conformance` median (secondary) plus the required/forbidden pattern hits. **Accessibility compliance** = `lint` (jsx-a11y) violations and the `a11y:coverage` gate.
+  - Limit: this harness never executes the generated a11y test or runs axe. It only lints and checks that the test file exists. Behavioural a11y needs the ablation eval's composeStories/axe scoring.
 - **Honest-outcome rule:** if Arm C is worse on either task, report it and reject ADR-027 as the ADR says: delete the spec files and the validator. Don't tune briefs, traps or the spec after seeing results.
 - **Budget:** 2 tasks × 2 arms (A, C) × 3 runs = 12 `claude -p` runs, sequential. Arm B isn't needed for this question; skip it with `--arm`.
 
