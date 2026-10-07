@@ -12,6 +12,7 @@ sources:
 # clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
 # clock reset 2026-10-02: CardHorizontal metadata gains author patterns/anti-patterns + size.separator token; schema and parts model unchanged, still accurate
 # clock reset 2026-10-06: ADR-023 amendment (Figma Parent.Root + one example frame per usage.patterns id); metadata schema unchanged, still accurate
+# rewritten 2026-10-07: drift example replaced (the change-callback rule was retired); paragraph on the ADR-026 naming checks in generate-pattern-schema.js
 ---
 # Machine-readable metadata
 
@@ -88,12 +89,16 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 
 ```json
 {
-  "pattern": "change-callback",
-  "issue": "prop-name-mismatch",
-  "detail": "Accordion uses `onOpenChange`, Checkbox uses `onChange (native)`, DropdownMenu uses `onSelect`, Select uses `onValueChange`, TextField uses `onChange (native)` — different names for the same state-changed axis.",
-  "components": ["Accordion", "Checkbox", "DropdownMenu", "Select", "TextField"]
+  "components": [
+    "Badge"
+  ],
+  "detail": "Badge JSX uses [Text] but metadata composition.composedOf declares [].",
+  "issue": "composition-metadata-mismatch",
+  "pattern": "static-display"
 }
 ```
+
+`drift[]` also checks prop names against the prop vocabulary ([ADR-026](decisions/026-component-prop-vocabulary.md)). Every `on<X>Change` callback needs an `x` prop, every `default<X>` needs both `x` and `on<X>Change`, and a selection component never carries a `selected*` prop. That is how `selectedValue` on `DropdownMenu` was caught. Components may use different callback names, because each callback is named after its own state (`onOpenChange`, `onValueChange`, `onPressedChange`).
 
 The consumption map — which command reads which section for what:
 
