@@ -48,6 +48,8 @@ The shipped component is the answer key, so two things must hold before any arm 
    - **Badge:** flat props with one job, so ADR-023 doesn't apply. It uses no Button (ADR-024) and has no lifecycle or content state (ADR-025). Last review was the `standard` path on 2026-07-09.
    - **Checkbox:** already migrated to `color.background.disabled` (ADR-024 amendment, 2026-10-06). Its native `checked`/`defaultChecked`/`onChange` fits ADR-025's app-data-interaction exception.
    - **CardVertical:** it *is* the ADR-023/025 reference (parts plus the derived `Completed` state, PR #112). The brief must say whether the task is the **preset** or the **preset + parts**. Recommended: the preset only, because the parts API is too large for a fair Arm 0 task.
+   - **ADR-026 prop vocabulary** (PR #115): all three conform. Badge's `variant: outline | filled` was explicitly kept (it names the look). Checkbox uses the native-input names (`checked`/`onChange`). CardVertical.Favorite already uses `pressed`/`onPressedChange`.
+   - **Checkbox `reference.png`:** capture it from the aligned Figma set `92:8772` (PR #116: `Checked` × `State`, `Label`, Disabled variants), not from a pre-#116 frame. Before #116, the metadata recorded no Figma component set for Checkbox.
 2. **The reference scores 0 product-quality violations under the eval scorer.** It doesn't today. Running the `pattern-accuracy-harness` traps on the shipped files gives:
 
    | Component | Violations | Cause | Fix belongs in |
@@ -69,6 +71,11 @@ The shipped component is the answer key, so two things must hold before any arm 
 
 - Workspace = `git archive HEAD` into a tmp dir, then a fresh `git init`, so `git log`/`git show` can't recover the deleted component.
 - Delete the target component directory, its export in `packages/components/src/index.ts`, and any story or doc that imports it. For Arms 1–2, also delete its mentions in other components' metadata (`relationships`) and in `component-patterns.json`.
+- **ADRs and rules give away parts of the answers** (Arms 1, 1b, 2). The ADR-026 amendment spells out Checkbox's Figma property mapping (`Checked` × `State`, `Label`, Disabled states, variable bindings) and Badge's `variant` values. Across `docs/decisions/`, Badge appears in 4 ADRs, Checkbox in 4 and CardVertical in 7. `.claude/rules/components.md` mentions Badge once and CardVertical twice. **Decide before the pilot**, and record the choice here:
+  - **(a) Redact:** in `prepare.js`, strip the lines that describe the target's API or Figma properties. Keep the general rules, even where they use the target as an example.
+  - **(b) Accept the leak:** keep the files whole and report it as a known advantage for Arms 1/2. The reasoning is that a real team's ADRs would also describe neighbouring components.
+
+  Recommended: (a) for lines about the target's own props or Figma mapping, and (b) for passing mentions used as examples.
 - `--setting-sources project` so user-level settings don't leak. There's no `~/.claude/CLAUDE.md` today, and auto-memory is keyed by project path, so a tmp path gets none. Confirm both in the pilot.
 - `node_modules`: symlink root and workspace `node_modules` from the main checkout instead of running `npm install` per run.
 - Grep the pilot transcripts for the deleted file's distinctive strings to confirm nothing leaked.
@@ -86,6 +93,11 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
 
 **System compliance (secondary: what this system additionally demands)**
 - `metadata:validate`, `a11y:coverage`, story conventions, `patterns` drift. Reported, never added into the headline.
+- **New `prop-vocabulary` check (ADR-026):**
+  - Run the naming-drift checks from `scripts/generate-pattern-schema.js` (`namingDrift` / `detectDrift`; they need exporting). They flag an `on<X>Change` with no matching `x` prop, a `default<X>` missing `x` or `on<X>Change`, and `selected*` props on a selection component.
+  - Diff the generated props against the reference's prop names and values. A renamed concept counts as a violation; an extra prop doesn't.
+  - Arm 0 never sees the vocabulary, so this stays out of the headline. But since PR #115 the neighbouring components are drift-free, so Arm 0 *can* infer the names from them. That makes this a fair comparison: inferred (Arm 0) vs told (Arms 1/1b) vs proposed and checked (Arm 2).
+  - Only CardVertical has an API large enough to separate the arms; Badge and Checkbox are small or native. If prop compliance should be a real finding, that argues for the Accordion stretch task (`open`/`onOpenChange`, `headingLevel`).
 
 **Process**
 - `--output-format json` gives `num_turns`, `duration_ms`, `total_cost_usd` and token usage.
@@ -106,13 +118,15 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
 ## Changes needed
 
 1. **`/add-component --eval` mode** (`.claude/commands/add-component.md`).
+   - **Auto-approve the Stage 1 API proposal checkpoint** (`/component-scaffold` step 3, ADR-026, added in PR #115). Under `claude -p` it would otherwise stall the run or get skipped in some unrecorded way. Accept the proposal exactly as the agent wrote it, and save it to the workspace as `api-proposal.md` so the `prop-vocabulary` score can be traced back to it.
    - Skip Stage 2b/2c (the human visual checkpoint) and record `visualReview: skipped-eval`.
    - In `/review-component`, skip branch, commit and PR, and write `.review.json`/`.run.json` into the workspace.
    - Don't append to the committed `run-ledger.json`.
 2. **New `scripts/harness-ablation/`**:
    - `prepare.js <task> <arm>`: archive, strip per arm, delete target, symlink deps, drop `reference.png`.
    - `run.js`: sequential, never parallel. Resumable: skips a task/arm/run that already has `score.json`. Flags: `--task`, `--arm`, `--runs`, `--model`, `--max-budget-usd`.
-   - `score.js`: in-workspace gates + traps imported from `pattern-accuracy-harness/score.js` (export `trapChecksTsx`, `trapChecksCss`, `runPatternChecks`) + the new `unknown-token` and `invented-import` traps + composeStories/axe.
+   - `score.js`: in-workspace gates + traps imported from `pattern-accuracy-harness/score.js` (export `trapChecksTsx`, `trapChecksCss`, `runPatternChecks`) + the new `unknown-token` and `invented-import` traps + composeStories/axe + the `prop-vocabulary` check (export the naming-drift functions from `scripts/generate-pattern-schema.js`).
+   - `prepare.js` also applies the redaction decided under "Leakage controls" to `docs/decisions/` and `.claude/rules/components.md` for Arms 1/1b/2.
    - `report.js` → `results.md`: per task × arm table, clean rate, cost per clean component. Copy each arm's median-run files into `results/<task>/<arm>/` for the case-study figure.
    - `tasks/*.json`: brief, target, files to delete, `requiredPatterns`/`forbiddenPatterns`, `reference.png` path.
 3. `package.json`: `ablation:run`, `ablation:score`.
@@ -151,4 +165,5 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
 ## Open questions
 
 - Should Arm 0 keep the existing `*.stories.tsx` files? Current call: yes. Stories are what a normal team has, and removing them would make the baseline a straw man.
+- ADR/rules leakage: redact or accept? See "Leakage controls". This has to be settled before the pilot, because changing it afterwards counts as tuning after seeing results.
 - Does the composeStories/axe runner already exist in `packages/components` test setup (`a11y:stories`)? If so, reuse it instead of writing a new one.
