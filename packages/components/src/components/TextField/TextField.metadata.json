@@ -68,13 +68,13 @@
     },
     "size": {
       "options": [
-        "default",
-        "large"
+        "md",
+        "lg"
       ],
-      "default": "default",
+      "default": "md",
       "purpose": {
-        "default": "40px tall. Standard form fields and inline inputs.",
-        "large": "48px tall. Hero search bars, prominent single-field forms."
+        "md": "40px tall. Standard form fields and inline inputs.",
+        "lg": "48px tall. Hero search bars, prominent single-field forms."
       }
     },
     "shape": {

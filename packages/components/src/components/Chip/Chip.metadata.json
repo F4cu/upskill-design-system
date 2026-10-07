@@ -4,7 +4,7 @@
     "category": "atom",
     "type": "interactive",
     "status": "beta",
-    "description": "Pill-shaped filter tag for toggling a selection state. Default: neutral border and subtle text. Selected: brand border and brand text. Pure selection indicator — not a navigation element. Label-only; no dropdown arrow.",
+    "description": "Pill-shaped filter toggle. Each chip is an independent toggle button (aria-pressed); the page owns which chips are pressed. Default: neutral border and subtle text. Pressed: brand border and brand text. Pure filter indicator — not a navigation element. Label-only; no dropdown arrow.",
     "figmaNodeId": "29:1257"
   },
   "usage": {
@@ -19,14 +19,19 @@
     ],
     "when": [
       "Filtering a list or carousel by category (e.g. All Courses, Design, Development)",
-      "Toggling a discrete selection option among a group of peers",
-      "Showing current filter state visually — selected chip reads as brand-colored"
+      "Multi-select filtering: each chip toggles one filter on or off independently",
+      "Showing current filter state visually — a pressed chip reads as brand-colored"
     ],
     "patterns": [
       {
         "name": "filter-bar",
-        "description": "A horizontal row of Chip components for category filtering, where one chip is selected at a time.",
-        "tree": "Inline(gap=sm, wrap=true) > [Chip(selected=true), Chip, Chip, Chip]"
+        "description": "A labelled group of Chips for multi-select filtering: each chip toggles its filter independently, and the page holds the set of active filters. The row is a role=group named by the section heading or an aria-label.",
+        "tree": "Inline(gap=sm, wrap=true, role=group, aria-labelledby=<heading id>) > [Chip(pressed=true), Chip(pressed=true), Chip, Chip]"
+      },
+      {
+        "name": "filter-bar-single",
+        "description": "The same labelled group used as a single-select filter: the page keeps one active value and presses exactly one chip (Homepage 'Discover new courses'). Chip itself is unchanged; exclusivity is page logic.",
+        "tree": "Inline(gap=sm, wrap=true, role=group, aria-labelledby=<heading id>) > [Chip(pressed=true), Chip, Chip, Chip]"
       }
     ],
     "antiPatterns": [
@@ -49,11 +54,16 @@
         "scenario": "Placing a Chip alongside a Button in the same Inline row as interactive siblings",
         "reason": "Chip is a selection toggle (state); Button is an action trigger (event). Mixing them in the same row conflates filtering with acting and confuses interaction semantics.",
         "alternative": "Group Chips in their own Inline filter bar. Place action Buttons in a separate row. Never use Chip as a substitute for a Button or vice versa."
+      },
+      {
+        "scenario": "A row of Chips without a group name",
+        "reason": "Screen readers announce each chip as 'toggle button, pressed' with no indication of what the chips filter or that they belong together.",
+        "alternative": "Give the Inline role=group and aria-labelledby pointing at the nearest heading (or an aria-label)."
       }
     ]
   },
   "variants": {
-    "selected": {
+    "pressed": {
       "options": [
         "false",
         "true"
@@ -75,8 +85,8 @@
       "description": "Adds neutral-subtlest background; border and text unchanged."
     },
     {
-      "state": "selected",
-      "description": "Brand border and brand text; toggled via the selected prop."
+      "state": "pressed",
+      "description": "Brand border and brand text; set via the pressed prop."
     },
     {
       "state": "disabled",
@@ -111,19 +121,19 @@
   "accessibility": {
     "role": "button",
     "ariaAttributes": [
-      "aria-pressed — reflects the selected state so screen readers announce active/inactive"
+      "aria-pressed — reflects the pressed prop so screen readers announce the toggle state"
     ],
     "keyboardInteractions": [
       {
         "key": "Enter / Space",
-        "action": "Toggles the chip selection (caller controls state)"
+        "action": "Fires onClick, then onPressedChange(!pressed) (caller controls state)"
       },
       {
         "key": "Tab",
         "action": "Moves focus to the next focusable element"
       }
     ],
-    "notes": "Uses a native <button> element with aria-pressed. The caller is responsible for managing the selected state and grouping chips in a meaningful container (e.g. role=group with aria-label)."
+    "notes": "Uses a native <button> element with aria-pressed. Controlled only: the caller owns pressed (filter state always drives page content) and groups chips in a container with role=group and an accessible name (see the filter-bar patterns)."
   },
   "composition": {
     "composedOf": [],

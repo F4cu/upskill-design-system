@@ -6,7 +6,7 @@ const meta: Meta<typeof Chip> = {
   title: 'Components/Chip',
   component: Chip,
   argTypes: {
-    selected: { control: 'boolean' },
+    pressed: { control: 'boolean' },
     disabled: { control: 'boolean' },
     children: { control: 'text' },
   },
@@ -18,14 +18,14 @@ type Story = StoryObj<typeof Chip>
 export const Default: Story = {
   args: {
     children: 'All Courses',
-    selected: false,
+    pressed: false,
   },
 }
 
-export const Selected: Story = {
+export const Pressed: Story = {
   args: {
     children: 'Design',
-    selected: true,
+    pressed: true,
   },
 }
 
@@ -38,8 +38,8 @@ export const Disabled: Story = {
 
 export const FilterGroup: Story = {
   render: () => (
-    <Inline gap="sm" wrap>
-      <Chip selected>All Courses</Chip>
+    <Inline gap="sm" wrap role="group" aria-label="Filter courses by topic">
+      <Chip pressed>All Courses</Chip>
       <Chip>Design</Chip>
       <Chip>Development</Chip>
       <Chip>Business</Chip>

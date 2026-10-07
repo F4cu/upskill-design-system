@@ -3,28 +3,6 @@
   "drift": [
     {
       "components": [
-        "Accordion",
-        "CardVertical",
-        "Checkbox",
-        "DropdownMenu",
-        "Select",
-        "TextField"
-      ],
-      "detail": "Accordion uses `onOpenChange`, CardVertical uses `onPressedChange`, Checkbox uses `onChange (native)`, DropdownMenu uses `onSelect`, Select uses `onValueChange`, TextField uses `onChange (native)` — different names for the same state-changed axis.",
-      "issue": "prop-name-mismatch",
-      "pattern": "change-callback"
-    },
-    {
-      "components": [
-        "DropdownMenu",
-        "Select"
-      ],
-      "detail": "DropdownMenu uses `selectedValue`, Select uses `value` — different names for the selected-value prop.",
-      "issue": "state-prop-name-mismatch",
-      "pattern": "controlled-selection"
-    },
-    {
-      "components": [
         "AppHeader"
       ],
       "detail": "AppHeader JSX uses [Avatar, DropdownMenu, Icon, TextField] but metadata composition.composedOf declares [Avatar, Icon, Text, TextField].",
@@ -48,7 +26,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "5b666e2c56cd8bebafa6adb90ebd496029e2b46e",
+  "generatedFrom": "00bfe2659e7a48026df702489c8e0597ddac0b76",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -157,7 +135,7 @@
               "role": "{listRole === 'listbox' ? 'option' : 'menuitem'}"
             }
           ],
-          "changeCallback": "onSelect",
+          "changeCallback": "onOpenChange",
           "component": "DropdownMenu",
           "composition": [],
           "maturity": "beta",
@@ -165,8 +143,8 @@
           "state": {
             "controlled": "always",
             "props": [
-              "onSelect",
-              "selectedValue"
+              "open",
+              "onOpenChange"
             ]
           },
           "systemSpecificNotes": [
@@ -492,6 +470,7 @@
               "element": "button"
             }
           ],
+          "changeCallback": "onSearchValueChange",
           "component": "AppHeader",
           "composition": [
             "Avatar",
@@ -501,6 +480,13 @@
           ],
           "maturity": "beta",
           "stage": "in review",
+          "state": {
+            "controlled": "always",
+            "props": [
+              "searchValue",
+              "onSearchValueChange"
+            ]
+          },
           "systemSpecificNotes": [
             "aria-label=\"Main navigation\" on the <nav> element",
             "aria-current=\"page\" on the active nav link",
@@ -729,17 +715,25 @@
         {
           "ariaContract": [
             {
-              "aria-pressed": "{selected}",
+              "aria-pressed": "{pressed}",
               "element": "button"
             }
           ],
+          "changeCallback": "onPressedChange",
           "component": "Chip",
           "composition": [],
           "maturity": "beta",
           "stage": "in review",
+          "state": {
+            "controlled": "always",
+            "props": [
+              "pressed",
+              "onPressedChange"
+            ]
+          },
           "systemSpecificNotes": [
-            "Uses a native <button> element with aria-pressed. The caller is responsible for managing the selected state and grouping chips in a meaningful container (e.g. role=group with aria-label).",
-            "aria-pressed — reflects the selected state so screen readers announce active/inactive"
+            "Uses a native <button> element with aria-pressed. Controlled only: the caller owns pressed (filter state always drives page content) and groups chips in a container with role=group and an accessible name (see the filter-bar patterns).",
+            "aria-pressed — reflects the pressed prop so screen readers announce the toggle state"
           ]
         }
       ]

@@ -183,16 +183,15 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
         aria-controls={open ? menuId : undefined}
         onClick={() => setOpen(prev => !prev)}
       />
-      {open && (
-        <DropdownMenu
-          items={items}
-          id={menuId}
-          aria-labelledby={`${id} ${titleId}`}
-          onSelect={handleSelect}
-          onClose={() => close(true)}
-          className={styles.menuPanel}
-        />
-      )}
+      <DropdownMenu
+        items={items}
+        open={open}
+        onOpenChange={next => (next ? setOpen(true) : close(true))}
+        id={menuId}
+        aria-labelledby={`${id} ${titleId}`}
+        onSelect={handleSelect}
+        className={styles.menuPanel}
+      />
     </div>
   )
 }

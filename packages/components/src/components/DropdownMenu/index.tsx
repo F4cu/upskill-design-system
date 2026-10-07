@@ -9,18 +9,20 @@ export type DropdownMenuItem = {
 
 export type DropdownMenuProps = {
   items: DropdownMenuItem[]
-  selectedValue?: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  value?: string
   onSelect: (value: string) => void
-  onClose: () => void
   listRole?: 'menu' | 'listbox'
   id?: string
 } & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'onSelect'>
 
 export function DropdownMenu({
   items,
-  selectedValue,
+  open,
+  onOpenChange,
+  value: selectedValue,
   onSelect,
-  onClose,
   listRole = 'menu',
   id,
   className,
@@ -29,12 +31,13 @@ export function DropdownMenu({
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (!open) return
     function handleKeyDown(e: globalThis.KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onOpenChange(false)
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
+  }, [open, onOpenChange])
 
   function handleItemKeyDown(e: KeyboardEvent<HTMLDivElement>, index: number, value: string) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -50,6 +53,8 @@ export function DropdownMenu({
       options?.[index - 1]?.focus()
     }
   }
+
+  if (!open) return null
 
   return (
     <div

@@ -6,7 +6,7 @@ import { Text } from '../Text'
 import styles from './TextField.module.css'
 import utilStyles from '../../styles/utilities.module.css'
 
-export type TextFieldSize = 'default' | 'large'
+export type TextFieldSize = 'md' | 'lg'
 export type TextFieldShape = 'square' | 'round'
 
 export type TextFieldProps = {
@@ -18,7 +18,7 @@ export type TextFieldProps = {
   icon?: IconName
 } & Omit<InputHTMLAttributes<HTMLInputElement>, 'children' | 'size'>
 
-export function TextField({ label, hideLabel, error, size = 'default', shape = 'square', icon, id: idProp, className, ...rest }: TextFieldProps) {
+export function TextField({ label, hideLabel, error, size = 'md', shape = 'square', icon, id: idProp, className, ...rest }: TextFieldProps) {
   const generatedId = useId()
   const id = idProp ?? generatedId
   const errorId = `${id}-error`
@@ -42,7 +42,7 @@ export function TextField({ label, hideLabel, error, size = 'default', shape = '
           id={id}
           className={[
             styles.input,
-            size === 'large' && styles.sizeLarge,
+            size === 'lg' && styles.sizeLg,
             shape === 'round' && styles.shapeRound,
             icon && styles.hasIcon,
             error && styles.hasError,

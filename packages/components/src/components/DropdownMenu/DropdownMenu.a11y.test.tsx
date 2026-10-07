@@ -7,7 +7,7 @@ import { DropdownMenu } from './index'
 // Tier-2 behavioral a11y (ADR-008). Asserts the dynamic ARIA contract from
 // DropdownMenu.metadata.json that static jsx-a11y lint can't see: the panel
 // exposes role=menu|listbox via listRole; items get menuitem|option; option
-// items carry aria-selected reflecting selectedValue; items use a single
+// items carry aria-selected reflecting value; items use a single
 // roving focus target (tabIndex=-1, moved via Arrow keys, not one Tab stop
 // per item); and Enter/Space on a focused item fires onSelect. Initial item
 // focus and trigger focus-return on close are owner-controlled (the
@@ -22,22 +22,22 @@ const items = [
 
 describe('DropdownMenu — a11y behavior', () => {
   it('exposes role=menu with role=menuitem items (listRole=menu)', () => {
-    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} onClose={vi.fn()} />)
+    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} open onOpenChange={vi.fn()} />)
 
     expect(screen.getByRole('menu')).toBeInTheDocument()
     expect(screen.getAllByRole('menuitem')).toHaveLength(items.length)
     expect(screen.getByRole('menuitem', { name: 'Alpha' })).toBeInTheDocument()
   })
 
-  it('exposes role=listbox with role=option items and aria-selected reflecting selectedValue (listRole=listbox)', () => {
+  it('exposes role=listbox with role=option items and aria-selected reflecting value (listRole=listbox)', () => {
     render(
       <DropdownMenu
         items={items}
         listRole="listbox"
-        selectedValue="b"
+        value="b"
         aria-label="Greek letters"
         onSelect={vi.fn()}
-        onClose={vi.fn()}
+        open onOpenChange={vi.fn()}
       />,
     )
 
@@ -51,7 +51,7 @@ describe('DropdownMenu — a11y behavior', () => {
   })
 
   it('makes every item a single roving focus target (tabIndex=-1) in menu mode', () => {
-    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} onClose={vi.fn()} />)
+    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} open onOpenChange={vi.fn()} />)
 
     for (const item of screen.getAllByRole('menuitem')) {
       expect(item).toHaveAttribute('tabindex', '-1')
@@ -65,7 +65,7 @@ describe('DropdownMenu — a11y behavior', () => {
         listRole="listbox"
         aria-label="Greek letters"
         onSelect={vi.fn()}
-        onClose={vi.fn()}
+        open onOpenChange={vi.fn()}
       />,
     )
 
@@ -82,7 +82,7 @@ describe('DropdownMenu — a11y behavior', () => {
         listRole="listbox"
         aria-label="Greek letters"
         onSelect={vi.fn()}
-        onClose={vi.fn()}
+        open onOpenChange={vi.fn()}
       />,
     )
 
@@ -103,7 +103,7 @@ describe('DropdownMenu — a11y behavior', () => {
 
   it('ArrowDown / ArrowUp navigate focus between items in menu mode (WAI-ARIA APG menu pattern)', async () => {
     const user = userEvent.setup()
-    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} onClose={vi.fn()} />)
+    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} open onOpenChange={vi.fn()} />)
 
     const [alpha, beta, gamma] = screen.getAllByRole('menuitem')
 
@@ -123,7 +123,7 @@ describe('DropdownMenu — a11y behavior', () => {
   it('fires onSelect with the item value on Enter and Space (keyboardInteractions: Enter / Space)', async () => {
     const user = userEvent.setup()
     const onSelect = vi.fn()
-    render(<DropdownMenu items={items} listRole="menu" onSelect={onSelect} onClose={vi.fn()} />)
+    render(<DropdownMenu items={items} listRole="menu" onSelect={onSelect} open onOpenChange={vi.fn()} />)
 
     const beta = screen.getByRole('menuitem', { name: 'Beta' })
     beta.focus()
@@ -137,17 +137,36 @@ describe('DropdownMenu — a11y behavior', () => {
     expect(onSelect).toHaveBeenCalledTimes(2)
   })
 
+  it('requests close with onOpenChange(false) on Escape (keyboardInteractions: Escape)', async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} open onOpenChange={onOpenChange} />)
+
+    await user.keyboard('{Escape}')
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it('renders nothing and ignores Escape when closed', async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    render(<DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} open={false} onOpenChange={onOpenChange} />)
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    await user.keyboard('{Escape}')
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
   it('has no axe violations in menu and listbox modes', async () => {
     const { container } = render(
       <>
-        <DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} onClose={vi.fn()} />
+        <DropdownMenu items={items} listRole="menu" onSelect={vi.fn()} open onOpenChange={vi.fn()} />
         <DropdownMenu
           items={items}
           listRole="listbox"
-          selectedValue="b"
+          value="b"
           aria-label="Greek letters"
           onSelect={vi.fn()}
-          onClose={vi.fn()}
+          open onOpenChange={vi.fn()}
         />
       </>,
     )

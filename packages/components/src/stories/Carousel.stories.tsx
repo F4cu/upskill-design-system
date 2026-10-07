@@ -44,9 +44,9 @@ function CarouselPage() {
         <Stack gap="lg">
           <Stack gap="md">
             <Heading size="headline">Discover Courses</Heading>
-            <Inline gap="sm" wrap>
+            <Inline gap="sm" wrap role="group" aria-label="Filter discover courses">
               {FILTERS.map((f) => (
-                <Chip key={f} selected={f === discoverFilter} onClick={() => setDiscoverFilter(f)}>
+                <Chip key={f} pressed={f === discoverFilter} onClick={() => setDiscoverFilter(f)}>
                   {f}
                 </Chip>
               ))}
@@ -69,9 +69,9 @@ function CarouselPage() {
         <Stack gap="lg">
           <Stack gap="md">
             <Heading size="headline">Saved Courses</Heading>
-            <Inline gap="sm" wrap>
+            <Inline gap="sm" wrap role="group" aria-label="Filter saved courses">
               {FILTERS.map((f) => (
-                <Chip key={f} selected={f === savedFilter} onClick={() => setSavedFilter(f)}>
+                <Chip key={f} pressed={f === savedFilter} onClick={() => setSavedFilter(f)}>
                   {f}
                 </Chip>
               ))}
@@ -143,9 +143,9 @@ const [filter, setFilter] = useState('All Courses')
 <Stack gap="lg">
   <Stack gap="md">
     <Heading size="headline">Discover Courses</Heading>
-    <Inline gap="sm" wrap>
+    <Inline gap="sm" wrap role="group" aria-label="Filter courses">
       {FILTERS.map((f) => (
-        <Chip key={f} selected={f === filter} onClick={() => setFilter(f)}>{f}</Chip>
+        <Chip key={f} pressed={f === filter} onClick={() => setFilter(f)}>{f}</Chip>
       ))}
     </Inline>
   </Stack>

@@ -35,14 +35,15 @@ One concept gets one name across the fixed set. A new component reuses these nam
 
 | Concept | Name | Notes |
 |---|---|---|
-| Visual weight or style | `variant` | One per component. Values name the look or weight, not a rank (ADR-024). Never `type`, `kind`, `mode`, `style`, `tone`, `appearance`. |
+| Visual weight or style | `variant` | One per component. Values name the look or weight, not a rank (ADR-024). Never `type`, `kind`, `mode`, `style`, `tone`, `appearance`. `default` is allowed as the baseline value of a surface or context axis whose other values are departures from it (Card `default\|elevated\|transparent`), never on an emphasis axis (ADR-024's Button problem). |
 | Size | `size` | T-shirt scale `sm` / `md` / `lg`, using only the steps the component has. Typography components (`Text`, `Heading`, `TextLink`) are the exception: their `size` takes type-scale names. |
 | Corner shape | `shape` | `square` / `round`. |
 | Layout direction | `orientation` | `horizontal` / `vertical`. `direction` is reserved for what a glyph points at (`ButtonArrow`). |
 | Lifecycle | `status` | One enum; derived from data when possible (ADR-025). |
 | Selected or entered value | `value` / `defaultValue` / `onValueChange` | For custom widgets. A component that spreads onto a native input keeps native names (`value`/`checked` + `onChange`). |
 | Shown / hidden | `open` / `defaultOpen` / `onOpenChange` | Disclosure, popovers and menus. Never `expanded`, `visible` or `onClose` alone. |
-| Toggle | `pressed` / `defaultPressed` / `onPressedChange` | For `aria-pressed`. |
+| Toggle | `pressed` / `defaultPressed` / `onPressedChange` | For `aria-pressed`, including filter chips: each chip toggles independently, and the page owns the set. `default*` is omitted when the caller must always own the state. |
+| Selection in a set | `value` on the container | `selected` is never an item prop. When a group owns the choice (tabs, listbox options), the container holds `value` / `onValueChange` and items derive `aria-selected` from it. |
 | Any other controlled state | `<x>` / `default<X>` / `on<X>Change` | The callback name comes from the state prop's name: `searchValue` → `onSearchValueChange`. |
 | Discrete event | `on<Verb>`, or `on<Part><Verb>` for an event from a nested part | `onSelect(value)` for picking an item; `onUserMenuSelect`. Never `handle*`. |
 | Boolean | Bare adjective or participle, default `false` | `disabled`, `required`, `certified`, `wrap`, `fullWidth`. Never `is*`, `has*`, `show*`. Exception: `hideLabel`. The label still renders for assistive technology, so the default-`false` form is "hide". |
@@ -82,15 +83,15 @@ The developer approves or edits the table; only then are the four files generate
 - One reference answers "what do I call this prop?". It is loaded with the component rules, so it is in front of the scaffold and the reviewer at the moment a name is chosen. The ADR-025 naming bullet folds into it.
 - Naming arguments happen once, on a table, before code and Figma exist. That is cheaper than renaming afterwards, which ADR-024 showed costs a migration in code, metadata, stories and Figma.
 - `/component-scaffold` is no longer one-shot: it waits for a reply. That is the point of the step, and it matches the developer-present nature of the moment.
-- **No new gate yet.** Detection stays with the existing `drift` report in `component-patterns.json`. A deterministic naming check (banned boolean prefixes, `on*` handlers without a matching state prop, controlled props missing their `default*`/`on*Change` partners) is a follow-up. It should land after the migration below, otherwise it starts red.
-- **Existing drift is not fixed here.** These are breaking renames, each with a code, metadata, story and Figma migration, so they go in their own PR:
+- **No new gate yet.** Detection is the `drift` report in `component-patterns.json`. Since 2026-10-07, `scripts/generate-pattern-schema.js` checks this vocabulary instead of requiring one callback name system-wide: every `on<X>Change` needs an `x` prop, every `default<X>` needs both `x` and `on<X>Change`, and selection components never carry a `selected*` prop. A blocking check (adding banned boolean prefixes) is still a follow-up.
+- **Existing drift is migrated in a separate PR.** These are breaking renames, each touching code, metadata, stories and Figma, so they ship apart from this decision:
 
-  | Component | Today | Vocabulary |
-  |---|---|---|
-  | AppHeader | `searchValue` + `onSearchChange` | `onSearchValueChange` |
-  | DropdownMenu | `selectedValue`; `onClose` | `value`; `onOpenChange(false)` |
-  | TextField | `size: default \| large` | `size: md \| lg` |
-  | Chip | `selected` (renders `aria-pressed`) | Review: `pressed` matches the ARIA contract; `selected` is the familiar filter-chip word |
-  | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | Review against ADR-024's "name the weight" rule |
+  | Component | Before | After | State |
+  |---|---|---|---|
+  | AppHeader | `searchValue` + `onSearchChange` | `onSearchValueChange` | Migrated 2026-10-07 |
+  | DropdownMenu | `selectedValue`; `onClose`; rendered conditionally by the consumer | `value`; `open` + `onOpenChange` (controlled only: the consumer owns the trigger, and the menu only ever requests `false`) | Migrated 2026-10-07 |
+  | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07 (no Figma component set to update) |
+  | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07; Figma `Selected` property still to rename |
+  | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value (vocabulary row above) | Closed 2026-10-07 |
 
 - **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). No component forwards one today. That is a behaviour gap, not a naming one, tracked in issue #114.

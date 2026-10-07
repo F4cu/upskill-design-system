@@ -10,7 +10,7 @@ const meta = {
     error: { control: 'text' },
     placeholder: { control: 'text' },
     disabled: { control: 'boolean' },
-    size: { control: 'select', options: ['default', 'large'] },
+    size: { control: 'select', options: ['md', 'lg'] },
     shape: { control: 'select', options: ['square', 'round'] },
     icon: {
       control: 'select',
@@ -80,7 +80,7 @@ export const Large: Story = {
     label: 'Email',
     placeholder: 'you@example.com',
     type: 'email',
-    size: 'large',
+    size: 'lg',
   },
 }
 
@@ -98,7 +98,7 @@ export const LargeRound: Story = {
     label: 'Search',
     placeholder: 'Search…',
     type: 'search',
-    size: 'large',
+    size: 'lg',
     shape: 'round',
   },
 }
@@ -119,7 +119,7 @@ export const SearchWithIconLarge: Story = {
     label: 'Search',
     placeholder: 'Search…',
     type: 'search',
-    size: 'large',
+    size: 'lg',
     shape: 'round',
     icon: 'search',
     hideLabel: true,
