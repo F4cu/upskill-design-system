@@ -22,6 +22,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
 import ts from "typescript";
+import { publicComponents } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -37,7 +38,7 @@ const EXTERNAL_DIR = dirFlag === -1 ? null : path.resolve(process.argv[dirFlag +
 const SPEC_DIR = EXTERNAL_DIR ?? COMPONENTS_DIR;
 
 const folders = (dir) => fs.readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
-const COMPONENT_NAMES = new Set([...folders(COMPONENTS_DIR), ...(EXTERNAL_DIR ? folders(EXTERNAL_DIR) : [])]);
+const COMPONENT_NAMES = new Set([...publicComponents(), ...(EXTERNAL_DIR ? folders(EXTERNAL_DIR) : [])]);
 
 const specs = folders(SPEC_DIR)
   .map((name) => ({ name, file: path.join(SPEC_DIR, name, `${name}.spec.json`) }))

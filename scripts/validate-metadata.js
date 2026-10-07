@@ -11,6 +11,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
+import { publicComponents } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -69,12 +70,7 @@ function tokenExists(dotPath) {
   return node != null && typeof node === "object" && "$value" in node;
 }
 
-const COMPONENT_NAMES = new Set(
-  fs
-    .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
-    .filter((e) => e.isDirectory())
-    .map((e) => e.name),
-);
+const COMPONENT_NAMES = publicComponents();
 
 // composition.parts cross-references (ADR-023). Part names must not collide
 // with component folders so an `accepts` entry resolves to exactly one thing.

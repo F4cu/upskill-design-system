@@ -30,6 +30,9 @@ const DRY_RUN_DIR = path.join(RUNS_DIR, '.dry-run')
 const PATTERNS_FILE = path.join(ROOT, '.claude/component-patterns.json')
 const SCHEMA_FILE = path.join(ROOT, 'packages/components/component.schema.json')
 
+// Frozen on purpose, not read from scripts/lib.js publicComponents() (issue
+// #98): this list is part of the prompt ADR-013 measured, so it changes only
+// when a rerun is meant to measure a different prompt.
 const FIXED_SET = [
   'Box', 'Stack', 'Inline', 'Text', 'Heading', 'Icon', 'Button', 'TextField',
   'Select', 'Checkbox', 'Card', 'Avatar', 'AppHeader', 'Breadcrumb', 'Divider',

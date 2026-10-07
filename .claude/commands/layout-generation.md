@@ -58,7 +58,7 @@ Every generated page must follow this fixed hierarchy. One abstraction level per
 
 ## Constraints (enforce strictly)
 
-- Only use components from the fixed 26-component set (see CLAUDE.md "Component scope").
+- Only use components exported by `@upskill/components` (see CLAUDE.md "Component scope"); `npm run layout:validate` enforces the same list.
 - Every structural choice must cite the metadata rule that justifies it:
   - `accepts` — a component can only contain what its metadata says it accepts
   - `containedBy` — a component can only appear inside what its metadata says allows it

@@ -17,6 +17,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { createRequire } from 'module'
+import { publicComponents } from './lib.js'
 
 const require = createRequire(import.meta.url)
 const parser = require('@babel/parser')
@@ -34,19 +35,9 @@ const WAIVED_FILES = new Set(
     : []
 )
 
-// Fixed 26-component set (CLAUDE.md "Component scope") + required sub-components
-const FIXED_SET = new Set([
-  'Box', 'Stack', 'Inline', 'Text', 'Heading', 'Icon', 'Button',
-  'TextField', 'Select', 'Checkbox', 'Card',
-  'Avatar', 'AppHeader', 'Breadcrumb', 'Divider', 'ProgressBar', 'CardHorizontal',
-  'CardVertical', 'Chip', 'VideoFrame', 'ButtonArrow', 'ScrollArea',
-  'Accordion', 'Badge', 'TextLink',
-  // Required sub-components exported alongside their parent
-  'AccordionItem',      // child API of Accordion
-  'DropdownMenu',       // used by AppHeader's user dropdown
-  // React built-ins used as wrappers — not user components, so ignored
-  'Fragment', 'StrictMode', 'Suspense',
-])
+// The package's public components (shared with validate-metadata.js, issue #98)
+// plus React built-ins used as wrappers, which aren't user components
+const FIXED_SET = new Set([...publicComponents(), 'Fragment', 'StrictMode', 'Suspense'])
 
 // Subcomponents (ADR-023): Parent → Map(partName → part), from each fixed-set
 // component's metadata composition.parts. <Parent.Part> is valid only when the
@@ -394,12 +385,12 @@ function validateFile(filePath, { styleOnly = false } = {}) {
         errors.push(
           FIXED_SET.has(parent)
             ? `Line ${node.loc?.start.line}: <${rawName}> is not a declared part of ${parent} (metadata composition.parts, ADR-023)`
-            : `Line ${node.loc?.start.line}: <${rawName}> — ${parent} is not in the fixed 26-component set`
+            : `Line ${node.loc?.start.line}: <${rawName}> — ${parent} is not a component exported by @upskill/components`
         )
       }
     } else if (/^[A-Z]/.test(rawName) && !FIXED_SET.has(rawName) && !APP_INTERNAL_ELEMENTS.has(rawName)) {
       errors.push(
-        `Line ${node.loc?.start.line}: <${rawName}> is not in the fixed 26-component set`
+        `Line ${node.loc?.start.line}: <${rawName}> is not a component exported by @upskill/components`
       )
     }
 

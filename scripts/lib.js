@@ -10,6 +10,15 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(__dirname, "..");
 
+// The component set every validator agrees on (issue #98): the PascalCase
+// value exports of the components package, i.e. what a layout can import.
+// Includes exported sub-components (AccordionItem); excludes hooks and types.
+export function publicComponents() {
+  const index = fs.readFileSync(path.join(ROOT, "packages/components/src/index.ts"), "utf8");
+  const names = [...index.matchAll(/^export \{([^}]+)\} from/gm)].flatMap((m) => m[1].split(",").map((n) => n.trim()));
+  return new Set(names.filter((n) => /^[A-Z]/.test(n)));
+}
+
 export function readJson(p) {
   return JSON.parse(fs.readFileSync(p, "utf8"));
 }
