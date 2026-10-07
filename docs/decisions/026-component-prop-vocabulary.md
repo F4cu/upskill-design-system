@@ -5,6 +5,7 @@ title: "ADR-026 — Component prop vocabulary and API proposal step"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
+**Amended:** 2026-10-07
 
 ## Context
 
@@ -65,8 +66,20 @@ Code and Figma share names, values and defaults. Casing is the only routine diff
 | `variant` | `Style` | "Variant" is Figma's own word for a component-set member; a property named `Variant` is ambiguous in the Figma UI. |
 | Optional prop omitted | `Has <x>` boolean, default `false` | An instance-swap or text layer has no "empty" option (ADR-023). |
 | Pseudo-classes | `State` variant | Preview only; `State` is reserved for interaction (ADR-025). |
+| `children` as a label string | `Text` text property | Figma has no `children`; the text property is the label layer's content (Button, Chip). |
+| `progress` (CardVertical) | `Status` variant (`Not started` / `In progress` / `Completed`) | Preview of the lifecycle the code derives from `progress` (ADR-025). Figma can't derive, so the axis is explicit there and has no code prop. |
 
 Code-only props (event handlers, `default*`, `className`, `id`) have no Figma property. Figma-only properties (`State`, `Has <x>`, design-only interaction states such as Menu `Expanded`) are listed as such.
+
+Figma-only properties with no code counterpart, recorded 2026-10-07:
+
+| Component set | Property | Why it stays |
+|---|---|---|
+| Chip | `Has dropdown` | Legacy dropdown-arrow look. Out of scope in code (Chip metadata "do not use"); kept because placed instances use it. |
+| Select | `Style` = `Outlined` / `Filled` | Design exploration; code ships one look and has no `variant`. |
+| Image placeholder | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
+
+Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`.
 
 ### API proposal step
 
@@ -91,7 +104,19 @@ The developer approves or edits the table; only then are the four files generate
   | AppHeader | `searchValue` + `onSearchChange` | `onSearchValueChange` | Migrated 2026-10-07 |
   | DropdownMenu | `selectedValue`; `onClose`; rendered conditionally by the consumer | `value`; `open` + `onOpenChange` (controlled only: the consumer owns the trigger, and the menu only ever requests `false`) | Migrated 2026-10-07 |
   | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07 (no Figma component set to update) |
-  | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07; Figma `Selected` property still to rename |
+  | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07, Figma included: `state=Selected` split into `Pressed` (default `false`) and `State` (interaction) |
   | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value (vocabulary row above) | Closed 2026-10-07 |
 
 - **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). No component forwards one today. That is a behaviour gap, not a naming one, tracked in issue #114.
+
+## Amendment (2026-10-07) — Figma alignment pass
+
+The file was brought in line with the vocabulary by renaming properties in place, so placed instances keep their state. No components were created or deleted.
+
+- **`variant` ↔ `Style` confirmed.** Button and Select already used `Style`; CardHorizontal's `Variant` axis is renamed to `Style`.
+- **Chip:** `state=Active|Hover|Selected` split into `Pressed` (`false`/`true`) and `State` (`Default`/`Hover`); `dropdown` renamed `Has dropdown` (Figma-only, table above). All 30 instances kept their state.
+- **Accordion list item:** `isExpanded=on|off|isExpanded3` → `Open` (`true`/`false`, default `false`) × `State` (`Default`/`Hover`). The third variant was the collapsed hover state.
+- **Button:** `Size` values `Small`/`Default`/`Large` → `sm`/`md`/`lg`. The default variant is now `md` + `Neutral`, matching code. `Trailing icon` (default `true`) toggled the *leading* icon; it is renamed `Has icon`, defaults to `false`, and the instance swap is renamed `Icon`. The 7 instances that showed the icon through the old default were pinned to `true`, so nothing changed visually.
+- **CardHorizontal:** `Progress` → `Has progress`. **Button arrow:** `State=Active` → `Default` (`Active` reads as the `:active` pseudo-class). **CardVertical:** `State` values recased to `Default`/`Hover`.
+- Figma picks a set's default variant by canvas position (top-left), not layer order, so defaults were set by moving variants.
+- ADR-024's Figma follow-ups were already done: the Button `Style` values, the CardVertical halo (two drop shadows bound to `color/icon/on-media/halo`), and the variables.

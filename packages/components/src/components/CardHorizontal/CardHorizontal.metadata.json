@@ -99,7 +99,7 @@
       "default": "default",
       "purpose": {
         "default": "Standard light-theme context. Text uses default and subtle color tokens.",
-        "inverted": "Inverted-background context within the light theme (e.g. the dark footer section). Switches the title to Heading color=inverted, metadata to Text color=inverted-subtle, and the badge icon to color.icon.inverted.default. The parent container must supply the dark background via color.background.container.inverted — do NOT use data-theme='dark'. Figma: Variant=inverted."
+        "inverted": "Inverted-background context within the light theme (e.g. the dark footer section). Switches the title to Heading color=inverted, metadata to Text color=inverted-subtle, and the badge icon to color.icon.inverted.default. The parent container must supply the dark background via color.background.container.inverted — do NOT use data-theme='dark'. Figma: Style=inverted."
       }
     }
   },
