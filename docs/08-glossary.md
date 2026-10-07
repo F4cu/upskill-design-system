@@ -26,6 +26,7 @@ sources:
 # clock reset 2026-10-07: components.md vocabulary adds pressed-for-filter-chips and the default-value rule; no glossary term changed, still accurate
 # clock reset 2026-10-07: components.md Figma line lists two more recorded mappings (Text, Status); no glossary term changed, still accurate
 # clock reset 2026-10-07: /figma-cli gains a Plugin API pitfalls list; no glossary term changed, still accurate
+# clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; no glossary term changed, still accurate
 ---
 # Glossary
 

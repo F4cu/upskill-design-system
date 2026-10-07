@@ -36,6 +36,7 @@ sources:
 # clock reset 2026-10-07: ADR-026 amendment adds Checkbox disabled variants and the restored box component; this page describes no Figma property names, still accurate
 # clock reset 2026-10-07: ADR-026 amendment adds the TextField Figma alignment; this page describes no Figma property names, still accurate
 # clock reset 2026-10-07: /figma-cli gains a Plugin API pitfalls list; this page describes no per-command steps, still accurate
+# clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; this page describes no Figma property detail, still accurate
 ---
 # Start here
 
