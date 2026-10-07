@@ -24,6 +24,10 @@ sources:
 # rewritten 2026-10-06: Slot and Open part entries say how each maps to Figma (ADR-023 amendment 2026-10-06: code slot = instance swap, open part = native slot on Parent.Root)
 # clock reset 2026-10-07: /component-scaffold gains an API proposal step and /add-component Stage 1 names it (ADR-026); Scaffold entry stays accurate at its level of detail, no new term
 # clock reset 2026-10-07: components.md vocabulary adds pressed-for-filter-chips and the default-value rule; no glossary term changed, still accurate
+# clock reset 2026-10-07: components.md Figma line lists two more recorded mappings (Text, Status); no glossary term changed, still accurate
+# clock reset 2026-10-07: /figma-cli gains a Plugin API pitfalls list; no glossary term changed, still accurate
+# clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; no glossary term changed, still accurate
+# clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; no glossary term changed, still accurate
 ---
 # Glossary
 

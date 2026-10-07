@@ -31,6 +31,14 @@ sources:
 # clock reset 2026-10-07: adds ADR-026 (prop vocabulary + scaffold API proposal step); this page lists no individual ADRs or component APIs, still accurate
 # clock reset 2026-10-07: ADR-026 drift table marks the TextField/AppHeader/DropdownMenu migrations done; this page lists no component APIs, still accurate
 # clock reset 2026-10-07: ADR-026 records the Chip pressed/selected and default-value decisions; this page lists no component APIs, still accurate
+# clock reset 2026-10-07: ADR-026 amendment records the Figma alignment pass (mappings, Figma-only properties, set renames); this page describes no Figma property names, still accurate
+# clock reset 2026-10-07: ADR-026 amendment adds the Checkbox Figma alignment; this page describes no Figma property names, still accurate
+# clock reset 2026-10-07: ADR-026 amendment adds Checkbox disabled variants and the restored box component; this page describes no Figma property names, still accurate
+# clock reset 2026-10-07: ADR-026 amendment adds the TextField Figma alignment; this page describes no Figma property names, still accurate
+# clock reset 2026-10-07: /figma-cli gains a Plugin API pitfalls list; this page describes no per-command steps, still accurate
+# clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; this page describes no Figma property detail, still accurate
+# clock reset 2026-10-07: ADR-026 amendment adds the Select Figma set and the DropdownMenu/Item rename; this page describes no Figma property names, still accurate
+# clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; this page describes no Figma detail, still accurate
 ---
 # Start here
 
