@@ -20,6 +20,7 @@ sources:
 # clock reset 2026-10-06: theme gains button.neutral.hover/button.transparent.hover (alpha tint) replacing outline.hover; pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-06: theme gains button.accent.{default,hover} and background.disabled (button.disabled aliases it); pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-06: retired button tokens (default, hover, ghost, elevated, inverted, outline.hover) deleted from theme source; pipeline mechanics unchanged, still accurate
+# clock reset 2026-10-07: adds primitives size.2000/2750 + device alias size.card.min.{sm,lg} for CardVertical min-width (#120); follows the existing size-alias pattern, page still accurate
 ---
 # Token pipeline
 
