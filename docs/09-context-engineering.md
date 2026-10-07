@@ -27,6 +27,7 @@ sources:
 # clock reset 2026-10-07: components.md vocabulary rows refined (Chip pressed, default values); this page describes rule scoping, not rule contents, still accurate
 # clock reset 2026-10-07: components.md Figma line lists two more recorded mappings; this page describes rule scoping, not rule contents, still accurate
 # clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; this page describes rule scoping, not rule contents, still accurate
+# clock reset 2026-10-07: .claude/rules/components.md gains the focus-ring line (ADR-028); this page describes the instruction ladder, not CSS rules, still accurate
 ---
 # Context engineering
 

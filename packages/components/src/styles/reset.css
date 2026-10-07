@@ -26,6 +26,13 @@ button, input, select, textarea {
   font: inherit;
 }
 
+/* One focus indicator for every focusable element (ADR-028). The offset puts
+   the ring on the surrounding surface, never on the control's own fill. */
+:focus-visible {
+  outline: var(--ds-size-focus-width) solid var(--ds-color-border-focus);
+  outline-offset: var(--ds-size-focus-offset);
+}
+
 a {
   color: var(--ds-color-text-interactive-default);
   text-decoration: none;

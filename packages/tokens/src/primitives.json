@@ -1018,6 +1018,10 @@
     }
   },
   "size": {
+    "025": {
+      "$type": "number",
+      "$value": 2
+    },
     "050": {
       "$type": "number",
       "$value": 4

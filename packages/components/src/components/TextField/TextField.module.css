@@ -30,7 +30,6 @@
   border-radius: var(--ds-border-radius-sm);
   font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-body-default);
-  outline: none;
   transition: border-color 120ms ease;
   box-sizing: border-box;
 }

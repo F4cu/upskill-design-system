@@ -43,6 +43,7 @@ sources:
 # clock reset 2026-10-07: ADR-027 amendment records the CardVertical pilot spec; this page lists no individual ADRs or per-component files, still accurate
 # clock reset 2026-10-07: ADR-027 links its harness-arm handoff; this page lists no handoffs or individual ADRs, still accurate
 # clock reset 2026-10-07: ADR-001 amendment (tokens lists what the component itself reads, enforced); this page lists no metadata fields, still accurate
+# 2026-10-07: adds ADR-028 (focus indicator); ADR count updated to twenty-eight; page lists no individual ADRs
 ---
 # Start here
 
@@ -106,4 +107,4 @@ The suggested reading order is the page order — tokens first, because everythi
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`CLAUDE.md` → rules → commands → snapshots → handoffs) and the CI gates that keep it honest
 - [10 — Machine-readable metadata](10-machine-readable-metadata.md) — the metadata stack: the per-component contract, its validators, the cross-component pattern aggregate, and the write-back loop (reads naturally right after 02)
 
-The twenty-seven architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
+The twenty-eight architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.

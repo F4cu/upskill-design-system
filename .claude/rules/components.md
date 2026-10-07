@@ -13,6 +13,7 @@ Loaded only when working under `packages/components/`. Cross-cutting policy (com
 - Only reference SD-output custom properties (`var(--token-name)`) — never raw values
 - Class names use `camelCase` inside the module (e.g. `.primaryButton`)
 - No global styles in component modules — globals (reset, base typography, grid) live in `packages/components/src/styles/`
+- Never set `outline: none` on a focusable element: the focus ring is one global `:focus-visible` rule in `reset.css`, built from `color.border.focus` and `size.focus.*` (ADR-028). A component may add a focus cue (a border colour) but never replace the ring. Exception: menu items, which show focus with a background highlight
 
 ## Component implementation rules (scaffold and layout generation)
 

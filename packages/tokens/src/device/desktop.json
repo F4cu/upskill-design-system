@@ -224,6 +224,16 @@
       "$type": "number",
       "$value": "{size.050}"
     },
+    "focus": {
+      "width": {
+        "$type": "number",
+        "$value": "{size.025}"
+      },
+      "offset": {
+        "$type": "number",
+        "$value": "{size.025}"
+      }
+    },
     "card": {
       "min": {
         "sm": {

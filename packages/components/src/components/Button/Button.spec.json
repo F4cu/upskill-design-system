@@ -127,7 +127,7 @@
       "name": "focus-visible",
       "kind": "interaction",
       "trigger": ":focus-visible",
-      "notes": "No component focus style and no focus token: the browser's default ring applies."
+      "notes": "No component rule: the global ring in styles/reset.css applies (ADR-028), color.border.focus at size.focus.width, offset size.focus.offset."
     },
     {
       "name": "disabled",

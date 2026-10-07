@@ -79,6 +79,11 @@ const PAIRS = [
     [T("interactive-hover"), bg],
   ]),
 
+  // Focus ring (ADR-028) — global :focus-visible outline, offset onto the
+  // surface around the control, so it is checked against the surfaces
+  // controls sit on, not against their fills. 3:1 (WCAG 1.4.11).
+  ...[...AMBIENT, BG("container-elevated")].map((bg) => [B("focus"), bg, "border"]),
+
   // Button — accent variant
   [T("inverted-default"), BG("button-accent-default")],
   [T("inverted-default"), BG("button-accent-hover")],

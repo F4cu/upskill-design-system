@@ -229,6 +229,10 @@
         "$type": "color",
         "$value": "{color.brand.9}"
       },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.brand.11}"
+      },
       "brand": {
         "$type": "color",
         "$value": "{color.brand.default}"
