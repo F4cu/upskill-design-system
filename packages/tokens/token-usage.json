@@ -356,6 +356,12 @@
       "packages/components/src/components/Stack/Stack.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
+    "--ds-size-card-min-lg": [
+      "packages/components/src/components/CardVertical/CardVertical.module.css"
+    ],
+    "--ds-size-card-min-sm": [
+      "packages/components/src/components/CardVertical/CardVertical.module.css"
+    ],
     "--ds-color-icon-on-media-default": [
       "packages/components/src/components/CardVertical/CardVertical.module.css"
     ],
@@ -866,6 +872,12 @@
       "packages/tokens/src/device/desktop.json"
     ],
     "size.050": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "size.2000": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "size.2750": [
       "packages/tokens/src/device/desktop.json"
     ],
     "font.size.5": [
