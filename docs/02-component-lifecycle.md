@@ -16,6 +16,7 @@ sources:
 # clock reset 2026-10-02: ADR-023 amendment (CardHorizontal author: one prop per datum, stays flat props under question 1); the ADR-009/023 test described here is unchanged, still accurate
 # clock reset 2026-10-06: ADR-023 amendment (Figma Parent.Root with native slots; example frame per pattern); the ADR-009/023 test described here is unchanged, still accurate
 # clock reset 2026-10-07: validate-metadata.js checks tokens.* against the CSS Module (ADR-001 amendment, #117); this page describes no tokens-list semantics, still accurate
+# clock reset 2026-10-07: lib.js gains publicComponents(), and validate-metadata.js checks part accepts against the package exports (#98); parts still never enter the set, page still accurate
 ---
 # Component lifecycle
 
