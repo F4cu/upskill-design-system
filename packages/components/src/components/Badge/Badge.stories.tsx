@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Badge } from './index'
+import { Inline } from '../Inline'
 
 const meta: Meta<typeof Badge> = {
   title: 'Components/Badge',
@@ -29,11 +30,11 @@ export const Filled: Story = {
 
 export const CategoryRow: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+    <Inline gap="sm">
       <Badge label="Design" />
       <Badge label="Development" />
       <Badge label="Beginner" variant="filled" />
       <Badge label="4h 30m" variant="filled" />
-    </div>
+    </Inline>
   ),
 }

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Avatar } from './index'
+import { Inline } from '../Inline'
 
 const PLACEHOLDER = 'https://placehold.co/128x128/D15D50/ffffff?text=U'
 
@@ -44,10 +45,10 @@ export const Large: Story = {
 export const Sizes: Story = {
   args: { src: PLACEHOLDER, alt: 'Avatar' },
   render: () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+    <Inline gap="lg" align="center">
       <Avatar src={PLACEHOLDER} alt="Small — 24px" size="sm" />
       <Avatar src={PLACEHOLDER} alt="Medium — 80px" size="md" />
       <Avatar src={PLACEHOLDER} alt="Large — 128px" size="lg" />
-    </div>
+    </Inline>
   ),
 }

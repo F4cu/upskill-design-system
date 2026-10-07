@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Checkbox } from './index'
+import { Stack } from '../Stack'
 
 const meta = {
   title: 'Components/Checkbox',
@@ -47,11 +48,11 @@ export const Group: Story = {
     label: 'Notification preferences',
   },
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <Stack gap="md">
       <Checkbox label="Email me when a course is updated" defaultChecked />
       <Checkbox label="Send weekly progress digests" defaultChecked />
       <Checkbox label="Notify me about new content in enrolled tracks" />
       <Checkbox label="Managed by your organisation" disabled defaultChecked />
-    </div>
+    </Stack>
   ),
 }

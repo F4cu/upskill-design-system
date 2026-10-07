@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Box } from '../Box'
 import { Stack } from './index'
+import { Inline } from '../Inline'
 import styles from './Stack.stories.module.css'
 
 const Swatch = ({ label }: { label: string }) => (
@@ -53,7 +54,7 @@ export const Default: Story = {
 
 export const GapScale: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '32px' }}>
+    <Inline gap="xl">
       {(['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const).map((gap) => (
         <div key={gap}>
           <div style={{ fontSize: '0.75rem', fontFamily: 'monospace', marginBottom: '8px' }}>gap="{gap}"</div>
@@ -64,7 +65,7 @@ export const GapScale: Story = {
           </Stack>
         </div>
       ))}
-    </div>
+    </Inline>
   ),
 }
 

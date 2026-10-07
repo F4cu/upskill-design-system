@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ButtonArrow } from './index'
+import { Inline } from '../Inline'
 
 const meta: Meta<typeof ButtonArrow> = {
   title: 'Components/ButtonArrow',
@@ -34,9 +35,9 @@ export const Disabled: Story = {
 
 export const Pair: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '0.5rem' }}>
+    <Inline gap="sm">
       <ButtonArrow direction="left" disabled />
       <ButtonArrow direction="right" />
-    </div>
+    </Inline>
   ),
 }

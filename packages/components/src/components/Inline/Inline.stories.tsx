@@ -3,6 +3,7 @@ import { Box } from '../Box'
 import { Button } from '../Button'
 import { Chip } from '../Chip'
 import { Inline } from './index'
+import { Stack } from '../Stack'
 import styles from './Inline.stories.module.css'
 
 const meta = {
@@ -45,7 +46,7 @@ export const Default: Story = {
 
 export const GapScale: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <Stack gap="lg">
       {(['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const).map((gap) => (
         <div key={gap}>
           <div style={{ fontSize: '0.75rem', fontFamily: 'monospace', marginBottom: '4px' }}>gap="{gap}"</div>
@@ -56,7 +57,7 @@ export const GapScale: Story = {
           </Inline>
         </div>
       ))}
-    </div>
+    </Stack>
   ),
 }
 

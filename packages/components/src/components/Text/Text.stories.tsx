@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Text } from './index'
+import { Stack } from '../Stack'
 
 const meta = {
   title: 'Typography/Text',
@@ -29,25 +30,25 @@ export const Default: Story = {
 
 export const SizeScale: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <Stack gap="md">
       {(['body-default', 'body-small', 'metadata', 'label'] as const).map((size) => (
         <div key={size}>
           <Text as="span" color="subtle" style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{size}</Text>
           <Text size={size}>The quick brown fox jumps over the lazy dog.</Text>
         </div>
       ))}
-    </div>
+    </Stack>
   ),
 }
 
 export const Colors: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <Stack gap="sm">
       {(['default', 'subtle', 'brand', 'disabled'] as const).map((color) => (
         <Text key={color} color={color}>
           color=&quot;{color}&quot; — The quick brown fox jumps over the lazy dog.
         </Text>
       ))}
-    </div>
+    </Stack>
   ),
 }

@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Icon } from './index'
+import { Stack } from '../Stack'
+import { Inline } from '../Inline'
 import type { IconName } from './index'
 import { Text } from '../Text'
 
@@ -59,16 +61,16 @@ export const AllIcons: Story = {
     name: 'search',
   },
   render: () => (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', alignItems: 'center' }}>
+    <Inline gap="lg" align="center">
       {allIcons.map((name) => (
-        <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+        <Stack key={name} gap="xs" align="center">
           <Icon name={name} size="md" />
           <Text as="span" color="subtle" style={{ fontFamily: 'monospace', fontSize: '0.625rem' }}>
             {name}
           </Text>
-        </div>
+        </Stack>
       ))}
-    </div>
+    </Inline>
   ),
 }
 
@@ -77,16 +79,16 @@ export const Sizes: Story = {
     name: 'search',
   },
   render: () => (
-    <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+    <Inline gap="xl" align="center">
       {(['sm', 'md'] as const).map((size) => (
-        <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+        <Stack key={size} gap="sm" align="center">
           <Icon name="search" size={size} />
           <Text as="span" color="subtle" style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
             {size}
           </Text>
-        </div>
+        </Stack>
       ))}
-    </div>
+    </Inline>
   ),
 }
 
@@ -95,11 +97,11 @@ export const InheritColor: Story = {
     name: 'heart',
   },
   render: () => (
-    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+    <Inline gap="md" align="center">
       <Text as="span" color="default"><Icon name="heart" size="md" /></Text>
       <Text as="span" color="brand"><Icon name="heart" size="md" /></Text>
       <Text as="span" color="subtle"><Icon name="heart" size="md" /></Text>
       <Text as="span" color="disabled"><Icon name="heart" size="md" /></Text>
-    </div>
+    </Inline>
   ),
 }

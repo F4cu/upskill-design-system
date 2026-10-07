@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Button } from './index'
+import { Inline } from '../Inline'
+import { Stack } from '../Stack'
 
 const meta = {
   title: 'Components/Button',
@@ -63,12 +65,12 @@ export const Default: Story = {
 
 export const Variants: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+    <Inline gap="md" align="center">
       <Button variant="accent">Accent</Button>
       <Button variant="neutral">Neutral</Button>
       <Button variant="transparent">Transparent</Button>
       <Button variant="danger">Danger</Button>
-    </div>
+    </Inline>
   ),
 }
 
@@ -81,69 +83,69 @@ export const ByContext: Story = {
     },
   },
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+    <Stack gap="md">
+      <Inline gap="md" align="center">
         <Button variant="neutral">Cancel</Button>
         <Button variant="accent">Save changes</Button>
-      </div>
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      </Inline>
+      <Inline gap="md" align="center">
         <Button variant="neutral" size="sm">Resume</Button>
         <Button variant="transparent" size="sm">Details</Button>
-      </div>
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      </Inline>
+      <Inline gap="md" align="center">
         <Button variant="neutral">Cancel</Button>
         <Button variant="danger">Delete account</Button>
-      </div>
-    </div>
+      </Inline>
+    </Stack>
   ),
 }
 
 export const Sizes: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+    <Inline gap="md" align="center">
       <Button size="sm">Small</Button>
       <Button size="md">Medium</Button>
       <Button size="lg">Large</Button>
-    </div>
+    </Inline>
   ),
 }
 
 export const WithIcon: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+    <Inline gap="md" align="center">
       <Button icon="search">Search</Button>
       <Button icon="download">Download</Button>
       <Button icon="plus">Add item</Button>
       <Button variant="accent" icon="bookmark">Save</Button>
-    </div>
+    </Inline>
   ),
 }
 
 export const TransparentToggle: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: 'var(--ds-space-inline-xs)', alignItems: 'center' }}>
+    <Inline gap="xs" align="center">
       <Button variant="transparent" size="sm" trailingIcon="chevron-down">Show more</Button>
       <Button variant="transparent" size="sm" trailingIcon="chevron-up">Show less</Button>
-    </div>
+    </Inline>
   ),
 }
 
 export const Disabled: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+    <Inline gap="md" align="center">
       <Button variant="accent" disabled>Accent disabled</Button>
       <Button variant="neutral" disabled>Neutral disabled</Button>
       <Button variant="transparent" disabled>Transparent disabled</Button>
       <Button variant="danger" disabled>Danger disabled</Button>
-    </div>
+    </Inline>
   ),
 }
 
 export const IconOnly: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <Stack gap="md">
       {(['square', 'round'] as const).map((shape) => (
-        <div key={shape} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <Inline key={shape} gap="md" align="center">
           {(['accent', 'neutral'] as const).map((variant) =>
             (['sm', 'md', 'lg'] as const).map((size) => (
               <Button
@@ -156,17 +158,17 @@ export const IconOnly: Story = {
               />
             ))
           )}
-        </div>
+        </Inline>
       ))}
-    </div>
+    </Stack>
   ),
 }
 
 export const AllCombinations: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <Stack gap="md">
       {(['accent', 'neutral', 'transparent', 'danger'] as const).map((variant) => (
-        <div key={variant} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <Inline key={variant} gap="md" align="center">
           {(['sm', 'md', 'lg'] as const).map((size) => (
             <Button key={size} variant={variant} size={size} icon="search">
               {size}
@@ -177,8 +179,8 @@ export const AllCombinations: Story = {
               {size}
             </Button>
           ))}
-        </div>
+        </Inline>
       ))}
-    </div>
+    </Stack>
   ),
 }

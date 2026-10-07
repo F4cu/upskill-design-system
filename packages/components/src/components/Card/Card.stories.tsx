@@ -68,13 +68,13 @@ export const WithAction: Story = {
 
 export const PaddingVariants: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <Stack gap="md">
       {(['none', 'sm', 'md', 'lg'] as const).map((padding) => (
         <Card key={padding} padding={padding}>
           <Text size="body-small" color="subtle">padding="{padding}"</Text>
         </Card>
       ))}
-    </div>
+    </Stack>
   ),
 }
 
