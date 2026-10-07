@@ -117,7 +117,7 @@
       "require": ["icon", "aria-label"],
       "ignore": ["children", "trailingIcon"],
       "reason": "With shape set, the glyph is the only visible content and nothing renders a label, so the button needs an icon to show and an aria-label to have an accessible name.",
-      "enforcedBy": []
+      "enforcedBy": ["type", "test"]
     }
   ],
   "states": [

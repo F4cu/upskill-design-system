@@ -65,15 +65,17 @@ function tokenPaths(value) {
   return [];
 }
 
-// Every props type in the component's file, keyed by spec prefix: "" for the
-// preset's <Name>Props, "<Part>." for <Name><Part>Props. `all` includes
+// Every exported props type in the component's file, keyed by spec prefix: ""
+// for the preset's <Name>Props, "<Part>." for <Name><Part>Props (ADR-023 exports
+// part prop types; unexported helper types are ignored). `all` includes
 // inherited native attributes, `own` only props declared in the file, and
 // `defaults` the literal destructuring defaults of the function taking it.
 function readPropsTypes(name) {
   const source = program.getSourceFile(path.join(COMPONENTS_DIR, name, "index.tsx"));
   const pattern = new RegExp(`^${name}(\\w*)Props$`);
   const types = new Map();
-  for (const alias of source.statements.filter((s) => ts.isTypeAliasDeclaration(s) && pattern.test(s.name.text))) {
+  const exported = (s) => s.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)
+  for (const alias of source.statements.filter((s) => ts.isTypeAliasDeclaration(s) && exported(s) && pattern.test(s.name.text))) {
     const part = alias.name.text.match(pattern)[1];
     types.set(part ? `${part}.` : "", { part, ...readProps(source, alias) });
   }

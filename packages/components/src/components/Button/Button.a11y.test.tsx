@@ -53,6 +53,19 @@ describe('Button — a11y behavior', () => {
     expect(screen.getByRole('button', { name: 'More actions' })).toHaveAttribute('aria-haspopup', 'menu')
   })
 
+  it('makes an icon-only button without an icon or accessible name a type error', () => {
+    // Checked by typecheck, not at runtime: each line must stay a compile error.
+    const invalid = [
+      // @ts-expect-error shape requires aria-label
+      <Button key="no-name" shape="round" icon="search" />,
+      // @ts-expect-error shape requires icon
+      <Button key="no-icon" shape="square" aria-label="Search" />,
+      // @ts-expect-error icon-only buttons take no label
+      <Button key="label" shape="round" icon="search" aria-label="Search">Search</Button>,
+    ]
+    expect(invalid).toHaveLength(3)
+  })
+
   it('has no axe violations across variants and icon-only modes', async () => {
     const { container } = render(
       <>
