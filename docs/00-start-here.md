@@ -29,6 +29,7 @@ sources:
 # clock reset 2026-10-06: ADR-023 amendment (Figma Parent.Root with native slots; example frame per pattern) + components.md Figma-mirror rule line; this page lists no individual ADRs or component APIs, still accurate
 # clock reset 2026-10-06: ADR-024 issue reference corrected (#22 → #24); page doesn't cite it, still accurate
 # clock reset 2026-10-07: adds ADR-026 (prop vocabulary + scaffold API proposal step); this page lists no individual ADRs or component APIs, still accurate
+# clock reset 2026-10-07: ADR-026 drift table marks the TextField/AppHeader/DropdownMenu migrations done; this page lists no component APIs, still accurate
 ---
 # Start here
 
