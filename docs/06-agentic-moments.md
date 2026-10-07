@@ -18,6 +18,7 @@ sources:
 # clock reset 2026-10-02: /layout-generation validation text now names the Button emphasis-by-context check (ADR-024); loop mechanics unchanged, still accurate
 # clock reset 2026-10-06: figma-variable-push.md example path swapped (button.ghost deleted → button.danger.default); moment behaviour unchanged, still accurate
 # rewritten 2026-10-07: Stage 1 bullet names the API proposal checkpoint that /component-scaffold and /add-component gained (ADR-026)
+# clock reset 2026-10-07: /figma-cli gains a Plugin API pitfalls list; this page names the command and its role only, still accurate
 ---
 # Agentic moments
 
