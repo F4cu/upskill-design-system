@@ -8,6 +8,7 @@ sources:
   - docs/decisions/008-behavioral-a11y-tier.md
   - docs/decisions/011-layout-landmark-grammar.md
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
+# clock reset 2026-10-07: validate-metadata.js reads the component set from the package exports, shared with validate-layout.js (#98); the set is still fixed and canonical in CLAUDE.md, page still accurate
 ---
 # Taming non-determinism
 
