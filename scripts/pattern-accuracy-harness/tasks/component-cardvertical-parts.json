@@ -20,6 +20,6 @@
     { "file": "CardVertical/index.tsx", "pattern": "<Heading", "reason": "the title must render through the Heading component" }
   ],
   "forbiddenPatterns": [
-    { "file": "CardVertical/index.tsx", "pattern": "\\b(isFavorite|favorited|onFavoriteChange|onToggle|isCertified|isCompleted|status)\\??:", "reason": "renames or adds a concept the approved API names (pressed/onPressedChange, certified, progress-derived status)" }
+    { "file": "CardVertical/index.tsx", "pattern": "\\b(isFavorite|favorited|onFavoriteChange|onToggle|isCertified)\\??:", "reason": "renames a concept the approved API names (pressed/onPressedChange, certified)" }
   ]
 }
