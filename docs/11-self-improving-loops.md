@@ -16,6 +16,7 @@ sources:
 # clock reset 2026-10-07: score.js px-literal flags px only on token-covered CSS properties (spacing, radius, type, focus ring); rescoring the 14 retained July cells leaves every trap count unchanged, so the ADR-013 numbers this page cites still hold
 # clock reset 2026-10-07: run.js gains Arm C (approved spec, ADR-027), --arm, --runs and --dry-run; the A/B experiment this page describes is unchanged and still accurate
 # clock reset 2026-10-07: score.js adds a secondary spec:conformance score (tasks with specTarget only), outside the headline total; the A/B numbers this page cites are unaffected
+# clock reset 2026-10-07: score.js metadata gate now merges brand token files (ADR-012), like validate-metadata.js; 4 July font.family.body hits were false positives (accordion and select, one per arm), so corrected totals are A 30 / B 26, same delta of 4; this page cites the finding, not the totals, so it stays accurate
 ---
 # Self-improving loops
 

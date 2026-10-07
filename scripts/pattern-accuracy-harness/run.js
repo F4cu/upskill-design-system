@@ -37,11 +37,17 @@ const FIXED_SET = [
   'ButtonArrow', 'ScrollArea', 'Accordion', 'AccordionItem', 'Badge',
 ]
 
+// A task's context components are always available, even ones FIXED_SET
+// predates (Image, DropdownMenu); otherwise the prompt forbids what it supplies.
+function available(task) {
+  return [...FIXED_SET, ...task.contextMetadata.filter((n) => !FIXED_SET.includes(n))]
+}
+
 function buildPrompt(task, arm) {
   const sections = []
   sections.push(
     'You are generating code for the UpSkill Design System: React + TypeScript, CSS Modules, design tokens exposed as CSS custom properties consumed via var(--...).',
-    `Library components are imported from '@upskill/components'. Available: ${FIXED_SET.join(', ')}. Hooks: useSlider, useCarousel. Do not invent other library components.`,
+    `Library components are imported from '@upskill/components'. Available: ${available(task).join(', ')}. Hooks: useSlider, useCarousel. Do not invent other library components.`,
     '',
     'TASK:',
     task.brief,

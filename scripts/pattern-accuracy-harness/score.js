@@ -345,7 +345,9 @@ function gateMetadataValidate(scratchDir) {
   const schema = JSON.parse(fs.readFileSync(path.join(ROOT, 'packages/components/component.schema.json'), 'utf8'))
   const validate = new Ajv({ allErrors: true }).compile(schema)
 
-  const tokenTree = ['primitives.json', 'theme/light.json', 'theme/dark.json', 'device/desktop.json', 'device/tablet.json', 'device/mobile.json']
+  // Brands share one token shape (ADR-012), so merging all of them is safe, as in scripts/validate-metadata.js
+  const brands = fs.readdirSync(path.join(ROOT, 'packages/tokens/src/brands')).filter((f) => f.endsWith('.json')).map((f) => `brands/${f}`)
+  const tokenTree = ['primitives.json', ...brands, 'theme/light.json', 'theme/dark.json', 'device/desktop.json', 'device/tablet.json', 'device/mobile.json']
     .reduce((tree, rel) => mergeTokens(tree, JSON.parse(fs.readFileSync(path.join(ROOT, 'packages/tokens/src', rel), 'utf8'))), {})
   function tokenExists(dotPath) {
     let node = tokenTree

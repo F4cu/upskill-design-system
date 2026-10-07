@@ -1,0 +1,25 @@
+{
+  "id": "component-cardvertical-parts",
+  "kind": "component",
+  "specTarget": "CardVertical",
+  "brief": "Implement `CardVertical`, a course card for the UpSkill design system, exported from CardVertical/index.tsx. Build it to this approved API proposal: a preset (`<CardVertical …props />`) plus parts. Attach the parts to the preset as statics (`CardVertical.Root`, `CardVertical.Media`, …) and build the preset from them. Export a props type for the preset (`CardVerticalProps`), one for every part that takes props (`CardVertical<Part>Props`, e.g. `CardVerticalFavoriteProps`), and `CardVerticalSize`.\n\nAnatomy (top to bottom, nesting shown by indentation):\n- Root\n  - Media: the thumbnail image\n    - Action: optional overlay in the image's top-right corner, holding exactly one Favorite or Menu\n      - Favorite: a heart toggle button\n      - Menu: a kebab button that opens a dropdown menu\n  - Progress: a progress bar\n  - Body\n    - Title\n    - Meta: the metadata row\n      - Duration\n      - Certified\n      - Completed\n\nPreset props (`CardVerticalProps`):\n| Prop | Concept | Kind | Type | Default |\n|---|---|---|---|---|\n| `thumbnailSrc` | Image | content | `string` | none |\n| `thumbnailAlt` | Image | content | `string` | `''` |\n| `title` | Content | content | `string` | required |\n| `duration` | Content | content | `string` | none |\n| `certified` | Boolean | content | `boolean` | `false` |\n| `progress` | Lifecycle | lifecycle | `number` (0–100) | none (omitted = not started) |\n| `size` | Size | variant axis | `'sm' \\| 'lg'` | `'lg'` |\n| `action` | new term: the overlay slot | content | `ReactElement<CardVerticalFavoriteProps> \\| ReactElement<CardVerticalMenuProps>` | none |\n\nPart props:\n| Part.prop | Concept | Kind | Type | Default |\n|---|---|---|---|---|\n| `Root.size` | Size | variant axis | `'sm' \\| 'lg'` | `'lg'` |\n| `Root.children` | Content | content | `ReactNode` | none |\n| `Media.src` | Image | content | `string` | none |\n| `Media.alt` | Image | content | `string` | `''` |\n| `Media.children` | Content | content | `ReactElement<CardVerticalActionProps>` | none |\n| `Action.children` | Content | content | `ReactElement<CardVerticalFavoriteProps> \\| ReactElement<CardVerticalMenuProps>` | required |\n| `Favorite.pressed` | Controlled state | controlled state | `boolean` | none |\n| `Favorite.defaultPressed` | Controlled state | controlled state | `boolean` | `false` |\n| `Favorite.onPressedChange` | Controlled state | controlled state | `(pressed: boolean) => void` | none |\n| `Menu.items` | Collection | content | `DropdownMenuItem[]` | required |\n| `Menu.onSelect` | Discrete event | event | `(value: string) => void` | required |\n| `Progress.value` | new term: the progress bar's value, passed through | lifecycle | `number` (0–100) | required |\n| `Body.children` | Content | content | `ReactNode` | required |\n| `Title.as` | Element | element | `HeadingTag` | `'h3'` |\n| `Title.children` | Content | content | `ReactNode` | required |\n| `Meta.children` | Content | content | `ReactNode` | required |\n| `Duration.children` | Content | content | `ReactNode` | required |\n\n`Certified` and `Completed` take no props. All visible strings must render with the system's typography treatment. Style with a co-located CSS module (CardVertical/CardVertical.module.css) referencing only design-token custom properties. Also produce CardVertical/CardVertical.metadata.json that validates against the provided component.schema.json, and a behavioral a11y test CardVertical/CardVertical.a11y.test.tsx (Vitest + Testing Library + vitest-axe, axe's color-contrast rule disabled).",
+  "gates": ["typecheck", "lint", "metadata:validate", "a11y:coverage"],
+  "outputHint": [
+    "CardVertical/index.tsx",
+    "CardVertical/CardVertical.module.css",
+    "CardVertical/CardVertical.metadata.json",
+    "CardVertical/CardVertical.a11y.test.tsx"
+  ],
+  "contextMetadata": ["Image", "Heading", "Text", "Icon", "ProgressBar", "Button", "DropdownMenu", "Stack", "Inline"],
+  "includeSchema": true,
+  "requiredPatterns": [
+    { "file": "CardVertical/index.tsx", "pattern": "export type CardVerticalProps\\b", "reason": "the approved preset props type name" },
+    { "file": "CardVertical/index.tsx", "pattern": "export type CardVerticalFavoriteProps\\b", "reason": "the approved part props type name" },
+    { "file": "CardVertical/index.tsx", "pattern": "onPressedChange", "reason": "the approved Favorite callback name" },
+    { "file": "CardVertical/index.tsx", "pattern": "<Text", "reason": "visible strings must render through the Text component" },
+    { "file": "CardVertical/index.tsx", "pattern": "<Heading", "reason": "the title must render through the Heading component" }
+  ],
+  "forbiddenPatterns": [
+    { "file": "CardVertical/index.tsx", "pattern": "\\b(isFavorite|favorited|onFavoriteChange|onToggle|isCertified|isCompleted|status)\\??:", "reason": "renames or adds a concept the approved API names (pressed/onPressedChange, certified, progress-derived status)" }
+  ]
+}

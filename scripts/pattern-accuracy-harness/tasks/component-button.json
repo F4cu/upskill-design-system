@@ -1,0 +1,23 @@
+{
+  "id": "component-button",
+  "kind": "component",
+  "specTarget": "Button",
+  "brief": "Implement `Button` for the UpSkill design system, exported from Button/index.tsx. Build it to this approved API proposal.\n\nAnatomy (left to right): Root, Icon, Label, TrailingIcon.\n\nProps (export the props type as `ButtonProps`, and the axis unions as `ButtonVariant`, `ButtonSize`, `ButtonShape`):\n| Prop | Concept | Kind | Type | Default |\n|---|---|---|---|---|\n| `variant` | Visual weight/style | variant axis | `'accent' \\| 'neutral' \\| 'transparent' \\| 'danger'` | `'neutral'` |\n| `size` | Size | variant axis | `'sm' \\| 'md' \\| 'lg'` | `'md'` |\n| `shape` | Corners | variant axis | `'square' \\| 'round'` | none (unset renders a labelled button; set renders an icon-only button) |\n| `icon` | Icon | content | `IconName` | none (leading icon) |\n| `trailingIcon` | Icon | content | `IconName` | none |\n| `children` | Content | content | `ReactNode` | none (the label) |\n| `disabled` | Boolean | native | `boolean` | `false` |\n| `type` | native | native | `'button' \\| 'submit' \\| 'reset'` | `'button'` |\n| `aria-label` | Accessible name | native | `string` | none |\n| `onClick` | Discrete event | native | `MouseEventHandler<HTMLButtonElement>` | none |\n\nIt renders a native `<button>`; other native button attributes pass through. Style with a co-located CSS module (Button/Button.module.css) referencing only design-token custom properties. Also produce Button/Button.metadata.json that validates against the provided component.schema.json, and a behavioral a11y test Button/Button.a11y.test.tsx (Vitest + Testing Library + vitest-axe, axe's color-contrast rule disabled).",
+  "gates": ["typecheck", "lint", "metadata:validate", "a11y:coverage"],
+  "outputHint": [
+    "Button/index.tsx",
+    "Button/Button.module.css",
+    "Button/Button.metadata.json",
+    "Button/Button.a11y.test.tsx"
+  ],
+  "contextMetadata": ["Icon"],
+  "includeSchema": true,
+  "requiredPatterns": [
+    { "file": "Button/index.tsx", "pattern": "export type ButtonProps\\b", "reason": "the approved props type name" },
+    { "file": "Button/index.tsx", "pattern": "<button\\b", "reason": "the brief requires a native button element" },
+    { "file": "Button/index.tsx", "pattern": "['\"]button['\"]", "reason": "type defaults to 'button', not the native 'submit'" }
+  ],
+  "forbiddenPatterns": [
+    { "file": "Button/index.tsx", "pattern": "\\b(kind|appearance|tone|intent|isDisabled|iconPosition|leadingIcon|endIcon)\\??:", "reason": "renames a concept the approved API names (variant, disabled, icon, trailingIcon)" }
+  ]
+}
