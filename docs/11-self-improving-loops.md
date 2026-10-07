@@ -15,6 +15,7 @@ sources:
 # clock reset 2026-10-07: score.js treats ADR-023 parts that render Text/Heading as typography wrappers; rescoring the 14 retained July cells leaves every trap count unchanged, so the ADR-013 numbers this page cites still hold
 # clock reset 2026-10-07: score.js px-literal flags px only on token-covered CSS properties (spacing, radius, type, focus ring); rescoring the 14 retained July cells leaves every trap count unchanged, so the ADR-013 numbers this page cites still hold
 # clock reset 2026-10-07: run.js gains Arm C (approved spec, ADR-027), --arm, --runs and --dry-run; the A/B experiment this page describes is unchanged and still accurate
+# clock reset 2026-10-07: score.js adds a secondary spec:conformance score (tasks with specTarget only), outside the headline total; the A/B numbers this page cites are unaffected
 ---
 # Self-improving loops
 
