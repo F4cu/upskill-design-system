@@ -80,7 +80,7 @@ Figma-only properties with no code counterpart, recorded 2026-10-07:
 | Select | `Style` = `Outlined` / `Filled` | Design exploration; code ships one look and has no `variant`. |
 | Image | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
 
-Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`.
+Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`. Checkbox has no `Disabled` previews (`checked` × `disabled`), and its nested box instance has no main component on the canvas (`92:8764` was removed), so the box can't be edited in one place.
 
 ### API proposal step
 
@@ -120,5 +120,6 @@ The file was brought in line with the vocabulary by renaming properties in place
 - **Button:** `Size` values `Small`/`Default`/`Large` → `sm`/`md`/`lg`. The default variant is now `md` + `Neutral`, matching code. `Trailing icon` (default `true`) toggled the *leading* icon; it is renamed `Has icon`, defaults to `false`, and the instance swap is renamed `Icon`. The 7 instances that showed the icon through the old default were pinned to `true`, so nothing changed visually.
 - **CardHorizontal:** `Progress` → `Has progress`. **Button arrow:** `State=Active` → `Default` (`Active` reads as the `:active` pseudo-class). **CardVertical:** `State` values recased to `Default`/`Hover`.
 - **Component set names match code:** `Accordion list item` → `Accordion`; the former `Accordion` composite → `Accordion list`, with its `State=Expanded|Collapsed` axis renamed `Show more` (default `false`), since `State` is reserved for interaction; `Button arrow` → `ButtonArrow`; `Image placeholder` → `Image`; `Option menu` → `DropdownMenu`.
+- **Checkbox** (`92:8772`, formerly `Checkbox with label`): `State=on|off|State3` → `Checked` (`false`/`true`, the native-input name) × `State` (`Default`/`Hover`). `State3` became the Hover preview. A `Label` text property now drives the label layer. The box, check and label are rebound to the variables the code reads (`background/input`, `background/brand`, `border/input/{default,hover}` at 1.5px, `text/inverted/default`, `text/default`). All 12 instances kept their checked state and labels.
 - Figma picks a set's default variant by canvas position (top-left), not layer order, so defaults were set by moving variants.
 - ADR-024's Figma follow-ups were already done: the Button `Style` values, the CardVertical halo (two drop shadows bound to `color/icon/on-media/halo`), and the variables.
