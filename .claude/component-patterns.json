@@ -16,15 +16,6 @@
     },
     {
       "components": [
-        "DropdownMenu",
-        "Select"
-      ],
-      "detail": "DropdownMenu uses `selectedValue`, Select uses `value` — different names for the selected-value prop.",
-      "issue": "state-prop-name-mismatch",
-      "pattern": "controlled-selection"
-    },
-    {
-      "components": [
         "AppHeader"
       ],
       "detail": "AppHeader JSX uses [Avatar, DropdownMenu, Icon, TextField] but metadata composition.composedOf declares [Avatar, Icon, Text, TextField].",
@@ -48,7 +39,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "5b666e2c56cd8bebafa6adb90ebd496029e2b46e",
+  "generatedFrom": "129ec032b5b328b02c1862761b9592c66c83ed98",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -166,7 +157,7 @@
             "controlled": "always",
             "props": [
               "onSelect",
-              "selectedValue"
+              "value"
             ]
           },
           "systemSpecificNotes": [

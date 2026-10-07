@@ -139,17 +139,16 @@ export function Select({
           </span>
         </button>
 
-        {open && (
-          <DropdownMenu
-            id={listboxId}
-            listRole="listbox"
-            items={options}
-            selectedValue={selectedValue}
-            onSelect={handleSelect}
-            onClose={() => setOpen(false)}
-            className={styles.dropdown}
-          />
-        )}
+        <DropdownMenu
+          id={listboxId}
+          listRole="listbox"
+          items={options}
+          open={open}
+          onOpenChange={setOpen}
+          value={selectedValue}
+          onSelect={handleSelect}
+          className={styles.dropdown}
+        />
 
         {/* Hidden native select for form submission */}
         <select

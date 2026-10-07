@@ -13,7 +13,8 @@ const meta = {
   component: DropdownMenu,
   parameters: { layout: 'padded' },
   argTypes: {
-    selectedValue: { control: 'text' },
+    value: { control: 'text' },
+    open: { control: 'boolean' },
     listRole: {
       control: 'radio',
       options: ['menu', 'listbox'],
@@ -28,17 +29,19 @@ export const Default: Story = {
   args: {
     items: ITEMS,
     onSelect: () => {},
-    onClose: () => {},
+    open: true,
+    onOpenChange: () => {},
   },
 }
 
 export const WithSelection: Story = {
   args: {
     items: ITEMS,
-    selectedValue: 'spanish',
+    value: 'spanish',
     listRole: 'listbox',
     'aria-label': 'Language',
     onSelect: () => {},
-    onClose: () => {},
+    open: true,
+    onOpenChange: () => {},
   },
 }

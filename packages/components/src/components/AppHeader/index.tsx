@@ -19,7 +19,7 @@ export type AppHeaderProps = {
   logoAlt?: string
   navItems?: NavItem[]
   searchValue?: string
-  onSearchChange?: (value: string) => void
+  onSearchValueChange?: (value: string) => void
   userAvatarSrc?: string
   userName?: string
   userMenuItems?: DropdownMenuItem[]
@@ -33,7 +33,7 @@ export function AppHeader({
   logoAlt = 'Logo',
   navItems = [],
   searchValue,
-  onSearchChange,
+  onSearchValueChange,
   userAvatarSrc,
   userName,
   userMenuItems,
@@ -101,7 +101,7 @@ export function AppHeader({
             shape="round"
             icon="search"
             value={searchValue ?? ''}
-            onChange={e => onSearchChange?.(e.target.value)}
+            onChange={e => onSearchValueChange?.(e.target.value)}
           />
         </div>
 
@@ -144,11 +144,12 @@ export function AppHeader({
                   className={[styles.chevron, menuOpen && styles.chevronOpen].filter(Boolean).join(' ')}
                 />
               </button>
-              {menuOpen && userMenuItems?.length && (
+              {!!userMenuItems?.length && (
                 <DropdownMenu
                   items={userMenuItems}
+                  open={menuOpen}
+                  onOpenChange={setMenuOpen}
                   onSelect={handleMenuSelect}
-                  onClose={() => setMenuOpen(false)}
                   className={styles.userMenu}
                 />
               )}

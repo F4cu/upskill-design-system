@@ -83,14 +83,14 @@ The developer approves or edits the table; only then are the four files generate
 - Naming arguments happen once, on a table, before code and Figma exist. That is cheaper than renaming afterwards, which ADR-024 showed costs a migration in code, metadata, stories and Figma.
 - `/component-scaffold` is no longer one-shot: it waits for a reply. That is the point of the step, and it matches the developer-present nature of the moment.
 - **No new gate yet.** Detection stays with the existing `drift` report in `component-patterns.json`. A deterministic naming check (banned boolean prefixes, `on*` handlers without a matching state prop, controlled props missing their `default*`/`on*Change` partners) is a follow-up. It should land after the migration below, otherwise it starts red.
-- **Existing drift is not fixed here.** These are breaking renames, each with a code, metadata, story and Figma migration, so they go in their own PR:
+- **Existing drift is migrated in a separate PR.** These are breaking renames, each touching code, metadata, stories and Figma, so they ship apart from this decision:
 
-  | Component | Today | Vocabulary |
-  |---|---|---|
-  | AppHeader | `searchValue` + `onSearchChange` | `onSearchValueChange` |
-  | DropdownMenu | `selectedValue`; `onClose` | `value`; `onOpenChange(false)` |
-  | TextField | `size: default \| large` | `size: md \| lg` |
-  | Chip | `selected` (renders `aria-pressed`) | Review: `pressed` matches the ARIA contract; `selected` is the familiar filter-chip word |
-  | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | Review against ADR-024's "name the weight" rule |
+  | Component | Before | After | State |
+  |---|---|---|---|
+  | AppHeader | `searchValue` + `onSearchChange` | `onSearchValueChange` | Migrated 2026-10-07 |
+  | DropdownMenu | `selectedValue`; `onClose`; rendered conditionally by the consumer | `value`; `open` + `onOpenChange` (controlled only: the consumer owns the trigger, and the menu only ever requests `false`) | Migrated 2026-10-07 |
+  | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07; Figma size values still to check and rename |
+  | Chip | `selected` (renders `aria-pressed`) | Review: `pressed` matches the ARIA contract; `selected` is the familiar filter-chip word | Open |
+  | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | Review against ADR-024's "name the weight" rule | Open |
 
 - **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). No component forwards one today. That is a behaviour gap, not a naming one, tracked in issue #114.
