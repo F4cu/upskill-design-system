@@ -72,6 +72,12 @@ Code and Figma share names, values and defaults. Casing is the only routine diff
 
 Code-only props (event handlers, `default*`, `className`, `id`) have no Figma property. Figma-only properties (`State`, `Has <x>`, design-only interaction states such as Menu `Expanded`) are listed as such.
 
+**A state that changes both the parent and a nested part is a variant on the parent** (amendment 2026-10-07, TextField `Has error`):
+
+- Figma can't drive a nested instance's variant from a parent boolean. So the parent becomes a set whose variants differ **only** in that state, each with the nested part preset to match. Figma keeps a designer's nested overrides on a parent flip only for properties the two presets agree on.
+- The nested instance must not be bound to an instance-swap property. A swap value is shared by every variant, so per-variant presets collapse into one.
+- All other part properties stay on the part, exposed through nested instance properties. Add a parent axis only when a state really spans parent and part; multiplying axes is how configuration collapse starts (ds101, Nathan Curtis).
+
 Figma-only properties with no code counterpart, recorded 2026-10-07:
 
 | Component set | Property | Why it stays |
@@ -82,7 +88,7 @@ Figma-only properties with no code counterpart, recorded 2026-10-07:
 | Select | `Style` = `Outlined` / `Filled` | Design exploration; code ships one look and has no `variant`. |
 | Image | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
 
-Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`. TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand). 8 `TextField` instances hold a `Select` in the `Input` slot, because the Figma `Select` has no label of its own while the code `Select` takes `label`; they stay until Select gains a label in Figma.
+Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`. TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand). 8 `TextField` instances hold a `Select`, because the Figma `Select` has no label of its own while the code `Select` takes `label`. Since the `Input` swap property was removed, they keep it only as a nested swap override, and flipping `Has error` resets it to the input. They stay until the Figma `Select` gains a `Label`.
 
 ### API proposal step
 
@@ -123,9 +129,9 @@ The file was brought in line with the vocabulary by renaming properties in place
 - **CardHorizontal:** `Progress` → `Has progress`. **Button arrow:** `State=Active` → `Default` (`Active` reads as the `:active` pseudo-class). **CardVertical:** `State` values recased to `Default`/`Hover`.
 - **Component set names match code:** `Accordion list item` → `Accordion`; the former `Accordion` composite → `Accordion list`, with its `State=Expanded|Collapsed` axis renamed `Show more` (default `false`), since `State` is reserved for interaction; `Button arrow` → `ButtonArrow`; `Image placeholder` → `Image`; `Option menu` → `DropdownMenu`.
 - **Checkbox** (`92:8772`, formerly `Checkbox with label`): `State=on|off|State3` → `Checked` (`false`/`true`, the native-input name) × `State` (`Default`/`Hover`). `State3` became the Hover preview. A `Label` text property now drives the label layer. The box, check and label are rebound to the variables the code reads (`background/input`, `background/brand`, `border/input/{default,hover}` at 1.5px, `text/inverted/default`, `text/default`). All 12 instances kept their checked state and labels. `State` gained `Disabled` for both `Checked` values (border `border/disabled`, label `text/disabled`, checked fill `background/disabled`), so every metadata state has a preview. The box's main component (`92:8764`), which had been removed from the canvas while its instances stayed, is back on the Checkbox page as `_Checkbox/Box` (private, unpublished), defaulting to the unchecked look; variants override fill, stroke and check per state.
-- **TextField:** the Figma `Input Group` (`71:1189`) is the code `TextField` (label + input + error) and takes its name. It gains `Label` and `Error` text properties and `Has error`. The error layer uses `font/size/body-small` and `text/feedback/error`. Its `Type` swap becomes `Input` (preferred: the input set), the nested input's properties are exposed on the parent, and the input fills the field's width as in code. `Input field` (`92:8005`) becomes the private part `_TextField/Input`:
+- **TextField:** the Figma `Input Group` (`71:1189`) is the code `TextField` (label + input + error) and takes its name. It gains `Label` and `Error` text properties and is now a set (`2879:8262`) with a `Has error` variant. Its two variants differ only in the nested input's `Has error`, so one switch shows the red border and the message; the `Input` swap property was removed to make that possible (rule above). This was tested on throwaway copies first. The error layer uses `font/size/body-small` and `text/feedback/error`. Its nested input's properties are exposed on the parent, and the input fills the field's width as in code. `Input field` (`92:8005`) becomes the private part `_TextField/Input`:
   - `Size` is `md`/`lg` (40/48px).
-  - `State=Empty|Filled|Hover` is split into `Has value` × `State` (`Default`/`Hover`/`Focus`/`Disabled`) plus `Has error`, covering every metadata state. The new Focus, Disabled and error rows are duplicates of existing variants.
+  - `State=Empty|Filled|Hover` is split into `Has value` × `State` (`Default`/`Hover`/`Focus`/`Disabled`) plus `Has error` (with an empty+error row for "required field left empty"), covering every metadata state. The new Focus, Disabled and error rows are duplicates of existing variants.
   - The 12 unused `Style=Outlined` variants were deleted, and the axis went with them; code has one look.
   - `Trailing icon` (default `true`, but it toggled the leading icon) is now `Has icon` (default `false`) + `Icon`.
   - Variables follow the CSS: fill `background/input`, borders `border/input/{default,hover}`, `border/selected`, `border/disabled`, `border/feedback/error`, text `text/default` or `text/disabled`.

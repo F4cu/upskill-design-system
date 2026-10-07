@@ -34,6 +34,8 @@ allowed-tools: Read, Glob, Grep, Bash, ReadMcpResourceTool
 - **`clone()` drops `componentPropertyReferences`.** A variant duplicated into a set must have its layers re-wired to the set's properties, or they ignore them.
 - **A new bound paint keeps its base color until Figma re-resolves it**, so a render can show the placeholder color (black). Build the paint with `variable.resolveForConsumer(node).value` as its base color.
 - **The default variant is the top-left one on the canvas**, not `children[0]`. Set it by moving variants.
+- **An instance-swap property's value is shared by every variant in the set.** A nested instance bound to one can't have a different preset per variant, and deleting the property resets every instance's nested choice. Snapshot the instances (nested main + properties) before deleting it, then restore them.
+- **A parent variant flip keeps nested overrides only for properties the two presets agree on.** Make variants that drive a nested part differ only in the driving state.
 - **Changing a component default changes every layer that inherits it.** Before changing a box or part default, pin the values the variants and instances rely on, then compare a read-back with the values from before.
 
 ## Output

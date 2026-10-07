@@ -55,7 +55,7 @@ One concept, one name across the fixed set. Enum props are axis nouns with camel
 | Image · collection · icon | `src`/`alt`, prefixed by part on composites (`thumbnailSrc`) · `items` (`<part>Items` when there are several; form inputs keep `options`) · `icon` (leading) / `trailingIcon` |
 | Element · inner heading · link | `as` (root element) · `headingLevel` (a heading rendered inside the component) · `href` |
 
-**Figma:** same names, values and defaults; only casing differs (`trailingIcon` ↔ `Trailing icon`). Recorded mappings only: `variant` ↔ `Style`; optional prop omitted ↔ `Has <x>` (default `false`); pseudo-classes ↔ `State` (preview); label `children` ↔ `Text`; CardVertical `progress` ↔ `Status` (preview). Figma-only properties are listed in ADR-026. Event handlers, `default*`, `className` and `id` are code-only. Known drift awaiting migration is listed in ADR-026; don't copy it into new components.
+**Figma:** same names, values and defaults; only casing differs (`trailingIcon` ↔ `Trailing icon`). Recorded mappings only: `variant` ↔ `Style`; optional prop omitted ↔ `Has <x>` (default `false`); pseudo-classes ↔ `State` (preview); label `children` ↔ `Text`; CardVertical `progress` ↔ `Status` (preview). Figma-only properties are listed in ADR-026. A state that changes both the parent and a nested part is a parent variant whose variants differ only in that state, with the nested instance not bound to a swap property (ADR-026). Event handlers, `default*`, `className` and `id` are code-only. Known drift awaiting migration is listed in ADR-026; don't copy it into new components.
 
 ## Subcomponents (ADR-023)
 

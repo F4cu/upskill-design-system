@@ -5,7 +5,7 @@
     "type": "input",
     "status": "beta",
     "description": "A labelled text input for collecting single-line user data. Includes a visible label, an optional error message with ARIA association, and interaction states. Use for any freeform text entry: names, emails, passwords, search terms.",
-    "figmaNodeId": "71:1189"
+    "figmaNodeId": "2879:8262"
   },
   "usage": {
     "keywords": [
