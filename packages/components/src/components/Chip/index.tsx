@@ -2,16 +2,21 @@ import type { ButtonHTMLAttributes } from 'react'
 import styles from './Chip.module.css'
 
 export type ChipProps = {
-  selected?: boolean
+  pressed?: boolean
+  onPressedChange?: (pressed: boolean) => void
   children: React.ReactNode
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'aria-pressed'>
 
-export function Chip({ selected = false, children, className, ...rest }: ChipProps) {
+export function Chip({ pressed = false, onPressedChange, onClick, children, className, ...rest }: ChipProps) {
   return (
     <button
       type="button"
-      aria-pressed={selected}
-      className={[styles.chip, selected && styles.selected, className].filter(Boolean).join(' ')}
+      aria-pressed={pressed}
+      className={[styles.chip, pressed && styles.pressed, className].filter(Boolean).join(' ')}
+      onClick={e => {
+        onClick?.(e)
+        onPressedChange?.(!pressed)
+      }}
       {...rest}
     >
       {children}

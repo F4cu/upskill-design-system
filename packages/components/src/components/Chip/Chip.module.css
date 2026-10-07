@@ -26,11 +26,11 @@
   border-color: var(--ds-color-border-disabled);
 }
 
-.selected {
+.pressed {
   border-color: var(--ds-color-border-selected);
   color: var(--ds-color-text-selected);
 }
 
-.selected:hover:not(:disabled) {
+.pressed:hover:not(:disabled) {
   background: var(--ds-color-background-overlay-subtlest);
 }

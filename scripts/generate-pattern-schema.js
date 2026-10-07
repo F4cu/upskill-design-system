@@ -170,14 +170,33 @@ function scanJsx(sf) {
   return { ariaNodes, renderedTags, usedJsxNames, hasLabelFor };
 }
 
+// ADR-026: controlled state is `<x>` + `on<X>Change`, with `default<X>` when
+// the component also supports uncontrolled use. The callback is always last.
 function detectControlledPair(props) {
   for (const p of props) {
+    if (/^(default|on)[A-Z]/.test(p)) continue;
     const cap = p[0].toUpperCase() + p.slice(1);
-    if (props.has(`default${cap}`) && props.has(`on${cap}Change`)) {
-      return [p, `default${cap}`, `on${cap}Change`];
-    }
+    if (!props.has(`on${cap}Change`)) continue;
+    return props.has(`default${cap}`) ? [p, `default${cap}`, `on${cap}Change`] : [p, `on${cap}Change`];
   }
   return null;
+}
+
+function namingDrift(props) {
+  const issues = [];
+  for (const p of props) {
+    const change = p.match(/^on([A-Z]\w*)Change$/);
+    if (change) {
+      const x = change[1][0].toLowerCase() + change[1].slice(1);
+      if (!props.has(x)) issues.push(`\`${p}\` has no \`${x}\` prop`);
+    }
+    const def = p.match(/^default([A-Z]\w*)$/);
+    if (def) {
+      const x = def[1][0].toLowerCase() + def[1].slice(1);
+      if (!props.has(x) || !props.has(`on${def[1]}Change`)) issues.push(`\`${p}\` without both \`${x}\` and \`on${def[1]}Change\``);
+    }
+  }
+  return issues;
 }
 
 function ariaText(ariaNodes) {
@@ -230,7 +249,7 @@ function scanComponent(name) {
   }
 
   let changeCallback = null;
-  if (controlledPair) changeCallback = controlledPair[2];
+  if (controlledPair) changeCallback = controlledPair[controlledPair.length - 1];
   else if (props.has("onSelect")) changeCallback = "onSelect";
   else {
     const inputSpread = nativeSpreads.find((s) => /InputHTMLAttributes/.test(s));
@@ -257,6 +276,8 @@ function scanComponent(name) {
     usesUseState,
     state,
     changeCallback,
+    namingIssues: namingDrift(props),
+    selectedProps: [...props].filter((p) => /^selected[A-Z]/.test(p)),
     compound,
     parts,
     idsFromUseId: [...useIdVars].sort(),
@@ -308,33 +329,21 @@ function walkFiles(dir, exts) {
 function detectDrift(components) {
   const drift = [];
 
-  const callbackUsers = components.filter((c) => c.changeCallback);
-  const callbackNames = new Set(callbackUsers.map((c) => c.changeCallback));
-  if (callbackNames.size > 1) {
+  for (const c of components.filter((c) => c.namingIssues.length)) {
     drift.push({
-      pattern: "change-callback",
-      issue: "prop-name-mismatch",
-      detail: callbackUsers
-        .map((c) => `${c.name} uses \`${c.changeCallback}\``)
-        .join(", ") + " — different names for the same state-changed axis.",
-      components: callbackUsers.map((c) => c.name).sort(),
+      pattern: c.bucket,
+      issue: "controlled-state-name-mismatch",
+      detail: `${c.name}: ${c.namingIssues.join("; ")} — ADR-026 names a controlled state \`<x>\` / \`default<X>\` / \`on<X>Change\`.`,
+      components: [c.name],
     });
   }
 
-  const selectionStateful = components.filter(
-    (c) => c.bucket === "controlled-selection" && c.state
-  );
-  const stateProps = new Set(
-    selectionStateful.map((c) => c.state.props.find((p) => !/^on[A-Z]/.test(p)))
-  );
-  if (stateProps.size > 1) {
+  for (const c of components.filter((c) => c.bucket === "controlled-selection" && c.selectedProps.length)) {
     drift.push({
       pattern: "controlled-selection",
       issue: "state-prop-name-mismatch",
-      detail: selectionStateful
-        .map((c) => `${c.name} uses \`${c.state.props.find((p) => !/^on[A-Z]/.test(p))}\``)
-        .join(", ") + " — different names for the selected-value prop.",
-      components: selectionStateful.map((c) => c.name).sort(),
+      detail: `${c.name} uses ${c.selectedProps.map((p) => `\`${p}\``).join(", ")} — ADR-026 names the selected value \`value\`.`,
+      components: [c.name],
     });
   }
 

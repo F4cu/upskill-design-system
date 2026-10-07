@@ -258,18 +258,18 @@ export default function Homepage() {
         </Box>
       </Box>
 
-      {/* ── Section 3: Discover new courses ── Chip usage.patterns "filter-bar" + CardVertical size=lg carousel */}
+      {/* ── Section 3: Discover new courses ── Chip usage.patterns "filter-bar-single" + CardVertical size=lg carousel */}
       <Box as="section" aria-labelledby="discover-heading" paddingY="lg">
         <Box className="container">
           <Stack gap="md">
 
             <Heading id="discover-heading" as="h2" size="headline">Discover new courses</Heading>
 
-            <Inline gap="sm" wrap>
+            <Inline gap="sm" wrap role="group" aria-labelledby="discover-heading">
               {DISCOVER_FILTERS.map((filter) => (
                 <Chip
                   key={filter}
-                  selected={filter === activeFilter}
+                  pressed={filter === activeFilter}
                   onClick={() => selectFilter(filter)}
                 >
                   {filter}

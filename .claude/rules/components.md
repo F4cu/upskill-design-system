@@ -32,7 +32,7 @@ A "state" is one of three kinds; each has a different home. Never collapse them 
 | Lifecycle / data | in progress, completed | Derived from a data prop (`progress={100}` → completed); a `status` enum only when not derivable | Property named for its axis (`Status`), never `State` |
 | Content | empty image, no meta, long title | Fallback when a prop is omitted (no `src` → placeholder) — never a `showX`/`empty` flag | One example per fallback |
 
-- **Exception — interaction state that is app data** (`pressed`, `selected`, `disabled`, `open`): a controlled prop with `default*` + `on*Change` (see `CardVertical.Favorite`).
+- **Exception — interaction state that is app data** (`pressed`, `disabled`, `open`, a container's `value`): a controlled prop with `on*Change`, plus `default*` when uncontrolled use makes sense (see `CardVertical.Favorite`; `Chip` is controlled only).
 - **One enum, not several booleans** for mutually exclusive states (`status: 'notStarted' | 'inProgress' | 'completed'`, never `isStarted` + `isCompleted`).
 - **Naming:** see "Prop vocabulary" below. `State` is reserved for the interaction axis in Figma.
 - Every lifecycle and content state appears in metadata `states` and has a story.
@@ -43,11 +43,11 @@ One concept, one name across the fixed set. Enum props are axis nouns with camel
 
 | Concept | Name |
 |---|---|
-| Visual weight/style | `variant`: values name the look, not a rank (ADR-024). Never `type`/`kind`/`mode`/`style`/`tone`/`appearance` |
+| Visual weight/style | `variant`: values name the look, not a rank (ADR-024). Never `type`/`kind`/`mode`/`style`/`tone`/`appearance`. `default` only as the baseline of a surface/context axis, never on an emphasis axis |
 | Size | `size`: `sm`/`md`/`lg` (only the steps it has). Typography components take type-scale names |
 | Corners · layout axis · glyph direction | `shape` (`square`/`round`) · `orientation` (`horizontal`/`vertical`) · `direction` (glyph only) |
 | Lifecycle | `status` enum, derived from data when possible (ADR-025) |
-| Controlled state | `<x>` / `default<X>` / `on<X>Change`, with the callback named after the prop. Canonical `<x>`: `value` (custom widget), `open` (disclosure, popover, menu; never `expanded`/`visible`/a bare `onClose`), `pressed` (`aria-pressed`). Native-input wrappers keep native names (`value`/`checked` + `onChange`) |
+| Controlled state | `<x>` / `default<X>` / `on<X>Change`, with the callback named after the prop. Canonical `<x>`: `value` (custom widget), `open` (disclosure, popover, menu; never `expanded`/`visible`/a bare `onClose`), `pressed` (`aria-pressed`, filter chips included). `selected` is never an item prop: a group that owns the choice holds `value` on the container. Omit `default*` when the caller must always own the state. Native-input wrappers keep native names (`value`/`checked` + `onChange`) |
 | Discrete event | `on<Verb>` / `on<Part><Verb>` (`onSelect`, `onUserMenuSelect`). Never `handle*` |
 | Boolean | Bare adjective or participle, default `false` (`disabled`, `certified`, `fullWidth`). Never `is*`/`has*`/`show*`. Exception: `hideLabel` (label stays for assistive technology) |
 | Accessible name · error | `label` (visible label, else the `aria-label`) · `error` (message string; presence means invalid, no `invalid` flag) |
