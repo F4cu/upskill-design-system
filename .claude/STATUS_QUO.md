@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-10-07T13:47:36.206Z**
+Generated: **2026-10-07T14:04:25.970Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -94,9 +94,9 @@ None. All review findings have been back-filled. ✅
 
 ## Figma drift
 
-- Snapshot captured: **2026-10-06** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **1 day(s)**
-- Variables mirrored: **460** (Primitives 289 · Theme 109 · Device 62)
+- Snapshot captured: **2026-10-07** (interactive Figma MCP — not script-regenerable, ADR-002)
+- Age: **0 day(s)**
+- Variables mirrored: **468** (Primitives 292 · Theme 110 · Device 66)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 
 This is a frozen mirror, not a live drift comparison. Run `/figma-variable-audit` to diff it against committed tokens.

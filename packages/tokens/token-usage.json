@@ -150,7 +150,6 @@
     "--ds-space-inline-xs": [
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
-      "packages/components/src/components/Button/Button.stories.tsx",
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
       "packages/components/src/components/CardVertical/CardVertical.module.css",
       "packages/components/src/components/Inline/Inline.module.css",
