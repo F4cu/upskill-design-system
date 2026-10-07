@@ -399,6 +399,18 @@ function gateA11yCoverage(scratchDir) {
   return { violations: detail.length, detail }
 }
 
+// Secondary, never in the headline total (spec harness arm handoff): Arm C saw
+// the spec, so a win here proves little alone. The committed spec is copied in
+// after generation, for every arm, and checked against the generated code.
+function specConformance(scratchDir, name) {
+  const dir = path.join(scratchDir, name)
+  fs.mkdirSync(dir, { recursive: true })
+  fs.copyFileSync(path.join(ROOT, 'packages/components/src/components', name, `${name}.spec.json`), path.join(dir, `${name}.spec.json`))
+  const result = spawnSync('node', [path.join(ROOT, 'scripts/validate-spec.js'), '--components-dir', scratchDir], { encoding: 'utf8' })
+  const detail = result.stderr.split('\n').filter((l) => l.startsWith('    ')).map((l) => l.trim())
+  return { violations: detail.length, detail: detail.slice(0, 40) }
+}
+
 const GATE_RUNNERS = {
   typecheck: gateTypecheck,
   lint: gateLint,
@@ -437,6 +449,7 @@ export function scoreScratch(scratchDir, task) {
     task: task.id,
     kind: task.kind,
     gates,
+    ...(task.specTarget && { secondary: { 'spec:conformance': specConformance(scratchDir, task.specTarget) } }),
     gateViolations: gateTotal,
     trapViolations: trapViolations.length,
     trapCounts,

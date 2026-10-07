@@ -50,7 +50,9 @@ Same two-bucket idea as the ablation eval, so Arm C isn't credited for repeating
    - Record `promptChars` in `score.json`.
    - **Done 2026-10-07.** Also added `--runs <n>` (the pre-registration needs N = 3): several runs go to `.runs/<task>/<arm>/run-<n>/`, one run keeps the old layout. Dry-run prompts go to `.runs/.dry-run/`, so a dry run never wipes scored runs. `report.js` doesn't read `run-<n>/` yet; that's item 4.
 2. `scripts/validate-spec.js`: a `--components-dir <dir>` option, so it can check a run folder. Treat repo components plus that dir as known component names (the run folder has only the target). Keep the default behaviour unchanged for CI.
+   **Done 2026-10-07.** Imports the run folder can't resolve (`../Icon`) resolve from the repo tree, and `@upskill/components` maps to the package source. A missing `index.tsx` or `metadata.json` counts as a mismatch instead of crashing.
 3. `score.js`: a `spec:conformance` gate that copies the committed spec into the run folder and calls the validator. Violations = reported mismatch lines.
+   **Done 2026-10-07.** It's reported under `score.secondary` and kept out of `total`. It runs only for tasks with `specTarget`. Calibration: the shipped Button and CardVertical score 0 traps and 0 `spec:conformance`. A renamed Button prop (`trailingIcon` → `endIcon`) scores 1.
 4. `report.js`: arm C rows, an A-vs-C delta over tasks that have C, a prompt-size column, and arm descriptions for C.
 5. `tasks/component-button.json`, `tasks/component-cardvertical-parts.json` with `specTarget`, briefs per the brief rule, and `requiredPatterns`/`forbiddenPatterns` written **before** the first run.
 6. Docs: `docs/07-cli-reference.md` and `docs/11-self-improving-loops.md` mention the harness, so check their `sources:` and touch them in the same commit if needed (docs-check coupling).

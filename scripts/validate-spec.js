@@ -12,6 +12,10 @@
 //     metadata state and composition.parts entry appears in the spec.
 // Specs are optional during the ADR-027 pilot: only components with a spec file
 // are checked. Requires built tokens (npm run tokens:build).
+//
+// --components-dir <dir> checks the specs in <dir> instead (a harness run
+// folder holding only the generated target). Repo components stay known names,
+// and imports the folder can't resolve (../Icon) resolve from the repo tree.
 
 import fs from "fs";
 import path from "path";
@@ -28,12 +32,15 @@ const TOKENS_CSS_DIR = path.resolve(ROOT, "packages/tokens/dist/css");
 
 const validate = new Ajv({ allErrors: true, allowUnionTypes: true }).compile(JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8")));
 
-const COMPONENT_NAMES = new Set(
-  fs.readdirSync(COMPONENTS_DIR, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name),
-);
+const dirFlag = process.argv.indexOf("--components-dir");
+const EXTERNAL_DIR = dirFlag === -1 ? null : path.resolve(process.argv[dirFlag + 1]);
+const SPEC_DIR = EXTERNAL_DIR ?? COMPONENTS_DIR;
 
-const specs = [...COMPONENT_NAMES]
-  .map((name) => ({ name, file: path.join(COMPONENTS_DIR, name, `${name}.spec.json`) }))
+const folders = (dir) => fs.readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
+const COMPONENT_NAMES = new Set([...folders(COMPONENTS_DIR), ...(EXTERNAL_DIR ? folders(EXTERNAL_DIR) : [])]);
+
+const specs = folders(SPEC_DIR)
+  .map((name) => ({ name, file: path.join(SPEC_DIR, name, `${name}.spec.json`) }))
   .filter(({ file }) => fs.existsSync(file));
 
 if (!fs.existsSync(TOKENS_CSS_DIR)) {
@@ -51,9 +58,24 @@ const tsconfig = ts.getParsedCommandLineOfConfigFile(path.join(PKG, "tsconfig.js
   ...ts.sys,
   onUnRecoverableConfigFileDiagnostic: () => {},
 });
+const options = {
+  ...tsconfig.options,
+  noEmit: true,
+  ...(EXTERNAL_DIR && { paths: { "@upskill/components": [path.join(PKG, "src/index.ts")] } }),
+};
+const host = ts.createCompilerHost(options);
+if (EXTERNAL_DIR) {
+  host.resolveModuleNameLiterals = (literals, containingFile, _redirect, opts) =>
+    literals.map((lit) => {
+      const resolved = ts.resolveModuleName(lit.text, containingFile, opts, host);
+      if (resolved.resolvedModule || !lit.text.startsWith("../") || !containingFile.startsWith(EXTERNAL_DIR)) return resolved;
+      return ts.resolveModuleName(lit.text, path.join(COMPONENTS_DIR, path.relative(EXTERNAL_DIR, containingFile)), opts, host);
+    });
+}
 const program = ts.createProgram(
-  specs.map(({ name }) => path.join(COMPONENTS_DIR, name, "index.tsx")),
-  { ...tsconfig.options, noEmit: true },
+  specs.map(({ name }) => path.join(SPEC_DIR, name, "index.tsx")),
+  options,
+  host,
 );
 const checker = program.getTypeChecker();
 
@@ -71,7 +93,8 @@ function tokenPaths(value) {
 // inherited native attributes, `own` only props declared in the file, and
 // `defaults` the literal destructuring defaults of the function taking it.
 function readPropsTypes(name) {
-  const source = program.getSourceFile(path.join(COMPONENTS_DIR, name, "index.tsx"));
+  const source = program.getSourceFile(path.join(SPEC_DIR, name, "index.tsx"));
+  if (!source) return new Map();
   const pattern = new RegExp(`^${name}(\\w*)Props$`);
   const types = new Map();
   const exported = (s) => s.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)
@@ -127,14 +150,17 @@ let failures = 0;
 const backlog = [];
 
 for (const { name, file } of specs) {
-  const rel = path.relative(ROOT, file);
   const spec = JSON.parse(fs.readFileSync(file, "utf8"));
-  const metadata = JSON.parse(fs.readFileSync(path.join(COMPONENTS_DIR, name, `${name}.metadata.json`), "utf8"));
   const errors = [];
+  const metadataFile = path.join(SPEC_DIR, name, `${name}.metadata.json`);
+  let metadata = {};
+  if (fs.existsSync(metadataFile)) metadata = JSON.parse(fs.readFileSync(metadataFile, "utf8"));
+  else errors.push(`${name}.metadata.json not found`);
+  if (!fs.existsSync(path.join(SPEC_DIR, name, "index.tsx"))) errors.push("index.tsx not found");
 
   if (!validate(spec)) {
     for (const e of validate.errors) errors.push(`${e.instancePath || "/"} ${e.message}`);
-    report(rel, errors);
+    report(file, errors);
     continue;
   }
 
@@ -226,7 +252,7 @@ for (const { name, file } of specs) {
       for (const value of Object.values(rule.set)) for (const t of tokenPaths(value)) specTokens.add(tokenToVar(t));
     }
   }
-  const cssFile = path.join(COMPONENTS_DIR, name, `${name}.module.css`);
+  const cssFile = path.join(SPEC_DIR, name, `${name}.module.css`);
   const cssVars = new Set(
     fs.existsSync(cssFile) ? [...fs.readFileSync(cssFile, "utf8").matchAll(/var\((--ds-[a-z0-9-]+)/g)].map((m) => m[1]) : [],
   );
@@ -236,10 +262,11 @@ for (const { name, file } of specs) {
     if (!definedVars.has(v)) errors.push(`styles: ${v} is not defined in the built token CSS`);
   }
 
-  report(rel, errors);
+  report(file, errors);
 }
 
-function report(rel, errors) {
+function report(file, errors) {
+  const rel = path.relative(ROOT, file);
   if (errors.length) {
     console.error(`✗ ${rel}`);
     for (const msg of errors) console.error(`    ${msg}`);
