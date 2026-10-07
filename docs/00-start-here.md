@@ -38,6 +38,7 @@ sources:
 # clock reset 2026-10-07: /figma-cli gains a Plugin API pitfalls list; this page describes no per-command steps, still accurate
 # clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; this page describes no Figma property detail, still accurate
 # clock reset 2026-10-07: ADR-026 amendment adds the Select Figma set and the DropdownMenu/Item rename; this page describes no Figma property names, still accurate
+# clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; this page describes no Figma detail, still accurate
 ---
 # Start here
 
