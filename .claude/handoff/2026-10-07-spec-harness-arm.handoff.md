@@ -54,6 +54,7 @@ Same two-bucket idea as the ablation eval, so Arm C isn't credited for repeating
 3. `score.js`: a `spec:conformance` gate that copies the committed spec into the run folder and calls the validator. Violations = reported mismatch lines.
    **Done 2026-10-07.** It's reported under `score.secondary` and kept out of `total`. It runs only for tasks with `specTarget`. Calibration: the shipped Button and CardVertical score 0 traps and 0 `spec:conformance`. A renamed Button prop (`trailingIcon` → `endIcon`) scores 1.
 4. `report.js`: arm C rows, an A-vs-C delta over tasks that have C, a prompt-size column, and arm descriptions for C.
+   **Done 2026-10-07.** Each cell reads one run or `run-<n>/` folders and reports medians with a min–max range. The table adds Runs, Range, Spec conformance and Prompt chars columns. The A-vs-B delta covers only tasks scored in both arms; the July numbers regenerate identically (32 vs 28). The A-vs-C section applies the pre-registered bar per task and prints a verdict only when every spec task has ≥ 3 runs in both arms.
 5. `tasks/component-button.json`, `tasks/component-cardvertical-parts.json` with `specTarget`, briefs per the brief rule, and `requiredPatterns`/`forbiddenPatterns` written **before** the first run.
 6. Docs: `docs/07-cli-reference.md` and `docs/11-self-improving-loops.md` mention the harness, so check their `sources:` and touch them in the same commit if needed (docs-check coupling).
 
