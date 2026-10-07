@@ -28,6 +28,14 @@ allowed-tools: Read, Glob, Grep, Bash, ReadMcpResourceTool
 4. **Write in one call.** `eval` for Plugin API mutations (rename, bind via `$bind`, set descriptions, component properties); `render` / `render-batch` only when creating new frames (never create visual nodes via `eval`).
 5. **Verify.** Re-read with `eval` (counts and names moved as expected) or `figma-cli verify <id> --measure` for a visual change. `figma-cli undo` reverts the last figma-cli operation if it went wrong.
 
+## Plugin API pitfalls (seen 2026-10-07)
+
+- **A runaway `eval` freezes Figma Desktop** and kills the daemon; recovery is a force-quit plus `connect`. Bound every loop (`for (let i = 0; i < 30 && p && p.type !== "PAGE"; i++) p = p.parent`) and run evals under a shell time limit.
+- **`clone()` drops `componentPropertyReferences`.** A variant duplicated into a set must have its layers re-wired to the set's properties, or they ignore them.
+- **A new bound paint keeps its base color until Figma re-resolves it**, so a render can show the placeholder color (black). Build the paint with `variable.resolveForConsumer(node).value` as its base color.
+- **The default variant is the top-left one on the canvas**, not `children[0]`. Set it by moving variants.
+- **Changing a component default changes every layer that inherits it.** Before changing a box or part default, pin the values the variants and instances rely on, then compare a read-back with the values from before.
+
 ## Output
 
 ```
