@@ -85,7 +85,8 @@
     "ariaAttributes": [
       "aria-label=\"Main navigation\" on the <nav> element",
       "aria-current=\"page\" on the active nav link",
-      "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)"
+      "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)",
+      "aria-controls → the menu's id on the user button while the menu is open; the menu (DropdownMenu listRole=menu) is named by aria-labelledby → the user button"
     ],
     "keyboardInteractions": [
       {
@@ -97,8 +98,20 @@
         "action": "Activates the user button, opening the DropdownMenu (listRole=menu) and moving focus to its first menuitem"
       },
       {
+        "key": "ArrowUp / ArrowDown (menu)",
+        "action": "Moves focus between menu items"
+      },
+      {
+        "key": "Enter / Space (menu item)",
+        "action": "Selects the item, closes the menu and returns focus to the user button"
+      },
+      {
         "key": "Escape",
         "action": "Closes the user DropdownMenu and returns focus to the user button"
+      },
+      {
+        "key": "Tab / Shift+Tab (menu open)",
+        "action": "Closes the menu and lets focus move on; an outside click also closes it without pulling focus back"
       }
     ]
   },

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
 import type { HTMLAttributes } from 'react'
+import { useMenuButton } from '../../hooks/useMenuButton'
 import { Avatar } from '../Avatar'
 import { DropdownMenu } from '../DropdownMenu'
 import type { DropdownMenuItem } from '../DropdownMenu'
@@ -42,45 +42,17 @@ export function AppHeader({
   className,
   ...rest
 }: AppHeaderProps) {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const userRef = useRef<HTMLDivElement>(null)
-  const userButtonRef = useRef<HTMLButtonElement>(null)
-  const prevMenuOpenRef = useRef(false)
-
-  useEffect(() => {
-    if (!menuOpen) return
-    function handleClick(e: MouseEvent) {
-      if (userRef.current && !userRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [menuOpen])
-
-  useEffect(() => {
-    if (menuOpen && userRef.current) {
-      userRef.current.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
-    }
-  }, [menuOpen])
-
-  useEffect(() => {
-    if (prevMenuOpenRef.current && !menuOpen) {
-      userButtonRef.current?.focus()
-    }
-    prevMenuOpenRef.current = menuOpen
-  }, [menuOpen])
+  const { open: menuOpen, toggle, close, onOpenChange, onBlur, wrapperRef, triggerId, menuId } = useMenuButton()
+  const hasMenu = !!userMenuItems?.length
 
   function handleUserClick() {
-    if (userMenuItems?.length) {
-      setMenuOpen(prev => !prev)
-    }
+    if (hasMenu) toggle()
     onUserClick?.()
   }
 
   function handleMenuSelect(value: string) {
     onUserMenuSelect?.(value)
-    setMenuOpen(false)
+    close(true)
   }
 
   return (
@@ -125,14 +97,15 @@ export function AppHeader({
           )}
 
           {(userAvatarSrc || userName) && (
-            <div ref={userRef} className={styles.userWrapper}>
+            <div ref={wrapperRef} className={styles.userWrapper} onBlur={hasMenu ? onBlur : undefined}>
               <button
-                ref={userButtonRef}
+                id={triggerId}
                 type="button"
                 className={styles.userButton}
                 onClick={handleUserClick}
-                aria-haspopup={userMenuItems?.length ? 'menu' : undefined}
-                aria-expanded={userMenuItems?.length ? menuOpen : undefined}
+                aria-haspopup={hasMenu ? 'menu' : undefined}
+                aria-expanded={hasMenu ? menuOpen : undefined}
+                aria-controls={menuOpen ? menuId : undefined}
               >
                 {userAvatarSrc && (
                   <Avatar src={userAvatarSrc} alt={userName ? '' : 'User'} size="sm" />
@@ -144,11 +117,13 @@ export function AppHeader({
                   className={[styles.chevron, menuOpen && styles.chevronOpen].filter(Boolean).join(' ')}
                 />
               </button>
-              {!!userMenuItems?.length && (
+              {hasMenu && (
                 <DropdownMenu
                   items={userMenuItems}
                   open={menuOpen}
-                  onOpenChange={setMenuOpen}
+                  onOpenChange={onOpenChange}
+                  id={menuId}
+                  aria-labelledby={triggerId}
                   onSelect={handleMenuSelect}
                   className={styles.userMenu}
                 />

@@ -1,5 +1,6 @@
-import { Children, createContext, isValidElement, useContext, useEffect, useId, useRef, useState } from 'react'
-import type { FocusEvent, HTMLAttributes, ReactElement, ReactNode } from 'react'
+import { Children, createContext, isValidElement, useContext, useId, useState } from 'react'
+import type { HTMLAttributes, ReactElement, ReactNode } from 'react'
+import { useMenuButton } from '../../hooks/useMenuButton'
 import { Button } from '../Button'
 import { DropdownMenu } from '../DropdownMenu'
 import type { DropdownMenuItem } from '../DropdownMenu'
@@ -129,32 +130,7 @@ export type CardVerticalMenuProps = {
 
 function Menu({ items, onSelect }: CardVerticalMenuProps) {
   const { titleId } = useCardVertical('Menu')
-  const id = useId()
-  const [open, setOpen] = useState(false)
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const menuId = `${id}-menu`
-
-  function close(returnFocus: boolean) {
-    setOpen(false)
-    if (returnFocus) wrapperRef.current?.querySelector('button')?.focus()
-  }
-
-  useEffect(() => {
-    if (!open) return
-    function handleClick(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [open])
-
-  useEffect(() => {
-    if (open) {
-      wrapperRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
-    }
-  }, [open])
+  const { open, toggle, close, onOpenChange, onBlur, wrapperRef, triggerId: id, menuId } = useMenuButton()
 
   if (items.length === 0) return null
 
@@ -163,12 +139,8 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
     close(true)
   }
 
-  function handleBlur(e: FocusEvent<HTMLDivElement>) {
-    if (open && !e.currentTarget.contains(e.relatedTarget)) setOpen(false)
-  }
-
   return (
-    <div ref={wrapperRef} className={styles.menu} onBlur={handleBlur}>
+    <div ref={wrapperRef} className={styles.menu} onBlur={onBlur}>
       <Button
         id={id}
         variant="transparent"
@@ -181,12 +153,12 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
-        onClick={() => setOpen(prev => !prev)}
+        onClick={toggle}
       />
       <DropdownMenu
         items={items}
         open={open}
-        onOpenChange={next => (next ? setOpen(true) : close(true))}
+        onOpenChange={onOpenChange}
         id={menuId}
         aria-labelledby={`${id} ${titleId}`}
         onSelect={handleSelect}
