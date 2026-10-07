@@ -23,6 +23,7 @@ sources:
 # clock reset 2026-10-06: CLAUDE.md one-word edit (transparent link-styled → ghost, ADR-024); context-budget structure unchanged, still accurate
 # clock reset 2026-10-06: components.md gains a State model section (ADR-025); this page describes rule scoping, not rule contents, still accurate
 # clock reset 2026-10-06: components.md Subcomponents block gains a Figma-mirror rule line (ADR-023 amendment 2026-10-06); layering/budget mechanics unchanged, still accurate
+# clock reset 2026-10-07: components.md gains a Prop vocabulary section (ADR-026); this page describes rule scoping, not rule contents, still accurate
 ---
 # Context engineering
 

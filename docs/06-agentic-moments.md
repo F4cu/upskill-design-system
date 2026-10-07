@@ -17,6 +17,7 @@ sources:
 # clock reset 2026-10-02: tokens-author Conventions gains a bullet (component dimension without a token → size primitive + named device alias, never raw px); this page doesn't list the convention bullets, still accurate
 # clock reset 2026-10-02: /layout-generation validation text now names the Button emphasis-by-context check (ADR-024); loop mechanics unchanged, still accurate
 # clock reset 2026-10-06: figma-variable-push.md example path swapped (button.ghost deleted → button.danger.default); moment behaviour unchanged, still accurate
+# rewritten 2026-10-07: Stage 1 bullet names the API proposal checkpoint that /component-scaffold and /add-component gained (ADR-026)
 ---
 # Agentic moments
 
@@ -73,7 +74,7 @@ Moments read the system's status quo from **committed files, never live APIs** �
 The flagship moment (6) is a bounded loop with stages, per ADR-007 — **sequential, at most two agents, frozen-file handoffs only**:
 
 - **Stage 0 — Sense** (script, no AI): `npm run sense:component <Name>` writes `.claude/handoff/runs/<Name>.snapshot.json` from the committed frozen-memory files. No live API call.
-- **Stage 1 — Scaffold** (main session): reuses `/component-scaffold`, fed only the snapshot + schema + a template component.
+- **Stage 1 — Scaffold** (main session): reuses `/component-scaffold`, fed only the snapshot + schema + a template component. Before any file is written it stops at an API proposal checkpoint: the developer approves the anatomy and a props table checked against the prop vocabulary ([ADR-026](decisions/026-component-prop-vocabulary.md)).
 - **Stage 2 — Gate** (script): `metadata:validate && typecheck && build && a11y:coverage && a11y:test && patterns:generate` (the a11y steps added by the ADR-007 amendment — see [Accessibility](03-accessibility.md); `patterns:generate` refreshes `.claude/component-patterns.json`, committed alongside the component — ADR-013). Fail-fast: a failure bounces back to Stage 1 with the error.
 - **Stage 2b — Visual checkpoint** (human): go/no-go in Storybook, light and dark themes. The answer is recorded as a `visualReview` record (`status`, `comments`, `at`) in `.claude/component-review-state.json` — checklist item 2 of the [`in review` stage](02-component-lifecycle.md#two-axes-because-one-field-kept-lying).
 - **Stage 3+ — Review + PR**: delegates to `/review-component`, which spawns the loop's *one* subagent — a fresh adversarial reviewer with independent context. The reviewer is **read-only by construction**: it is a committed agent definition (`.claude/agents/adversarial-reviewer.md`) whose tool set is Read/Grep/Glob/Bash only — no Edit, no Write — so "reviewer reports, never fixes" is enforced by the tool boundary, not just the prompt. It returns structured findings, and the *main session* persists them to `.claude/handoff/runs/<Name>.review.json`, applies fixes, re-runs the gate, and opens a PR on a `component/<kebab-name>` branch. No agent-written code reaches `main` unreviewed — this is also one of the three exceptions to the repo's no-new-branches workflow (the others are moment 9's `docs-sync/<date>` branch and moment 4's `layout/<kebab-name>` branch per [ADR-016](decisions/016-layout-output-review-path.md), for the same reason: agent-generated content goes through a PR).

@@ -34,8 +34,28 @@ A "state" is one of three kinds; each has a different home. Never collapse them 
 
 - **Exception — interaction state that is app data** (`pressed`, `selected`, `disabled`, `open`): a controlled prop with `default*` + `on*Change` (see `CardVertical.Favorite`).
 - **One enum, not several booleans** for mutually exclusive states (`status: 'notStarted' | 'inProgress' | 'completed'`, never `isStarted` + `isCompleted`).
-- **Naming:** enum props are axis nouns (`size`, `variant`, `status`), values camelCase; booleans are bare adjectives (`certified`, `disabled`) defaulting to `false`, never `isX`/`showX`. Figma uses the same names; `State` is reserved for the interaction axis.
+- **Naming:** see "Prop vocabulary" below. `State` is reserved for the interaction axis in Figma.
 - Every lifecycle and content state appears in metadata `states` and has a story.
+
+## Prop vocabulary (ADR-026)
+
+One concept, one name across the fixed set. Enum props are axis nouns with camelCase values. Reuse these names; any other prop name is a **new term** and needs a reason in the `/component-scaffold` API proposal.
+
+| Concept | Name |
+|---|---|
+| Visual weight/style | `variant`: values name the look, not a rank (ADR-024). Never `type`/`kind`/`mode`/`style`/`tone`/`appearance` |
+| Size | `size`: `sm`/`md`/`lg` (only the steps it has). Typography components take type-scale names |
+| Corners · layout axis · glyph direction | `shape` (`square`/`round`) · `orientation` (`horizontal`/`vertical`) · `direction` (glyph only) |
+| Lifecycle | `status` enum, derived from data when possible (ADR-025) |
+| Controlled state | `<x>` / `default<X>` / `on<X>Change`, with the callback named after the prop. Canonical `<x>`: `value` (custom widget), `open` (disclosure, popover, menu; never `expanded`/`visible`/a bare `onClose`), `pressed` (`aria-pressed`). Native-input wrappers keep native names (`value`/`checked` + `onChange`) |
+| Discrete event | `on<Verb>` / `on<Part><Verb>` (`onSelect`, `onUserMenuSelect`). Never `handle*` |
+| Boolean | Bare adjective or participle, default `false` (`disabled`, `certified`, `fullWidth`). Never `is*`/`has*`/`show*`. Exception: `hideLabel` (label stays for assistive technology) |
+| Accessible name · error | `label` (visible label, else the `aria-label`) · `error` (message string; presence means invalid, no `invalid` flag) |
+| Content | `children` for wrappers or single free-form content; one named prop per datum otherwise (`title`, `author`) |
+| Image · collection · icon | `src`/`alt`, prefixed by part on composites (`thumbnailSrc`) · `items` (`<part>Items` when there are several; form inputs keep `options`) · `icon` (leading) / `trailingIcon` |
+| Element · inner heading · link | `as` (root element) · `headingLevel` (a heading rendered inside the component) · `href` |
+
+**Figma:** same names, values and defaults; only casing differs (`trailingIcon` ↔ `Trailing icon`). Recorded mappings only: `variant` ↔ `Style`; optional prop omitted ↔ `Has <x>` (default `false`); pseudo-classes ↔ `State` (preview). Event handlers, `default*`, `className` and `id` are code-only. Known drift awaiting migration is listed in ADR-026; don't copy it into new components.
 
 ## Subcomponents (ADR-023)
 

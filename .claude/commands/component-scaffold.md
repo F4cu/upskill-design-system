@@ -15,6 +15,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 
 - Metadata schema — `packages/components/component.schema.json`
 - Existing component as structural template — pick the closest one in `packages/components/src/` (e.g. for Button use an interactive component; for Card use a container component)
+- Prop vocabulary — `.claude/rules/components.md` → "Prop vocabulary" (ADR-026)
 - Figma design context — use Figma MCP (`get_design_context` on the component's Figma node) to read variants, states, token usage, and layout
 
 ## Steps
@@ -28,14 +29,27 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
    **Line-height translation rule:** Figma stores line-heights as px values and names them `font/line-height/<scale>-<ratio>` (e.g. `body-small-none`, `title-medium-tight`). The px value is a representational artifact — Figma can't store unitless ratios (ADR-002, accepted divergence). Always ignore the scale prefix and map the trailing ratio label to the code token: `none` → `--ds-font-line-height-none` · `tight` → `--ds-font-line-height-tight` · `default` → `--ds-font-line-height-default` · `relaxed` → `--ds-font-line-height-relaxed` · `loose` → `--ds-font-line-height-loose`. Never use the raw px value from Figma.
 
    **Spacing translation rule:** The Figma output names gap variables like `gap-[var(--space/inline/md, 16px)]`. Map the segment after `--space/` directly to the gap token name — `inline/md` → `gap="md"`, `stack/xs` → `gap="xs"`. Never substitute a different scale step or use the fallback px value as a guide. Do not add wrapper elements that aren't in the Figma layout — siblings in a Figma flex row stay siblings in code.
-2. Fill the metadata schema fields from what you observe in Figma. Anti-patterns must reference only components in the fixed set. Variant names must match Figma exactly.
-3. Determine the component name before creating any files. **Naming rule: noun first, then variant/modifier** — `Button`, `ButtonArrow`; `Card`, `CardHorizontal`, `CardVertical`. Never reverse this (`ArrowButton`, `HorizontalCard`). This keeps variants grouped together in directory listings and matches the existing library convention.
-4. Produce the component folder at `packages/components/src/ComponentName/`:
+2. Determine the component name before creating any files. **Naming rule: noun first, then variant/modifier** — `Button`, `ButtonArrow`; `Card`, `CardHorizontal`, `CardVertical`. Never reverse this (`ArrowButton`, `HorizontalCard`). This keeps variants grouped together in directory listings and matches the existing library convention.
+3. **API proposal — stop for approval before writing any file** (ADR-026). Output the following and wait for the developer to approve or edit it:
+   - **Anatomy:** named parts and layers, top to bottom. These names become the Figma layer names (and `composition.parts` if the component has parts, ADR-023).
+   - **Props table:**
+
+     | Prop | Concept | Kind | Type | Default | Figma property | Surface |
+     |---|---|---|---|---|---|---|
+     | `size` | Size | variant axis | `'sm' \| 'md'` | `'md'` | `Size` | both |
+     | `onValueChange` | Controlled state | event | `(value: string) => void` | — | — | code-only |
+
+     *Concept* is a row of `.claude/rules/components.md` → "Prop vocabulary", or **new term** with a one-line reason. *Kind* ∈ variant axis · lifecycle · content · controlled state · event · native. *Surface* ∈ both · code-only · Figma-only (`State`, `Has <x>`).
+   - **Divergences:** every Figma property or value that differs from code by more than casing, and every departure from the vocabulary. Each one is a recorded mapping (ADR-026) or gets fixed; none passes silently.
+
+   Inside `/add-component` this checkpoint is part of Stage 1. The approved names are final for steps 4–5.
+4. Fill the metadata schema fields from the approved API proposal and what you observe in Figma. Anti-patterns must reference only components in the fixed set. Variant and prop names match the approved table; Figma differs only by casing or a recorded mapping.
+5. Produce the component folder at `packages/components/src/ComponentName/`:
    - `index.tsx` — typed props matching the metadata's variant axes (one prop per `variants.<axis>`, typed to that axis's `options`) and `states`; no hard-coded design values; import CSS module for class names
    - `ComponentName.module.css` — one rule per variant + state combination; only `var(--ds-*)` custom properties, never raw values
    - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls. **Storybook title rule:** layout primitives (`category: layout` in metadata) use `title: 'Layout/ComponentName'`; everything else uses `title: 'Components/ComponentName'`.
    - `ComponentName.metadata.json` — completed metadata file conforming to the schema
-5. Record the Figma node ID in the metadata file's `figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
+6. Record the Figma node ID in the metadata file's `figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
 
 ## Output
 

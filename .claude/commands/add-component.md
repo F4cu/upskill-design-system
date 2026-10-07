@@ -28,7 +28,7 @@ Run `npm run sense:component <Name>`. This writes `.claude/handoff/runs/<Name>.s
 If the Figma snapshot is reported absent or stale (`figma.snapshot.stale: true`) and the component has a Figma node, tell the developer and offer to refresh via `/figma-variable-audit` before continuing. Do not silently rely on stale drift state.
 
 ### Stage 1 · Scaffold (main session)
-Read **only** the snapshot from stage 0 plus the metadata schema (`packages/components/component.schema.json`) and the closest existing component as a structural template. Then follow `/component-scaffold` to produce the four files at `packages/components/src/components/<Name>/`:
+Read **only** the snapshot from stage 0 plus the metadata schema (`packages/components/component.schema.json`) and the closest existing component as a structural template. Then follow `/component-scaffold`: first its API proposal checkpoint (props table checked against the "Prop vocabulary" in `.claude/rules/components.md`, approved by the developer before any file is written, ADR-026), then the four files at `packages/components/src/components/<Name>/`:
 - `index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.metadata.json`
 
 Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, noun-first naming, story title rule). Pick active tokens — never one listed under `tokens.deprecatedAvoid` in the snapshot. Add the component to `packages/components/src/index.ts`.

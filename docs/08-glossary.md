@@ -22,6 +22,7 @@ sources:
 # clock reset 2026-10-02: tokens-author Conventions gains a bullet (component dimension without a token → size primitive + named device alias, never raw px); this page doesn't list the convention bullets, still accurate
 # clock reset 2026-10-06: figma-variable-push.md example path swapped (button.ghost → button.danger.default); no term changed, still accurate
 # rewritten 2026-10-06: Slot and Open part entries say how each maps to Figma (ADR-023 amendment 2026-10-06: code slot = instance swap, open part = native slot on Parent.Root)
+# clock reset 2026-10-07: /component-scaffold gains an API proposal step and /add-component Stage 1 names it (ADR-026); Scaffold entry stays accurate at its level of detail, no new term
 ---
 # Glossary
 
