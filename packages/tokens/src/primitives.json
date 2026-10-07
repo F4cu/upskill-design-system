@@ -1053,6 +1053,14 @@
     "1600": {
       "$type": "number",
       "$value": 128
+    },
+    "2000": {
+      "$type": "number",
+      "$value": 160
+    },
+    "2750": {
+      "$type": "number",
+      "$value": 220
     }
   },
   "font": {

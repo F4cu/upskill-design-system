@@ -6,11 +6,11 @@
 }
 
 .lg {
-  min-width: 220px;
+  min-width: var(--ds-size-card-min-lg);
 }
 
 .sm {
-  min-width: 160px;
+  min-width: var(--ds-size-card-min-sm);
 }
 
 /* No overflow clipping: the Menu panel must be able to extend past the thumbnail */

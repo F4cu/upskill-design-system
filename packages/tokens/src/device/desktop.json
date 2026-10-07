@@ -223,6 +223,18 @@
     "halo": {
       "$type": "number",
       "$value": "{size.050}"
+    },
+    "card": {
+      "min": {
+        "sm": {
+          "$type": "number",
+          "$value": "{size.2000}"
+        },
+        "lg": {
+          "$type": "number",
+          "$value": "{size.2750}"
+        }
+      }
     }
   }
 }

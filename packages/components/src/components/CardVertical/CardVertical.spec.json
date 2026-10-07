@@ -436,8 +436,8 @@
           "width": { "literal": "100%", "reason": "Fills its grid or carousel cell (layoutBehavior fill)." }
         }
       },
-      { "when": { "size": "lg" }, "set": { "min-width": { "literal": "220px", "reason": "No token. A raw px value breaks the components CSS rule; it should be a size primitive plus a device alias (pilot finding)." } } },
-      { "when": { "size": "sm" }, "set": { "min-width": { "literal": "160px", "reason": "No token. Same finding as the lg min-width." } } }
+      { "when": { "size": "lg" }, "set": { "min-width": "size.card.min.lg" } },
+      { "when": { "size": "sm" }, "set": { "min-width": "size.card.min.sm" } }
     ],
     "Thumbnail": [
       { "when": { "state": "hover" }, "set": { "opacity": { "literal": "0.8", "reason": "No opacity token scale exists." } } }

@@ -232,7 +232,9 @@
     ],
     "borderRadius": [],
     "other": [
-      "size.halo"
+      "size.halo",
+      "size.card.min.sm",
+      "size.card.min.lg"
     ]
   },
   "accessibility": {
