@@ -62,7 +62,7 @@ The grammar table from ADR-011 — one abstraction level per Figma wrapper:
 
 Responsiveness comes from the token layer, never from layout files: device tokens carry the per-breakpoint values, reflow happens via `.grid` or `Inline wrap`, and hand-written `@media` in a layout file is forbidden. Which spacing tokens a layout may touch is governed by [ADR-004](decisions/004-layout-token-categories.md) (`grid.*` is consumed only by `.container`; components use `space.*`) and [ADR-005](decisions/005-size-vs-space-primitives.md) (`space` for gaps, `size` for element dimensions).
 
-The validator enforces the load-bearing invariants without judgment: exactly one `<main>`, every `<section>` named, every extra `<nav>` uniquely labelled, fixed-set component names only.
+The validator enforces the load-bearing invariants without judgment: exactly one `<main>`, every `<section>` named, every extra `<nav>` uniquely labelled, fixed-set component names only. The fixed set is whatever `@upskill/components` exports, read from the package's `index.ts`; the metadata validator checks part `accepts` against the same list, so the two can't disagree (#98).
 
 Dotted names are allowed for subcomponents ([ADR-023](decisions/023-subcomponents-compound-components.md)). `<CardVertical.Body>` passes only when `Body` is declared in `CardVertical`'s metadata `composition.parts`; `<CardVertical.Bogus>` fails. For declared parts the validator also checks:
 
