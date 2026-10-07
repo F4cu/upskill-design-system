@@ -515,6 +515,15 @@
     ],
     "--ds-grid-columns": [
       "packages/components/src/styles/grid.css"
+    ],
+    "--ds-size-focus-width": [
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-color-border-focus": [
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-size-focus-offset": [
+      "packages/components/src/styles/reset.css"
     ]
   },
   "aliases": {
@@ -872,6 +881,9 @@
       "packages/tokens/src/device/desktop.json"
     ],
     "size.050": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "size.025": [
       "packages/tokens/src/device/desktop.json"
     ],
     "size.2000": [
