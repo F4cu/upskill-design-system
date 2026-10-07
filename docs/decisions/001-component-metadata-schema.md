@@ -4,7 +4,7 @@ title: "ADR-001 — Component Metadata Schema for Machine-Readable Design System
 # ADR-001 — Component Metadata Schema for Machine-Readable Design System
 
 **Date:** 2026-06-11
-**Amended:** 2026-07-23
+**Amended:** 2026-10-07
 **Status:** `accepted`
 
 ## Context
@@ -82,3 +82,16 @@ Commit `d89782a` (2026-06-24) reshaped the relationship section without a matchi
 3. **`neverPairWith` dropped, absorbed into `usage.antiPatterns`.** Five files had populated it (the three Card variants' mutual-exclusion rules, Chip↔Button, Image↔Avatar). Those constraints survive as anti-patterns — e.g. Card's "Using Card as a sibling of CardVertical or CardHorizontal in the same layout group" — where each carries a `reason` and `alternative` instead of a bare name list; self-nesting rules moved to `layoutBehavior.canNest`. Per the "deliberately excluded" convention above, do not re-add it without a new ADR.
 
 `composedOf` (internal library dependencies) has been part of the section since the original schema. References to `relationships` elsewhere in this ADR are preserved as written; read them as `composition`.
+
+## Amendment (2026-10-07) — `tokens` lists what the component itself reads, enforced
+
+`tokens` was hand-written and never checked against the code. Issue #117 found 11 of 27 components out of step with their CSS Modules. Seven left out tokens their CSS reads (AppHeader missed nine). Others listed tokens their CSS never reads, either stale (Text listed `font.weight.medium`; its CSS uses `bold`) or applied by a child component (CardVertical listed `color.text.subtle`, which reaches it through `<Text color="subtle">`).
+
+**Decision.** `tokens.*` lists exactly the tokens the component itself reads: `var(--ds-*)` in its CSS Module or its `index.tsx`. A TSX template prefix counts, so Avatar's `` var(--ds-size-avatar-${size}) `` covers `size.avatar.*`. A token applied by a child component (a Text color, a Stack gap, a Heading size) belongs to the child's metadata, not the parent's.
+
+`scripts/validate-metadata.js` enforces both directions. A token read by the CSS Module but not listed fails, and so does a listed token that neither file reads.
+
+**Why this rule:** it is the only one a script can check. It also keeps the token map complete for deprecation analysis: every token a component renders is read by some component's CSS, so it is listed in that component's metadata. The route a child token takes is recorded where it is useful to a builder, in the component spec's `anatomy[].builtOnProps` (ADR-027).
+
+**Alternative considered:** waiting for ADR-027 to move `tokens` into the spec, where `spec:validate` already enforces this for the two pilot components. That would leave 25 components unchecked until the pilot is decided. If ADR-027 is accepted, the check moves with the section.
+

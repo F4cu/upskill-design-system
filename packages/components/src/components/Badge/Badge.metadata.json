@@ -69,19 +69,13 @@
   "tokens": {
     "color": [
       "color.border.default",
-      "color.text.subtle",
       "color.background.overlay.subtlest"
     ],
     "spacing": [
       "space.inset.xxs",
       "space.inset.xs"
     ],
-    "typography": [
-      "font.family.body",
-      "font.size.body-small",
-      "font.weight.regular",
-      "font.line-height.default"
-    ],
+    "typography": [],
     "borderRadius": [
       "border-radius.sm"
     ],

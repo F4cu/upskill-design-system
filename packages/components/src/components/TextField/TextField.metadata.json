@@ -126,14 +126,13 @@
     ],
     "spacing": [
       "space.stack.sm",
-      "space.inset.md"
+      "space.inset.md",
+      "space.inset.xs"
     ],
     "typography": [
       "font.family.body",
-      "font.size.label",
       "font.size.body-default",
       "font.size.body-small",
-      "font.weight.bold",
       "font.line-height.relaxed"
     ],
     "borderRadius": [

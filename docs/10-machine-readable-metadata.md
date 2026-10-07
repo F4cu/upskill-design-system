@@ -77,10 +77,11 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 ]
 ```
 
-`scripts/validate-metadata.js` runs three checks beyond the Ajv schema pass:
+`scripts/validate-metadata.js` runs four checks beyond the Ajv schema pass:
 
 - `component.name` must equal the containing directory name.
 - Every dot-path under `tokens.*` must resolve to a `$value` node in the merged primitives+brands+theme+device tree.
+- `tokens.*` must list exactly the tokens the component itself reads: every `var(--ds-*)` in its CSS Module must be listed, and every listed token must appear in the CSS Module or `index.tsx` (a TSX template prefix such as `` var(--ds-size-avatar-${size}) `` counts). Tokens a child component applies belong to the child's metadata (ADR-001 amendment 2026-10-07).
 - Every `composition.parts` entry must be internally consistent: names are unique and don't collide with a component folder, `accepts` appears only on `slot`/`open` parts (and is required there), each `accepts` entry is a component or a sibling part, each `containedBy` entry is a sibling part, and `builtOn` is a component or `null`.
 
 `scripts/validate-layout.js` then uses the same block to check layouts that compose a component from its parts.

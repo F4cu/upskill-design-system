@@ -59,19 +59,26 @@
   ],
   "tokens": {
     "color": [
-      "color.background.container.elevated",
-      "color.border.subtle",
-      "color.text.brand"
+      "color.text.brand",
+      "color.background.container.canvas",
+      "color.border.brand",
+      "color.text.subtle",
+      "color.text.default"
     ],
     "spacing": [
       "space.inline.xs",
-      "space.inline.lg",
       "space.inset.xs",
-      "space.inset.xxl"
+      "space.inline.md",
+      "space.stack.xs"
     ],
-    "typography": [],
+    "typography": [
+      "font.size.body-default",
+      "font.line-height.relaxed"
+    ],
     "borderRadius": [],
-    "other": []
+    "other": [
+      "grid.margin"
+    ]
   },
   "accessibility": {
     "role": "banner",

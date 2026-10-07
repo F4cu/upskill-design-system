@@ -163,10 +163,12 @@
     "typography": [
       "font.family.body",
       "font.size.body-default",
-      "font.weight.semibold"
+      "font.weight.semibold",
+      "font.line-height.none"
     ],
     "borderRadius": [
-      "border-radius.sm"
+      "border-radius.sm",
+      "border-radius.full"
     ]
   },
   "accessibility": {

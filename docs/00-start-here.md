@@ -42,6 +42,7 @@ sources:
 # 2026-10-07: adds ADR-027 (proposed: component spec file, Button pilot); ADR count corrected to twenty-seven (was already one behind after ADR-026); page lists no individual ADRs or per-component files
 # clock reset 2026-10-07: ADR-027 amendment records the CardVertical pilot spec; this page lists no individual ADRs or per-component files, still accurate
 # clock reset 2026-10-07: ADR-027 links its harness-arm handoff; this page lists no handoffs or individual ADRs, still accurate
+# clock reset 2026-10-07: ADR-001 amendment (tokens lists what the component itself reads, enforced); this page lists no metadata fields, still accurate
 ---
 # Start here
 

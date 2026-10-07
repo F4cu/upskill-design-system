@@ -98,14 +98,13 @@
     "spacing": [
       "space.stack.sm",
       "space.stack.xs",
-      "space.inset.md"
+      "space.inset.md",
+      "space.inline.xs"
     ],
     "typography": [
       "font.family.body",
-      "font.size.label",
       "font.size.body-default",
       "font.size.body-small",
-      "font.weight.medium",
       "font.line-height.relaxed"
     ],
     "borderRadius": [

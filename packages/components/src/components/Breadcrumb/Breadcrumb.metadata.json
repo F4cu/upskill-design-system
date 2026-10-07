@@ -60,12 +60,16 @@
   "tokens": {
     "color": [
       "color.text.default",
-      "color.text.subtle"
+      "color.text.subtle",
+      "color.text.brand"
     ],
     "spacing": [
       "space.inline.xs"
     ],
-    "typography": [],
+    "typography": [
+      "font.size.body-default",
+      "font.line-height.relaxed"
+    ],
     "borderRadius": [],
     "other": []
   },

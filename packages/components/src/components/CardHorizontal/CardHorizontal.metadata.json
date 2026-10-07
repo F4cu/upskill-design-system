@@ -111,19 +111,14 @@
   ],
   "tokens": {
     "color": [
-      "color.text.default",
       "color.text.subtle",
-      "color.text.inverted.default",
       "color.text.inverted.subtle",
       "color.icon.subtle",
       "color.icon.inverted.default"
     ],
     "spacing": [
       "space.inline.xs",
-      "space.inline.sm",
-      "space.inline.md",
-      "space.stack.xs",
-      "space.stack.sm"
+      "space.inline.md"
     ],
     "typography": [
       "font.line-height.tight"

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Validates every component metadata file against component.schema.json.
 // Also checks each metadata file's component.name matches its folder name,
-// resolves tokens.* and composition.parts cross-references, and validates the
+// resolves tokens.* and composition.parts cross-references, checks tokens.*
+// against what the component's own CSS Module and TSX read, and validates the
 // canonical example file. Exits non-zero on any failure so it can
 // gate CI. This is the contract the component-scaffold and layout-generation
 // agentic moments consume — keep it green.
@@ -112,6 +113,33 @@ function checkParts(parts) {
   return errors;
 }
 
+// tokens.* lists exactly the tokens the component itself reads: var(--ds-*) in
+// its CSS Module or TSX, including a TSX template prefix such as
+// `var(--ds-size-avatar-${size})`. Tokens a child component applies (a Text
+// color, a Stack gap) belong to that child's metadata (ADR-001 amendment).
+function checkTokenReads(dir, data) {
+  const read = (file, re) => (fs.existsSync(file) ? [...fs.readFileSync(file, "utf8").matchAll(re)].map((m) => m[1]) : []);
+  const cssVars = new Set(read(path.join(COMPONENTS_DIR, dir, `${dir}.module.css`), /var\((--ds-[a-z0-9-]+)/g));
+  const tsxFile = path.join(COMPONENTS_DIR, dir, "index.tsx");
+  const tsxVars = new Set(read(tsxFile, /(--ds-[a-z0-9-]+)(?!-?\$\{)/g));
+  const tsxPrefixes = read(tsxFile, /(--ds-[a-z0-9-]*-)\$\{/g);
+  const listed = new Set();
+  const errors = [];
+  for (const [category, refs] of Object.entries(data.tokens ?? {})) {
+    for (const ref of refs) {
+      const cssVar = `--ds-${ref.replaceAll(".", "-")}`;
+      listed.add(cssVar);
+      if (!cssVars.has(cssVar) && !tsxVars.has(cssVar) && !tsxPrefixes.some((p) => cssVar.startsWith(p))) {
+        errors.push(`tokens.${category}: "${ref}" is not read by ${dir}.module.css or index.tsx`);
+      }
+    }
+  }
+  for (const cssVar of cssVars) {
+    if (!listed.has(cssVar)) errors.push(`tokens: ${dir}.module.css reads ${cssVar}, which tokens.* does not list`);
+  }
+  return errors;
+}
+
 const targets = [];
 for (const dir of fs.readdirSync(COMPONENTS_DIR)) {
   const file = path.join(COMPONENTS_DIR, dir, `${dir}.metadata.json`);
@@ -152,6 +180,8 @@ for (const { file, expectedName } of targets) {
       }
     }
   }
+
+  if (expectedName) errors.push(...checkTokenReads(expectedName, data));
 
   if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
 

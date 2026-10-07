@@ -209,8 +209,6 @@
   ],
   "tokens": {
     "color": [
-      "color.text.default",
-      "color.text.subtle",
       "color.icon.subtle",
       "color.icon.brand",
       "color.icon.on-media.default",
@@ -220,15 +218,11 @@
     "spacing": [
       "space.stack.sm",
       "space.stack.xs",
-      "space.inline.sm",
       "space.inline.xs",
       "space.inset.xs"
     ],
     "typography": [
-      "font.family.headline-serif",
-      "font.size.subheader",
-      "font.weight.medium",
-      "font.line-height.tight"
+      "font.size.subheader"
     ],
     "borderRadius": [],
     "other": [
