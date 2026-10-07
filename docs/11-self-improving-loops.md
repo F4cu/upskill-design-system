@@ -14,6 +14,7 @@ sources:
 # clock reset 2026-09-23: ADR-017 amendment (2026-09-08) names the CLAUDE.md split against CoALA memory types, no structural change; this page only cites ADR-017 for capping CLAUDE.md, still accurate
 # clock reset 2026-10-07: score.js treats ADR-023 parts that render Text/Heading as typography wrappers; rescoring the 14 retained July cells leaves every trap count unchanged, so the ADR-013 numbers this page cites still hold
 # clock reset 2026-10-07: score.js px-literal flags px only on token-covered CSS properties (spacing, radius, type, focus ring); rescoring the 14 retained July cells leaves every trap count unchanged, so the ADR-013 numbers this page cites still hold
+# clock reset 2026-10-07: run.js gains Arm C (approved spec, ADR-027), --arm, --runs and --dry-run; the A/B experiment this page describes is unchanged and still accurate
 ---
 # Self-improving loops
 

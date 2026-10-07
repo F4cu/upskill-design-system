@@ -48,6 +48,7 @@ Same two-bucket idea as the ablation eval, so Arm C isn't credited for repeating
    - Arms per task: A, B, plus C when `specTarget` is set. `--arm <A|B|C>` (repeatable) to pick.
    - `--dry-run`: write `prompt.md` and print prompt sizes without invoking `claude`.
    - Record `promptChars` in `score.json`.
+   - **Done 2026-10-07.** Also added `--runs <n>` (the pre-registration needs N = 3): several runs go to `.runs/<task>/<arm>/run-<n>/`, one run keeps the old layout. Dry-run prompts go to `.runs/.dry-run/`, so a dry run never wipes scored runs. `report.js` doesn't read `run-<n>/` yet; that's item 4.
 2. `scripts/validate-spec.js`: a `--components-dir <dir>` option, so it can check a run folder. Treat repo components plus that dir as known component names (the run folder has only the target). Keep the default behaviour unchanged for CI.
 3. `score.js`: a `spec:conformance` gate that copies the committed spec into the run folder and calls the validator. Violations = reported mismatch lines.
 4. `report.js`: arm C rows, an A-vs-C delta over tasks that have C, a prompt-size column, and arm descriptions for C.

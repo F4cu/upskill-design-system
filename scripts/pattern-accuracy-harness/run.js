@@ -3,8 +3,10 @@
 // handoff). For each task × arm it invokes `claude -p` headlessly with a fresh
 // context — Arm A gets the brief + per-component metadata (mirroring what
 // /layout-generation and /component-scaffold inject today), Arm B gets the
-// identical prompt + .claude/component-patterns.json — extracts the emitted
-// files into an isolated scratch dir, and scores them with score.js.
+// identical prompt + .claude/component-patterns.json, Arm C gets Arm A + the
+// target's approved <Name>.spec.json (ADR-027; tasks with `specTarget` only) —
+// extracts the emitted files into an isolated scratch dir, and scores them
+// with score.js.
 // Sequential, never parallel (CLAUDE.md on-demand loop guardrails).
 //
 // `claude` runs with cwd in an empty tmp dir so the repo's CLAUDE.md is NOT
@@ -24,6 +26,7 @@ const ROOT = path.resolve(__dirname, '../..')
 const TASKS_DIR = path.join(__dirname, 'tasks')
 const RUNS_DIR = path.join(__dirname, '.runs')
 const COMPONENTS_DIR = path.join(ROOT, 'packages/components/src/components')
+const DRY_RUN_DIR = path.join(RUNS_DIR, '.dry-run')
 const PATTERNS_FILE = path.join(ROOT, '.claude/component-patterns.json')
 const SCHEMA_FILE = path.join(ROOT, 'packages/components/component.schema.json')
 
@@ -55,6 +58,14 @@ function buildPrompt(task, arm) {
       '',
       'CONTEXT — component.schema.json that any *.metadata.json you emit must validate against:',
       fs.readFileSync(SCHEMA_FILE, 'utf8').trim(),
+    )
+  }
+
+  if (arm === 'C') {
+    sections.push(
+      '',
+      `CONTEXT — approved component spec (${task.specTarget}.spec.json):`,
+      fs.readFileSync(path.join(COMPONENTS_DIR, task.specTarget, `${task.specTarget}.spec.json`), 'utf8').trim(),
     )
   }
 
@@ -114,40 +125,73 @@ function invokeClaude(prompt) {
   return result.stdout
 }
 
-function runArm(task, arm) {
-  const scratchDir = path.join(RUNS_DIR, task.id, arm)
+function armsFor(task) {
+  const arms = task.specTarget ? ['A', 'B', 'C'] : ['A', 'B']
+  return armFilter.length > 0 ? arms.filter((a) => armFilter.includes(a)) : arms
+}
+
+function dryRunArm(task, arm) {
+  const dir = path.join(DRY_RUN_DIR, task.id, arm)
+  fs.mkdirSync(dir, { recursive: true })
+  const prompt = buildPrompt(task, arm)
+  fs.writeFileSync(path.join(dir, 'prompt.md'), prompt)
+  console.log(`[${task.id}] arm ${arm}: ${prompt.length} chars → ${path.relative(process.cwd(), path.join(dir, 'prompt.md'))}`)
+}
+
+// One run keeps the original .runs/<task>/<arm>/ layout so the July cells stay
+// readable; several runs go to .runs/<task>/<arm>/run-<n>/.
+function runArm(task, arm, run) {
+  const scratchDir = runs === 1 ? path.join(RUNS_DIR, task.id, arm) : path.join(RUNS_DIR, task.id, arm, `run-${run}`)
+  const label = runs === 1 ? `[${task.id}] arm ${arm}` : `[${task.id}] arm ${arm} run ${run}`
   fs.rmSync(scratchDir, { recursive: true, force: true })
   fs.mkdirSync(scratchDir, { recursive: true })
 
   const prompt = buildPrompt(task, arm)
   fs.writeFileSync(path.join(scratchDir, 'prompt.md'), prompt)
 
-  console.log(`[${task.id}] arm ${arm}: invoking claude -p (${prompt.length} chars of prompt)…`)
+  console.log(`${label}: invoking claude -p (${prompt.length} chars of prompt)…`)
   const response = invokeClaude(prompt)
   fs.writeFileSync(path.join(scratchDir, 'response.md'), response)
 
   const written = extractFiles(response, scratchDir, task.outputHint)
-  console.log(`[${task.id}] arm ${arm}: extracted ${written.length} file(s): ${written.join(', ') || '(none)'}`)
+  console.log(`${label}: extracted ${written.length} file(s): ${written.join(', ') || '(none)'}`)
 
-  const score = scoreScratch(scratchDir, task)
-  console.log(`[${task.id}] arm ${arm}: ${score.gateViolations} gate + ${score.trapViolations} trap = ${score.total} violations`)
+  const score = { ...scoreScratch(scratchDir, task), promptChars: prompt.length }
+  fs.writeFileSync(path.join(scratchDir, 'score.json'), JSON.stringify(score, null, 2) + '\n')
+  console.log(`${label}: ${score.gateViolations} gate + ${score.trapViolations} trap = ${score.total} violations`)
   return score
 }
 
 const args = process.argv.slice(2)
 const taskIds = []
+const armFilter = []
 let all = false
+let dryRun = false
+let runs = 1
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--all') all = true
   else if (args[i] === '--task') taskIds.push(args[++i])
+  else if (args[i] === '--arm') armFilter.push(args[++i])
+  else if (args[i] === '--dry-run') dryRun = true
+  else if (args[i] === '--runs') runs = Number(args[++i])
   else {
     console.error(`Unknown argument: ${args[i]}`)
     process.exit(1)
   }
 }
 if (!all && taskIds.length === 0) {
-  console.error('Usage: npm run harness:run -- --task <id> [--task <id>…] | --all')
+  console.error('Usage: npm run harness:run -- --task <id> [--task <id>…] | --all  [--arm <A|B|C>…] [--runs <n>] [--dry-run]')
   console.error(`Available tasks: ${fs.readdirSync(TASKS_DIR).map((f) => f.replace('.json', '')).join(', ')}`)
+  process.exit(1)
+}
+
+const badArm = armFilter.find((a) => !['A', 'B', 'C'].includes(a))
+if (badArm) {
+  console.error(`Unknown arm: ${badArm} (expected A, B or C)`)
+  process.exit(1)
+}
+if (!Number.isInteger(runs) || runs < 1) {
+  console.error('--runs must be a positive integer')
   process.exit(1)
 }
 
@@ -157,8 +201,14 @@ const selected = all
 
 for (const id of selected) {
   const task = loadTask(id)
-  for (const arm of ['A', 'B']) runArm(task, arm)
+  const arms = armsFor(task)
+  if (arms.length === 0) console.log(`[${id}] no matching arm (arm C needs specTarget), skipped`)
+  for (const arm of arms) {
+    if (dryRun) dryRunArm(task, arm)
+    else for (let run = 1; run <= runs; run++) runArm(task, arm, run)
+  }
 }
 
+if (dryRun) process.exit(0)
 writeReport()
 console.log(`\nReport written to ${path.relative(process.cwd(), path.join(__dirname, 'results.md'))}`)
