@@ -67,6 +67,7 @@ Code and Figma share names, values and defaults. Casing is the only routine diff
 | Optional prop omitted | `Has <x>` boolean, default `false` | An instance-swap or text layer has no "empty" option (ADR-023). |
 | Pseudo-classes | `State` variant | Preview only; `State` is reserved for interaction (ADR-025). |
 | `children` as a label string | `Text` text property | Figma has no `children`; the text property is the label layer's content (Button, Chip). |
+| Native `value` / `placeholder` (TextField) | `Has value` variant + `Value` text property | Figma can't show the placeholder and a value at once. `Has value=false` previews the placeholder style; `Value` holds whichever text is shown. |
 | `progress` (CardVertical) | `Status` variant (`Not started` / `In progress` / `Completed`) | Preview of the lifecycle the code derives from `progress` (ADR-025). Figma can't derive, so the axis is explicit there and has no code prop. |
 
 Code-only props (event handlers, `default*`, `className`, `id`) have no Figma property. Figma-only properties (`State`, `Has <x>`, design-only interaction states such as Menu `Expanded`) are listed as such.
@@ -77,10 +78,11 @@ Figma-only properties with no code counterpart, recorded 2026-10-07:
 |---|---|---|
 | Chip | `Has dropdown` | Legacy dropdown-arrow look. Out of scope in code (Chip metadata "do not use"); kept because placed instances use it. |
 | Accordion list | The whole set, `Show more` = `false` / `true` | A stack of `Accordion` instances plus a Show more link, for page mock-ups. Code composes Accordions directly and has no list component. |
+| Input Group + button | The whole component | Search input plus icon button, for page mock-ups. Code composes `TextField` and `Button` (AppHeader search). |
 | Select | `Style` = `Outlined` / `Filled` | Design exploration; code ships one look and has no `variant`. |
 | Image | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
 
-Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`.
+Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`. TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand). 8 `TextField` instances hold a `Select` in the `Input` slot, because the Figma `Select` has no label of its own while the code `Select` takes `label`; they stay until Select gains a label in Figma.
 
 ### API proposal step
 
@@ -104,7 +106,7 @@ The developer approves or edits the table; only then are the four files generate
   |---|---|---|---|
   | AppHeader | `searchValue` + `onSearchChange` | `onSearchValueChange` | Migrated 2026-10-07 |
   | DropdownMenu | `selectedValue`; `onClose`; rendered conditionally by the consumer | `value`; `open` + `onOpenChange` (controlled only: the consumer owns the trigger, and the menu only ever requests `false`) | Migrated 2026-10-07 |
-  | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07 (no Figma component set to update) |
+  | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07; Figma `Size` renamed in the alignment pass (amendment below) |
   | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07, Figma included: `state=Selected` split into `Pressed` (default `false`) and `State` (interaction) |
   | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value (vocabulary row above) | Closed 2026-10-07 |
 
@@ -121,5 +123,13 @@ The file was brought in line with the vocabulary by renaming properties in place
 - **CardHorizontal:** `Progress` → `Has progress`. **Button arrow:** `State=Active` → `Default` (`Active` reads as the `:active` pseudo-class). **CardVertical:** `State` values recased to `Default`/`Hover`.
 - **Component set names match code:** `Accordion list item` → `Accordion`; the former `Accordion` composite → `Accordion list`, with its `State=Expanded|Collapsed` axis renamed `Show more` (default `false`), since `State` is reserved for interaction; `Button arrow` → `ButtonArrow`; `Image placeholder` → `Image`; `Option menu` → `DropdownMenu`.
 - **Checkbox** (`92:8772`, formerly `Checkbox with label`): `State=on|off|State3` → `Checked` (`false`/`true`, the native-input name) × `State` (`Default`/`Hover`). `State3` became the Hover preview. A `Label` text property now drives the label layer. The box, check and label are rebound to the variables the code reads (`background/input`, `background/brand`, `border/input/{default,hover}` at 1.5px, `text/inverted/default`, `text/default`). All 12 instances kept their checked state and labels. `State` gained `Disabled` for both `Checked` values (border `border/disabled`, label `text/disabled`, checked fill `background/disabled`), so every metadata state has a preview. The box's main component (`92:8764`), which had been removed from the canvas while its instances stayed, is back on the Checkbox page as `_Checkbox/Box` (private, unpublished), defaulting to the unchecked look; variants override fill, stroke and check per state.
+- **TextField:** the Figma `Input Group` (`71:1189`) is the code `TextField` (label + input + error) and takes its name. It gains `Label` and `Error` text properties and `Has error`. The error layer uses `font/size/body-small` and `text/feedback/error`. Its `Type` swap becomes `Input` (preferred: the input set), the nested input's properties are exposed on the parent, and the input fills the field's width as in code. `Input field` (`92:8005`) becomes the private part `_TextField/Input`:
+  - `Size` is `md`/`lg` (40/48px).
+  - `State=Empty|Filled|Hover` is split into `Has value` × `State` (`Default`/`Hover`/`Focus`/`Disabled`) plus `Has error`, covering every metadata state. The new Focus, Disabled and error rows are duplicates of existing variants.
+  - The 12 unused `Style=Outlined` variants were deleted, and the axis went with them; code has one look.
+  - `Trailing icon` (default `true`, but it toggled the leading icon) is now `Has icon` (default `false`) + `Icon`.
+  - Variables follow the CSS: fill `background/input`, borders `border/input/{default,hover}`, `border/selected`, `border/disabled`, `border/feedback/error`, text `text/default` or `text/disabled`.
+  - All 44 instances kept their variant, icon and text.
+- Figma's `clone()` drops `componentPropertyReferences`. A duplicated variant must be re-wired to the set's properties, or its layers stop responding to them.
 - Figma picks a set's default variant by canvas position (top-left), not layer order, so defaults were set by moving variants.
 - ADR-024's Figma follow-ups were already done: the Button `Style` values, the CardVertical halo (two drop shadows bound to `color/icon/on-media/halo`), and the variables.

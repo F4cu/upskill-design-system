@@ -34,6 +34,7 @@ sources:
 # clock reset 2026-10-07: ADR-026 amendment records the Figma alignment pass (mappings, Figma-only properties, set renames); this page describes no Figma property names, still accurate
 # clock reset 2026-10-07: ADR-026 amendment adds the Checkbox Figma alignment; this page describes no Figma property names, still accurate
 # clock reset 2026-10-07: ADR-026 amendment adds Checkbox disabled variants and the restored box component; this page describes no Figma property names, still accurate
+# clock reset 2026-10-07: ADR-026 amendment adds the TextField Figma alignment; this page describes no Figma property names, still accurate
 ---
 # Start here
 
