@@ -1,0 +1,516 @@
+{
+  "component": "CardVertical",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "role": "article, named by Title (aria-labelledby)",
+      "required": true,
+      "notes": "Provides size and the title id to every part through context. Owns the gap between Media, Progress and Body."
+    },
+    {
+      "name": "Media",
+      "parent": "Root",
+      "element": "div",
+      "builtOn": "Image",
+      "role": "generic",
+      "required": true,
+      "notes": "Positioned wrapper around the Thumbnail. No overflow clipping, so the MenuPanel can extend past it. Throws unless it holds at most one Action."
+    },
+    {
+      "name": "Thumbnail",
+      "parent": "Media",
+      "element": "Image",
+      "builtOn": "Image",
+      "role": "img, named by alt (default '': decorative, the title names the card)",
+      "required": true,
+      "notes": "aspectRatio 4/5 when size=lg, 3/2 when size=sm. Without src, Image renders its placeholder."
+    },
+    {
+      "name": "Action",
+      "parent": "Media",
+      "element": "div",
+      "role": "generic",
+      "required": false,
+      "when": "action is set (preset) or an Action child is passed to Media",
+      "notes": "Top-right overlay. Throws unless it holds exactly one Favorite or Menu."
+    },
+    {
+      "name": "Favorite",
+      "parent": "Action",
+      "element": "Button",
+      "builtOn": "Button",
+      "builtOnProps": { "variant": "transparent", "size": "sm", "shape": "round", "icon": "heart", "aria-label": "Save" },
+      "role": "button (toggle, aria-pressed), named 'Save <title>' via aria-labelledby [self, Title]",
+      "action": "Toggles pressed and calls onPressedChange.",
+      "required": false
+    },
+    {
+      "name": "FavoriteGlyph",
+      "parent": "Favorite",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "role": "presentation",
+      "required": true,
+      "notes": "Button's Icon part. Carries the on-media halo."
+    },
+    {
+      "name": "Menu",
+      "parent": "Action",
+      "element": "div",
+      "builtOn": "Button",
+      "role": "generic",
+      "required": false,
+      "when": "items is not empty (renders nothing otherwise)",
+      "notes": "Positioned wrapper for MenuTrigger and MenuPanel. Open state is internal. Closes on outside click and when focus leaves it."
+    },
+    {
+      "name": "MenuTrigger",
+      "parent": "Menu",
+      "element": "Button",
+      "builtOn": "Button",
+      "builtOnProps": { "variant": "transparent", "size": "sm", "shape": "round", "icon": "more-vertical", "aria-label": "More options", "aria-haspopup": "menu" },
+      "role": "button, named 'More options <title>'; aria-expanded, aria-controls → MenuPanel while open",
+      "action": "Opens the menu and moves focus to the first item; activating again closes it.",
+      "required": true
+    },
+    {
+      "name": "MenuTriggerGlyph",
+      "parent": "MenuTrigger",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "role": "presentation",
+      "required": true,
+      "notes": "Button's Icon part. Carries the on-media halo."
+    },
+    {
+      "name": "MenuPanel",
+      "parent": "Menu",
+      "element": "DropdownMenu",
+      "builtOn": "DropdownMenu",
+      "role": "menu, named by the trigger and title",
+      "action": "Selecting an item calls onSelect, closes the menu and returns focus to MenuTrigger.",
+      "required": false,
+      "when": "the menu is open",
+      "notes": "Opens below the trigger, right-aligned."
+    },
+    {
+      "name": "Progress",
+      "parent": "Root",
+      "element": "ProgressBar",
+      "builtOn": "ProgressBar",
+      "role": "progressbar, named by Title",
+      "required": false,
+      "when": "progress is set"
+    },
+    {
+      "name": "Body",
+      "parent": "Root",
+      "element": "Stack",
+      "builtOn": "Stack",
+      "builtOnProps": { "gap": "sm" },
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Title",
+      "parent": "Body",
+      "element": "Heading",
+      "builtOn": "Heading",
+      "builtOnProps": { "size": "headline-serif" },
+      "role": "heading (level from as, default h3); its id names Root, Progress, Favorite and Menu",
+      "required": true,
+      "notes": "Must come first in Body. headline-serif sets family, weight and line-height; the CSS Module overrides only the font size."
+    },
+    {
+      "name": "Meta",
+      "parent": "Body",
+      "element": "Inline",
+      "builtOn": "Inline",
+      "builtOnProps": { "gap": "sm", "wrap": true, "align": "center" },
+      "role": "generic",
+      "required": false,
+      "when": "duration, certified or completed (preset)"
+    },
+    {
+      "name": "Duration",
+      "parent": "Meta",
+      "element": "Text",
+      "builtOn": "Text",
+      "builtOnProps": { "as": "span", "size": "metadata", "color": "subtle" },
+      "role": "generic",
+      "required": false,
+      "when": "duration is set (preset)"
+    },
+    {
+      "name": "Certified",
+      "parent": "Meta",
+      "element": "span",
+      "role": "generic",
+      "required": false,
+      "when": "certified (preset)"
+    },
+    {
+      "name": "CertifiedIcon",
+      "parent": "Certified",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "builtOnProps": { "name": "badge-check", "size": "sm" },
+      "role": "presentation",
+      "required": true
+    },
+    {
+      "name": "CertifiedLabel",
+      "parent": "Certified",
+      "element": "Text",
+      "builtOn": "Text",
+      "builtOnProps": { "as": "span", "size": "metadata", "color": "subtle" },
+      "role": "generic",
+      "required": true,
+      "notes": "Fixed text 'Certified'."
+    },
+    {
+      "name": "Completed",
+      "parent": "Meta",
+      "element": "span",
+      "role": "generic",
+      "required": false,
+      "when": "progress >= 100 (preset; derived, no prop)"
+    },
+    {
+      "name": "CompletedIcon",
+      "parent": "Completed",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "builtOnProps": { "name": "check", "size": "sm" },
+      "role": "presentation",
+      "required": true
+    },
+    {
+      "name": "CompletedLabel",
+      "parent": "Completed",
+      "element": "Text",
+      "builtOn": "Text",
+      "builtOnProps": { "as": "span", "size": "metadata", "color": "subtle" },
+      "role": "generic",
+      "required": true,
+      "notes": "Fixed text 'Completed'."
+    }
+  ],
+  "props": {
+    "thumbnailSrc": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": { "surface": "code-only", "note": "An image fill on the Thumbnail layer; no component property." }
+    },
+    "thumbnailAlt": {
+      "kind": "content",
+      "type": "string",
+      "default": "",
+      "concept": "Image",
+      "figma": { "surface": "code-only" }
+    },
+    "title": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "property": "Title", "note": "Text layer in the preset, not a CardVertical.Title instance (ADR-023 amendment 2026-10-06)." }
+    },
+    "duration": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "property": "Duration", "note": "Text layer in the preset (ADR-023 amendment 2026-10-06)." }
+    },
+    "certified": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": { "surface": "both", "property": "Certified" }
+    },
+    "progress": {
+      "kind": "lifecycle",
+      "type": "number (0–100)",
+      "default": null,
+      "concept": "Lifecycle",
+      "figma": { "surface": "both", "property": "Status", "note": "ADR-026 recorded mapping: the code derives Not started / In progress / Completed from progress; Figma makes it an explicit variant." }
+    },
+    "size": {
+      "kind": "variantAxis",
+      "type": "CardVerticalSize",
+      "options": ["sm", "lg"],
+      "default": "lg",
+      "concept": "Size",
+      "figma": { "surface": "both", "property": "Size" }
+    },
+    "action": {
+      "kind": "content",
+      "type": "ReactElement<CardVerticalFavoriteProps | CardVerticalMenuProps>",
+      "default": null,
+      "concept": "new term: the one preset prop ADR-023 allows, for the overlay slot",
+      "figma": { "surface": "both", "property": "Has action + Action", "note": "ADR-023: slot part ↔ instance swap plus a Has <x> boolean." }
+    },
+
+    "Root.size": {
+      "kind": "variantAxis",
+      "type": "CardVerticalSize",
+      "options": ["sm", "lg"],
+      "default": "lg",
+      "concept": "Size",
+      "figma": { "surface": "both", "set": "CardVertical.Root", "property": "Size" }
+    },
+    "Root.children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "code-only", "note": "Root's fixed layers plus its Body and Meta native slots." }
+    },
+    "Media.src": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": { "surface": "code-only" }
+    },
+    "Media.alt": {
+      "kind": "content",
+      "type": "string",
+      "default": "",
+      "concept": "Image",
+      "figma": { "surface": "code-only" }
+    },
+    "Media.children": {
+      "kind": "content",
+      "type": "ReactElement<CardVerticalActionProps>",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "set": "CardVertical.Root", "property": "Has action + Action" }
+    },
+    "Action.children": {
+      "kind": "content",
+      "type": "ReactElement<CardVerticalFavoriteProps | CardVerticalMenuProps>",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "property": "Action", "note": "The instance swap's value: Favorite or Menu." }
+    },
+    "Favorite.pressed": {
+      "kind": "controlledState",
+      "type": "boolean",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": { "surface": "both", "property": "Pressed" }
+    },
+    "Favorite.defaultPressed": {
+      "kind": "controlledState",
+      "type": "boolean",
+      "default": false,
+      "concept": "Controlled state",
+      "figma": { "surface": "code-only" }
+    },
+    "Favorite.onPressedChange": {
+      "kind": "controlledState",
+      "type": "(pressed: boolean) => void",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": { "surface": "code-only" }
+    },
+    "Menu.items": {
+      "kind": "content",
+      "type": "DropdownMenuItem[]",
+      "default": null,
+      "concept": "Collection",
+      "figma": { "surface": "code-only" }
+    },
+    "Menu.onSelect": {
+      "kind": "event",
+      "type": "(value: string) => void",
+      "default": null,
+      "concept": "Discrete event",
+      "figma": { "surface": "code-only" }
+    },
+    "Progress.value": {
+      "kind": "lifecycle",
+      "type": "number (0–100)",
+      "default": null,
+      "concept": "new term: ProgressBar's value, passed through",
+      "figma": { "surface": "both", "set": "CardVertical.Root", "property": "completion", "note": "ADR-023 amendment 2026-10-06: fixed part properties are exposed on the parent." }
+    },
+    "Body.children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "set": "CardVertical.Root", "property": "Body", "note": "Native slot; gap bound to the Stack spacing variable." }
+    },
+    "Title.as": {
+      "kind": "element",
+      "type": "HeadingTag",
+      "default": "h3",
+      "concept": "Element",
+      "figma": { "surface": "code-only" }
+    },
+    "Title.children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "set": "CardVertical.Title", "property": "Title" }
+    },
+    "Meta.children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "set": "CardVertical.Root", "property": "Meta", "note": "Native slot." }
+    },
+    "Duration.children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "set": "CardVertical.Duration", "property": "Duration" }
+    }
+  },
+  "constraints": [
+    {
+      "id": "controlled-pressed-wins",
+      "if": { "Favorite.pressed": "*" },
+      "ignore": ["Favorite.defaultPressed"],
+      "reason": "When pressed is passed, aria-pressed follows the prop only, never internal state; clicking only calls onPressedChange.",
+      "enforcedBy": ["test"]
+    }
+  ],
+  "states": [
+    { "name": "default", "kind": "interaction", "trigger": "rest" },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": "Root:hover",
+      "figma": "State=Hover",
+      "notes": "Card-level: hovering anywhere on the card fades the thumbnail."
+    },
+    {
+      "name": "action-hover",
+      "kind": "interaction",
+      "trigger": ":hover:not(:disabled) on Favorite or MenuTrigger"
+    },
+    {
+      "name": "with-progress",
+      "kind": "lifecycle",
+      "trigger": "progress set, below 100",
+      "figma": "Status=In progress"
+    },
+    {
+      "name": "completed",
+      "kind": "lifecycle",
+      "trigger": "progress >= 100",
+      "figma": "Status=Completed",
+      "notes": "Derived, no prop: the preset adds Completed after Certified in Meta."
+    },
+    { "name": "placeholder", "kind": "content", "trigger": "thumbnailSrc omitted" },
+    {
+      "name": "favorite-pressed",
+      "kind": "appData",
+      "trigger": "Favorite.pressed true, or internal state when uncontrolled",
+      "figma": "Pressed=true"
+    },
+    {
+      "name": "menu-open",
+      "kind": "interaction",
+      "trigger": "MenuTrigger activated (internal state; aria-expanded=true)",
+      "figma": "Menu Expanded (design-only)"
+    }
+  ],
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.stack.sm",
+          "width": { "literal": "100%", "reason": "Fills its grid or carousel cell (layoutBehavior fill)." }
+        }
+      },
+      { "when": { "size": "lg" }, "set": { "min-width": { "literal": "220px", "reason": "No token. A raw px value breaks the components CSS rule; it should be a size primitive plus a device alias (pilot finding)." } } },
+      { "when": { "size": "sm" }, "set": { "min-width": { "literal": "160px", "reason": "No token. Same finding as the lg min-width." } } }
+    ],
+    "Thumbnail": [
+      { "when": { "state": "hover" }, "set": { "opacity": { "literal": "0.8", "reason": "No opacity token scale exists." } } }
+    ],
+    "Action": [
+      {
+        "when": {},
+        "set": {
+          "top": "space.inset.xs",
+          "right": "space.inset.xs",
+          "z-index": { "literal": "1", "reason": "Above the thumbnail. No z-index token scale exists." }
+        }
+      }
+    ],
+    "Favorite": [
+      { "when": {}, "set": { "color": "color.icon.on-media.default" } },
+      { "when": { "state": "action-hover" }, "set": { "background": "color.background.on-media.hover" } },
+      { "when": { "state": "favorite-pressed" }, "set": { "color": "color.icon.brand" } }
+    ],
+    "FavoriteGlyph": [
+      {
+        "when": {},
+        "set": { "filter": { "template": "drop-shadow(0 0 {size.halo} {color.icon.on-media.halo}) drop-shadow(0 0 {size.halo} {color.icon.on-media.halo})" } }
+      },
+      { "when": { "state": "favorite-pressed" }, "set": { "fill": { "literal": "currentColor", "reason": "The heart fills when pressed." } } }
+    ],
+    "MenuTrigger": [
+      { "when": {}, "set": { "color": "color.icon.on-media.default" } },
+      { "when": { "state": "action-hover" }, "set": { "background": "color.background.on-media.hover" } }
+    ],
+    "MenuTriggerGlyph": [
+      {
+        "when": {},
+        "set": { "filter": { "template": "drop-shadow(0 0 {size.halo} {color.icon.on-media.halo}) drop-shadow(0 0 {size.halo} {color.icon.on-media.halo})" } }
+      }
+    ],
+    "MenuPanel": [
+      {
+        "when": {},
+        "set": {
+          "top": { "template": "calc(100% + {space.stack.xs})" },
+          "right": { "literal": "0", "reason": "Right-aligned to the trigger." },
+          "z-index": { "literal": "100", "reason": "Above neighbouring cards in a carousel. No z-index token scale exists." }
+        }
+      }
+    ],
+    "Title": [
+      { "when": {}, "set": { "font-size": "font.size.subheader" } }
+    ],
+    "Certified": [
+      { "when": {}, "set": { "gap": "space.inline.xs" } }
+    ],
+    "CertifiedIcon": [
+      { "when": {}, "set": { "color": "color.icon.subtle" } }
+    ],
+    "Completed": [
+      { "when": {}, "set": { "gap": "space.inline.xs" } }
+    ],
+    "CompletedIcon": [
+      { "when": {}, "set": { "color": "color.icon.subtle" } }
+    ]
+  },
+  "figma": {
+    "sets": [
+      { "name": "CardVertical", "nodeId": "52:4270", "covers": "The preset: Size × Status × State" },
+      { "name": "CardVertical.Root", "nodeId": "2871:7567", "covers": "Composed parts, with Body and Meta as native slots" },
+      { "name": "CardVertical examples", "nodeId": "2871:8034", "covers": "Section with one example frame per usage.patterns id (not a component)" }
+    ],
+    "divergences": [
+      { "what": "Menu has an Expanded property in Figma; in code the open state is internal.", "decision": "Design-only preview property (ADR-026)." },
+      { "what": "In the preset, Title and Duration are text layers, not part instances.", "decision": "Kept: swapping them would wipe text overrides on 47 and 14 placed cards (ADR-023 amendment 2026-10-06)." },
+      { "what": "Status is an explicit variant in Figma; code derives it from progress.", "decision": "Recorded mapping (ADR-026)." },
+      { "what": "On CardVertical.Root, Completed is consumer-placed slot content, not derived.", "decision": "Same as the code parts API: derivation lives only in the preset (ADR-023 amendment 2026-10-06)." }
+    ]
+  }
+}

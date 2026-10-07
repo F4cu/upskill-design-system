@@ -2,13 +2,14 @@
 // Validates every component spec (<Name>.spec.json, ADR-027) against
 // component.spec.schema.json, then checks it against what was built so the
 // spec cannot drift from the code:
-//   - props: every prop the component declares is in the spec and vice versa;
-//     variant-axis options match the TypeScript union and the metadata axis;
-//     destructuring defaults match.
+//   - props: every prop the component and its parts declare (<Name>Props,
+//     <Name><Part>Props) is in the spec and vice versa; variant-axis options
+//     match the TypeScript union and the metadata axis; destructuring defaults
+//     match.
 //   - styles: the token paths in the spec equal the --ds-* custom properties
 //     the CSS Module reads, and each one is defined in the built token CSS.
-//   - states, constraints, anatomy: internal cross-references resolve, and every
-//     metadata state appears in the spec.
+//   - states, constraints, anatomy: internal cross-references resolve; every
+//     metadata state and composition.parts entry appears in the spec.
 // Specs are optional during the ADR-027 pilot: only components with a spec file
 // are checked. Requires built tokens (npm run tokens:build).
 
@@ -57,16 +58,29 @@ const program = ts.createProgram(
 const checker = program.getTypeChecker();
 
 const tokenToVar = (dotPath) => `--ds-${dotPath.replaceAll(".", "-")}`;
-const isTokenPath = (value) => typeof value === "string";
 
-// The component's props as TypeScript sees them: `all` includes inherited
-// native attributes, `own` only those declared in the component's file.
-function readProps(name) {
-  const file = path.join(COMPONENTS_DIR, name, "index.tsx");
-  const source = program.getSourceFile(file);
-  const alias = source.statements.find((s) => ts.isTypeAliasDeclaration(s) && s.name.text === `${name}Props`);
-  if (!alias) return null;
+function tokenPaths(value) {
+  if (typeof value === "string") return [value];
+  if (value.template) return [...value.template.matchAll(/\{([a-z0-9.-]+)\}/g)].map((m) => m[1]);
+  return [];
+}
 
+// Every props type in the component's file, keyed by spec prefix: "" for the
+// preset's <Name>Props, "<Part>." for <Name><Part>Props. `all` includes
+// inherited native attributes, `own` only props declared in the file, and
+// `defaults` the literal destructuring defaults of the function taking it.
+function readPropsTypes(name) {
+  const source = program.getSourceFile(path.join(COMPONENTS_DIR, name, "index.tsx"));
+  const pattern = new RegExp(`^${name}(\\w*)Props$`);
+  const types = new Map();
+  for (const alias of source.statements.filter((s) => ts.isTypeAliasDeclaration(s) && pattern.test(s.name.text))) {
+    const part = alias.name.text.match(pattern)[1];
+    types.set(part ? `${part}.` : "", { part, ...readProps(source, alias) });
+  }
+  return types;
+}
+
+function readProps(source, alias) {
   const all = new Map();
   const own = new Set();
   for (const symbol of checker.getPropertiesOfType(checker.getTypeAtLocation(alias.name))) {
@@ -75,7 +89,10 @@ function readProps(name) {
   }
 
   const defaults = new Map();
-  const fn = source.statements.find((s) => ts.isFunctionDeclaration(s) && s.name?.text === name);
+  const fn = source.statements.find((s) => {
+    const type = ts.isFunctionDeclaration(s) && s.parameters[0]?.type;
+    return type && ts.isTypeReferenceNode(type) && type.typeName.getText(source) === alias.name.text;
+  });
   const binding = fn?.parameters[0]?.name;
   if (binding && ts.isObjectBindingPattern(binding)) {
     for (const el of binding.elements) {
@@ -89,6 +106,11 @@ function readProps(name) {
     }
   }
   return { all, own, defaults };
+}
+
+function splitProp(key) {
+  const dot = key.lastIndexOf(".");
+  return dot === -1 ? ["", key] : [key.slice(0, dot + 1), key.slice(dot + 1)];
 }
 
 function stringLiterals(symbol) {
@@ -116,49 +138,56 @@ for (const { name, file } of specs) {
 
   if (spec.component !== name) errors.push(`component "${spec.component}" does not match folder "${name}"`);
 
-  // Anatomy
+  // Anatomy, and the ADR-023 parts declared in metadata
   const partNames = spec.anatomy.map((p) => p.name);
   for (const dup of partNames.filter((n, i) => partNames.indexOf(n) !== i)) errors.push(`anatomy: duplicate part "${dup}"`);
   for (const part of spec.anatomy) {
-    if (part.builtOn && !COMPONENT_NAMES.has(part.builtOn)) {
-      errors.push(`anatomy["${part.name}"].builtOn: "${part.builtOn}" is not a component`);
+    const at = `anatomy["${part.name}"]`;
+    if (part.builtOn && !COMPONENT_NAMES.has(part.builtOn)) errors.push(`${at}.builtOn: "${part.builtOn}" is not a component`);
+    if (part.parent && !partNames.includes(part.parent)) errors.push(`${at}.parent: "${part.parent}" is not an anatomy part`);
+  }
+  for (const part of metadata.composition?.parts ?? []) {
+    const entry = spec.anatomy.find((p) => p.name === part.name);
+    if (!entry) errors.push(`anatomy: metadata part "${part.name}" missing from the spec`);
+    else if (part.builtOn && entry.builtOn !== part.builtOn) {
+      errors.push(`anatomy["${part.name}"].builtOn "${entry.builtOn}" ≠ metadata "${part.builtOn}"`);
     }
   }
 
-  // Props against the TypeScript props type and the metadata axes
-  const ts_ = readProps(name);
-  if (!ts_) {
-    errors.push(`index.tsx declares no ${name}Props type alias`);
-  } else {
-    for (const prop of ts_.own) {
-      if (!spec.props[prop]) errors.push(`props: "${prop}" is declared in ${name}Props but missing from the spec`);
+  // Props against the TypeScript props types and the metadata axes
+  const propsTypes = readPropsTypes(name);
+  if (!propsTypes.has("")) errors.push(`index.tsx declares no ${name}Props type alias`);
+  for (const [prefix, { part, own }] of propsTypes) {
+    if (part && !partNames.includes(part)) errors.push(`anatomy: ${name}${part}Props has no "${part}" part`);
+    for (const prop of own) {
+      if (!spec.props[prefix + prop]) errors.push(`props: "${prefix + prop}" is declared in ${name}${part}Props but missing from the spec`);
     }
-    for (const [prop, def] of Object.entries(spec.props)) {
-      const at = `props["${prop}"]`;
-      if (def.figma.surface === "figma-only") continue;
-      if (!ts_.all.has(prop)) {
-        errors.push(`${at}: not a prop of ${name}Props`);
-        continue;
-      }
-      if (def.kind !== "native" && !ts_.own.has(prop)) {
-        errors.push(`${at}: kind "${def.kind}" but the prop is inherited, not declared by ${name}`);
-      }
-      if (def.options) {
-        const literals = stringLiterals(ts_.all.get(prop));
-        if (!sameSet(def.options, literals)) {
-          errors.push(`${at}.options [${def.options}] ≠ TypeScript [${literals}]`);
-        }
-      }
-      if (ts_.defaults.has(prop) && ts_.defaults.get(prop) !== def.default) {
-        errors.push(`${at}.default ${JSON.stringify(def.default)} ≠ code default ${JSON.stringify(ts_.defaults.get(prop))}`);
-      }
-      if (def.kind === "variantAxis") {
-        const axis = metadata.variants?.[prop];
-        if (!axis) errors.push(`${at}: variant axis missing from metadata variants`);
-        else {
-          if (!sameSet(def.options ?? [], axis.options)) errors.push(`${at}.options ≠ metadata variants.${prop}.options`);
-          if ((def.default ?? null) !== axis.default) errors.push(`${at}.default ≠ metadata variants.${prop}.default`);
-        }
+  }
+  for (const [key, def] of Object.entries(spec.props)) {
+    const at = `props["${key}"]`;
+    if (def.figma.surface === "figma-only") continue;
+    const [prefix, prop] = splitProp(key);
+    const owner = propsTypes.get(prefix);
+    if (!owner?.all.has(prop)) {
+      errors.push(`${at}: not a prop of ${name}${prefix.slice(0, -1)}Props`);
+      continue;
+    }
+    if (def.kind !== "native" && !owner.own.has(prop)) {
+      errors.push(`${at}: kind "${def.kind}" but the prop is inherited, not declared by ${name}`);
+    }
+    if (def.options) {
+      const literals = stringLiterals(owner.all.get(prop));
+      if (!sameSet(def.options, literals)) errors.push(`${at}.options [${def.options}] ≠ TypeScript [${literals}]`);
+    }
+    if (owner.defaults.has(prop) && owner.defaults.get(prop) !== def.default) {
+      errors.push(`${at}.default ${JSON.stringify(def.default)} ≠ code default ${JSON.stringify(owner.defaults.get(prop))}`);
+    }
+    if (def.kind === "variantAxis") {
+      const axis = metadata.variants?.[prop];
+      if (!axis) errors.push(`${at}: variant axis "${prop}" missing from metadata variants`);
+      else {
+        if (!sameSet(def.options ?? [], axis.options)) errors.push(`${at}.options ≠ metadata variants.${prop}.options`);
+        if ((def.default ?? null) !== axis.default) errors.push(`${at}.default ≠ metadata variants.${prop}.default`);
       }
     }
   }
@@ -192,7 +221,7 @@ for (const { name, file } of specs) {
           errors.push(`styles["${part}"]: when.${key}="${value}" is not an option`);
         }
       }
-      for (const value of Object.values(rule.set)) if (isTokenPath(value)) specTokens.add(tokenToVar(value));
+      for (const value of Object.values(rule.set)) for (const t of tokenPaths(value)) specTokens.add(tokenToVar(t));
     }
   }
   const cssFile = path.join(COMPONENTS_DIR, name, `${name}.module.css`);

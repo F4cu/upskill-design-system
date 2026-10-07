@@ -12,7 +12,7 @@
     },
 
     "anatomy": {
-      "description": "Every named part, top to bottom, including internal elements that are not ADR-023 parts. Names follow the ADR-023 naming contract (they are the Figma layer names).",
+      "description": "Every named part, top to bottom, including internal elements that are not ADR-023 parts. Names follow the ADR-023 naming contract (they are the Figma layer names). Every metadata composition.parts entry must appear here.",
       "type": "array",
       "minItems": 1,
       "items": {
@@ -20,6 +20,10 @@
         "required": ["name", "element", "role", "required"],
         "properties": {
           "name": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+          "parent": {
+            "description": "Anatomy name of the enclosing part. Omit for the outermost part.",
+            "type": "string"
+          },
           "element": {
             "description": "Rendered HTML element, 'text' for a bare text node, or the library component it renders.",
             "type": "string"
@@ -27,6 +31,11 @@
           "builtOn": {
             "description": "Library component this part renders, when it renders one.",
             "type": "string"
+          },
+          "builtOnProps": {
+            "description": "Fixed props the part passes to its builtOn component (e.g. a Heading's size). Values the consumer controls belong in props instead.",
+            "type": "object",
+            "additionalProperties": { "type": ["string", "number", "boolean"] }
           },
           "role": {
             "description": "Semantic role as exposed to assistive technology, or 'presentation' when hidden from it. An authored fact: design files cannot carry it.",
@@ -48,7 +57,7 @@
     },
 
     "props": {
-      "description": "The approved API proposal (ADR-026), kept. Every prop the component declares itself must appear; native attributes appear only when the contract depends on them.",
+      "description": "The approved API proposal (ADR-026), kept. Keys are prop names; a part's props are keyed '<Part>.<prop>'. Every prop the component and its parts declare must appear; native attributes appear only when the contract depends on them.",
       "type": "object",
       "minProperties": 1,
       "additionalProperties": {
@@ -57,7 +66,7 @@
         "properties": {
           "kind": {
             "type": "string",
-            "enum": ["variantAxis", "lifecycle", "content", "controlledState", "event", "native"]
+            "enum": ["variantAxis", "lifecycle", "content", "controlledState", "event", "element", "native"]
           },
           "type": { "type": "string" },
           "options": {
@@ -151,7 +160,7 @@
     },
 
     "styles": {
-      "description": "Part → ordered rules. Each rule sets CSS properties under a condition; later rules win. A value is a token path, a literal with a reason, or a reference to another property's value.",
+      "description": "Anatomy part → ordered rules for that part's own element. Each rule sets CSS properties under a condition; later rules win. A value is a token path, a literal with a reason, a template embedding {token.paths}, or a reference to another property's value.",
       "type": "object",
       "additionalProperties": {
         "type": "array",
@@ -224,6 +233,15 @@
           "properties": {
             "literal": { "type": "string" },
             "reason": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Composite value with {token.path} references, e.g. drop-shadow(0 0 {size.halo} {color.icon.on-media.halo}).",
+          "type": "object",
+          "required": ["template"],
+          "properties": {
+            "template": { "type": "string", "pattern": "\\{[a-z][a-z0-9-]*(\\.[a-z0-9-]+)+\\}" }
           },
           "additionalProperties": false
         },

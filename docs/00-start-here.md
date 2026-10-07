@@ -40,6 +40,7 @@ sources:
 # clock reset 2026-10-07: ADR-026 amendment adds the Select Figma set and the DropdownMenu/Item rename; this page describes no Figma property names, still accurate
 # clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; this page describes no Figma detail, still accurate
 # 2026-10-07: adds ADR-027 (proposed: component spec file, Button pilot); ADR count corrected to twenty-seven (was already one behind after ADR-026); page lists no individual ADRs or per-component files
+# clock reset 2026-10-07: ADR-027 amendment records the CardVertical pilot spec; this page lists no individual ADRs or per-component files, still accurate
 ---
 # Start here
 

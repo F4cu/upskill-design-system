@@ -5,6 +5,7 @@ title: "ADR-027 — Component spec file, split from metadata by reader"
 
 **Date:** 2026-10-07
 **Status:** `proposed`
+**Amended:** 2026-10-07
 
 ## Context
 
@@ -100,3 +101,24 @@ On acceptance:
 - Each component gets one more file to keep in sync. The validator makes that cost visible instead of letting drift pass silently. The real burden can only be judged after the CardVertical pilot.
 - `spec:validate` needs built tokens. In CI it runs after `tokens:build`.
 - The five problems the Button pilot found are reported but not fixed in this change. Two are already visible in the spec: the unenforced icon-only constraint (validator backlog) and the missing focus style (the `focus-visible` state notes).
+
+## Amendment (2026-10-07) — CardVertical pilot
+
+`CardVertical.spec.json` is written and passes `spec:validate`. The second exit condition is met: the parts fit without new top-level keys. They did need four additions inside existing sections, which this amendment records as part of the schema:
+
+- **`anatomy[].parent`** records nesting. A compound component has 22 named elements in four levels, and a flat list can't show which `Icon` belongs to which part.
+- **`anatomy[].builtOnProps`** records the fixed props a part passes to its child component (Title → Heading `size=headline-serif`, Body → Stack `gap=sm`). This is where most of a compound component's look comes from, and it never appears in its own CSS Module.
+- **A `template` style value** embeds `{token.path}` references in a composite CSS value: the halo `drop-shadow(...)` and `calc(100% + {space.stack.xs})`. The validator extracts the token paths from it.
+- **An `element` prop kind** for `as`. ADR-026's kind list had no row for it.
+
+Part props are keyed `<Part>.<prop>` inside `props`. The validator reads each `<Name><Part>Props` type and checks completeness, options and defaults per part. It also checks that every metadata `composition.parts` entry appears in `anatomy` with the same `builtOn`.
+
+**Size.** The CardVertical spec is 18 KB and its metadata 21 KB; for Button the two are about 9 KB each. Until the migration moves `tokens`, `states` and `accessibility` out of metadata, a builder moment reading both files roughly doubles its per-component context. The harness arm has to weigh that against any accuracy gain.
+
+**What the pilot found:**
+
+- `Root` sets `min-width: 220px` / `160px`. These are raw px values in a CSS Module, which the component rules forbid; the tokens-author convention is a size primitive plus a device alias.
+- `metadata.tokens` lists six tokens the CSS Module never reads (`color.text.*`, `font.family.headline-serif`, `font.weight.medium`, `font.line-height.tight`, `space.inline.sm`). They reach the card through `Heading`, `Text` and `Inline`. The spec states this through `builtOnProps` rather than listing other components' tokens. This is part of #117.
+- No opacity or z-index token scale exists. The thumbnail hover `0.8` and the overlay stacking (`1`, `100`) are literals with reasons.
+- The one prop constraint, controlled `pressed` wins over `defaultPressed`, is already enforced by a behavioural test. CardVertical's other rules are about composition (what a part accepts) and belong in metadata `composition.parts`.
+
