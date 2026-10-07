@@ -15,7 +15,7 @@
   "requiredPatterns": [
     { "file": "Button/index.tsx", "pattern": "export type ButtonProps\\b", "reason": "the approved props type name" },
     { "file": "Button/index.tsx", "pattern": "<button\\b", "reason": "the brief requires a native button element" },
-    { "file": "Button/index.tsx", "pattern": "['\"]button['\"]", "reason": "type defaults to 'button', not the native 'submit'" }
+    { "file": "Button/index.tsx", "pattern": "type\\s*=\\s*\\{?\\s*['\"]button['\"]|type\\s*\\?\\?\\s*['\"]button['\"]", "reason": "type defaults to 'button', not the native 'submit'" }
   ],
   "forbiddenPatterns": [
     { "file": "Button/index.tsx", "pattern": "\\b(kind|appearance|tone|intent|isDisabled|iconPosition|leadingIcon|endIcon)\\??:", "reason": "renames a concept the approved API names (variant, disabled, icon, trailingIcon)" }
