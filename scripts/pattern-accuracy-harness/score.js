@@ -228,15 +228,23 @@ function trapChecksTsx(rel, source, violations, partWrappers = new Set()) {
   }
 }
 
+// px is a violation only on properties a token category covers (spacing,
+// radius, type, focus ring — ADR-028). Border widths and box geometry such as
+// a checkmark's size have no token category, and the system's gates accept them.
+const TOKENIZED_PX_PROPERTY = /^(padding|margin|inset)(-[a-z-]+)?$|^(row-|column-)?gap$|^border(-[a-z]+)*-radius$|^(font-size|line-height)$|^outline(-width|-offset)?$/
+
 function trapChecksCss(rel, source, violations) {
   for (const [i, line] of source.split('\n').entries()) {
     if (/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/.test(line)) {
       violations.push({ trap: 'raw-hex-color', file: rel, line: i + 1, detail: line.trim().slice(0, 80) })
     }
-    const pxMatches = line.match(/\b\d*\.?\d+px\b/g) ?? []
-    for (const m of pxMatches) {
-      if (m !== '1px') {
-        violations.push({ trap: 'px-literal', file: rel, line: i + 1, detail: line.trim().slice(0, 80) })
+    for (const [, property, value] of line.matchAll(/([a-z-]+)\s*:\s*([^;{}]+)/g)) {
+      if (!TOKENIZED_PX_PROPERTY.test(property)) continue
+      const pxMatches = value.match(/\b\d*\.?\d+px\b/g) ?? []
+      for (const m of pxMatches) {
+        if (m !== '1px') {
+          violations.push({ trap: 'px-literal', file: rel, line: i + 1, detail: line.trim().slice(0, 80) })
+        }
       }
     }
   }

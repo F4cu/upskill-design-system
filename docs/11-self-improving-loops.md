@@ -13,6 +13,7 @@ sources:
   - docs/decisions/019-screenshot-baseline-visual-regression.md
 # clock reset 2026-09-23: ADR-017 amendment (2026-09-08) names the CLAUDE.md split against CoALA memory types, no structural change; this page only cites ADR-017 for capping CLAUDE.md, still accurate
 # clock reset 2026-10-07: score.js treats ADR-023 parts that render Text/Heading as typography wrappers; rescoring the 14 retained July cells leaves every trap count unchanged, so the ADR-013 numbers this page cites still hold
+# clock reset 2026-10-07: score.js px-literal flags px only on token-covered CSS properties (spacing, radius, type, focus ring); rescoring the 14 retained July cells leaves every trap count unchanged, so the ADR-013 numbers this page cites still hold
 ---
 # Self-improving loops
 
