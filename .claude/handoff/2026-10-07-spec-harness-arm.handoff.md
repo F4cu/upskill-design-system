@@ -67,6 +67,7 @@ Same two-bucket idea as the ablation eval, so Arm C isn't credited for repeating
    - `raw-text-prop-render` flags `title` rendered through `CardVertical.Title`. This is the scorer fix listed in the ablation eval's Stage 0 (treat a part that renders Text/Heading as a typography wrapper). Do it once, for both evals.
    - A real violation in a reference is fixed in the component on its own PR, never by loosening the scorer.
 2. `--dry-run` both tasks and check the prompts: Arm A has the API table, Arm C adds only the spec.
+   **Done 2026-10-08.** Arm C = Arm A plus one `CONTEXT — approved component spec` block before OUTPUT FORMAT (diff: 0 lines removed). Arm A's TASK carries the anatomy and props table. Prompt chars: Button A 16,302 / C 25,209 (+55%); CardVertical A 57,276 / C 75,152 (+31%).
 
 ## Pre-registration (write before the first real run)
 
