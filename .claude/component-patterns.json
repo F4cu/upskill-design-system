@@ -7,7 +7,7 @@
       ],
       "detail": "AppHeader JSX uses [Avatar, DropdownMenu, Icon, TextField] but metadata composition.composedOf declares [Avatar, Icon, Text, TextField].",
       "issue": "composition-metadata-mismatch",
-      "pattern": "navigation"
+      "pattern": "disclosure"
     },
     {
       "components": [
@@ -26,7 +26,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "979460af1263f31e4954eae3135f62225ecf5463",
+  "generatedFrom": "d8f2b01f3d4d12b09afd8287472321aea6fab284",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -97,6 +97,25 @@
             "prev",
             "next",
             "reset"
+          ]
+        },
+        {
+          "consumers": [
+            "packages/components/src/components/AppHeader/AppHeader.a11y.test.tsx",
+            "packages/components/src/components/AppHeader/index.tsx",
+            "packages/components/src/components/CardVertical/index.tsx"
+          ],
+          "hook": "useMenuButton",
+          "params": [],
+          "returns": [
+            "open",
+            "toggle",
+            "close",
+            "onOpenChange",
+            "onBlur",
+            "wrapperRef",
+            "triggerId",
+            "menuId"
           ]
         },
         {
@@ -268,6 +287,61 @@
           ]
         },
         {
+          "ariaContract": [
+            {
+              "aria-hidden": "true",
+              "element": "img"
+            },
+            {
+              "aria-label": "Main navigation",
+              "element": "nav"
+            },
+            {
+              "aria-current": "{item.active ? 'page' : undefined}",
+              "element": "a"
+            },
+            {
+              "aria-controls": "{menuOpen ? menuId : undefined}",
+              "aria-expanded": "{hasMenu ? menuOpen : undefined}",
+              "aria-haspopup": "{hasMenu ? 'menu' : undefined}",
+              "element": "button",
+              "id": "{triggerId}"
+            },
+            {
+              "aria-labelledby": "{triggerId}",
+              "element": "DropdownMenu",
+              "id": "{menuId}"
+            },
+            {
+              "aria-label": "Open menu",
+              "element": "button"
+            }
+          ],
+          "changeCallback": "onSearchValueChange",
+          "component": "AppHeader",
+          "composition": [
+            "Avatar",
+            "DropdownMenu",
+            "Icon",
+            "TextField"
+          ],
+          "maturity": "beta",
+          "stage": "in review",
+          "state": {
+            "controlled": "always",
+            "props": [
+              "searchValue",
+              "onSearchValueChange"
+            ]
+          },
+          "systemSpecificNotes": [
+            "aria-label=\"Main navigation\" on the <nav> element",
+            "aria-current=\"page\" on the active nav link",
+            "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)",
+            "aria-controls → the menu's id on the user button while the menu is open; the menu (DropdownMenu listRole=menu) is named by aria-labelledby → the user button"
+          ]
+        },
+        {
           "architecturalStyle": "compound",
           "ariaContract": [
             {
@@ -316,7 +390,6 @@
           ],
           "idsFromUseId": [
             "id",
-            "menuId",
             "titleId"
           ],
           "maturity": "beta",
@@ -446,53 +519,6 @@
       "architecturalStyle": "flat-props",
       "description": "A <nav> landmark containing links, with aria-current marking the active item.",
       "implementedBy": [
-        {
-          "ariaContract": [
-            {
-              "aria-hidden": "true",
-              "element": "img"
-            },
-            {
-              "aria-label": "Main navigation",
-              "element": "nav"
-            },
-            {
-              "aria-current": "{item.active ? 'page' : undefined}",
-              "element": "a"
-            },
-            {
-              "aria-expanded": "{userMenuItems?.length ? menuOpen : undefined}",
-              "aria-haspopup": "{userMenuItems?.length ? 'menu' : undefined}",
-              "element": "button"
-            },
-            {
-              "aria-label": "Open menu",
-              "element": "button"
-            }
-          ],
-          "changeCallback": "onSearchValueChange",
-          "component": "AppHeader",
-          "composition": [
-            "Avatar",
-            "DropdownMenu",
-            "Icon",
-            "TextField"
-          ],
-          "maturity": "beta",
-          "stage": "in review",
-          "state": {
-            "controlled": "always",
-            "props": [
-              "searchValue",
-              "onSearchValueChange"
-            ]
-          },
-          "systemSpecificNotes": [
-            "aria-label=\"Main navigation\" on the <nav> element",
-            "aria-current=\"page\" on the active nav link",
-            "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)"
-          ]
-        },
         {
           "ariaContract": [
             {
