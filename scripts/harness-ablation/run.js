@@ -46,6 +46,11 @@ const ISOLATION_FLAGS = [
 // Env vars that would silently move the main or subagent model off --model.
 const MODEL_ENV = ['ANTHROPIC_MODEL', 'CLAUDE_CODE_SUBAGENT_MODEL', 'ANTHROPIC_SMALL_FAST_MODEL']
 
+// Launched from inside a Claude Code session, the parent's CLAUDE* vars (effort,
+// session id, nested-session flags) would leak into every run. Only auth and the
+// config dir survive, so a run behaves the same wherever run.js is started.
+const KEEP_CLAUDE_ENV = new Set(['CLAUDE_CODE_OAUTH_TOKEN', 'CLAUDE_CONFIG_DIR'])
+
 const LIMIT_RE = /usage limit|rate limit|rate_limit|overloaded|quota/i
 const NETWORK_RE = /\b(curl|wget|gh\s|git\s+(clone|fetch|pull|remote))|github\.com/i
 
@@ -112,6 +117,7 @@ function runAgent(prompt, ws, runDir, args) {
   if (args.effort) flags.push('--effort', args.effort)
   const env = { ...process.env }
   for (const key of MODEL_ENV) delete env[key]
+  for (const key of Object.keys(env)) if (/^CLAUDE/.test(key) && !KEEP_CLAUDE_ENV.has(key)) delete env[key]
 
   const transcriptPath = path.join(runDir, 'transcript.jsonl')
   const out = fs.openSync(transcriptPath, 'w')
