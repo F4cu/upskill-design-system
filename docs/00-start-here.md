@@ -47,6 +47,7 @@ sources:
 # 2026-10-07: adds ADR-028 (focus indicator); ADR count updated to twenty-eight; page lists no individual ADRs
 # clock reset 2026-10-07: ADR-013 amendment corrects harness totals (ROADMAP follows); layout-generation reads the component set from the package exports (#98); page cites neither the totals nor the set's source, still accurate
 # clock reset 2026-10-08: /add-component, /component-scaffold and /review-component gain an --eval mode for the harness-ablation eval; this page lists the moments, not their modes, still accurate
+# clock reset 2026-10-08: ADR-026 amendment records Badge `label` → `children` as open drift (harness-ablation pilot); this page lists no individual ADR contents, still accurate
 ---
 # Start here
 
