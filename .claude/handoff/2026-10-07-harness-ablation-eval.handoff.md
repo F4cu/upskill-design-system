@@ -81,7 +81,7 @@ The shipped component is the answer key, so two things must hold before any arm 
   - **(a) Redact:** in `prepare.js`, strip the lines that describe the target's API or Figma properties. Keep the general rules, even where they use the target as an example.
   - **(b) Accept the leak:** keep the files whole and report it as a known advantage for Arms 1/2. The reasoning is that a real team's ADRs would also describe neighbouring components.
 
-  Recommended: (a) for lines about the target's own props or Figma mapping, and (b) for passing mentions used as examples. **Status 2026-10-08:** still the recommendation, awaiting developer confirmation. Record the decision here before the pilot.
+  Recommended: (a) for lines about the target's own props or Figma mapping, and (b) for passing mentions used as examples. **Decided 2026-10-08 (developer):** (a) redact lines about the target's own props or Figma mapping; (b) keep passing mentions used as examples. Report (b) as a known advantage for Arms 1/2. Locked: it doesn't change after the pilot.
 - `--setting-sources project` so user-level settings don't leak. There's no `~/.claude/CLAUDE.md` today, and auto-memory is keyed by project path, so a tmp path gets none. Confirm both in the pilot.
 - `node_modules`: symlink root and workspace `node_modules` from the main checkout instead of running `npm install` per run.
 - Grep the pilot transcripts for the deleted file's distinctive strings to confirm nothing leaked.
@@ -161,5 +161,5 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
 ## Open questions
 
 - Should Arm 0 keep the existing `*.stories.tsx` files? Current call: yes. Stories are what a normal team has, and removing them would make the baseline a straw man.
-- ADR/rules leakage: redact or accept? See "Leakage controls". This has to be settled before the pilot, because changing it afterwards counts as tuning after seeing results.
+- ~~ADR/rules leakage: redact or accept?~~ **Settled 2026-10-08:** redact target-API lines, accept passing mentions. See "Leakage controls".
 - Does the composeStories/axe runner already exist in `packages/components` test setup (`a11y:stories`)? If so, reuse it instead of writing a new one.
