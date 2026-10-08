@@ -76,7 +76,10 @@ Lock briefs and reference answers **before the first run**. A brief states the r
 
 ## Pre-registration (write before the first full run)
 
-- **Prediction:** write it here, unhedged, before any run.
+- **Prediction:** 
+   - Pass counts: Arm A passes 6 out of 13, Arm B passes 10 out of 13
+   - select search, and otp-input fail on both arms
+   - Arm C is better than B
 - **Honest-outcome rule:** don't tune briefs, reference answers or the scorer after seeing results.
 - **N = 3** runs per task × arm; N = 1 is a pilot.
 - **Budget:** 13 tasks × 2 arms (A, B) × 3 = 78 single-shot runs, plus Arm C on 4 tasks × 3 = 12: **90 in total**, sequential. Prompts are 53–106K chars and the output is a short JSON block.
