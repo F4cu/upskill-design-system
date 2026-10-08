@@ -1,0 +1,36 @@
+{
+  "id": "checkbox",
+  "target": "Checkbox",
+  "referencePng": "checkbox.reference.png",
+  "redactionsReviewed": true,
+  "deleteFiles": [
+    "packages/components/src/stories/SettingsForm.stories.tsx"
+  ],
+  "redactions": [
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "- **Checkbox** (`92:8772`, formerly `Checkbox with label`): `State=on|off|State3` → `Checked` (`false`/`true`, the native-input name) × `State` (`Default`/`Hover`). `State3` became the Hover preview. A `Label` text property now drives the label layer. The box, check and label are rebound to the variables the code reads (`background/input`, `background/brand`, `border/input/{default,hover}` at 1.5px, `text/inverted/default`, `text/default`). All 12 instances kept their checked state and labels. `State` gained `Disabled` for both `Checked` values (border `border/disabled`, label `text/disabled`, checked fill `background/disabled`), so every metadata state has a preview. The box's main component (`92:8764`), which had been removed from the canvas while its instances stayed, is back on the Checkbox page as `_Checkbox/Box` (private, unpublished), defaulting to the unchecked look; variants override fill, stroke and check per state.\n",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/024-button-variants-by-weight.md",
+      "find": ", which Checkbox reads instead of borrowing Button's token",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/013-cross-component-pattern-schema.md",
+      "find": "`Accordion` (`title`), `Select`/`TextField` (`label`), and `Checkbox` (`label`) render",
+      "replace": "`Accordion` (`title`) and `Select`/`TextField` (`label`) render"
+    },
+    {
+      "file": "scripts/token-contrast-check.js",
+      "find": "// where the same alias plays a graphical rather than textual role (e.g. the\n// Checkbox checkmark drawn with a \"text\" token).",
+      "replace": "// where the same alias plays a graphical rather than textual role."
+    },
+    {
+      "file": "scripts/token-contrast-check.js",
+      "find": "  // Checkbox — box border/fill sits on background.input; checkmark is a\n  // graphic (icon role, not text) drawn on background.brand once checked\n  [B(\"input-default\"), BG(\"input\"), \"border\"],\n  [B(\"input-hover\"), BG(\"input\"), \"border\"],\n  [T(\"inverted-default\"), BG(\"brand\"), \"icon\"],\n  ...AMBIENT.map((bg) => [T(\"default\"), bg]),\n\n",
+      "replace": ""
+    }
+  ]
+}

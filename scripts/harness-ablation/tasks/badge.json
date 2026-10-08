@@ -1,0 +1,31 @@
+{
+  "id": "badge",
+  "target": "Badge",
+  "referencePng": "badge.reference.png",
+  "redactionsReviewed": true,
+  "deleteFiles": [
+    "packages/components/src/components/CardVertical/CardVertical.stories.tsx"
+  ],
+  "redactions": [
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "| Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\\|filled` names the look; `default` is a baseline value (vocabulary row above) |",
+      "replace": "| Card, CardHorizontal | `variant` values `default`, `outline` | No rename. `default` is a baseline value (vocabulary row above) |"
+    },
+    {
+      "file": "docs/decisions/021-container-canvas-consolidation.md",
+      "find": "(Badge, Chip, ButtonArrow, ProgressBar)",
+      "replace": "(Chip, ButtonArrow, ProgressBar)"
+    },
+    {
+      "file": "scripts/token-contrast-check.js",
+      "find": "Chip, ButtonArrow, and Badge's outline\n//   variant, with no background fill",
+      "replace": "Chip, and ButtonArrow,\n//   with no background fill"
+    },
+    {
+      "file": "scripts/token-contrast-check.js",
+      "find": "  // Badge — outline variant's border is the shared decorative border.default\n  // (not checked — same reasoning as Button's neutral variant, above).\n\n",
+      "replace": ""
+    }
+  ]
+}

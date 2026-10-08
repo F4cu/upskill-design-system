@@ -1,0 +1,14 @@
+{
+  "id": "cardvertical",
+  "target": "CardVertical",
+  "referencePng": "cardvertical.reference.png",
+  "redactionsReviewed": false,
+  "deleteFiles": [
+    "packages/components/src/components/ScrollArea/ScrollArea.stories.tsx",
+    "packages/components/src/stories/Carousel.stories.tsx"
+  ],
+  "deleteScreenshots": [
+    "layout-scrollarea--"
+  ],
+  "redactions": []
+}
