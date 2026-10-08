@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Agent, SlashCommand, S
 
 **Trigger:** Developer, when building any component from the fixed set that will go to `main`. This is the production path — use it instead of `/component-scaffold` directly. Scaffold alone skips the gate and adversarial review, meaning agent-written code reaches human review unverified.
 
-**Invocation:** `/add-component <Name>` (e.g. `/add-component Accordion`).
+**Invocation:** `/add-component <Name>` (e.g. `/add-component Accordion`). `/add-component <Name> --eval` runs the unattended harness-ablation variant — see "Eval mode" below; it is valid only inside an ablation workspace.
 
 This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps `/component-scaffold` (Stage 1) in a deterministic gate and one adversarial review pass, then opens the PR. It is **sequential and uses at most two agents**: the main session orchestrates every stage; exactly one fresh subagent runs the adversarial review (Stage 3), because independent context is the whole point of that stage. **Never** spawn parallel workers — on Claude Pro the scarce resource is the rolling usage window, and a fan-out drains it N× and trips rate limits.
 
@@ -72,6 +72,25 @@ A `changes-requested` answer records the state but does **not** block committing
 Delegate to `/review-component <Name>` — the **full** review path (`path: "full"` in review-state). That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
 
 `/review-component` is also the standalone entry point for reviewing existing components — the same command works in both contexts.
+
+## Eval mode (`--eval`)
+
+Arm 2 of the harness-ablation eval (`.claude/handoff/2026-10-07-harness-ablation-eval.handoff.md`) runs this loop under `claude -p` with no human present. `--eval` keeps every stage that measures the harness — sense, the API proposal, the gate, the adversarial reviewer, the fix pass — and replaces only the human checkpoints and the outward-facing steps. Everything not listed here runs exactly as above.
+
+**Guard.** Before Stage 0, check that `.ablation-workspace` exists at the repo root (written by `scripts/harness-ablation/prepare.js`; never committed). If it is absent, stop and say `--eval` only runs in an ablation workspace. This keeps the review-skipping path off the real repo.
+
+**Never block on a human.** No AskUserQuestion, no "reply go", no waiting. Each place this loop would ask, take the eval default below and keep going.
+
+| Stage | Eval behaviour |
+|---|---|
+| 0 · Sense | Run as normal. Skip the stale-Figma offer; note it in `.run.json` `notes` instead. |
+| 1 · Scaffold | No Figma MCP. The design input is the brief plus the `reference.png` it names — read the image instead of a Figma node. **API proposal checkpoint is auto-approved:** write the full proposal (anatomy, props table, divergences) to `api-proposal.md` at the repo root, then proceed with it exactly as written — no second pass. Omit `figmaNodeId` from the metadata. |
+| 2 · Gate | Run as normal, fail-fast. **Cap: 5 gate runs.** If the 5th still fails, stop: write `.run.json` with the failures and `"outcome": "gate-failed"`, skip Stage 3. |
+| 2b · Visual checkpoint | Skipped. |
+| 2c · Record visual review | Skipped. Don't write `visualReview` to `component-review-state.json`; record `"visualReview": "skipped-eval"` in `.run.json`. |
+| 3+ · Review | Run `/review-component <Name> --eval` (see that command's eval section): same single reviewer subagent, same fix pass and gate, but no branch, commit or PR. |
+
+**Outputs, all in the workspace:** the component files, `api-proposal.md`, `.claude/handoff/runs/<Name>.review.json` and `<Name>.run.json`. Don't run `npm run handoff:tidy`: eval runs never enter the committed `run-ledger.json`. End with a one-paragraph summary of the outcome; the harness reads cost and turns from `--output-format json`, not from the summary.
 
 ## Success signal
 The component ships *through* the loop — meeting its roadmap success signal with no manual restructuring, the human reviewing only clean code. Stages 0–2c complete cleanly, then `/review-component` clears the adversarial review and opens the PR. Update this prompt with anything learned from each run.

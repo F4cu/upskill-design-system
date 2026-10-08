@@ -42,7 +42,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
      *Concept* is a row of `.claude/rules/components.md` → "Prop vocabulary", or **new term** with a one-line reason. *Kind* ∈ variant axis · lifecycle · content · controlled state · event · native. *Surface* ∈ both · code-only · Figma-only (`State`, `Has <x>`).
    - **Divergences:** every Figma property or value that differs from code by more than casing, and every departure from the vocabulary. Each one is a recorded mapping (ADR-026) or gets fixed; none passes silently.
 
-   Inside `/add-component` this checkpoint is part of Stage 1. The approved names are final for steps 4–5.
+   Inside `/add-component` this checkpoint is part of Stage 1. The approved names are final for steps 4–5. Under `/add-component --eval` it is auto-approved: write the proposal to `api-proposal.md` and continue (see that command's "Eval mode").
 4. Fill the metadata schema fields from the approved API proposal and what you observe in Figma. Anti-patterns must reference only components in the fixed set. Variant and prop names match the approved table; Figma differs only by casing or a recorded mapping.
 5. Produce the component folder at `packages/components/src/ComponentName/`:
    - `index.tsx` — typed props matching the metadata's variant axes (one prop per `variants.<axis>`, typed to that axis's `options`) and `states`; no hard-coded design values; import CSS module for class names

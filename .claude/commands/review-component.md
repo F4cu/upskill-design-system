@@ -93,6 +93,14 @@ Append a record to `.claude/handoff/runs/<Name>.run.json`:
 
 ---
 
+## Eval mode (`--eval`)
+
+Only reached from `/add-component <Name> --eval` inside an ablation workspace (same `.ablation-workspace` guard). Stage 1 is unchanged except for the diff: the new files are untracked, so run `git add -N packages/components/src/components/<Name>` and pass `git diff` against the workspace's baseline commit. Stage 2 applies the findings and re-runs the gate as normal, capped at 5 gate runs. Then:
+
+- **No branch, no commit, no PR.** The workspace is thrown away; the harness scores the working tree.
+- Stage 3 writes `.run.json` as normal, plus `"mode": "eval"`, `"visualReview": "skipped-eval"`, `"outcome": "clean" | "findings-applied" | "gate-failed"`, and `"apiProposal": "api-proposal.md"`.
+- Don't update `component-review-state.json`, don't run `npm run sense` or `handoff:tidy`, and skip the `/extract-learnings` reminder.
+
 ## Success signal
 
 Gate passes, review verdict is `clean` or all findings applied, PR is open, and `.review.json` + `.run.json` are written. The PR contains only gate-cleared, reviewed code.
