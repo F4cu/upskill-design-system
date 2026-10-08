@@ -194,6 +194,14 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
        - **Found, not this eval's:** the committed `.claude/component-patterns.json` on `main` is stale. Regenerating it rewrites AppHeader's entry (`aria-controls`, the `useMenuButton` hook), so an AppHeader change landed without `patterns:generate`.
    - `prepare.js` also applies the redaction decided under "Leakage controls" to `docs/decisions/` and `.claude/rules/components.md` for Arms 1/1b/2.
    - `report.js` → `results.md`: per task × arm table, clean rate, cost per clean component. Copy each arm's median-run files into `results/<task>/<arm>/` for the case-study figure.
+     - **Done 2026-10-08** (`npm run ablation:report`, plus `--smoke`, which writes the gitignored `results-smoke.md` from `.runs/_smoke/` and never touches `results/`). `results.md` has five sections:
+       1. **Headline table per task × arm:** runs (with pending), clean rate, mean violations (min–max), cost per clean component (shown as "0 clean, $X spent" when nothing is clean), mean cost, turns and minutes.
+       2. **Per-arm pooled table** for the Arm 1 vs 2 split.
+       3. **Breakdown of product violations** by gate and trap.
+       4. **Secondary table:** metadata written, prop-vocabulary issues, story inline styles, Arm 2 reviewer findings (total and high+medium), budget cut-offs, contamination flags.
+       5. **Median-run list.**
+
+       It warns when the scored runs use more than one model, or when any cell has fewer than the pre-registered N = 3. The **median run** is chosen by violations, then cost. With an even count it takes the upper-middle (worse) run, so a tie never resolves toward the best. `results/<task>/arm<N>/` gets that run's `output/` (component, `api-proposal.md`, review files, `diff.patch`), its `score.json` and a `MEDIAN.txt`. Tested on three synthetic runs with 0/4/7 violations: it picked the 4, and cost per clean = total ÷ 1.
    - `tasks/*.json`: brief, target, files to delete, `requiredPatterns`/`forbiddenPatterns`, `reference.png` path.
 3. `package.json`: `ablation:run`, `ablation:score`.
 4. ADR: none for the scaffolding. Record one (or amend ADR-007) only if the results change how the loop is built, e.g. dropping the reviewer.
