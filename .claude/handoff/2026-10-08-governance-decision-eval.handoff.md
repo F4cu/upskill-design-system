@@ -89,6 +89,26 @@ Lock briefs and reference answers **before the first run**. A brief states the r
 - **N = 3** runs per task × arm; N = 1 is a pilot.
 - **Budget:** 13 tasks × 2 arms (A, B) × 3 = 78 single-shot runs, plus Arm C on 4 tasks × 3 = 12: **90 in total**, sequential. Prompts are 53–106K chars and the output is a short JSON block.
 
+## Run log and task defects (found in transcript review)
+
+**Run 1 (2026-10-08):** stopped after 30/90 runs, when `claude -p` exited 1 with empty stderr on `card-actions-row` A run 1 (the usage limit; the developer reset it). The four completed tasks kept their 30 scored runs. The remaining 9 tasks were relaunched with `--task` (60 runs), because `run.js` deletes and redoes a cell instead of skipping scored runs.
+
+**Task defects.** Both are construction errors in the locked task files, not model failures. Per the honest-outcome rule, the task files stay as locked. The final report gives the pass counts **with and without** these two tasks, and the prediction is scored on both.
+
+| Task | Defect | Evidence | Effect |
+|---|---|---|---|
+| `decision-arrow-vs-disclosure` | (1) **The context contradicts itself.** The brief says "we are building the Accordion", but `excludeComponents: ["Accordion"]` strips it from the scope list, so the model is told no Accordion parent exists to hold an internal element. (2) **Button isn't pinned.** Every arm sees today's Button, whose `transparent` variant plus `shape=round` + `icon` is exactly a borderless circular icon button. The original decision predates that variant. | All 9 runs (A, B, C) answer `compose`/`reuse` Button. Each one rejects ButtonArrow for the right ADR-009 q2 reason, and rejects Accordion because "it is not on the approved list". | **Invalid.** Given the context, `reuse Button` is defensible. Excluded from the corrected counts. |
+| `decision-button-ghost` | **Case-sensitive redaction.** `redact.adr` is `transparent\|ghost` without `i`. Two ADR-024 lines survive: the "**Transparent button + icon halo**" options row, and the Figma rename "`Ghost` → `Transparent`". The prompt has 3 hits in Arm A and 4 in Arm B. | A run 2 cites "Figma's Style axis already has `Transparent`" and answers `reuse` Button. | **Contaminated** in both directions: the leak shows the variant exists, which pushes toward `reuse` (wrong), and shows it was added as a variant, which pushes toward `extend-variant` (right). Excluded from the corrected counts. |
+
+No other task has a case-variant hit on its redaction patterns (checked across every dry-run prompt).
+
+**Fixes for a v2, only if a clean rerun of these two tasks is wanted.** These are new task ids, never edits to the locked files.
+- arrow-vs-disclosure:
+  - keep Accordion in scope as the parent being built (exclude only its metadata)
+  - pin Button (and ButtonArrow) to `e2843b8`, before the ghost variant existed
+- button-ghost: case-insensitive redaction (`(?i)` or an `i` flag in `adrText`).
+- **Guard for any v2 task:** run the leak scan case-insensitively, and check that nothing the brief names as existing or being built is excluded from scope.
+
 ## Order and dependencies
 
 1. After the spec harness arm, whose ADR-027 outcome decides whether Arm C exists.
