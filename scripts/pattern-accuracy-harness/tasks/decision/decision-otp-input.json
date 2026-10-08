@@ -1,0 +1,28 @@
+{
+  "id": "decision-otp-input",
+  "kind": "decision",
+  "brief": "Two-factor sign-in needs a six-digit code entry: six separate boxes, typing a digit moves to the next box, Backspace moves back, and pasting a full code fills all six. How should the design system provide this?",
+  "referenceDecision": "escalate",
+  "referenceTarget": null,
+  "requiredCandidates": [
+    "TextField"
+  ],
+  "acceptedCitations": [
+    "CLAUDE.md#component-scope",
+    "ADR-009"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "TextField",
+    "Inline"
+  ],
+  "source": "New case. Outside the fixed set; a segmented focus model is a different interaction model (ADR-009 q2), so it needs a scope decision",
+  "notes": "Not historical. 'new' without escalating fails: the scope list is closed."
+}

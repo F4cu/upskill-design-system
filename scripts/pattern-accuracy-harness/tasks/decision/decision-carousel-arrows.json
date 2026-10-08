@@ -1,0 +1,50 @@
+{
+  "id": "decision-carousel-arrows",
+  "kind": "decision",
+  "brief": "The developer has expanded the component scope for the Homepage: the course carousel needs previous/next controls. They are small circular buttons, always bordered, with a left or right arrow, and they become disabled at either end of the list. How should the design system provide them?",
+  "referenceDecision": "new",
+  "referenceTarget": null,
+  "requiredCandidates": [
+    "Button"
+  ],
+  "acceptedCitations": [
+    "ADR-009"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "Button",
+    "Icon",
+    "CardVertical",
+    "Inline"
+  ],
+  "metadataAsOf": {
+    "Button": "041dc82",
+    "CardVertical": "041dc82",
+    "Inline": "041dc82"
+  },
+  "excludeComponents": [
+    "ButtonArrow",
+    "Accordion",
+    "Chip",
+    "ScrollArea",
+    "VideoFrame"
+  ],
+  "redact": {
+    "adr": [
+      "ButtonArrow|ccordion|disclosure toggle"
+    ],
+    "scope": [
+      "; `useSlider` hook \\(stepper state, no component\\)",
+      "; `Button` gains a `transparent` variant \\(ghost, ADR-024\\)"
+    ]
+  },
+  "source": "ADR-009 q2 example (ButtonArrow added in bf02b1e)",
+  "notes": "Answer is 'new', not 'escalate': the brief states the scope was expanded. Only Button is a required candidate; rejecting it as a variant is the test."
+}

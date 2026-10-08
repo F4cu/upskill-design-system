@@ -1,0 +1,27 @@
+{
+  "id": "decision-course-tag-static",
+  "kind": "decision",
+  "brief": "Course cards should show the course level (\"Beginner\", \"Intermediate\", \"Advanced\") as a small pill label. It is informational only; clicking it does nothing. How should this be built?",
+  "referenceDecision": "reuse",
+  "referenceTarget": "Badge",
+  "requiredCandidates": [
+    "Badge",
+    "Chip"
+  ],
+  "acceptedCitations": [
+    "Badge.metadata.json"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "Badge",
+    "Chip"
+  ],
+  "source": "Badge/Chip metadata usage.when"
+}

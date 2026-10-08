@@ -1,0 +1,52 @@
+{
+  "id": "decision-card-favorite-progress",
+  "kind": "decision",
+  "brief": "CardVertical needs two new overlay actions on its thumbnail: a favorite toggle and an overflow menu. A card shows one of them or neither, never both. Some pages also need consumer-specific content in the card, such as an instructor row or a grouped \"New · Updated this week\" meta line, while most pages keep using today's simple card. How should CardVertical change?",
+  "referenceDecision": "parts",
+  "referenceTarget": "CardVertical",
+  "requiredCandidates": [
+    "CardVertical"
+  ],
+  "acceptedCitations": [
+    "ADR-023",
+    "ADR-009"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "CardVertical",
+    "Image",
+    "Heading",
+    "Text",
+    "Icon",
+    "ProgressBar",
+    "Button",
+    "DropdownMenu",
+    "Stack",
+    "Inline"
+  ],
+  "metadataAsOf": {
+    "CardVertical": "cad846c"
+  },
+  "redact": {
+    "adr": [
+      "CardVertical"
+    ],
+    "scope": []
+  },
+  "recordPatterns": [
+    {
+      "path": "proposedApi",
+      "pattern": "CardVertical\\.[A-Z]",
+      "reason": "parts are named Parent.Part"
+    }
+  ],
+  "source": "ADR-023 Context (commit 48b4e32)",
+  "notes": "The brief is ADR-023's own Context, rephrased. Every ADR line naming CardVertical is redacted, so the general parts rule stays but the worked example goes."
+}

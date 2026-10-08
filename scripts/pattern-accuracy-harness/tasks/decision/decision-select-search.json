@@ -1,0 +1,30 @@
+{
+  "id": "decision-select-search",
+  "kind": "decision",
+  "brief": "The country picker has 200 options. Users want to type to filter the list while it is open, keeping the same look as our other dropdowns. How should the design system provide this?",
+  "referenceDecision": "escalate",
+  "referenceTarget": null,
+  "requiredCandidates": [
+    "Select",
+    "TextField"
+  ],
+  "acceptedCitations": [
+    "CLAUDE.md#component-scope",
+    "ADR-009"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "Select",
+    "TextField",
+    "DropdownMenu"
+  ],
+  "source": "New case. Select is a select-only combobox whose contract moves focus into the listbox; typing to filter needs an editable combobox (focus stays in the input, aria-activedescendant): a different keyboard contract (ADR-009 q2) outside the fixed set",
+  "notes": "Not historical. 'extend-prop' on Select is the tempting wrong answer."
+}

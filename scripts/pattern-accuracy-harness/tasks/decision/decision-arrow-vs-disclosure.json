@@ -1,0 +1,37 @@
+{
+  "id": "decision-arrow-vs-disclosure",
+  "kind": "decision",
+  "brief": "We are building the Accordion for the Course Overview page. Each item header needs a small circular icon button on the right that expands and collapses its panel (chevron down when closed, up when open; borderless at rest, subtle fill on hover). The library already has round prev/next arrow buttons used by the homepage carousel. How should the expand/collapse control be provided?",
+  "referenceDecision": "internal",
+  "referenceTarget": "Accordion",
+  "requiredCandidates": [
+    "ButtonArrow",
+    "Button"
+  ],
+  "acceptedCitations": [
+    "ADR-009"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "ButtonArrow",
+    "Button",
+    "Icon"
+  ],
+  "excludeComponents": [
+    "Accordion"
+  ],
+  "redact": {
+    "adr": [
+      "ccordion|disclosure toggle|ShowMore|Show more"
+    ],
+    "scope": []
+  },
+  "source": "ADR-009 Context + q2/q3 examples"
+}

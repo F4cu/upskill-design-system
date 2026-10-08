@@ -88,7 +88,22 @@ Lock briefs and reference answers **before the first run**. A brief states the r
 
 ## Changes needed
 
-1. `tasks/decision-*.json`: brief, `referenceDecision`, `referenceTarget`, `requiredCandidates`, `citations`, `redact` (ADR line ranges to strip).
+1. Task files. **Done 2026-10-08:** `tasks/decision/decision-*.json` (13 files). They're in a subfolder so `run.js --all` (which reads only `tasks/*.json`) doesn't pick them up before the `decision` kind exists. Fields:
+   - `brief`: product language; never names the decision or the ADR
+   - `referenceDecision`, `referenceTarget` (`null` for compose/new/escalate)
+   - `requiredCandidates`, `acceptedCitations` (any one counts)
+   - `contextAdrs`: ADR numbers for every arm. ADR-006 is dropped from the `carousel` task because it is the case ruling.
+   - `contextMetadata`: Arm B's candidate metadata
+   - `metadataAsOf` (`{Component: commit}`): historical tasks read the decided component's metadata **from before the decision**, from git (Button `e2843b8`, CardVertical `cad846c`, pre-ButtonArrow `041dc82`). This uses real history instead of a hand-redacted copy.
+   - `excludeComponents`: components that didn't exist yet. `run.js` strips them from the scope list and from metadata.
+   - `redact.adr`: regexes; matching ADR lines are dropped
+   - `redact.scope`: regexes; matching substrings are cut from the CLAUDE.md scope section
+   - `recordPatterns`: secondary checks on the record, e.g. the carousel `proposedApi` names a `use*` hook
+   - `source`, `notes`
+
+   Label balance: extend-prop 3, compose 2, reuse 2, escalate 2, and 1 each for new, internal, parts and extend-variant. A check script confirmed every commit and path resolves, every redaction pattern matches, and no answer string survives redaction (ADR text + scope after exclusions).
+   - **Locked before the first run.** The two "not historical" references (`button-loading`, `textfield-helper`) and the two `escalate` cases are the developer's calls. Review them now, because they can't change after a run.
+   - **Found while writing `select-search`:** `Select.metadata.json` `component.description` says it "wraps a native `<select>`", but `index.tsx` is a custom select-only combobox (`role="combobox"` + listbox). The arm B context for that task carries the stale description.
 2. `run.js`: a `decision` task kind that assembles arm context from ADR text + metadata (+ spec) and asks for the JSON record.
 3. `score.js`: a decision scorer as above. Export `namingDrift`/`detectDrift` from `scripts/generate-pattern-schema.js` (shared with the ablation eval).
 4. `report.js`: per-task label accuracy per arm, A-vs-B delta, prompt chars.

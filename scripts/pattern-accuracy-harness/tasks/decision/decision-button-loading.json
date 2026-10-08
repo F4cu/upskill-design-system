@@ -1,0 +1,35 @@
+{
+  "id": "decision-button-loading",
+  "kind": "decision",
+  "brief": "When a user submits the settings form, the Save button should show that work is in progress until the request finishes: a spinner replaces the label, the button keeps its width, and it can't be pressed again. Screen readers should hear that it's busy. How should the design system provide this?",
+  "referenceDecision": "extend-prop",
+  "referenceTarget": "Button",
+  "requiredCandidates": [
+    "Button"
+  ],
+  "acceptedCitations": [
+    "ADR-009",
+    "ADR-025"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "Button",
+    "Icon"
+  ],
+  "recordPatterns": [
+    {
+      "path": "proposedApi",
+      "pattern": "\\b(loading|busy|pending)\\b",
+      "reason": "one boolean-style state prop on Button"
+    }
+  ],
+  "source": "New case. ADR-009 q1 (same role, same interaction model) + ADR-025 state kinds",
+  "notes": "Not historical: no reference ADR. Locked by the developer before the first run."
+}

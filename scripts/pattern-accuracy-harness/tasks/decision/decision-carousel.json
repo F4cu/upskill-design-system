@@ -1,0 +1,49 @@
+{
+  "id": "decision-carousel",
+  "kind": "decision",
+  "brief": "The Homepage needs a horizontal row of course cards that pages left and right with previous/next buttons, showing as many cards as fit. The Saved Courses section needs the same behaviour. How should the design system provide it?",
+  "referenceDecision": "compose",
+  "referenceTarget": null,
+  "requiredCandidates": [
+    "ButtonArrow",
+    "ScrollArea",
+    "CardVertical"
+  ],
+  "acceptedCitations": [
+    "ADR-009"
+  ],
+  "contextAdrs": [
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "ButtonArrow",
+    "ScrollArea",
+    "CardVertical",
+    "Inline",
+    "Stack"
+  ],
+  "excludeComponents": [
+    "Accordion"
+  ],
+  "redact": {
+    "adr": [
+      "arousel|useSlider|useCarousel"
+    ],
+    "scope": [
+      "; `useSlider` hook \\(stepper state, no component\\)"
+    ]
+  },
+  "recordPatterns": [
+    {
+      "path": "proposedApi",
+      "pattern": "\\buse[A-Z]\\w*",
+      "reason": "ADR-006: offset state lives in a hook, layout stays in the page"
+    }
+  ],
+  "source": "ADR-006 (excluded from context: it is the case ruling)",
+  "notes": "ADR-006 chose hook + pattern. The hook is checked as a secondary recordPattern, not the label, because 'compose' is the decision class."
+}

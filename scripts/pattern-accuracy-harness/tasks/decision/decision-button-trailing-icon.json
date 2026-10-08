@@ -1,0 +1,47 @@
+{
+  "id": "decision-button-trailing-icon",
+  "kind": "decision",
+  "brief": "Under each collapsed course section we need a low-emphasis \"Show more\" action: the words \"Show more\" followed by a small chevron pointing right. It triggers an in-page action (it does not navigate). How should the design system provide it?",
+  "referenceDecision": "extend-prop",
+  "referenceTarget": "Button",
+  "requiredCandidates": [
+    "Button"
+  ],
+  "acceptedCitations": [
+    "ADR-009"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "Button",
+    "Icon"
+  ],
+  "metadataAsOf": {
+    "Button": "e2843b8"
+  },
+  "excludeComponents": [
+    "Accordion"
+  ],
+  "redact": {
+    "adr": [
+      "trailingIcon|ShowMore|Show more"
+    ],
+    "scope": [
+      "; `Button` gains a `transparent` variant \\(ghost, ADR-024\\)"
+    ]
+  },
+  "recordPatterns": [
+    {
+      "path": "proposedApi",
+      "pattern": "[Ii]con",
+      "reason": "the extension is an icon-placement prop"
+    }
+  ],
+  "source": "ADR-009 Context + q1 example (commit 4c54691)"
+}

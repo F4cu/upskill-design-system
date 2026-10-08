@@ -1,0 +1,37 @@
+{
+  "id": "decision-course-tag-filter",
+  "kind": "decision",
+  "brief": "Above the course list we want the same small pill labels (\"Design\", \"Development\", \"Marketing\"), but clicking one should toggle filtering the list by that category, and several can be on at once. How should this be built?",
+  "referenceDecision": "reuse",
+  "referenceTarget": "Chip",
+  "requiredCandidates": [
+    "Badge",
+    "Chip"
+  ],
+  "acceptedCitations": [
+    "Chip.metadata.json",
+    "Badge.metadata.json"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "Badge",
+    "Chip",
+    "Inline"
+  ],
+  "recordPatterns": [
+    {
+      "path": "proposedApi",
+      "pattern": "pressed",
+      "reason": "Chip's toggle is aria-pressed / pressed (ADR-026)"
+    }
+  ],
+  "source": "Badge metadata antiPatterns ('Use Chip'), Chip usage.when",
+  "notes": "Paired with course-tag-static: same look, different role. A label-only policy fails one of the two."
+}

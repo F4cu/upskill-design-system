@@ -1,0 +1,34 @@
+{
+  "id": "decision-textfield-helper",
+  "kind": "decision",
+  "brief": "Some form fields need a short persistent hint under the input, e.g. \"At least 8 characters\" under a password field. It is visible before any error, and when there is an error the error is shown too. Screen readers should read the hint with the field. How should the design system provide this?",
+  "referenceDecision": "extend-prop",
+  "referenceTarget": "TextField",
+  "requiredCandidates": [
+    "TextField"
+  ],
+  "acceptedCitations": [
+    "ADR-009"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "TextField",
+    "Text"
+  ],
+  "recordPatterns": [
+    {
+      "path": "proposedApi",
+      "pattern": "\\b(description|hint|helperText|helper)\\b",
+      "reason": "one content prop, wired through aria-describedby like error"
+    }
+  ],
+  "source": "New case. TextField has only `error` today; same role and the same aria-describedby grammar (ADR-009 q1)",
+  "notes": "Not historical. 'compose' (Text under the field) is wrong: it loses the aria-describedby association."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "decision-card-actions-row",
+  "kind": "decision",
+  "brief": "Course cards on the dashboard need a footer with two actions: \"Continue\" (the main thing to do with that course) and \"Details\". There can be a dozen of these cards on one page. How should this be built?",
+  "referenceDecision": "compose",
+  "referenceTarget": "Button",
+  "requiredCandidates": [
+    "Button",
+    "Card"
+  ],
+  "acceptedCitations": [
+    "Button.metadata.json"
+  ],
+  "contextAdrs": [
+    "006",
+    "009",
+    "023",
+    "024",
+    "025",
+    "026"
+  ],
+  "contextMetadata": [
+    "Button",
+    "Card",
+    "Inline",
+    "Stack",
+    "Heading",
+    "Text"
+  ],
+  "recordPatterns": [
+    {
+      "path": "proposedApi",
+      "pattern": "neutral",
+      "reason": "the card's lead action is neutral, never accent (Button card-actions pattern)"
+    }
+  ],
+  "source": "Button metadata usage.patterns card-actions, antiPatterns (accent in a repeated item)",
+  "notes": "Expected A < B: the pattern lives only in metadata."
+}
