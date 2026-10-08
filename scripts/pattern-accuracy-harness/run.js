@@ -6,7 +6,9 @@
 // identical prompt + .claude/component-patterns.json, Arm C gets Arm A + the
 // target's approved <Name>.spec.json (ADR-027; tasks with `specTarget` only) —
 // extracts the emitted files into an isolated scratch dir, and scores them
-// with score.js.
+// with score.js. `decision` tasks (tasks/decision/, the governance decision
+// eval) get their own prompt and scorer from decision.js and report to
+// results-decision.md; they never enter --all or results.md.
 // Sequential, never parallel (CLAUDE.md on-demand loop guardrails).
 //
 // `claude` runs with cwd in an empty tmp dir so the repo's CLAUDE.md is NOT
@@ -20,6 +22,7 @@ import { fileURLToPath } from 'url'
 import { spawnSync } from 'child_process'
 import { scoreScratch, loadTask } from './score.js'
 import { writeReport } from './report.js'
+import { buildDecisionPrompt, scoreDecision, decisionArms, decisionTaskIds, writeDecisionReport } from './decision.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '../..')
@@ -135,14 +138,14 @@ function invokeClaude(prompt) {
 }
 
 function armsFor(task) {
-  const arms = task.specTarget ? ['A', 'B', 'C'] : ['A', 'B']
+  const arms = task.kind === 'decision' ? decisionArms(task) : task.specTarget ? ['A', 'B', 'C'] : ['A', 'B']
   return armFilter.length > 0 ? arms.filter((a) => armFilter.includes(a)) : arms
 }
 
 function dryRunArm(task, arm) {
   const dir = path.join(DRY_RUN_DIR, task.id, arm)
   fs.mkdirSync(dir, { recursive: true })
-  const prompt = buildPrompt(task, arm)
+  const prompt = task.kind === 'decision' ? buildDecisionPrompt(task, arm) : buildPrompt(task, arm)
   fs.writeFileSync(path.join(dir, 'prompt.md'), prompt)
   console.log(`[${task.id}] arm ${arm}: ${prompt.length} chars → ${path.relative(process.cwd(), path.join(dir, 'prompt.md'))}`)
 }
@@ -155,12 +158,19 @@ function runArm(task, arm, run) {
   fs.rmSync(scratchDir, { recursive: true, force: true })
   fs.mkdirSync(scratchDir, { recursive: true })
 
-  const prompt = buildPrompt(task, arm)
+  const prompt = task.kind === 'decision' ? buildDecisionPrompt(task, arm) : buildPrompt(task, arm)
   fs.writeFileSync(path.join(scratchDir, 'prompt.md'), prompt)
 
   console.log(`${label}: invoking claude -p (${prompt.length} chars of prompt)…`)
   const response = invokeClaude(prompt)
   fs.writeFileSync(path.join(scratchDir, 'response.md'), response)
+
+  if (task.kind === 'decision') {
+    const score = { ...scoreDecision(scratchDir, task), promptChars: prompt.length }
+    fs.writeFileSync(path.join(scratchDir, 'score.json'), JSON.stringify(score, null, 2) + '\n')
+    console.log(`${label}: ${score.decision ?? 'unparsed'}${score.target ? `(${score.target})` : ''} → ${score.correct ? 'correct' : `wrong (reference ${task.referenceDecision})`}`)
+    return score
+  }
 
   const written = extractFiles(response, scratchDir, task.outputHint)
   console.log(`${label}: extracted ${written.length} file(s): ${written.join(', ') || '(none)'}`)
@@ -175,10 +185,12 @@ const args = process.argv.slice(2)
 const taskIds = []
 const armFilter = []
 let all = false
+let decisions = false
 let dryRun = false
 let runs = 1
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--all') all = true
+  else if (args[i] === '--decisions') decisions = true
   else if (args[i] === '--task') taskIds.push(args[++i])
   else if (args[i] === '--arm') armFilter.push(args[++i])
   else if (args[i] === '--dry-run') dryRun = true
@@ -188,9 +200,10 @@ for (let i = 0; i < args.length; i++) {
     process.exit(1)
   }
 }
-if (!all && taskIds.length === 0) {
-  console.error('Usage: npm run harness:run -- --task <id> [--task <id>…] | --all  [--arm <A|B|C>…] [--runs <n>] [--dry-run]')
-  console.error(`Available tasks: ${fs.readdirSync(TASKS_DIR).map((f) => f.replace('.json', '')).join(', ')}`)
+if (!all && !decisions && taskIds.length === 0) {
+  console.error('Usage: npm run harness:run -- --task <id> [--task <id>…] | --all | --decisions  [--arm <A|B|C>…] [--runs <n>] [--dry-run]')
+  console.error(`Available tasks: ${fs.readdirSync(TASKS_DIR).filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')).join(', ')}`)
+  console.error(`Decision tasks: ${decisionTaskIds().join(', ')}`)
   process.exit(1)
 }
 
@@ -204,9 +217,11 @@ if (!Number.isInteger(runs) || runs < 1) {
   process.exit(1)
 }
 
-const selected = all
-  ? fs.readdirSync(TASKS_DIR).filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')).sort()
-  : taskIds
+const selected = [
+  ...(all ? fs.readdirSync(TASKS_DIR).filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')).sort() : []),
+  ...(decisions ? decisionTaskIds() : []),
+  ...taskIds,
+]
 
 for (const id of selected) {
   const task = loadTask(id)
@@ -219,5 +234,13 @@ for (const id of selected) {
 }
 
 if (dryRun) process.exit(0)
-writeReport()
-console.log(`\nReport written to ${path.relative(process.cwd(), path.join(__dirname, 'results.md'))}`)
+const ranDecision = selected.some((id) => loadTask(id).kind === 'decision')
+const ranComponent = selected.some((id) => loadTask(id).kind !== 'decision')
+if (ranComponent) {
+  writeReport()
+  console.log(`\nReport written to ${path.relative(process.cwd(), path.join(__dirname, 'results.md'))}`)
+}
+if (ranDecision) {
+  writeDecisionReport()
+  console.log(`\nReport written to ${path.relative(process.cwd(), path.join(__dirname, 'results-decision.md'))}`)
+}

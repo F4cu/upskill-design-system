@@ -6,7 +6,6 @@
   "referenceTarget": null,
   "requiredCandidates": [
     "ButtonArrow",
-    "ScrollArea",
     "CardVertical"
   ],
   "acceptedCitations": [
@@ -21,7 +20,6 @@
   ],
   "contextMetadata": [
     "ButtonArrow",
-    "ScrollArea",
     "CardVertical",
     "Inline",
     "Stack"
@@ -45,5 +43,5 @@
     }
   ],
   "source": "ADR-006 (excluded from context: it is the case ruling)",
-  "notes": "ADR-006 chose hook + pattern. The hook is checked as a secondary recordPattern, not the label, because 'compose' is the decision class."
+  "notes": "ADR-006 chose hook + pattern. The hook is checked as a secondary recordPattern, not the label, because 'compose' is the decision class. ScrollArea is left out: it was created in the same commit as this decision (bf02b1e) and its metadata names itself a carousel alternative."
 }

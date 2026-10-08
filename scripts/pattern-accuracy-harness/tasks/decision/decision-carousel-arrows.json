@@ -27,7 +27,8 @@
   "metadataAsOf": {
     "Button": "041dc82",
     "CardVertical": "041dc82",
-    "Inline": "041dc82"
+    "Inline": "041dc82",
+    "Icon": "041dc82"
   },
   "excludeComponents": [
     "ButtonArrow",

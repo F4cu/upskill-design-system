@@ -50,7 +50,7 @@ Lock briefs and reference answers **before the first run**. A brief states the r
 
 ## Scoring (deterministic, no LLM judge in v1)
 
-- **Headline:** the decision label matches the reference. `target` must match too for `reuse`, `extend-*` and `parts`.
+- **Headline:** the decision label matches the reference. `target` must match too for `reuse`, `extend-*`, `parts` and `internal`. A task passes in an arm when most of its runs are correct.
 - **Secondary:**
   - Every required candidate per task is listed in `candidates`. For example, `course-tag-filter` must consider both Badge and Chip.
   - The deciding ADR or metadata path is cited.
@@ -65,7 +65,7 @@ Lock briefs and reference answers **before the first run**. A brief states the r
 |---|---|
 | A | brief + CLAUDE.md "Component scope" + ADR-006/009/023/024/025/026 text (redacted per task) |
 | B | A + metadata of the task's candidate components |
-| C | B + their `*.spec.json`. Run it **only if ADR-027 is accepted** by the spec harness arm. |
+| C | B + their `*.spec.json` (ADR-027 accepted 2026-10-08). A component pinned by `metadataAsOf` never gets its spec, which postdates the decision, so a task where no unpinned candidate has a spec has no Arm C. |
 
 ## What the result decides
 
@@ -79,7 +79,7 @@ Lock briefs and reference answers **before the first run**. A brief states the r
 - **Prediction:** write it here, unhedged, before any run.
 - **Honest-outcome rule:** don't tune briefs, reference answers or the scorer after seeing results.
 - **N = 3** runs per task × arm; N = 1 is a pilot.
-- **Budget:** 13 tasks × 2 arms (A, B) × 3 = 78 single-shot runs (short prompts, JSON output). Arm C adds 39 if it runs. Sequential.
+- **Budget:** 13 tasks × 2 arms (A, B) × 3 = 78 single-shot runs, plus Arm C on 4 tasks × 3 = 12: **90 in total**, sequential. Prompts are 53–106K chars and the output is a short JSON block.
 
 ## Order and dependencies
 
@@ -105,6 +105,24 @@ Lock briefs and reference answers **before the first run**. A brief states the r
    - **Locked before the first run.** The two "not historical" references (`button-loading`, `textfield-helper`) and the two `escalate` cases are the developer's calls. Review them now, because they can't change after a run.
    - **Found while writing `select-search`:** `Select.metadata.json` `component.description` says it "wraps a native `<select>`", but `index.tsx` is a custom select-only combobox (`role="combobox"` + listbox). The arm B context for that task carries the stale description.
 2. `run.js`: a `decision` task kind that assembles arm context from ADR text + metadata (+ spec) and asks for the JSON record.
-3. `score.js`: a decision scorer as above. Export `namingDrift`/`detectDrift` from `scripts/generate-pattern-schema.js` (shared with the ablation eval).
+   **Done 2026-10-08** (`decision.js`, routed from `run.js`; `--decisions` selects all 13). Component-task prompts are byte-identical to before, checked against the spec-arm run. The prompt gives every arm the same one-line definition of each label, so a miss is about the decision, not the vocabulary.
+   - **Dry run:** 13 tasks, 30 prompts (Arm C on 4 tasks: arrow-vs-disclosure, button-loading, card-actions-row, carousel), 53–106K chars.
+   - **Leak scan:** clean in every arm, after three fixes:
+     - `card-favorite-progress` pins **every** candidate to `cad846c` (today's Button and DropdownMenu metadata name the Favorite/Menu parts).
+     - `carousel-arrows` pins Icon to `041dc82` (its `containedBy` listed ButtonArrow).
+     - `carousel` drops ScrollArea, which was created in the decision's own commit and describes itself as a carousel alternative.
+3. `score.js`: a decision scorer as above.
+   **Done 2026-10-08** in `decision.js` (`scoreDecision`). `loadTask` also reads `tasks/decision/`.
+   - **Calibration:** a synthetic reference record for each task scores correct, with no secondary misses.
+   - **Negatives:** a wrong label, a wrong target and unparseable output score wrong. A hallucinated candidate is flagged in the secondary checks.
+   - **Deferred:** the ADR-026 `namingDrift` check on `proposedApi`. It belongs with the ablation eval's `prop-vocabulary` export; `recordPatterns` covers the per-task names for now.
 4. `report.js`: per-task label accuracy per arm, A-vs-B delta, prompt chars.
+   **Done 2026-10-08** as `writeDecisionReport()` → `results-decision.md`, separate from `results.md`. It covers:
+   - per task × arm: correct/runs, the decisions given, citations, missed candidates, hallucinations, pattern misses
+   - the pass rate per arm
+   - the A-vs-B readout (thin semantics / metadata earns it / metadata hurts)
+   - an incompleteness notice until every task has ≥ 3 runs in A and B
 5. Docs: check the `sources:` of `docs/07-cli-reference.md` and `docs/11-self-improving-loops.md` (docs-check coupling).
+   **Done 2026-10-08:** 07 documents `--decisions`; 11 has a clock reset.
+
+**Ready to run once the pre-registration is written:** lock the four developer-call references and the prediction, then `npm run harness:run -- --decisions --runs 3`. That's 90 single-shot runs, sequential (30 cells × 3).

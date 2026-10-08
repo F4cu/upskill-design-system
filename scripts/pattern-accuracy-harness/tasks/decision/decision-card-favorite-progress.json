@@ -32,7 +32,16 @@
     "Inline"
   ],
   "metadataAsOf": {
-    "CardVertical": "cad846c"
+    "CardVertical": "cad846c",
+    "Image": "cad846c",
+    "Heading": "cad846c",
+    "Text": "cad846c",
+    "Icon": "cad846c",
+    "ProgressBar": "cad846c",
+    "Button": "cad846c",
+    "DropdownMenu": "cad846c",
+    "Stack": "cad846c",
+    "Inline": "cad846c"
   },
   "redact": {
     "adr": [
@@ -48,5 +57,5 @@
     }
   ],
   "source": "ADR-023 Context (commit 48b4e32)",
-  "notes": "The brief is ADR-023's own Context, rephrased. Every ADR line naming CardVertical is redacted, so the general parts rule stays but the worked example goes."
+  "notes": "The brief is ADR-023's own Context, rephrased. Every ADR line naming CardVertical is redacted, so the general parts rule stays but the worked example goes. Every candidate's metadata is pinned to cad846c: today's Button and DropdownMenu metadata name CardVertical's Favorite/Menu parts."
 }

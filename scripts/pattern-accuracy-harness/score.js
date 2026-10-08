@@ -463,7 +463,10 @@ export function scoreScratch(scratchDir, task) {
 }
 
 export function loadTask(taskId) {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, 'tasks', `${taskId}.json`), 'utf8'))
+  const file = [path.join(__dirname, 'tasks', `${taskId}.json`), path.join(__dirname, 'tasks', 'decision', `${taskId}.json`)]
+    .find((f) => fs.existsSync(f))
+  if (!file) throw new Error(`No task file for ${taskId} in tasks/ or tasks/decision/`)
+  return JSON.parse(fs.readFileSync(file, 'utf8'))
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
