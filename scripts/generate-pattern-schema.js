@@ -56,7 +56,7 @@ const PATTERN_DESCRIPTIONS = {
   "static-display": "A presentational component rendering provided content, no managed state.",
 };
 
-function parseFile(filePath) {
+export function parseFile(filePath) {
   return ts.createSourceFile(
     filePath,
     fs.readFileSync(filePath, "utf8"),
@@ -182,7 +182,7 @@ function detectControlledPair(props) {
   return null;
 }
 
-function namingDrift(props) {
+export function namingDrift(props) {
   const issues = [];
   for (const p of props) {
     const change = p.match(/^on([A-Z]\w*)Change$/);
@@ -441,4 +441,4 @@ function main() {
   console.log(`Wrote ${path.relative(ROOT, OUTPUT_PATH)}`);
 }
 
-main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) main();

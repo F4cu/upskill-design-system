@@ -10,5 +10,18 @@
   "deleteScreenshots": [
     "layout-scrollarea--"
   ],
-  "redactions": []
+  "redactions": [],
+  "propVocabulary": {
+    "ignore": [
+      "action"
+    ]
+  },
+  "requiredPatterns": [
+    {
+      "file": "packages/components/src/index.ts",
+      "pattern": "from '\\./components/CardVertical'",
+      "reason": "the brief asks for the export from the package entry"
+    }
+  ],
+  "forbiddenPatterns": []
 }

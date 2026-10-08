@@ -32,5 +32,22 @@
       "find": "  // Checkbox — box border/fill sits on background.input; checkmark is a\n  // graphic (icon role, not text) drawn on background.brand once checked\n  [B(\"input-default\"), BG(\"input\"), \"border\"],\n  [B(\"input-hover\"), BG(\"input\"), \"border\"],\n  [T(\"inverted-default\"), BG(\"brand\"), \"icon\"],\n  ...AMBIENT.map((bg) => [T(\"default\"), bg]),\n\n",
       "replace": ""
     }
+  ],
+  "requiredPatterns": [
+    {
+      "file": "packages/components/src/index.ts",
+      "pattern": "from '\\./components/Checkbox'",
+      "reason": "the brief asks for the export from the package entry"
+    },
+    {
+      "file": "packages/components/src/components/Checkbox/index.tsx",
+      "pattern": "type=[\"']checkbox[\"']",
+      "reason": "the brief says it must work inside an ordinary HTML form, which a native checkbox input does"
+    },
+    {
+      "file": "packages/components/src/components/Checkbox/index.tsx",
+      "pattern": "<label\\b|htmlFor",
+      "reason": "the brief says clicking the label toggles it"
+    }
   ]
 }

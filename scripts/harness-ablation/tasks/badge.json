@@ -27,5 +27,24 @@
       "find": "  // Badge — outline variant's border is the shared decorative border.default\n  // (not checked — same reasoning as Button's neutral variant, above).\n\n",
       "replace": ""
     }
+  ],
+  "requiredPatterns": [
+    {
+      "file": "packages/components/src/index.ts",
+      "pattern": "from '\\./components/Badge'",
+      "reason": "the brief asks for the export from the package entry"
+    }
+  ],
+  "forbiddenPatterns": [
+    {
+      "file": "packages/components/src/components/Badge/index.tsx",
+      "pattern": "onClick|<button|role=[\"']button",
+      "reason": "the brief says a badge is not clickable"
+    },
+    {
+      "file": "packages/components/src/components/Badge/index.tsx",
+      "pattern": "<Icon\\b|<svg\\b",
+      "reason": "the brief says a badge shows text only, no icon"
+    }
   ]
 }

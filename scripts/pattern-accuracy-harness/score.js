@@ -81,7 +81,7 @@ function walkJsx(node, ancestors, fn) {
 // from composition.parts in the repo's metadata and any emitted metadata. Inside
 // the parent's own folder a part is referenced by its bare name (<Title>);
 // elsewhere as <Parent.Part>.
-function typographyParts(scratchDir) {
+export function typographyParts(scratchDir) {
   const files = [
     ...listFiles(path.join(ROOT, 'packages/components/src/components'), ['.metadata.json']),
     ...listFiles(scratchDir, ['.metadata.json']),
@@ -108,7 +108,7 @@ function nearestComponent(ancestors) {
   return null
 }
 
-function trapChecksTsx(rel, source, violations, partWrappers = new Set()) {
+export function trapChecksTsx(rel, source, violations, partWrappers = new Set()) {
   const folder = rel.split(path.sep)[0]
   const isPartWrapper = (name) => partWrappers.has(name) || partWrappers.has(`${folder}.${name}`)
   let ast
@@ -233,7 +233,7 @@ function trapChecksTsx(rel, source, violations, partWrappers = new Set()) {
 // a checkmark's size have no token category, and the system's gates accept them.
 const TOKENIZED_PX_PROPERTY = /^(padding|margin|inset)(-[a-z-]+)?$|^(row-|column-)?gap$|^border(-[a-z]+)*-radius$|^(font-size|line-height)$|^outline(-width|-offset)?$/
 
-function trapChecksCss(rel, source, violations) {
+export function trapChecksCss(rel, source, violations) {
   for (const [i, line] of source.split('\n').entries()) {
     if (/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/.test(line)) {
       violations.push({ trap: 'raw-hex-color', file: rel, line: i + 1, detail: line.trim().slice(0, 80) })
@@ -250,7 +250,7 @@ function trapChecksCss(rel, source, violations) {
   }
 }
 
-function runPatternChecks(scratchDir, task, violations) {
+export function runPatternChecks(scratchDir, task, violations) {
   for (const spec of task.requiredPatterns ?? []) {
     const file = path.join(scratchDir, spec.file)
     const content = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : ''

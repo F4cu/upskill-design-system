@@ -159,6 +159,39 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
        - **Briefs locked 2026-10-08 (developer-approved):** `tasks/{badge,checkbox,cardvertical}.brief.md`. They describe behaviour and never name props, because prop names are scored. Each lists the component, CSS module, stories file and the `index.ts` export. The CardVertical brief leaves out the overlay action, because `action` only accepts the `Favorite`/`Menu` parts and so contradicts "preset only". `score.js`'s `prop-vocabulary` diff must therefore not count a missing `action` as a violation. Each `reference.png` must show only what its brief describes: both Badge looks; Checkbox unchecked/checked/disabled/disabled-checked; CardVertical in both sizes, including an in-progress card and a completed one.
        - ~~**Open, blocks the pilot:** the briefs.~~ Resolved above. Original note: `run.js` reads `tasks/<id>.brief.md` (the same file for every arm; Arm 2 gets `/add-component <Target> --eval` prepended) and refuses to run without it. Set the Arm 2 `--max-budget-usd` from the pilot. It has to cover the reviewer subagent too, and $0.30 on Haiku didn't get through the gate.
    - `score.js`: in-workspace gates + traps imported from `pattern-accuracy-harness/score.js` (export `trapChecksTsx`, `trapChecksCss`, `runPatternChecks`) + the new `unknown-token` and `invented-import` traps + composeStories/axe + the `prop-vocabulary` check (export the naming-drift functions from `scripts/generate-pattern-schema.js`).
+     - **Done 2026-10-08** (`npm run ablation:score -- <runDir>`; `run.js` calls it). `--calibrate <task>` restores the shipped component into a fresh workspace (Arm 2, or Arm 0 while the redactions are unreviewed) and must score 0. **All three references score 0 product violations.** The sweep composes Badge 3, Checkbox 5 and CardVertical 13 stories, and every system check passes on Badge and Checkbox. `generate-pattern-schema.js` now runs `main()` only as an entry point, so importing it has no side effects.
+       - **Product quality (the headline), in the workspace:**
+         - Missing deliverables (component, CSS module, stories file).
+         - `typecheck` errors, counted over the whole package; the baseline is 0.
+         - `eslint` errors on the target directory.
+         - `a11y:stories` through vitest's JSON reporter. Any failure counts. A target story with axe switched off (`parameters.a11y`) counts too, and so does a stories file that composes no stories.
+         - The pattern-accuracy traps on the target's `.tsx` (tests excluded) and `.css`.
+         - `unknown-token`: every `var(--ds-*)` must exist in the rebuilt `packages/tokens/dist/css`. A custom property the component defines in the same file is local and allowed.
+         - `invented-import`: a sibling component directory that didn't exist at baseline, or an `@upskill/components` name the baseline `index.ts` didn't export.
+         - The task's `requiredPatterns`/`forbiddenPatterns`.
+       - **System compliance (reported separately):**
+         - Whether metadata is present.
+         - `metadata:validate` and `a11y:coverage`, where the arm has the script.
+         - Pattern drift entries naming the target.
+         - Story-file `off-scale-inline-style` hits.
+         - `prop-vocabulary`, see below.
+         - Uncommitted changes under `packages/tokens/src`. If an arm adds tokens, unknown-token can't catch an invented name, so this list shows it.
+       - **`prop-vocabulary`:**
+         - The vocabulary is the props on `<Target>Props`, or on every `*Props` type if that one doesn't exist. Native `checked`/`defaultChecked`/`onChange`/`disabled`/`name` count when the props spread `InputHTMLAttributes` without omitting them.
+         - It also records string-literal union values, resolving local type aliases.
+         - A violation is a reference prop or value the run lacks. Extra props aren't violations.
+         - ADR-026's `namingDrift` checks only props the component declares itself. Native ones follow the ADR-025 native contract; without this, the shipped Checkbox had a false positive.
+         - `selected*` is flagged only when the component renders a selection role.
+         - CardVertical ignores `action`, per the brief.
+       - **Process:** cost, turns, duration, subagents spawned, the contamination-flag count, and for Arm 2 the reviewer's findings by severity from `.review.json`.
+       - **Brief checklists (pre-registered, part of the locked task files):**
+         - Every task: the export in `index.ts`.
+         - Badge: no `onClick`/`<button`/`role="button"` and no `<Icon`/`<svg`, because the brief says not clickable and text only.
+         - Checkbox: `type="checkbox"` (works in an ordinary form) and `<label`/`htmlFor` (clicking the label toggles it).
+         - CardVertical: the export only. Forbidding `Object.assign` would fail the reference.
+       - **Negative test:** defects planted in a restored Badge triggered every trap: hex, px, unknown token, invented import, typecheck, lint, axe switched off, prop renames and naming drift.
+       - **Smoke test (Haiku, Arm 0, locked brief, no `reference.png`):** $0.13 and 27 turns. It scored 4 product violations, all `unknown-token`, and every one is a real invented name (e.g. `--ds-font-size-body-sm`; the token is `body-small`). The vocabulary check found `label` renamed and `variant` without `outline`.
+       - **Found, not this eval's:** the committed `.claude/component-patterns.json` on `main` is stale. Regenerating it rewrites AppHeader's entry (`aria-controls`, the `useMenuButton` hook), so an AppHeader change landed without `patterns:generate`.
    - `prepare.js` also applies the redaction decided under "Leakage controls" to `docs/decisions/` and `.claude/rules/components.md` for Arms 1/1b/2.
    - `report.js` → `results.md`: per task × arm table, clean rate, cost per clean component. Copy each arm's median-run files into `results/<task>/<arm>/` for the case-study figure.
    - `tasks/*.json`: brief, target, files to delete, `requiredPatterns`/`forbiddenPatterns`, `reference.png` path.
