@@ -7,6 +7,7 @@ sources:
   - .github/workflows/*.yml
 # clock reset 2026-07-10: CI-audit workflows (#57-#60) merged; this page's rewrite in #61 already describes the end state (lint gate, sync.yml, weekly pull, showcase-check)
 # clock reset 2026-07-23: components-check.yml paths filter narrowed (#88, package.json dropped) and now includes itself so workflow edits exercise the gate; trigger paths aren't described on this page, prose unaffected
+# rewritten 2026-10-08: ablation:run, ablation:score, ablation:report rows; harness:run is no longer the only LLM-costing script
 ---
 # CLI reference
 
@@ -42,7 +43,7 @@ The tables below are the full reference — most entries are composite children,
 | `npm run docs:check` / `npm run claudemd:check` | After touching a doc's declared source, or `CLAUDE.md`. |
 | `npm run handoff:tidy` | After finishing the work a handoff describes. |
 
-Everything else either runs itself — a composite child chained by one of the commands above, or a step CI fires on every PR/push to `main` — or is a rare, deliberate one-off (`airtable:setup`, `harness:run`). The "When it runs" column in each table below tells you which bucket a given command falls into.
+Everything else either runs itself — a composite child chained by one of the commands above, or a step CI fires on every PR/push to `main` — or is a rare, deliberate one-off (`airtable:setup`, `harness:run`, `ablation:run`). The "When it runs" column in each table below tells you which bucket a given command falls into.
 
 ---
 
@@ -165,13 +166,16 @@ The self-documenting side of the system: two gates that keep the human docs and 
 
 ## Handoff & telemetry
 
-Housekeeping for `.claude/handoff/` (see [agentic moments](06-agentic-moments.md)) and the measurement harness behind ADR-013's "patterns help layouts, hurt scaffolds" finding.
+Housekeeping for `.claude/handoff/` (see [agentic moments](06-agentic-moments.md)) and the two measurement harnesses: the pattern-accuracy harness behind ADR-013's "patterns help layouts, hurt scaffolds" finding, and the harness-ablation eval, which measures whether the `/add-component` harness itself earns its cost.
 
 | Command | What it does | When it runs |
 |---|---|---|
 | `npm run handoff:tidy` | Archive `done`/`superseded` handoffs, regenerate `handoff/index.json`, and promote per-run `.run.json` telemetry into the committed `run-ledger.json`. | You type it after finishing the work a handoff describes; `/extract-learnings` runs it as its close-out step. Deliberately never CI. |
-| `npm run harness:run` | Pattern-accuracy harness: invokes `claude -p` headlessly per task, one arm with per-component metadata only (A), one with `component-patterns.json` added (B), and, for tasks with a `specTarget`, one with the target's `<Name>.spec.json` added (C, the ADR-027 exit test), then scores each. `--decisions` runs the governance decision eval instead: the 13 tasks in `tasks/decision/` ask for a JSON decision record (reuse, compose, extend, parts, internal, new or escalate), are scored against a locked reference answer, and report to `results-decision.md`. Arms there: A = scope + ADRs, B = + candidate metadata, C = + candidate specs. Flags: `--arm <A\|B\|C>` (repeatable), `--runs <n>`, `--dry-run` (writes prompts and prints their sizes, no LLM call). **Costs LLM usage** — the only script in this file that does, except under `--dry-run`. | You type it only when re-evaluating whether a context file earns its cost (`component-patterns.json`, or the spec file under ADR-027). Rare and deliberate. |
+| `npm run harness:run` | Pattern-accuracy harness: invokes `claude -p` headlessly per task, one arm with per-component metadata only (A), one with `component-patterns.json` added (B), and, for tasks with a `specTarget`, one with the target's `<Name>.spec.json` added (C, the ADR-027 exit test), then scores each. `--decisions` runs the governance decision eval instead: the 13 tasks in `tasks/decision/` ask for a JSON decision record (reuse, compose, extend, parts, internal, new or escalate), are scored against a locked reference answer, and report to `results-decision.md`. Arms there: A = scope + ADRs, B = + candidate metadata, C = + candidate specs. Flags: `--arm <A\|B\|C>` (repeatable), `--runs <n>`, `--dry-run` (writes prompts and prints their sizes, no LLM call). **Costs LLM usage** — one of two scripts in this file that do (the other is `ablation:run`), except under `--dry-run`. | You type it only when re-evaluating whether a context file earns its cost (`component-patterns.json`, or the spec file under ADR-027). Rare and deliberate. |
 | `npm run harness:score` | The deterministic scorer for harness output — pre-registered gates plus a mechanical trap checklist, no LLM. | Runs inside `harness:run`; you type it standalone only to re-score an existing run. |
+| `npm run ablation:run` | Harness-ablation eval: for each task × arm × run, builds a fresh workspace outside the repo with the target component deleted (`prepare.js`), runs `claude -p` in it agentically (Arm 0 bare repo, Arm 1 context only, Arm 2 `/add-component <Name> --eval`), keeps the transcript and outputs under `scripts/harness-ablation/.runs/`, and scores each run. Sequential; resumable across usage windows (a usage-limit stop exits so the same command picks up where it left off). Required: `--model`, `--max-budget-usd`. Flags: `--task`, `--arm`, `--runs`, `--effort`, `--dry-run`, `--smoke` (plumbing check on a cheap model; writes under `.runs/_smoke/`). **Costs LLM usage.** | You type it only when measuring the harness (pilot, then the full N = 3 run). Rare and deliberate. |
+| `npm run ablation:score` | Scores one ablation run inside its workspace, no LLM: product quality (typecheck, lint, the story axe sweep, the trap checklist, unknown tokens, invented imports, the brief checklist) and, separately, system compliance (metadata, prop vocabulary, pattern drift). `-- --calibrate <task>` restores the shipped component and must score 0. | Runs inside `ablation:run`; you type it to re-score a run or to calibrate a task before a pilot. |
+| `npm run ablation:report` | Renders `scripts/harness-ablation/results.md` (clean rate, mean violations, cost per clean component per task × arm) and copies each cell's median run into `results/<task>/arm<N>/`. `--smoke` writes the gitignored `results-smoke.md` instead. | You type it after runs land. |
 
 ---
 

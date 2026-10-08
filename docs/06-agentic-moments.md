@@ -22,6 +22,7 @@ sources:
 # clock reset 2026-10-07: parent-variant rule for nested state (TextField Has error) added to ADR-026, components.md Figma line and /figma-cli pitfalls; this page names /figma-cli and its role only, still accurate
 # clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; this page names /figma-cli and its role only, still accurate
 # clock reset 2026-10-07: validate-metadata.js and lib.js share the package-export component set (#98); this page doesn't describe how validators define a component, still accurate
+# rewritten 2026-10-08: Eval mode paragraph for /add-component --eval and /review-component --eval (harness-ablation Arm 2: guard, auto-approved API proposal, no visual checkpoint, no branch/PR)
 ---
 # Agentic moments
 
@@ -88,6 +89,8 @@ The flagship moment (6) is a bounded loop with stages, per ADR-007 — **sequent
   - Contrast misses → a new pair in the curated `PAIRS` list in `scripts/token-contrast-check.js` (never a waiver).
 
   The command gates on `metadata:validate` (plus `tokens:contrast-check` when `PAIRS` changed) and writes `.learnings.json`. That file is the "processed" marker: on the `full` review path, `sense.js` reads it to check off item 4 of the [`in review` checklist](02-component-lifecycle.md#two-axes-because-one-field-kept-lying); the component stays `in review` until human sign-off in Airtable. (`standard`-path reviews — the `/code-review` route, marked `"path": "standard"` in `.review.json` — have no learnings step, so the checklist renders item 4 as an explicit `n/a — not required on standard path`.) In `--all` mode it may *propose* (never auto-apply) a `CLAUDE.md` addition when a pattern repeats across components, and runs a consolidation pass over `/layout-generation`'s hand-accreted "Recurring patterns" section — flagging entries now duplicated by metadata or `component-patterns.json` with a prune/move/keep disposition, again applied only on developer confirmation. Scope is deliberately bounded to component, layout, and token contracts; process and tooling mistakes are skipped, not routed. Fixes that land only in code rot; landing them in the system's contracts is what makes it self-improving.
+
+**Eval mode.** `/add-component <Name> --eval` runs the same stages unattended, as Arm 2 of the harness-ablation eval. It refuses to run unless `.ablation-workspace` exists at the repo root, so it only runs in a workspace built by `scripts/harness-ablation/prepare.js`, never on the real repo. It reads a `reference.png` instead of Figma, auto-approves the API proposal (saved as `api-proposal.md`), skips the visual checkpoint (`visualReview: skipped-eval`), caps the gate at 5 runs, and has `/review-component --eval` keep the single reviewer and fix pass but skip the branch, commit and PR. Eval runs never enter `run-ledger.json`. See the [CLI reference](07-cli-reference.md) for `ablation:run`.
 
 Metadata isn't just another thing the gate checks — it's a **loop-carried input and output** around the LLM stage, distinct from the plain CI checks that only ever look at code:
 
