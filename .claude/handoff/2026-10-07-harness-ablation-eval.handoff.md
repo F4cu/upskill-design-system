@@ -10,7 +10,9 @@ completed:
 
 **Why not extend `pattern-accuracy-harness/`:** that harness is single-shot (`claude -p`, no tools, context pasted into the prompt). It measures *context*. This eval has to measure the *harness*: tools, gates, the retry loop and the reviewer. That needs agentic runs inside a real workspace. The scorer's trap checks are reused.
 
-**Order (2026-10-08):** run this eval **after** the [spec harness arm](archive/2026-10-07-spec-harness-arm.handoff.md) (its ADR-027 outcome sets Arm 1's context) and the [governance decision eval](2026-10-08-governance-decision-eval.handoff.md) (it may add metadata fields, which would change Arm 1's context and force a rerun). Every task here is "rebuild a known component", so the governance decision is fixed in advance. That's right for an output-quality eval, and it's why governance has its own eval.
+**Order (2026-10-08):** run this eval **after** the [spec harness arm](archive/2026-10-07-spec-harness-arm.handoff.md) (its ADR-027 outcome sets Arm 1's context) and the [governance decision eval](archive/2026-10-08-governance-decision-eval.handoff.md) (it may add metadata fields, which would change Arm 1's context and force a rerun). Every task here is "rebuild a known component", so the governance decision is fixed in advance. That's right for an output-quality eval, and it's why governance has its own eval.
+
+**Governance decision eval done (2026-10-08):** it added no metadata fields, so Arm 1's context doesn't change because of it. This eval can proceed.
 
 **ADR-027 accepted (2026-10-08):** Arm 1 (and 1b, 2) context includes `*.spec.json`. `prepare.js` keeps the specs like metadata, deletes the target's spec with its directory, and redacts the target's mentions in other specs. The spec arm's Button result shows Arm A invents token names when it has no token catalogue. The `unknown-token` trap here is what measures that properly.
 

@@ -1,12 +1,12 @@
 ---
-status: active
+status: done
 created: 2026-10-08
-completed:
+completed: 2026-10-08
 ---
 
 # Governance decision eval — scope
 
-**Question:** given a new requirement, does Claude make the right governance decision? The options are reuse, compose, extend with a prop or variant, add parts, use an internal element, create a new component, or escalate. And is the knowledge in this repo enough to decide well, or are its semantics too thin? The two other evals ([spec harness arm](archive/2026-10-07-spec-harness-arm.handoff.md), [harness ablation](2026-10-07-harness-ablation-eval.handoff.md)) measure **output quality**: whether the built component is correct. Their tasks decide "build X" in advance. Nothing measures the decision that comes before the build.
+**Question:** given a new requirement, does Claude make the right governance decision? The options are reuse, compose, extend with a prop or variant, add parts, use an internal element, create a new component, or escalate. And is the knowledge in this repo enough to decide well, or are its semantics too thin? The two other evals ([spec harness arm](2026-10-07-spec-harness-arm.handoff.md), [harness ablation](../2026-10-07-harness-ablation-eval.handoff.md)) measure **output quality**: whether the built component is correct. Their tasks decide "build X" in advance. Nothing measures the decision that comes before the build.
 
 **Why this matters here:** the rules exist only as prose (ADR-006, 009, 023, 024, 025, 026, plus the closed list in CLAUDE.md "Component scope"). No command runs the decision. `/component-scaffold` and `/add-component` assume it has already been made, and `layout:validate` only rejects components outside the set. "A requirement arrives against an existing component" is handled ad hoc in chat, and no record of the decision is kept.
 
@@ -108,6 +108,48 @@ No other task has a case-variant hit on its redaction patterns (checked across e
   - pin Button (and ButtonArrow) to `e2843b8`, before the ghost variant existed
 - button-ghost: case-insensitive redaction (`(?i)` or an `i` flag in `adrText`).
 - **Guard for any v2 task:** run the leak scan case-insensitively, and check that nothing the brief names as existing or being built is excluded from scope.
+
+## Result (2026-10-08, 90/90 runs; full table in `scripts/pattern-accuracy-harness/results-decision.md`)
+
+| | Arm A | Arm B | Arm C (4 tasks) |
+|---|---|---|---|
+| Tasks passed, raw | 10/13 | 11/13 | 3/4 |
+| Correct runs, raw | 30/39 | 31/39 | 9/12 |
+| Tasks passed, excluding the two defective tasks | 9/11 | 10/11 | 3/3 |
+
+**Prediction vs. result** (read by the pre-registered rule):
+
+| Prediction | Result |
+|---|---|
+| A passes 6/13 | **Wrong.** A passes 10/13 (9/11 corrected). The ADR rules alone decide most cases. |
+| B passes 10/13 | **Close.** B passes 11/13 (10/11 corrected). |
+| select-search and otp-input fail in both arms | **Wrong.** Both pass 3/3 in both arms. Every run escalates and names the closed scope list and the interaction-model change. |
+| C better than B (correct runs on the 4 C tasks) | **Right, narrowly.** C 9 vs. B 8. The whole difference is `carousel` (C 3/3, B 2/3). Excluding the invalid arrow-vs-disclosure, C is 9/9 vs. B 8/9. |
+
+**The A-vs-B readout, after transcript review:**
+- **"Thin semantics" (fails in A and B):** only `arrow-vs-disclosure`, which is invalid (see the defects section). **There is no valid evidence of thin semantics.**
+- **"Metadata earns it":**
+  - `carousel` (A 1/3, B 2/3, C 3/3): noisy, but every run spread its answer across labels. The metadata and spec context steady it.
+  - `course-tag-filter` (A 0/3, B 2/3): A answers `compose(Chip)` every time. That's the right component, and a filter *row* fits the prompt's own definition of compose. **It's a label-boundary problem (reuse vs. compose), not missing knowledge.**
+- **"Metadata hurts":** `carousel-arrows` (A 3/3 `new`, B 0/3 `reuse`/`compose` Button). B sees the pre-decision Button, which already has a bordered variant, a round shape and a disabled state, and argues visual and functional equivalence. A argues ADR-009 q2 (navigation ≠ action). **The reference is contestable.** The two runs disagree on whether "navigation vs. action" is a role difference, and ADR-009's own worked example contrasts ButtonArrow with the accordion trigger, not with Button.
+
+**Scorer defects (secondary metrics only, headline unaffected):**
+- **`hallucinatedNames` is unusable.** The model lists rejected alternatives as candidates with descriptive names (`Carousel (new)`, `Button (variant=accent)`), and every one counts. No run invented a real-looking component. A v2 needs a `verdict`-aware check, or names limited to `use`/`extend` verdicts.
+- **`card-actions-row`'s recordPattern can't pass.** It looks for `neutral` in `proposedApi`, which the correct answer (no library change) leaves empty. It belongs on candidate reasons.
+
+**Decision (per "What the result decides"):**
+- **No new JSON layer and no decision step.** The rules plus existing metadata decide 10 of 11 valid tasks. The two weak spots are a label boundary and a contestable reference, not a missing field. ADR-009 stays as it is, and no ADR is recorded.
+- **Ablation eval:** this result adds no metadata fields, so its Arm 1 context is unchanged.
+- **Caveats:**
+  - N = 3 and 11 valid tasks, so any arm gap of one task is within noise.
+  - The tasks are ADR-shaped, so Arm A's ceiling is high by construction.
+  - A harder v2 would need requirements no ADR anticipates.
+
+**If a v2 is ever run:**
+- use the defect fixes above
+- define reuse vs. compose for groups ("several instances of one component in a layout primitive = compose")
+- either add a "different role from Button" fact to ButtonArrow-style tasks, or accept both answers
+- fix the two scorer defects
 
 ## Order and dependencies
 

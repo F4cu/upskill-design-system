@@ -1,4 +1,4 @@
-// Governance decision eval (.claude/handoff/2026-10-08-governance-decision-eval.handoff.md).
+// Governance decision eval (.claude/handoff/archive/2026-10-08-governance-decision-eval.handoff.md).
 // A `decision` task asks for a JSON decision record — reuse, compose, extend,
 // parts, internal, new or escalate — instead of component files, and is scored
 // against a locked reference answer. Single-shot, like the component tasks:
