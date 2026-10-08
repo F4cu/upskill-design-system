@@ -120,7 +120,7 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
 
 ## Pre-registration (write before the first full run)
 
-- **Prediction:** violations Arm 0 > Arm 1 > Arm 2. Arm 2 costs the most per run. Arm 1b: about equal to Arm 1 on violations, with more tokens per run. Write down the actual guess before running, without hedging it.
+- **Prediction:** violations Arm 0 > Arm 1 > Arm 2. Arm 2 costs the most per run. Arm 1b: about equal to Arm 1 on violations, with more tokens per run. Locked 2026-10-08 (developer), before the Badge pilot.
 - **Honest-outcome rule:** same as pattern-accuracy. If Arm 2 doesn't beat Arm 1 by a meaningful margin, report that and question whether the loop and the reviewer earn their cost. Don't tune briefs or traps after seeing results.
 - **Showcase rule:** the case-study side-by-side uses the **median** run of each arm, never the best.
 - **N = 3** runs per task × arm. N = 1 is a pilot, not a result.
