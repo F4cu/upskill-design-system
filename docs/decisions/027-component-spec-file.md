@@ -4,8 +4,8 @@ title: "ADR-027 — Component spec file, split from metadata by reader"
 # ADR-027 — Component spec file, split from metadata by reader
 
 **Date:** 2026-10-07
-**Status:** `proposed`
-**Amended:** 2026-10-07
+**Status:** `accepted`
+**Amended:** 2026-10-08
 
 ## Context
 
@@ -93,7 +93,7 @@ On acceptance:
 
 **Reject** if the harness shows scaffolding gets worse, or if keeping specs up to date costs more than the drift it catches. In that case delete the spec files and the validator; metadata is untouched.
 
-The harness plan (Arm C, two tasks, the `spec:conformance` gate, and what "not worse" means) is in `.claude/handoff/2026-10-07-spec-harness-arm.handoff.md`.
+The harness plan (Arm C, two tasks, the `spec:conformance` gate, and what "not worse" means) is in `.claude/handoff/archive/2026-10-07-spec-harness-arm.handoff.md`.
 
 ## Consequences
 
@@ -123,4 +123,27 @@ Part props are keyed `<Part>.<prop>` inside `props`. The validator reads each `<
 - `metadata.tokens` lists six tokens the CSS Module never reads (`color.text.*`, `font.family.headline-serif`, `font.weight.medium`, `font.line-height.tight`, `space.inline.sm`). They reach the card through `Heading`, `Text` and `Inline`. The spec states this through `builtOnProps` rather than listing other components' tokens. This is part of #117.
 - No opacity or z-index token scale exists. The thumbnail hover `0.8` and the overlay stacking (`1`, `100`) are literals with reasons.
 - The one prop constraint, controlled `pressed` wins over `defaultPressed`, is already enforced by a behavioural test. CardVertical's other rules are about composition (what a part accepts) and belong in metadata `composition.parts`.
+
+## Amendment (2026-10-08) — Harness arm result: accepted
+
+The first exit condition is met. The pattern-accuracy harness ran Arm A (brief + API table + dependency metadata + schema) against Arm C (A + the target's `<Name>.spec.json`), N = 3 runs per task, on 2026-10-08. The accept bar was registered before any run: Arm C's median headline total ≤ Arm A's on each task.
+
+| Task | Arm A median (range) | Arm C median (range) | Spec conformance A → C | Prompt chars A → C |
+|---|---|---|---|---|
+| `component-button` | 35 (33–35) | 0 (0–2) | 38 → 26 | 16,302 → 25,209 (+55%) |
+| `component-cardvertical-parts` | 9 (7–12) | 4 (4–6) | 46 → 39 | 57,276 → 75,152 (+31%) |
+
+Arm C is better on both tasks, so the bar is met. The developer's prediction ("better, especially in prop and accessibility compliance") holds for props: spec conformance improves on both tasks. It shows nothing for accessibility: `lint` and `a11y:coverage` scored the same in both arms, and this harness never runs axe.
+
+**Why the size of the win is overstated:**
+
+- **Arm A had no token catalogue.** 32–34 of Button Arm A's violations are invented token names in its metadata (`color.action.accent.background`, `spacing.sm`). Its CSS invents unprefixed custom properties too, which this harness's headline doesn't count. The spec gave Arm C the real paths. The real `/component-scaffold` can read the token files, so most of the Button gap measures "no token names vs. token names", not the spec's other sections. The harness-ablation eval's `unknown-token` trap measures this inside a real workspace.
+- **A scorer false positive costs both arms 2 on CardVertical.** All six runs export the right type names as `export interface`, and the task's required pattern accepts only `export type`. Corrected medians are 7 vs. 2, so the verdict doesn't change. The task file was locked before the run and was left as it is, per the honest-outcome rule.
+
+**What acceptance changes now:**
+
+- **Specs stay optional, and only Button and CardVertical have one**, until the migration below lands. `spec:validate` stays in `components-check.yml`.
+- **The "On acceptance" steps above are now the backlog, not part of this change:** move `tokens`, `states` and `accessibility` into the spec (with the ADR-001 amendment), switch `/component-scaffold` step 3 to write the spec, require a spec for every component with script-generated `props` and `styles`, and correct ADR-026's Button `shape` line. Each is its own PR.
+- **The extra context is a real cost.** Until the migration removes the duplicated sections, a builder moment that reads both files carries +31% to +55% more prompt for these two components.
+- **The harness-ablation eval's Arm 1 context includes the specs.** `prepare.js` keeps and strips them like metadata, including redacting the target's own spec.
 

@@ -6,7 +6,7 @@ completed:
 
 # Governance decision eval — scope
 
-**Question:** given a new requirement, does Claude make the right governance decision? The options are reuse, compose, extend with a prop or variant, add parts, use an internal element, create a new component, or escalate. And is the knowledge in this repo enough to decide well, or are its semantics too thin? The two other evals ([spec harness arm](2026-10-07-spec-harness-arm.handoff.md), [harness ablation](2026-10-07-harness-ablation-eval.handoff.md)) measure **output quality**: whether the built component is correct. Their tasks decide "build X" in advance. Nothing measures the decision that comes before the build.
+**Question:** given a new requirement, does Claude make the right governance decision? The options are reuse, compose, extend with a prop or variant, add parts, use an internal element, create a new component, or escalate. And is the knowledge in this repo enough to decide well, or are its semantics too thin? The two other evals ([spec harness arm](archive/2026-10-07-spec-harness-arm.handoff.md), [harness ablation](2026-10-07-harness-ablation-eval.handoff.md)) measure **output quality**: whether the built component is correct. Their tasks decide "build X" in advance. Nothing measures the decision that comes before the build.
 
 **Why this matters here:** the rules exist only as prose (ADR-006, 009, 023, 024, 025, 026, plus the closed list in CLAUDE.md "Component scope"). No command runs the decision. `/component-scaffold` and `/add-component` assume it has already been made, and `layout:validate` only rejects components outside the set. "A requirement arrives against an existing component" is handled ad hoc in chat, and no record of the decision is kept.
 

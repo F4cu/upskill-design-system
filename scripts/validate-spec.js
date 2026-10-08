@@ -10,7 +10,7 @@
 //     the CSS Module reads, and each one is defined in the built token CSS.
 //   - states, constraints, anatomy: internal cross-references resolve; every
 //     metadata state and composition.parts entry appears in the spec.
-// Specs are optional during the ADR-027 pilot: only components with a spec file
+// Specs stay optional until the ADR-027 migration: only components with a spec file
 // are checked. Requires built tokens (npm run tokens:build).
 //
 // --components-dir <dir> checks the specs in <dir> instead (a harness run

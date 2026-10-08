@@ -48,7 +48,7 @@ jobs:
       - name: Validate component metadata
         run: npm run metadata:validate
 
-      - name: Validate component specs (ADR-027 pilot)
+      - name: Validate component specs (ADR-027)
         run: npm run spec:validate
 
       - name: Lint inline styles in component source and stories

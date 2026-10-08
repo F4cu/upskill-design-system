@@ -1,14 +1,14 @@
 ---
-status: active
+status: done
 created: 2026-10-07
-completed:
+completed: 2026-10-08
 ---
 
 # Spec harness arm — ADR-027 exit condition
 
-**Question:** does giving the scaffold the approved `<Name>.spec.json` keep component scaffolding from getting worse? This is the remaining condition for accepting [ADR-027](../../docs/decisions/027-component-spec-file.md). The other condition (CardVertical's parts fit the schema) was met on 2026-10-07 (`69c2a7e`).
+**Question:** does giving the scaffold the approved `<Name>.spec.json` keep component scaffolding from getting worse? This is the remaining condition for accepting [ADR-027](../../../docs/decisions/027-component-spec-file.md). The other condition (CardVertical's parts fit the schema) was met on 2026-10-07 (`69c2a7e`).
 
-**Why this is its own handoff:** [the harness-ablation eval](2026-10-07-harness-ablation-eval.handoff.md) measures the *harness* (tools, gates, loop, reviewer) agentically in a real workspace. This measures *context*, single-shot, in the existing `scripts/pattern-accuracy-harness/`. The two have different questions and different tools, and this one closes when ADR-027 is accepted or rejected, long before the ablation eval finishes. Shared dependencies are listed under "Before running".
+**Why this is its own handoff:** [the harness-ablation eval](../2026-10-07-harness-ablation-eval.handoff.md) measures the *harness* (tools, gates, loop, reviewer) agentically in a real workspace. This measures *context*, single-shot, in the existing `scripts/pattern-accuracy-harness/`. The two have different questions and different tools, and this one closes when ADR-027 is accepted or rejected, long before the ablation eval finishes. Shared dependencies are listed under "Before running".
 
 ## Arms
 
@@ -83,3 +83,12 @@ Same two-bucket idea as the ablation eval, so Arm C isn't credited for repeating
 - Record the result in an ADR-027 amendment: accept (status `accepted`, then the migration steps listed in the ADR) or reject.
 - Tell the ablation eval: if accepted, its Arm 1 context includes specs (`prepare.js` must keep and strip them like metadata, including leakage redaction of the target's spec).
 - Mark this handoff `done` and run `npm run handoff:tidy`.
+
+## Result (2026-10-08)
+
+**Accepted.** 12 runs. Medians A → C: Button 35 → 0, CardVertical-parts 9 → 4. Spec conformance 38 → 26 and 46 → 39. Recorded in the ADR-027 amendment (2026-10-08), with two caveats:
+- Arm A had no token catalogue, which inflates the Button gap.
+- An `export type`-only required pattern is a false positive that costs both arms 2 on CardVertical. It was left unfixed per the honest-outcome rule. **Fix it before the task is reused:** accept `export (type|interface)`.
+
+The ablation handoff is told: its Arm 1 includes specs.
+
