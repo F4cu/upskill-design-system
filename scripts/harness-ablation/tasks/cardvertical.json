@@ -2,7 +2,7 @@
   "id": "cardvertical",
   "target": "CardVertical",
   "referencePng": "cardvertical.reference.png",
-  "redactionsReviewed": false,
+  "redactionsReviewed": true,
   "deleteFiles": [
     "packages/components/src/components/ScrollArea/ScrollArea.stories.tsx",
     "packages/components/src/stories/Carousel.stories.tsx"
@@ -10,7 +10,93 @@
   "deleteScreenshots": [
     "layout-scrollarea--"
   ],
-  "redactions": [],
+  "redactions": [
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "`sm|lg` (CardVertical), ",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "| `progress` (CardVertical) | `Status` variant (`Not started` / `In progress` / `Completed`) | Preview of the lifecycle the code derives from `progress` (ADR-025). Figma can't derive, so the axis is explicit there and has no code prop. |\n",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": " **CardVertical:** `State` values recased to `Default`/`Hover`.",
+      "replace": ""
+    },
+    {
+      "file": ".claude/rules/components.md",
+      "find": "; CardVertical `progress` ↔ `Status` (preview).",
+      "replace": "."
+    },
+    {
+      "file": "docs/decisions/025-component-state-model.md",
+      "find": "First application: `CardVertical` derives \"completed\" from `progress >= 100` and adds a `CardVertical.Completed` marker (check icon + \"Completed\", styled like Certified) to its meta row. There is no `completed` or `status` prop. Rejected alternative: a `status: 'notStarted' | 'inProgress' | 'completed'` prop. It would duplicate `progress` and could disagree with it. It stays the fallback if product ever needs lifecycle and percentage to differ.\n",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/023-subcomponents-compound-components.md",
+      "find": " (for CardVertical, exactly one: `action`)",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/023-subcomponents-compound-components.md",
+      "find": " (for CardVertical: `size` and the title's `useId`)",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/023-subcomponents-compound-components.md",
+      "find": "**Decision.** In Figma, CardVertical mirrors the **preset**, not the composable parts. `Body` and `Meta` stay fixed layers. Figma doesn't allow component properties on layers inside a native slot, so turning `Body` into a slot would cost the `Title`/`Duration` text properties and the `Certified` boolean. Those properties cover the common case. That is \"common configurable, uncommon composable\" applied to the Figma file.\n",
+      "replace": "**Decision.** In Figma, a component with parts mirrors the **preset**, not the composable parts. Its fixed layers stay fixed: Figma doesn't allow component properties on layers inside a native slot, so turning one into a slot would cost the preset's text and boolean properties. Those properties cover the common case. That is \"common configurable, uncommon composable\" applied to the Figma file.\n"
+    },
+    {
+      "file": "docs/decisions/023-subcomponents-compound-components.md",
+      "find": " (`Title`, `Meta`, `Duration`, `Certified`, `Completed`)",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/023-subcomponents-compound-components.md",
+      "find": "So text-property parts (`Title`, `Duration`) stay",
+      "replace": "So text-property parts stay"
+    },
+    {
+      "file": "docs/decisions/023-subcomponents-compound-components.md",
+      "find": " (In CardVertical, 47 placed cards had their own title text and 14 had their own duration text.)",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/013-cross-component-pattern-schema.md",
+      "find": "(`title={course.title}` on `CardVertical`)",
+      "replace": "(a text prop passed to a library component)"
+    },
+    {
+      "file": "docs/decisions/001-component-metadata-schema.md",
+      "find": " (CardVertical listed `color.text.subtle`, which reaches it through `<Text color=\"subtle\">`)",
+      "replace": ""
+    },
+    {
+      "file": "packages/components/src/components/Image/Image.metadata.json",
+      "find": "Portrait — tall card images in CardVertical.",
+      "replace": "Portrait — tall card images."
+    },
+    {
+      "file": "packages/components/src/components/ProgressBar/ProgressBar.metadata.json",
+      "find": " (CardVertical.Progress)",
+      "replace": ""
+    },
+    {
+      "file": "scripts/token-contrast-check.js",
+      "find": "  // CardVertical.Favorite / .Menu — transparent icon buttons over a photo.\n  // icon.on-media.* sits on arbitrary image pixels, so no pair can check it;\n  // the halo carries the contrast and the light/dark-thumbnail stories are\n  // the visual check (ADR-024).\n",
+      "replace": ""
+    },
+    {
+      "file": "scripts/token-contrast-check.js",
+      "find": "  // CardVertical — badge icon, ambient (composed standalone or in a Card)\n  ...AMBIENT.map((bg) => [I(\"subtle\"), bg]),\n\n",
+      "replace": ""
+    }
+  ],
   "propVocabulary": {
     "ignore": [
       "action"
