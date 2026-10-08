@@ -5,7 +5,7 @@ title: "ADR-026 — Component prop vocabulary and API proposal step"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-07
+**Amended:** 2026-10-08
 
 ## Context
 
@@ -114,6 +114,7 @@ The developer approves or edits the table; only then are the four files generate
   | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07; Figma `Size` renamed in the alignment pass (amendment below) |
   | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07, Figma included: `state=Selected` split into `Pressed` (default `false`) and `State` (interaction) |
   | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value (vocabulary row above) | Closed 2026-10-07 |
+  | Badge | `label` (the badge's text) | `children` (single free-form content, vocabulary row above) | Open: found 2026-10-08 by the harness-ablation pilot, where every arm named it `children` |
 
 - **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). No component forwards one today. That is a behaviour gap, not a naming one, tracked in issue #114.
 
@@ -143,3 +144,7 @@ The file was brought in line with the vocabulary by renaming properties in place
 - Figma's `clone()` drops `componentPropertyReferences`. A duplicated variant must be re-wired to the set's properties, or its layers stop responding to them.
 - Figma picks a set's default variant by canvas position (top-left), not layer order, so defaults were set by moving variants.
 - ADR-024's Figma follow-ups were already done: the Button `Style` values, the CardVertical halo (two drop shadows bound to `color/icon/on-media/halo`), and the variables.
+
+## Amendment (2026-10-08) — Badge `label` is drift
+
+The harness-ablation pilot rebuilt Badge three times and every run named its text `children`, which is what the Content row prescribes for single free-form content. Badge's shipped `label` predates the vocabulary. It joins the migration table as open drift; the rename is a separate breaking PR like the others.

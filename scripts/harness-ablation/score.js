@@ -291,6 +291,9 @@ function propVocabulary(ws, task) {
   const reference = vocabulary(ts.createSourceFile('ref.tsx', referenceSource(target), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX), target).props
   const { props: generated, explicit } = vocabulary(parseFile(file), target)
   const ignore = new Set(task.propVocabulary?.ignore ?? [])
+  // A reference prop that is itself recorded drift (ADR-026 migration table) is
+  // satisfied by its vocabulary name too, e.g. Badge `label` → `children`.
+  const equivalents = task.propVocabulary?.equivalents ?? {}
 
   // Native props follow the native contract (ADR-025 exception: checked/onChange),
   // so ADR-026's naming check applies only to props the component declares.
@@ -301,7 +304,7 @@ function propVocabulary(ws, task) {
   }
   for (const [name, values] of reference) {
     if (ignore.has(name)) continue
-    if (!generated.has(name)) {
+    if (!generated.has(name) && !(equivalents[name] ?? []).some((n) => generated.has(n))) {
       detail.push(`reference prop \`${name}\` missing or renamed`)
       continue
     }

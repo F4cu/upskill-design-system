@@ -26,6 +26,16 @@
       "file": "scripts/token-contrast-check.js",
       "find": "  // Badge — outline variant's border is the shared decorative border.default\n  // (not checked — same reasoning as Button's neutral variant, above).\n\n",
       "replace": ""
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "  | Badge | `label` (the badge's text) | `children` (single free-form content, vocabulary row above) | Open: found 2026-10-08 by the harness-ablation pilot, where every arm named it `children` |\n",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "\n## Amendment (2026-10-08) — Badge `label` is drift\n\nThe harness-ablation pilot rebuilt Badge three times and every run named its text `children`, which is what the Content row prescribes for single free-form content. Badge's shipped `label` predates the vocabulary. It joins the migration table as open drift; the rename is a separate breaking PR like the others.\n",
+      "replace": ""
     }
   ],
   "requiredPatterns": [
@@ -38,13 +48,20 @@
   "forbiddenPatterns": [
     {
       "file": "packages/components/src/components/Badge/index.tsx",
-      "pattern": "onClick|<button|role=[\"']button",
-      "reason": "the brief says a badge is not clickable"
+      "pattern": "onClick\\??\\s*[:=]|<button\\b|role=[\"']button",
+      "reason": "the brief says a badge is not clickable (a declared or passed onClick handler, a <button>, or role=button; omitting onClick from the spread type is the opposite and does not match)"
     },
     {
       "file": "packages/components/src/components/Badge/index.tsx",
       "pattern": "<Icon\\b|<svg\\b",
       "reason": "the brief says a badge shows text only, no icon"
     }
-  ]
+  ],
+  "propVocabulary": {
+    "equivalents": {
+      "label": [
+        "children"
+      ]
+    }
+  }
 }

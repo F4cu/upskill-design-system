@@ -53,6 +53,13 @@ const KEEP_CLAUDE_ENV = new Set(['CLAUDE_CODE_OAUTH_TOKEN', 'CLAUDE_CONFIG_DIR']
 
 const LIMIT_RE = /usage limit|rate limit|rate_limit|overloaded|quota/i
 const NETWORK_RE = /\b(curl|wget|gh\s|git\s+(clone|fetch|pull|remote))|github\.com/i
+// Arms poll their own local Storybook (curl localhost:<port>) to look at their
+// work; that stays on the machine, so it isn't a network attempt.
+const LOCAL_FETCH_RE = /\b(curl|wget)\b[^|;&\n]*?(localhost|127\.0\.0\.1)[^\s|;&]*/g
+
+export function isNetworkShaped(input) {
+  return NETWORK_RE.test(JSON.stringify(input).replace(LOCAL_FETCH_RE, ''))
+}
 
 function usage(msg) {
   if (msg) console.error(msg)
@@ -128,13 +135,13 @@ function runAgent(prompt, ws, runDir, args) {
   return { exitCode: res.status, events: readEvents(transcriptPath) }
 }
 
-function readEvents(p) {
+export function readEvents(p) {
   return fs.readFileSync(p, 'utf8').split('\n').filter(Boolean).flatMap((line) => {
     try { return [JSON.parse(line)] } catch { return [] }
   })
 }
 
-function toolUses(events) {
+export function toolUses(events) {
   return events
     .filter((e) => e.type === 'assistant')
     .flatMap((e) => e.message?.content ?? [])
@@ -143,7 +150,7 @@ function toolUses(events) {
 
 // What the pilot's transcript review checks first: did anything outside the arm's
 // workspace reach the session, and did the session try to reach out.
-function contamination(init, result, uses, model) {
+export function contamination(init, result, uses, model) {
   const flags = []
   if (init?.mcp_servers?.length) flags.push(`mcp servers loaded: ${init.mcp_servers.map((s) => s.name).join(', ')}`)
   const plugins = (init?.plugins ?? []).filter((p) => p.path !== 'builtin')
@@ -152,7 +159,7 @@ function contamination(init, result, uses, model) {
   const models = Object.keys(result?.modelUsage ?? {})
   const others = models.filter((m) => m !== init?.model)
   if (others.length) flags.push(`other models used: ${others.join(', ')}`)
-  const network = uses.filter((u) => NETWORK_RE.test(JSON.stringify(u.input)))
+  const network = uses.filter((u) => isNetworkShaped(u.input))
   for (const u of network) flags.push(`network-shaped ${u.name}: ${JSON.stringify(u.input).slice(0, 200)}`)
   const gitArchaeology = uses.filter((u) => u.name === 'Bash' && /git\s+(log|show|reflog|fsck|cat-file|rev-list)/.test(u.input?.command ?? ''))
   for (const u of gitArchaeology) flags.push(`git archaeology: ${u.input.command.slice(0, 200)}`)
@@ -284,4 +291,4 @@ function main() {
   }
 }
 
-main()
+if (process.argv[1] === fileURLToPath(import.meta.url)) main()
