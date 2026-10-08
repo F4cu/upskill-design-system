@@ -30,6 +30,7 @@ sources:
 # clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; no glossary term changed, still accurate
 # clock reset 2026-10-07: .claude/rules/components.md gains the focus-ring line (ADR-028); the State entry still says interaction focus is CSS-only, still accurate
 # clock reset 2026-10-07: validate-metadata.js and lib.js share the package-export component set (#98); this page doesn't describe how validators define a component, still accurate
+# rewritten 2026-10-08: /add-component, /component-scaffold and /review-component gain an --eval mode; the Evaluation Harness entry said the repo had none and now names the pattern-accuracy harness and the harness-ablation eval
 ---
 # Glossary
 
@@ -327,7 +328,7 @@ The gradual loss of focus and accuracy an AI model shows over a long, single con
 A distinction between operations that always produce the same output for the same input (deterministic) and ones that vary run to run (probabilistic). `npm run typecheck` is deterministic — same code, same result, always. Asking Claude to draft a component summary is probabilistic — the wording will differ slightly each time even from an identical prompt. This repo's deterministic gate exists specifically to keep the parts that can be deterministic out of an agent's hands.
 
 **Evaluation Harness**
-An automated framework for measuring how well a model, prompt, or pipeline performs against a fixed set of test cases, rather than judging quality by spot-checking a few examples. This repo doesn't yet have one; the closest analogue is the deterministic gate plus the adversarial-reviewer pass, which check code correctness rather than prompt quality.
+An automated framework for measuring how well a model, prompt, or pipeline performs against a fixed set of test cases, rather than judging quality by spot-checking a few examples. This repo has two, both started by the developer and never run in CI. The **pattern-accuracy harness** (`scripts/pattern-accuracy-harness/`) measures *context*: one prompt with no tools, with and without injected metadata, patterns or specs, scored against pre-registered traps. The **harness-ablation eval** (`scripts/harness-ablation/`) measures the *harness itself*. It deletes a shipped component and asks for it back in a fresh workspace with no context, context only, or the full `/add-component --eval` loop, then compares clean rate and cost per clean component. The deterministic gate and the adversarial reviewer, by contrast, check one component's code, not how well the system performs overall.
 
 **Few-Shot Prompting**
 Showing a model a small number of worked examples of the exact input/output shape you want, instead of only describing the rule in prose. In this repo, `/component-scaffold` points at an existing component as a template — effectively a one-shot example the agent pattern-matches against when generating the next one.
