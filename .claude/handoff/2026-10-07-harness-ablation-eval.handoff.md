@@ -10,6 +10,8 @@ completed:
 
 **Why not extend `pattern-accuracy-harness/`:** that harness is single-shot (`claude -p`, no tools, context pasted into the prompt). It measures *context*. This eval has to measure the *harness*: tools, gates, the retry loop and the reviewer. That needs agentic runs inside a real workspace. The scorer's trap checks are reused.
 
+**Order (2026-10-08):** run this eval **after** the [spec harness arm](2026-10-07-spec-harness-arm.handoff.md) (its ADR-027 outcome sets Arm 1's context) and the [governance decision eval](2026-10-08-governance-decision-eval.handoff.md) (it may add metadata fields, which would change Arm 1's context and force a rerun). Every task here is "rebuild a known component", so the governance decision is fixed in advance. That's right for an output-quality eval, and it's why governance has its own eval.
+
 **Related:** [the spec harness arm](2026-10-07-spec-harness-arm.handoff.md) adds an Arm C to `pattern-accuracy-harness` for the ADR-027 exit condition. It shares this eval's Stage 0 scorer fix and CardVertical reference, and if ADR-027 is accepted, the specs become part of this eval's Arm 1 context.
 
 ## Arms
@@ -29,7 +31,7 @@ Arm 1 vs 1b changes one thing: how conventions are delivered, either loaded by f
 - **1b ≥ 1 on violations:** the path-scoped split isn't earning its keep, and conventions should move into the index.
 - **1b costs noticeably more tokens for the same violations:** this matches Atlassian's DESIGN.md result and supports the split.
 
-Arm 1b is added **after the pilot**, once Arms 0/1/2 are confirmed leak-free. It needs the `AGENTS.md` draft first.
+Arm 1b is added **after the pilot**, once Arms 0/1/2 are confirmed leak-free. It needs `AGENTS.md` shipped first. **Moved 2026-10-08:** Arm 1b and the AGENTS.md product work are tracked in [2026-10-08-agents-md](2026-10-08-agents-md.handoff.md). This eval's scope is Arms 0/1/2.
 
 ## Tasks: rebuild components that already ship
 
@@ -79,7 +81,7 @@ The shipped component is the answer key, so two things must hold before any arm 
   - **(a) Redact:** in `prepare.js`, strip the lines that describe the target's API or Figma properties. Keep the general rules, even where they use the target as an example.
   - **(b) Accept the leak:** keep the files whole and report it as a known advantage for Arms 1/2. The reasoning is that a real team's ADRs would also describe neighbouring components.
 
-  Recommended: (a) for lines about the target's own props or Figma mapping, and (b) for passing mentions used as examples.
+  Recommended: (a) for lines about the target's own props or Figma mapping, and (b) for passing mentions used as examples. **Status 2026-10-08:** still the recommendation, awaiting developer confirmation. Record the decision here before the pilot.
 - `--setting-sources project` so user-level settings don't leak. There's no `~/.claude/CLAUDE.md` today, and auto-memory is keyed by project path, so a tmp path gets none. Confirm both in the pilot.
 - `node_modules`: symlink root and workspace `node_modules` from the main checkout instead of running `npm install` per run.
 - Grep the pilot transcripts for the deleted file's distinctive strings to confirm nothing leaked.
@@ -135,30 +137,20 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
    - `tasks/*.json`: brief, target, files to delete, `requiredPatterns`/`forbiddenPatterns`, `reference.png` path.
 3. `package.json`: `ablation:run`, `ablation:score`.
 4. ADR: none for the scaffolding. Record one (or amend ADR-007) only if the results change how the loop is built, e.g. dropping the reviewer.
-5. `prepare.js` arm `1b`: copy Arm 1, delete `.claude/rules/`, write the committed `AGENTS.md` and a one-line `CLAUDE.md` (`@AGENTS.md`). It uses the shipped file, not a hand-tuned eval copy, so the arm measures what consumers actually get.
-
-## Ship AGENTS.md (product change, independent of the eval)
-
-**Goal:** the system works with any coding agent (Codex, Cursor, Copilot…), not only Claude Code. The same file doubles as the Arm 1b treatment.
-
-- **Shape:** a compressed index, **≤8KB** (Vercel's working size). It holds:
-  - the fixed component set
-  - the token layer order and the `var(--ds-*)`-only rule
-  - the layout grammar invariants
-  - the ADR-009 extend/new/internal test
-  - pointers to the metadata files and the schema
-
-  It contains no procedures; those stay in the commands. It must not dump the rules verbatim: Atlassian's DESIGN.md-only arm cost about 92% more tokens.
-- **Single source of truth:** `AGENTS.md` is canonical for tool-agnostic invariants, and `CLAUDE.md` imports it with `@AGENTS.md`, keeping only Claude-specific content: commands, agentic moments, MCP policy, git workflow. Before choosing the direction, check whether Claude Code currently reads `AGENTS.md` natively. If it does, the import may be unnecessary, but keep it if it's harmless.
-- **Gate:** extend `claudemd:check` (ADR-017) to budget `AGENTS.md` too (≤8KB), and to count the imported content toward `CLAUDE.md`'s effective size.
-- **ADR:** amend ADR-017. This changes the context-budget contract and adds a second always-loaded file that other tools depend on.
-- **Docs:** this touches a declared source, so the same PR needs a doc touch (docs-check coupling).
-- **Order:** ship `AGENTS.md` (its own PR) **before** running Arm 1b, so the arm tests the real file.
+5. `prepare.js` arm `1b` (tracked in [2026-10-08-agents-md](2026-10-08-agents-md.handoff.md)): copy Arm 1, delete `.claude/rules/`, write the committed `AGENTS.md` and a one-line `CLAUDE.md` (`@AGENTS.md`). It uses the shipped file, not a hand-tuned eval copy, so the arm measures what consumers actually get.
 
 ## Budget and order
 
 - **Pilot:** `Badge` × 3 arms × 1 run. Check leakage, timing and `total_cost_usd`, then decide N and whether Accordion fits.
-- **Full:** 3 tasks × 3 arms × 3 runs = 27 agentic runs, sequential. **Then Arm 1b:** 3 tasks × 3 runs = 9 more, after `AGENTS.md` ships. That makes 36 in total, and 1b is about as cheap per run as Arm 1. Arm 2 is the expensive one (main session plus one reviewer subagent). Spread runs across usage windows; `run.js` being resumable is what makes that work.
+- **Transcript review (after the pilot, before the full run):** read every pilot transcript end to end before trusting any score. Look for:
+  - leaks: deleted-file strings, or `git` archaeology
+  - stalls or silent skips at the `--eval` auto-approve
+  - Arm 2 reviewer findings the scorer doesn't capture
+  - scorer false positives or negatives
+
+  Fix the harness (not the briefs or traps) and record what changed here before the full run.
+- **Human calibration (1 person, after the full run):** before looking at the scores, rate each arm's median run against `reference.png` on a 3-point visual-match scale (matches / minor drift / wrong). Rate blind to arm where possible. Report it next to the trap counts as the case-study figure's visual axis; it's never folded into the headline.
+- **Full:** 3 tasks × 3 arms × 3 runs = 27 agentic runs, sequential. (Arm 1b's 9 runs are tracked in the agents-md handoff.) Arm 2 is the expensive one (main session plus one reviewer subagent). Spread runs across usage windows; `run.js` being resumable is what makes that work.
 - **Later (separate pass):** the model axis. Arm 0 with Opus vs Arm 2 with Sonnet/Haiku tests whether the harness makes a cheaper model good enough.
 
 ## Case-study output
