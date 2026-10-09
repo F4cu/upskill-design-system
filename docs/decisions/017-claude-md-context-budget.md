@@ -4,7 +4,7 @@ title: "ADR-017 — CLAUDE.md context budget and knowledge routing"
 # ADR-017 — CLAUDE.md context budget and knowledge routing
 
 **Date:** 2026-07-08
-**Amended:** 2026-09-08
+**Amended:** 2026-10-09
 **Status:** `accepted`
 
 ## Context
@@ -45,3 +45,12 @@ Two things follow from naming this explicitly:
 2. **This ADR is itself the episodic record of this observation.** Rather than opening a new ADR to say "we noticed our architecture matches a published taxonomy," the observation is amended here, next to the decision it explains — consistent with the amendment-in-place convention this repo already uses.
 
 No structural change to the routing table, the budget gate, or any file's location follows from this amendment — it is a naming/grounding exercise, not a new decision.
+
+## Amendment (2026-10-09) — A second always-loaded file, and the budget counts imports
+
+ADR-029 adopts a tiered context architecture. Its Tier 0 is a tool-agnostic `AGENTS.md` at the repo root, and CLAUDE.md becomes the Claude-specific layer that imports it with `@AGENTS.md`. Two things in this ADR change as a result:
+
+1. **Two always-loaded files, each budgeted.** `npm run claudemd:check` gains an `AGENTS.md` cap of 8,000 bytes. CLAUDE.md keeps its 200-line / 20KB cap on its own bytes and gains an **effective-size** cap: its own bytes plus every resolved `@import`. Option (b) above was rejected because imported files "still load in full at launch, zero context saved"; that is exactly why the effective size, not the file size, is what protects the always-loaded prefix. The effective-size number is chosen and recorded when the check ships (the plan targets ~24KB, which keeps the prefix about flat as content moves out of CLAUDE.md into `AGENTS.md`).
+2. **No duplicated invariants.** Content moves from CLAUDE.md to `AGENTS.md`; it is not copied. The check fails when a normalised line appears in both files.
+
+The routing table gains one row (a tool-agnostic invariant any coding agent needs → `AGENTS.md`), and the litmus test becomes two questions: needed by any tool → `AGENTS.md`; needed by Claude sessions only → CLAUDE.md. Path-scoped rules (Decision, point 1) stay until ADR-029 decides Tier 1 delivery; if that decision moves them to nested `packages/*/AGENTS.md`, the `paths:` frontmatter check is replaced by a sibling-`CLAUDE.md`-import check, recorded in ADR-029.

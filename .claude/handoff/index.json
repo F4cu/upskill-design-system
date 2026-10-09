@@ -8,12 +8,12 @@
     "path": ".claude/handoff/2026-09-30-cardvertical-subcomponents.handoff.md"
   },
   {
-    "name": "2026-10-08-agents-md",
+    "name": "2026-10-09-tiered-context-architecture",
     "kind": "handoff",
     "status": "active",
-    "created": "2026-10-08",
-    "updated": "2026-10-08",
-    "path": ".claude/handoff/2026-10-08-agents-md.handoff.md"
+    "created": "2026-10-09",
+    "updated": "2026-10-09",
+    "path": ".claude/handoff/2026-10-09-tiered-context-architecture.handoff.md"
   },
   {
     "name": "2026-07-03-multi-brand-refactor",
@@ -132,15 +132,23 @@
     "kind": "handoff",
     "status": "done",
     "created": "2026-10-07",
-    "updated": "2026-10-08",
+    "updated": "2026-10-09",
     "path": ".claude/handoff/archive/2026-10-07-spec-harness-arm.handoff.md"
+  },
+  {
+    "name": "2026-10-08-agents-md",
+    "kind": "handoff",
+    "status": "superseded",
+    "created": "2026-10-08",
+    "updated": "2026-10-09",
+    "path": ".claude/handoff/archive/2026-10-08-agents-md.handoff.md"
   },
   {
     "name": "2026-10-08-governance-decision-eval",
     "kind": "handoff",
     "status": "done",
     "created": "2026-10-08",
-    "updated": "2026-10-08",
+    "updated": "2026-10-09",
     "path": ".claude/handoff/archive/2026-10-08-governance-decision-eval.handoff.md"
   },
   {

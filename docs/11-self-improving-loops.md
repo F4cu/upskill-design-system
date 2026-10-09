@@ -21,6 +21,7 @@ sources:
 # clock reset 2026-10-08: run.js/score.js gain the `decision` task kind (governance decision eval, decision.js, results-decision.md); component prompts are byte-identical and the A/B numbers this page cites are unaffected
 # clock reset 2026-10-07: run.js FIXED_SET gets a comment that it stays frozen on purpose (#98); no behaviour change, page still accurate
 # clock reset 2026-10-08: pattern-accuracy score.js exports its trap functions for the harness-ablation scorer; no scoring change, the A/B numbers this page cites still hold
+# clock reset 2026-10-09: ADR-017 amendment (ADR-029) plans a second always-loaded AGENTS.md; this page only cites ADR-017 for capping CLAUDE.md, still accurate
 ---
 # Self-improving loops
 

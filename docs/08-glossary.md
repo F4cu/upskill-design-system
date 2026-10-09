@@ -31,6 +31,7 @@ sources:
 # clock reset 2026-10-07: .claude/rules/components.md gains the focus-ring line (ADR-028); the State entry still says interaction focus is CSS-only, still accurate
 # clock reset 2026-10-07: validate-metadata.js and lib.js share the package-export component set (#98); this page doesn't describe how validators define a component, still accurate
 # rewritten 2026-10-08: /add-component, /component-scaffold and /review-component gain an --eval mode; the Evaluation Harness entry said the repo had none and now names the pattern-accuracy harness and the harness-ablation eval
+# clock reset 2026-10-09: ADR-007 amendment (ADR-029) records a risk-triggered reviewer, not yet implemented in the commands; no glossary term changed, still accurate
 ---
 # Glossary
 

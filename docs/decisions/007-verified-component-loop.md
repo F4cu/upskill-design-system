@@ -4,7 +4,7 @@ title: "ADR-007 — Verified component loop: sequential, ≤2 agents, frozen-fil
 # ADR-007 — Verified component loop: sequential, ≤2 agents, frozen-file handoffs
 
 **Date:** 2026-06-22
-**Amended:** 2026-07-23
+**Amended:** 2026-10-09
 **Status:** `accepted`
 
 > Staked out ahead of Phase 9 implementation as `proposed`, with promotion gated on the loop running once on a real component (the Phase 9 exit condition). Promoted 2026-07-23 — see the amendment below.
@@ -90,3 +90,15 @@ with its behavioral a11y contract asserted, and the committed run ledger
 Downstream docs (`docs/06-agentic-moments.md`, `docs/11-self-improving-loops.md`) have treated the
 loop as settled fact since; this amendment closes the loop on the ADR's own status so the citation
 trail no longer dead-ends on `proposed`. No change to the decision or its binding rules.
+
+## Amendment (2026-10-09) — The reviewer is risk-triggered, not always-on
+
+The harness ablation (`scripts/harness-ablation/results.md`, 27 runs) measured the loop against context alone. The full loop never beat context alone on the product-quality headline and cost 69% more per clean component. All 12 gate retries were `metadata:validate` compliance churn. The reviewer's real catches (forced-colors handling, APG keyboard test gaps, type narrowing) were concentrated in interactive components; on display-only Badge its main fix repaired a contrast miss the loop had created itself. ADR-029 records the full evidence and its limits (N = 3, one discriminating task).
+
+Stage 4 changes:
+
+- **Interactive components** keep the adversarial subagent, unchanged. "Interactive" uses the derivation `scripts/a11y-coverage.js` already applies for the Tier 2 a11y gate (ADR-008): `component.type ∈ {interactive, input}`, an interactive ARIA role, or a widget keyboard contract. One shared function backs both, exposed as `npm run component:risk -- <Name>`.
+- **Every other component** takes the in-session path (ADR-010 amendment 2026-07-12): `/code-review` on the diff, then the gate, then the PR, recorded as `reviewPath: in-session` so the run ledger keeps the two paths comparable.
+- **Overrides:** `--review` forces the subagent, `--no-review` skips it. `--eval` keeps the reviewer always-on so the ablation's Arm 2 stays re-runnable.
+
+The binding rules stand. **Sequential, ≤2 agents** still holds; the second agent is now conditional. The Accordion revisit condition above becomes one of ADR-029's revisit triggers: the pre-registered Accordion stretch task tests whether the reviewer earns its cost where it is still spent. Until the `/add-component` change ships, the loop runs as described above.
