@@ -1,0 +1,58 @@
+{
+  "rater": "developer",
+  "ratedAt": "2026-10-09",
+  "method": "Blind 3-point rating (matches / minor drift / wrong) of each cell's median run against tasks/<task>.reference.png. Every candidate rendered one shared rating story per task (the reference's states and copy) in its retained workspace, screenshotted at 2x and shown at the reference's CSS scale, with arms shuffled to letters A/B/C per task and the mapping kept off the rating page.",
+  "tasks": {
+    "badge": {
+      "0": {
+        "letter": "C",
+        "rating": "minor",
+        "note": "colours match but not the size and spacing tokens"
+      },
+      "1": {
+        "letter": "A",
+        "rating": "matches",
+        "note": "only slightly darker typeface and borders"
+      },
+      "2": {
+        "letter": "B",
+        "rating": "minor",
+        "note": "bigger badge size and darker colours"
+      }
+    },
+    "checkbox": {
+      "0": {
+        "letter": "C",
+        "rating": "matches",
+        "note": null
+      },
+      "1": {
+        "letter": "A",
+        "rating": "minor",
+        "note": "bigger checkboxes"
+      },
+      "2": {
+        "letter": "B",
+        "rating": "minor",
+        "note": "bigger checkboxes"
+      }
+    },
+    "cardvertical": {
+      "0": {
+        "letter": "A",
+        "rating": "minor",
+        "note": "The card titles are bigger than the reference, and the small cards have a different typeface for the titles all together"
+      },
+      "1": {
+        "letter": "C",
+        "rating": "wrong",
+        "note": "wilder variation in card sizes besides font sizes"
+      },
+      "2": {
+        "letter": "B",
+        "rating": "minor",
+        "note": "The card titles are bigger than the reference but could be a match"
+      }
+    }
+  }
+}

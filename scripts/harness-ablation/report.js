@@ -180,6 +180,29 @@ function medianList(cells) {
     .join('\n')
 }
 
+const RATING_LABELS = { matches: 'matches', minor: 'minor drift', wrong: 'wrong' }
+
+function visualSection() {
+  const file = path.join(MEDIAN_DIR, 'visual-rating.json')
+  if (smoke || !fs.existsSync(file)) return ''
+  const v = JSON.parse(fs.readFileSync(file, 'utf8'))
+  const tasks = Object.keys(v.tasks).sort()
+  const rows = [`| Arm | ${tasks.join(' | ')} |`, `|---|${tasks.map(() => '---').join('|')}|`]
+  for (const arm of ARMS) {
+    rows.push(`| ${arm} · ${ARM_NAMES[arm]} | ${tasks.map((t) => {
+      const r = v.tasks[t][arm]
+      return r ? `${RATING_LABELS[r.rating]}${r.note ? `: ${r.note}` : ''}` : '—'
+    }).join(' | ')} |`)
+  }
+  return `
+## Visual match (human calibration, never in the headline)
+
+${v.method} Rated by the ${v.rater} on ${v.ratedAt}. Source: \`results/visual-rating.json\`.
+
+${rows.join('\n')}
+`
+}
+
 function copyMedians(cells) {
   for (const c of cells.filter((c) => c.median)) {
     const dest = path.join(MEDIAN_DIR, c.task, `arm${c.arm}`)
@@ -235,7 +258,7 @@ ${systemTable(cells)}
 The case-study figure uses each cell's median run, never the best (sorted by violations, then cost; an even count takes the worse middle run).
 
 ${medianList(cells) || '_None yet._'}
-`
+${visualSection()}`
   fs.writeFileSync(RESULTS_MD, md)
   if (!smoke) copyMedians(cells)
   console.log(`Wrote ${path.relative(process.cwd(), RESULTS_MD)} (${scored.length} cell(s) with scored runs)`)

@@ -1,6 +1,6 @@
 # Harness-ablation results
 
-Generated: 2026-10-09T12:25:18.984Z · 27 scored run(s) · model: claude-opus-5-5
+Generated: 2026-10-09T12:44:46.028Z · 27 scored run(s) · model: claude-opus-5-5
 
 Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (`/add-component <Name> --eval`). Scope, arms and scoring: `.claude/handoff/2026-10-07-harness-ablation-eval.handoff.md`.
 
@@ -77,3 +77,13 @@ The case-study figure uses each cell's median run, never the best (sorted by vio
 - checkbox · arm 0: run-3 (2 violations, $0.69) → `results/checkbox/arm0/`
 - checkbox · arm 1: run-3 (0 violations, $0.93) → `results/checkbox/arm1/`
 - checkbox · arm 2: run-3 (0 violations, $1.53) → `results/checkbox/arm2/`
+
+## Visual match (human calibration, never in the headline)
+
+Blind 3-point rating (matches / minor drift / wrong) of each cell's median run against tasks/<task>.reference.png. Every candidate rendered one shared rating story per task (the reference's states and copy) in its retained workspace, screenshotted at 2x and shown at the reference's CSS scale, with arms shuffled to letters A/B/C per task and the mapping kept off the rating page. Rated by the developer on 2026-10-09. Source: `results/visual-rating.json`.
+
+| Arm | badge | cardvertical | checkbox |
+|---|---|---|---|
+| 0 · Bare repo | minor drift: colours match but not the size and spacing tokens | minor drift: The card titles are bigger than the reference, and the small cards have a different typeface for the titles all together | matches |
+| 1 · Context only | matches: only slightly darker typeface and borders | wrong: wilder variation in card sizes besides font sizes | minor drift: bigger checkboxes |
+| 2 · Full harness | minor drift: bigger badge size and darker colours | minor drift: The card titles are bigger than the reference but could be a match | minor drift: bigger checkboxes |

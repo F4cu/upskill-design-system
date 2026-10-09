@@ -254,6 +254,26 @@ The scorer runs **inside the workspace** with the real npm gates where possible,
   - **Reading:** under the honest-outcome rule, Arm 2 doesn't beat Arm 1 on the headline for any task and costs about 1.7× as much per clean component. The 0 > 1 half of the prediction held, but only Checkbox shows it. Badge and CardVertical don't separate the arms, which strengthens the case for the Accordion stretch task.
   - **Next:** the human visual calibration below, then the write-up.
 - **Human calibration (1 person, after the full run):** before looking at the scores, rate each arm's median run against `reference.png` on a 3-point visual-match scale (matches / minor drift / wrong). Rate blind to arm where possible. Report it next to the trap counts as the case-study figure's visual axis; it's never folded into the headline.
+  - **Done 2026-10-09 (developer, blind).** Method:
+    - Each cell's median run rendered one shared rating story per task (the reference's states and copy), not its own stories, so the rating compares components rather than story choices.
+    - Renders were 2× screenshots from the retained workspaces, shown at the reference's CSS scale.
+    - Arms were shuffled to A/B/C per task. The mapping stayed off the rating page, and the rating was unblinded afterwards.
+    - Ratings: `results/visual-rating.json`, rendered by `report.js` as the "Visual match" section of `results.md`. The rating stories and screenshot script are in the gitignored `.runs/_rating/`.
+
+    | Arm | Badge | Checkbox | CardVertical |
+    |---|---|---|---|
+    | 0 | minor drift | **matches** | minor drift |
+    | 1 | **matches** | minor drift | **wrong** |
+    | 2 | minor drift | minor drift | minor drift |
+
+  - **Reading:**
+    - **The visual axis doesn't follow the headline.** Arm 2 has no "matches" in any task. Arm 0's Checkbox, which fails the headline 0/3, is the only Checkbox that matches.
+    - **The context doesn't steer visual fidelity.** No arm is visually reliable, and the harness's gates and reviewer check conventions, not the design.
+    - **Causes found in the CSS:**
+      - **Checkbox:** Arms 1 and 2 size the box with the `size.300` primitive. The reference uses the semantic `size.icon.sm`, and Arm 0's `calc(size.200 + size.025)` lands near it. The scorer doesn't distinguish primitive from semantic size tokens.
+      - **CardVertical:** Arm 1's median (`run-1`) is the run flagged in the transcript review for its `title-small` title. The card-size variation the rater saw hasn't been traced in its CSS yet.
+      - **Badge:** Arm 2 and Arm 1 share padding, so Arm 2's "bigger and darker" isn't from padding; not traced further.
+    - **N = 1 per cell (medians only).** These ratings are a calibration signal for the case-study figure, not a result.
 - **Full:** 3 tasks × 3 arms × 3 runs = 27 agentic runs, sequential. (Arm 1b's 9 runs are tracked in the agents-md handoff.) Arm 2 is the expensive one (main session plus one reviewer subagent). Spread runs across usage windows; `run.js` being resumable is what makes that work.
 - **Later (separate pass):** the model axis. Arm 0 with Opus vs Arm 2 with Sonnet/Haiku tests whether the harness makes a cheaper model good enough.
 
