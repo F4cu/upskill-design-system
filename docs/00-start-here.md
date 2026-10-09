@@ -48,6 +48,7 @@ sources:
 # clock reset 2026-10-07: ADR-013 amendment corrects harness totals (ROADMAP follows); layout-generation reads the component set from the package exports (#98); page cites neither the totals nor the set's source, still accurate
 # clock reset 2026-10-08: /add-component, /component-scaffold and /review-component gain an --eval mode for the harness-ablation eval; this page lists the moments, not their modes, still accurate
 # clock reset 2026-10-08: ADR-026 amendment records Badge `label` → `children` as open drift (harness-ablation pilot); this page lists no individual ADR contents, still accurate
+# 2026-10-09: adds ADR-029 (tiered context architecture, risk-triggered reviewer) + ADR-007/017 amendments; ADR count updated to twenty-nine; page lists no individual ADRs
 ---
 # Start here
 
@@ -111,4 +112,4 @@ The suggested reading order is the page order — tokens first, because everythi
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`CLAUDE.md` → rules → commands → snapshots → handoffs) and the CI gates that keep it honest
 - [10 — Machine-readable metadata](10-machine-readable-metadata.md) — the metadata stack: the per-component contract, its validators, the cross-component pattern aggregate, and the write-back loop (reads naturally right after 02)
 
-The twenty-eight architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
+The twenty-nine architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.

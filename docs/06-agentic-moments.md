@@ -23,6 +23,7 @@ sources:
 # clock reset 2026-10-07: /figma-cli pitfalls gain the variant drag-out note; TextField set id updated in ADR-026; this page names /figma-cli and its role only, still accurate
 # clock reset 2026-10-07: validate-metadata.js and lib.js share the package-export component set (#98); this page doesn't describe how validators define a component, still accurate
 # rewritten 2026-10-08: Eval mode paragraph for /add-component --eval and /review-component --eval (harness-ablation Arm 2: guard, auto-approved API proposal, no visual checkpoint, no branch/PR)
+# clock reset 2026-10-09: ADR-007 amendment (ADR-029) records a risk-triggered reviewer for /add-component; the command change ships in a later PR and the loop still runs as this page describes, still accurate
 ---
 # Agentic moments
 
