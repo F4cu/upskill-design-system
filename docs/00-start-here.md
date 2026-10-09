@@ -50,6 +50,7 @@ sources:
 # clock reset 2026-10-08: ADR-026 amendment records Badge `label` → `children` as open drift (harness-ablation pilot); this page lists no individual ADR contents, still accurate
 # 2026-10-09: adds ADR-029 (tiered context architecture, risk-triggered reviewer) + ADR-007/017 amendments; ADR count updated to twenty-nine; page lists no individual ADRs
 # clock reset 2026-10-09: /add-component and /review-component gain the risk-triggered reviewer (ADR-029); this page lists the moments, not their stages, still accurate
+# clock reset 2026-10-09: /component-scaffold and /add-component Stage 1 fill tokens.* via metadata:derive-tokens (ADR-029 Step 5); this page's level of detail is unaffected, still accurate
 ---
 # Start here
 

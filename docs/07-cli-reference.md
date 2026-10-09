@@ -9,6 +9,7 @@ sources:
 # clock reset 2026-07-23: components-check.yml paths filter narrowed (#88, package.json dropped) and now includes itself so workflow edits exercise the gate; trigger paths aren't described on this page, prose unaffected
 # rewritten 2026-10-08: ablation:run, ablation:score, ablation:report rows; harness:run is no longer the only LLM-costing script
 # 2026-10-09: adds component:risk (risk-triggered reviewer, ADR-029)
+# 2026-10-09: adds metadata:derive-tokens (ADR-029 Step 5)
 ---
 # CLI reference
 
@@ -36,6 +37,7 @@ The tables below are the full reference — most entries are composite children,
 | `npm run typecheck` / `npm run lint` | Before pushing component changes. |
 | `npm run a11y:coverage` / `npm run a11y:test` / `npm run a11y:stories` | Before pushing a new or changed interactive component. |
 | `npm run metadata:validate` | After editing a `*.metadata.json`. |
+| `npm run metadata:derive-tokens -- <Name>` | Rewrite a component's `tokens.*` from the `--ds-*` custom properties its own CSS Module and TSX read: the same scan `metadata:validate` checks against. Existing entries keep their category and order, unread entries are dropped, and new reads land under the category their top-level segment implies. A TSX template read (`var(--ds-size-avatar-${size})`) can't be enumerated, so it's reported for hand-listing. | `/component-scaffold` runs it after writing the CSS Module and TSX; you type it when `metadata:validate` reports a token-list mismatch. |
 | `npm run spec:validate` | After editing a `*.spec.json`, or a component that has one. |
 | `npm run layout:validate -- <path>` | After hand-editing a layout file. |
 | `npm run screenshot:check` / `npm run screenshot:approve` | After a visual change, to catch or accept pixel diffs. |

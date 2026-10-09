@@ -31,7 +31,7 @@ If the Figma snapshot is reported absent or stale (`figma.snapshot.stale: true`)
 Read **only** the snapshot from stage 0 plus the metadata schema (`packages/components/component.schema.json`) and the closest existing component as a structural template. Then follow `/component-scaffold`: first its API proposal checkpoint (props table checked against the "Prop vocabulary" in `packages/components/AGENTS.md`, approved by the developer before any file is written, ADR-026), then the four files at `packages/components/src/components/<Name>/`:
 - `index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.metadata.json`
 
-Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, noun-first naming, story title rule). Pick active tokens — never one listed under `tokens.deprecatedAvoid` in the snapshot. Add the component to `packages/components/src/index.ts`.
+Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, noun-first naming, story title rule). Pick active tokens — never one listed under `tokens.deprecatedAvoid` in the snapshot. Add the component to `packages/components/src/index.ts`. Fill `tokens` with `npm run metadata:derive-tokens -- <Name>`, never by hand.
 
 ### Stage 2 · Gate (script — fail-fast)
 Run, in order:
