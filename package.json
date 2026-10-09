@@ -63,6 +63,7 @@
     "a11y:coverage": "node scripts/a11y-coverage.js",
     "component:risk": "node scripts/component-risk.js",
     "a11y:test": "npm run test:a11y -w @upskill/components",
-    "a11y:stories": "npm run test:a11y:stories -w @upskill/components"
+    "a11y:stories": "npm run test:a11y:stories -w @upskill/components",
+    "metadata:derive-tokens": "node scripts/derive-metadata-tokens.js"
   }
 }

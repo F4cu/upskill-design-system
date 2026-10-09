@@ -9,6 +9,7 @@ sources:
   - docs/decisions/013-cross-component-pattern-schema.md
   - docs/decisions/023-subcomponents-compound-components.md
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
+# 2026-10-09: tokens.* is derived by metadata:derive-tokens; validator errors carry the fix (ADR-029 Step 5)
 # clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
 # clock reset 2026-10-02: CardHorizontal metadata gains author patterns/anti-patterns + size.separator token; schema and parts model unchanged, still accurate
 # clock reset 2026-10-06: ADR-023 amendment (Figma Parent.Root + one example frame per usage.patterns id); metadata schema unchanged, still accurate
@@ -38,7 +39,9 @@ The schema requires all three fields of an anti-pattern — `scenario`, `reason`
 
 ### Tokens are existence-checked, not just format-checked
 
-`tokens.*` isn't just an array of strings matching a shape — `scripts/validate-metadata.js` merges every source token file (primitives, all brands, both themes, all three device files) into one tree and resolves every dot-path a component claims to use against a real `$value` node. A component can't reference a token that was renamed or never existed; the check catches it at the same PR that would otherwise ship the drift.
+`tokens.*` isn't just an array of strings matching a shape — `scripts/validate-metadata.js` merges every source token file (primitives, all brands, both themes, all three device files) into one tree and resolves every dot-path a component claims to use against a real `$value` node. A component can't reference a token that was renamed or never existed; the check catches it at the same PR that would otherwise ship the drift. It also checks the list against what the component itself reads: every `var(--ds-*)` in its CSS Module or TSX must be listed, and nothing else may be. A token a child `Text`, `Icon` or `Stack` applies belongs to that child's metadata.
+
+That second rule caused 8 of the 12 gate retries in the harness ablation's full-harness arm: the scaffold hand-listed tokens it saw rendered, not the ones its own files read. So the list isn't hand-written anymore. `npm run metadata:derive-tokens -- <Name>` rewrites `tokens.*` from the same read scan the validator checks against. The validator's error messages also name the fix: the allowed enum values, the dot-path behind a CSS-spelled token, the derive command. A retry then takes one turn (ADR-029 Step 5).
 
 ### `composition` is a machine-checkable graph because layout generation has to cite it
 

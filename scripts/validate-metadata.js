@@ -11,55 +11,20 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
-import { publicComponents } from "./lib.js";
+import { publicComponents, tokenSourceTree, tokenPathsByCssVar, componentTokenReads, tokenCategory } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const COMPONENTS_DIR = path.resolve(ROOT, "packages/components/src/components");
 const SCHEMA_PATH = path.resolve(ROOT, "packages/components/component.schema.json");
 const EXAMPLE_PATH = path.resolve(ROOT, "packages/components/component.metadata.example.json");
-const TOKENS_SRC = path.resolve(ROOT, "packages/tokens/src");
 
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schema);
 
-// Merge every source token file into one tree so metadata dot-paths can be
-// resolved against the tokens they claim to use. A node is a token when it
-// carries a $value; the metadata ref must land on one.
-// The brand layer holds the color slot ramps (color.brand/accent/neutral/surface)
-// and font.family.* — metadata may reference those, and every brand shares an
-// identical shape (build-time shape gate), so merging all brands is safe.
-const TOKEN_FILES = [
-  "primitives.json",
-  ...fs
-    .readdirSync(path.join(TOKENS_SRC, "brands"))
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => `brands/${f}`),
-  "theme/light.json",
-  "theme/dark.json",
-  "device/desktop.json",
-  "device/tablet.json",
-  "device/mobile.json",
-];
-
-function mergeTokens(target, source) {
-  for (const key of Object.keys(source)) {
-    const value = source[key];
-    if (value && typeof value === "object" && !Array.isArray(value) && !("$value" in value)) {
-      target[key] ??= {};
-      mergeTokens(target[key], value);
-    } else {
-      target[key] = value;
-    }
-  }
-  return target;
-}
-
-const tokenTree = TOKEN_FILES.reduce(
-  (tree, rel) => mergeTokens(tree, JSON.parse(fs.readFileSync(path.join(TOKENS_SRC, rel), "utf8"))),
-  {},
-);
+const tokenTree = tokenSourceTree();
+const tokenPathByCssVar = tokenPathsByCssVar(tokenTree);
 
 function tokenExists(dotPath) {
   let node = tokenTree;
@@ -68,6 +33,19 @@ function tokenExists(dotPath) {
     else return false;
   }
   return node != null && typeof node === "object" && "$value" in node;
+}
+
+// Error messages carry the fix so a scaffold retry takes one turn (ADR-029 Step 5).
+const DERIVE_HINT = (dir) => `run \`npm run metadata:derive-tokens -- ${dir}\` to rewrite tokens.* from the component's own reads`;
+
+function schemaError(e) {
+  const at = e.instancePath || "/";
+  if (e.keyword === "enum") return `${at} must be one of: ${e.params.allowedValues.map((v) => JSON.stringify(v)).join(", ")}`;
+  if (e.keyword === "minProperties" && at === "/variants") {
+    return `${at} must have at least one axis — model a binary state as an axis, e.g. { "checked": { "options": [false, true], "default": false, "purpose": "…" } } (Chip)`;
+  }
+  if (e.keyword === "additionalProperties") return `${at} has unknown property "${e.params.additionalProperty}"`;
+  return `${at} ${e.message}`;
 }
 
 const COMPONENT_NAMES = publicComponents();
@@ -114,11 +92,7 @@ function checkParts(parts) {
 // `var(--ds-size-avatar-${size})`. Tokens a child component applies (a Text
 // color, a Stack gap) belong to that child's metadata (ADR-001 amendment).
 function checkTokenReads(dir, data) {
-  const read = (file, re) => (fs.existsSync(file) ? [...fs.readFileSync(file, "utf8").matchAll(re)].map((m) => m[1]) : []);
-  const cssVars = new Set(read(path.join(COMPONENTS_DIR, dir, `${dir}.module.css`), /var\((--ds-[a-z0-9-]+)/g));
-  const tsxFile = path.join(COMPONENTS_DIR, dir, "index.tsx");
-  const tsxVars = new Set(read(tsxFile, /(--ds-[a-z0-9-]+)(?!-?\$\{)/g));
-  const tsxPrefixes = read(tsxFile, /(--ds-[a-z0-9-]*-)\$\{/g);
+  const { cssVars, tsxVars, tsxPrefixes } = componentTokenReads(path.join(COMPONENTS_DIR, dir));
   const listed = new Set();
   const errors = [];
   for (const [category, refs] of Object.entries(data.tokens ?? {})) {
@@ -126,12 +100,17 @@ function checkTokenReads(dir, data) {
       const cssVar = `--ds-${ref.replaceAll(".", "-")}`;
       listed.add(cssVar);
       if (!cssVars.has(cssVar) && !tsxVars.has(cssVar) && !tsxPrefixes.some((p) => cssVar.startsWith(p))) {
-        errors.push(`tokens.${category}: "${ref}" is not read by ${dir}.module.css or index.tsx`);
+        errors.push(
+          `tokens.${category}: "${ref}" is not read by ${dir}.module.css or index.tsx — a token a child component applies (Text color, Icon size, Stack gap) belongs to that child's metadata; ${DERIVE_HINT(dir)}`,
+        );
       }
     }
   }
   for (const cssVar of cssVars) {
-    if (!listed.has(cssVar)) errors.push(`tokens: ${dir}.module.css reads ${cssVar}, which tokens.* does not list`);
+    if (!listed.has(cssVar)) {
+      const dotPath = tokenPathByCssVar.get(cssVar);
+      errors.push(`tokens: ${dir}.module.css reads ${cssVar}, which tokens.* does not list${dotPath ? ` — add "${dotPath}" to tokens.${tokenCategory(dotPath)}` : ""}`);
+    }
   }
   return errors;
 }
@@ -139,13 +118,19 @@ function checkTokenReads(dir, data) {
 const targets = [];
 for (const dir of fs.readdirSync(COMPONENTS_DIR)) {
   const file = path.join(COMPONENTS_DIR, dir, `${dir}.metadata.json`);
-  targets.push({ file, expectedName: dir });
+  const stray = !fs.existsSync(file) && !fs.existsSync(path.join(COMPONENTS_DIR, dir, "index.tsx"));
+  targets.push({ file, expectedName: dir, stray });
 }
 targets.push({ file: EXAMPLE_PATH, expectedName: null });
 
 let failures = 0;
-for (const { file, expectedName } of targets) {
+for (const { file, expectedName, stray } of targets) {
   const rel = path.relative(ROOT, file);
+  if (stray) {
+    console.error(`✗ ${path.relative(ROOT, path.dirname(file))}/ — not a component (no index.tsx, no metadata); stray directory, likely a mkdir from the wrong cwd — remove it`);
+    failures++;
+    continue;
+  }
   if (!fs.existsSync(file)) {
     console.error(`✗ ${rel} — missing metadata file`);
     failures++;
@@ -157,7 +142,7 @@ for (const { file, expectedName } of targets) {
 
   if (!validate(data)) {
     for (const e of validate.errors) {
-      errors.push(`${e.instancePath || "/"} ${e.message}`);
+      errors.push(schemaError(e));
     }
   }
 
@@ -171,7 +156,8 @@ for (const { file, expectedName } of targets) {
     for (const [category, refs] of Object.entries(data.tokens)) {
       for (const ref of Array.isArray(refs) ? refs : [refs]) {
         if (typeof ref === "string" && !tokenExists(ref)) {
-          errors.push(`tokens.${category} references unknown token "${ref}"`);
+          const real = tokenPathByCssVar.get(`--ds-${ref.replaceAll(".", "-")}`);
+          errors.push(`tokens.${category} references unknown token "${ref}"${real ? ` — did you mean "${real}"? (DTCG dot-path, not the CSS variable spelling)` : ""}`);
         }
       }
     }

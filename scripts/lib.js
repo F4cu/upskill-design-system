@@ -70,6 +70,66 @@ export function isInteractive(meta) {
 const LEGACY_REVIEW_PATHS = { adversarial: "full", "in-session": "standard", lighter: "standard" };
 export const normalizeReviewPath = (p) => LEGACY_REVIEW_PATHS[p] ?? p ?? "full";
 
+// Every source token file merged into one tree (primitives, all brands, both
+// themes, all devices), so a metadata dot-path can be resolved against it. The
+// brand layer holds the color slot ramps and font.family.*; every brand shares
+// an identical shape (build-time shape gate), so merging all brands is safe.
+function mergeTokens(target, source) {
+  for (const key of Object.keys(source)) {
+    const value = source[key];
+    if (value && typeof value === "object" && !Array.isArray(value) && !("$value" in value)) {
+      target[key] ??= {};
+      mergeTokens(target[key], value);
+    } else {
+      target[key] = value;
+    }
+  }
+  return target;
+}
+
+export function tokenSourceTree() {
+  const src = path.join(ROOT, "packages/tokens/src");
+  const brands = fs.readdirSync(path.join(src, "brands")).filter((f) => f.endsWith(".json")).map((f) => `brands/${f}`);
+  const files = ["primitives.json", ...brands, "theme/light.json", "theme/dark.json", "device/desktop.json", "device/tablet.json", "device/mobile.json"];
+  return files.reduce((tree, f) => mergeTokens(tree, readJson(path.join(src, f))), {});
+}
+
+// CSS custom property → DTCG dot-path for every token in the tree. The reverse
+// of dotPathToCssVar can't be computed from the string alone: --ds-size-card-min-sm
+// is size.card.min.sm, not size.card-min.sm.
+export function tokenPathsByCssVar(tree) {
+  const map = new Map();
+  const walk = (node, prefix) => {
+    for (const [key, val] of Object.entries(node)) {
+      if (!val || typeof val !== "object" || key.startsWith("$")) continue;
+      const dotPath = prefix ? `${prefix}.${key}` : key;
+      if ("$value" in val) map.set(dotPathToCssVar(dotPath), dotPath);
+      else walk(val, dotPath);
+    }
+  };
+  walk(tree, "");
+  return map;
+}
+
+// What a component itself reads: var(--ds-*) in its CSS Module, --ds-* in its
+// TSX, and TSX template prefixes such as `var(--ds-size-avatar-${size})`.
+export function componentTokenReads(componentDir) {
+  const name = path.basename(componentDir);
+  const read = (file, re) => (fs.existsSync(file) ? [...fs.readFileSync(file, "utf8").matchAll(re)].map((m) => m[1]) : []);
+  const tsxFile = path.join(componentDir, "index.tsx");
+  return {
+    cssVars: new Set(read(path.join(componentDir, `${name}.module.css`), /var\((--ds-[a-z0-9-]+)/g)),
+    tsxVars: new Set(read(tsxFile, /(--ds-[a-z0-9-]+)(?![a-z0-9-]|\$\{)/g)),
+    tsxPrefixes: read(tsxFile, /(--ds-[a-z0-9-]*-)\$\{/g),
+  };
+}
+
+// tokens.* category for a dot-path, by its top-level segment.
+export function tokenCategory(dotPath) {
+  const top = dotPath.split(".")[0];
+  return { color: "color", space: "spacing", font: "typography", "border-radius": "borderRadius" }[top] ?? "other";
+}
+
 // dot-path token → SD CSS custom property, e.g. color.terracotta.9 → --ds-color-terracotta-9
 export function dotPathToCssVar(dotPath) {
   return "--ds-" + dotPath.replace(/\./g, "-");

@@ -48,7 +48,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
    - `index.tsx` — typed props matching the metadata's variant axes (one prop per `variants.<axis>`, typed to that axis's `options`) and `states`; no hard-coded design values; import CSS module for class names
    - `ComponentName.module.css` — one rule per variant + state combination; only `var(--ds-*)` custom properties, never raw values
    - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls. **Storybook title rule:** layout primitives (`category: layout` in metadata) use `title: 'Layout/ComponentName'`; everything else uses `title: 'Components/ComponentName'`.
-   - `ComponentName.metadata.json` — completed metadata file conforming to the schema
+   - `ComponentName.metadata.json` — completed metadata file conforming to the schema. Don't hand-write `tokens`: once the CSS Module and `index.tsx` exist, run `npm run metadata:derive-tokens -- <Name>`. It lists exactly what the component's own files read, which is what `metadata:validate` checks; tokens a child `Text`/`Icon`/`Stack` applies stay out. Hand-list only the template reads it reports.
 6. Record the Figma node ID in the metadata file's `figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
 
 ## Output

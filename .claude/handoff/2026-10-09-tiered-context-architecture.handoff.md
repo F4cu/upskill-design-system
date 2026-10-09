@@ -154,6 +154,8 @@ Decide between the two options and record the choice in ADR-029 (amend in place 
 
 ## Step 5 · Cut gate churn at its source (optional, its own PR)
 
+> **Status (2026-10-09):** shipped on `metadata/gate-churn`. The 12 failures group as 8 token-list (child `Text`/`Icon`/`Stack` tokens), 3 schema (`displayType` enum, empty `variants`), 2 CSS-spelled path, 1 stray directory. `npm run metadata:derive-tokens -- <Name>` is wired into `/component-scaffold` and `/add-component` Stage 1. The validator's errors now name the fix: enum values, the real dot-path, a binary-axis hint for empty `variants`, the derive command, stray-dir removal. Verified: wiping `tokens` on Badge, Checkbox and CardVertical and deriving passes `metadata:validate` first try; the script makes no changes on all 27 committed components. A TSX regex backtrack (`--ds-size-avata`) was fixed along the way. **Open:** the first-attempt pass on a live scaffold is confirmed on the next real `/add-component` run.
+
 All 12 Arm 2 retries were `metadata:validate`. The recurring causes:
 - tokens listed that the component reads only through `Text`/`Icon`
 - a schema enum value
