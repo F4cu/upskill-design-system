@@ -1,0 +1,94 @@
+{
+  "task": "cardvertical",
+  "arm": "0",
+  "run": 1,
+  "smoke": false,
+  "model": "claude-opus-5-5",
+  "product": {
+    "clean": true,
+    "violations": 0,
+    "gateViolations": 0,
+    "trapViolations": 0,
+    "trapCounts": {},
+    "gates": {
+      "typecheck": {
+        "violations": 0,
+        "detail": []
+      },
+      "lint": {
+        "violations": 0,
+        "detail": []
+      },
+      "a11y:stories": {
+        "violations": 0,
+        "detail": [],
+        "targetStories": 6
+      }
+    },
+    "traps": []
+  },
+  "system": {
+    "metadataPresent": false,
+    "metadata:validate": {
+      "ran": false,
+      "reason": "arm has no such script"
+    },
+    "a11y:coverage": {
+      "ran": true,
+      "passed": true,
+      "detail": []
+    },
+    "patternDrift": {
+      "ran": false,
+      "reason": "arm has no pattern script"
+    },
+    "storyInlineStyle": {
+      "violations": 0,
+      "detail": []
+    },
+    "storyVisibleText": {
+      "violations": 0,
+      "detail": []
+    },
+    "propVocabulary": {
+      "ran": true,
+      "passed": true,
+      "detail": [],
+      "reference": {
+        "thumbnailSrc": null,
+        "thumbnailAlt": null,
+        "title": null,
+        "duration": null,
+        "certified": null,
+        "progress": null,
+        "size": [
+          "lg",
+          "sm"
+        ],
+        "action": null
+      },
+      "generated": {
+        "thumbnailSrc": null,
+        "thumbnailAlt": null,
+        "title": null,
+        "duration": null,
+        "certified": null,
+        "progress": null,
+        "size": [
+          "lg",
+          "sm"
+        ]
+      }
+    },
+    "tokenSourceChanges": []
+  },
+  "process": {
+    "outcome": "success",
+    "totalCostUsd": 0.4581162,
+    "numTurns": 11,
+    "durationMs": 79226,
+    "subagentsSpawned": 0,
+    "reviewer": null,
+    "contaminationFlags": 0
+  }
+}

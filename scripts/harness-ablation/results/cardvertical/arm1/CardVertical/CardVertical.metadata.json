@@ -1,0 +1,149 @@
+{
+  "component": {
+    "name": "CardVertical",
+    "category": "molecule",
+    "type": "display",
+    "status": "beta",
+    "description": "A vertical course card (image-top layout): a thumbnail, an optional ProgressBar under it (stack sm), the serif title (h3) and a metadata row (Inline gap sm) with optional duration, a Certified marker and a Completed marker. Status is derived from progress (ADR-025): omitted → not started (no bar), 0–99 → in progress (bar), ≥100 → completed (full bar + Completed marker). Two sizes: sm (fixed size.card.min.sm width, 3:2 thumbnail) for the saved-courses carousel, lg (fills its grid cell, min size.card.min.lg, 4:5 thumbnail) for the catalog grid. Single flat-prop component. For thumbnail-left lists use CardHorizontal; for generic surfaces use Card.",
+    "figmaNodeId": "none — built from reference.png"
+  },
+  "usage": {
+    "keywords": [
+      "card",
+      "course card",
+      "vertical card",
+      "catalog",
+      "carousel",
+      "saved courses"
+    ],
+    "when": [
+      "Showing courses in a catalog grid (size lg)",
+      "Showing saved or started courses in a horizontal carousel (size sm)"
+    ],
+    "patterns": [
+      {
+        "name": "catalog-grid",
+        "description": "Catalog grid of large cards; the grid tracks use size.card.min.lg as their minimum so cards never shrink below it.",
+        "tree": "Box(className=grid) > [CardVertical(size=lg, title, duration, certified?, progress?), ...]"
+      },
+      {
+        "name": "saved-courses-carousel",
+        "description": "Horizontally scrolling row of small fixed-width cards.",
+        "tree": "ScrollArea(orientation=horizontal) > Inline(gap=md, wrap=false, align=start) > [CardVertical(size=sm, title, duration, progress?), ...]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Passing a status or completed flag",
+        "reason": "Lifecycle is derived from progress (ADR-025); a separate flag allows impossible combinations.",
+        "alternative": "Pass progress={100} for a completed course and omit progress for a course not yet started."
+      },
+      {
+        "scenario": "Packing certification or completion into duration, e.g. duration=\"12 Hours · Certified\"",
+        "reason": "One prop per datum; the component renders the markers and their spacing.",
+        "alternative": "Pass duration=\"12 Hours\" certified; pass progress={100} for Completed."
+      },
+      {
+        "scenario": "Mixing sm and lg cards, or CardVertical with CardHorizontal or Card, in one row or grid",
+        "reason": "Different thumbnail ratios and widths break the visual rhythm.",
+        "alternative": "Use one size per section: sm in carousels, lg in grids."
+      },
+      {
+        "scenario": "Placing CardVertical in a section whose heading is not an h2",
+        "reason": "The title always renders as an h3, so any other parent level skips or inverts the outline.",
+        "alternative": "Put cards inside a section headed by an h2."
+      },
+      {
+        "scenario": "Colouring the title, metadata or marker icons via inline style or a color prop on Icon",
+        "reason": "Heading/Text own their colour; marker icons take color.icon.subtle from the .marker svg rule in the CSS Module.",
+        "alternative": "Leave colours to the component."
+      }
+    ]
+  },
+  "variants": {
+    "size": {
+      "options": [
+        "sm",
+        "lg"
+      ],
+      "default": "lg",
+      "purpose": {
+        "sm": "Saved-courses carousel: fixed width size.card.min.sm, 3:2 thumbnail.",
+        "lg": "Catalog grid: fills its cell (min size.card.min.lg), 4:5 thumbnail."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "notStarted",
+      "description": "progress omitted: no ProgressBar, no Completed marker."
+    },
+    {
+      "state": "inProgress",
+      "description": "progress 0–99: ProgressBar under the thumbnail, labelled by the title."
+    },
+    {
+      "state": "completed",
+      "description": "progress ≥ 100: full ProgressBar plus a check + 'Completed' marker in the metadata row."
+    },
+    {
+      "state": "noThumbnail",
+      "description": "thumbnailSrc omitted: Image renders its placeholder glyph."
+    },
+    {
+      "state": "noMeta",
+      "description": "No duration, not certified, not completed: the metadata row is not rendered."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.icon.subtle"
+    ],
+    "spacing": [
+      "space.stack.sm",
+      "space.inline.xs"
+    ],
+    "typography": [
+      "font.family.headline-serif",
+      "font.weight.medium",
+      "font.line-height.tight"
+    ],
+    "borderRadius": [],
+    "other": [
+      "size.card.min.sm",
+      "size.card.min.lg"
+    ]
+  },
+  "accessibility": {
+    "role": "article",
+    "ariaAttributes": [
+      "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type",
+      "thumbnailAlt defaults to empty (decorative) since the title names the card",
+      "ProgressBar aria-labelledby → the title id"
+    ],
+    "keyboardInteractions": []
+  },
+  "composition": {
+    "composedOf": [
+      "Image",
+      "ProgressBar",
+      "Heading",
+      "Text",
+      "Icon",
+      "Stack",
+      "Inline"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "ScrollArea"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "flex-column",
+      "canNest": false
+    }
+  }
+}

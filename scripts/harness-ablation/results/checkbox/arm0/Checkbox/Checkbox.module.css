@@ -1,0 +1,84 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-inline-sm);
+  cursor: pointer;
+  font-family: var(--ds-font-family-body);
+  font-size: var(--ds-font-size-body-default);
+  line-height: var(--ds-font-line-height-tight);
+  color: var(--ds-color-text-default);
+}
+
+.disabled {
+  cursor: not-allowed;
+  color: var(--ds-color-text-disabled);
+}
+
+.control {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  /* Sized to the body-text label: a touch taller than its cap height. */
+  width: calc(var(--ds-size-200) + var(--ds-size-025));
+  height: calc(var(--ds-size-200) + var(--ds-size-025));
+}
+
+/* The real input covers the box but is invisible; .box draws the state. */
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: var(--ds-color-background-input);
+  border: var(--ds-size-025) solid var(--ds-color-border-input-default);
+  border-radius: var(--ds-border-radius-xs);
+  color: var(--ds-color-icon-inverted-default);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+/* .box .check (not .check): must outrank Icon's single-class size rule. */
+.box .check {
+  width: 90%;
+  height: 90%;
+  visibility: hidden;
+}
+
+.input:hover:not(:disabled) + .box {
+  border-color: var(--ds-color-border-input-hover);
+}
+
+.input:checked + .box {
+  background: var(--ds-color-background-brand);
+  border-color: var(--ds-color-background-brand);
+}
+
+.input:checked + .box .check {
+  visibility: visible;
+}
+
+.input:disabled + .box {
+  border-color: var(--ds-color-border-disabled);
+}
+
+.input:disabled:checked + .box {
+  background: var(--ds-color-background-disabled);
+}
+
+/* The invisible input receives focus, so mirror the global ring (reset.css,
+   ADR-028) onto the visible box. */
+.input:focus-visible + .box {
+  outline: var(--ds-size-focus-width) solid var(--ds-color-border-focus);
+  outline-offset: var(--ds-size-focus-offset);
+}

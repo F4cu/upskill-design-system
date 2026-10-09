@@ -1,0 +1,403 @@
+diff --git a/packages/components/src/components/CardVertical/CardVertical.metadata.json b/packages/components/src/components/CardVertical/CardVertical.metadata.json
+new file mode 100644
+index 0000000..e8e5982
+--- /dev/null
++++ b/packages/components/src/components/CardVertical/CardVertical.metadata.json
+@@ -0,0 +1,149 @@
++{
++  "component": {
++    "name": "CardVertical",
++    "category": "molecule",
++    "type": "display",
++    "status": "beta",
++    "description": "A vertical course card (image-top layout): a thumbnail, an optional ProgressBar under it (stack sm), the serif title (h3) and a metadata row (Inline gap sm) with optional duration, a Certified marker and a Completed marker. Status is derived from progress (ADR-025): omitted → not started (no bar), 0–99 → in progress (bar), ≥100 → completed (full bar + Completed marker). Two sizes: sm (fixed size.card.min.sm width, 3:2 thumbnail) for the saved-courses carousel, lg (fills its grid cell, min size.card.min.lg, 4:5 thumbnail) for the catalog grid. Single flat-prop component. For thumbnail-left lists use CardHorizontal; for generic surfaces use Card.",
++    "figmaNodeId": "none — built from reference.png"
++  },
++  "usage": {
++    "keywords": [
++      "card",
++      "course card",
++      "vertical card",
++      "catalog",
++      "carousel",
++      "saved courses"
++    ],
++    "when": [
++      "Showing courses in a catalog grid (size lg)",
++      "Showing saved or started courses in a horizontal carousel (size sm)"
++    ],
++    "patterns": [
++      {
++        "name": "catalog-grid",
++        "description": "Catalog grid of large cards; the grid tracks use size.card.min.lg as their minimum so cards never shrink below it.",
++        "tree": "Box(className=grid) > [CardVertical(size=lg, title, duration, certified?, progress?), ...]"
++      },
++      {
++        "name": "saved-courses-carousel",
++        "description": "Horizontally scrolling row of small fixed-width cards.",
++        "tree": "ScrollArea(orientation=horizontal) > Inline(gap=md, wrap=false, align=start) > [CardVertical(size=sm, title, duration, progress?), ...]"
++      }
++    ],
++    "antiPatterns": [
++      {
++        "scenario": "Passing a status or completed flag",
++        "reason": "Lifecycle is derived from progress (ADR-025); a separate flag allows impossible combinations.",
++        "alternative": "Pass progress={100} for a completed course and omit progress for a course not yet started."
++      },
++      {
++        "scenario": "Packing certification or completion into duration, e.g. duration=\"12 Hours · Certified\"",
++        "reason": "One prop per datum; the component renders the markers and their spacing.",
++        "alternative": "Pass duration=\"12 Hours\" certified; pass progress={100} for Completed."
++      },
++      {
++        "scenario": "Mixing sm and lg cards, or CardVertical with CardHorizontal or Card, in one row or grid",
++        "reason": "Different thumbnail ratios and widths break the visual rhythm.",
++        "alternative": "Use one size per section: sm in carousels, lg in grids."
++      },
++      {
++        "scenario": "Placing CardVertical in a section whose heading is not an h2",
++        "reason": "The title always renders as an h3, so any other parent level skips or inverts the outline.",
++        "alternative": "Put cards inside a section headed by an h2."
++      },
++      {
++        "scenario": "Colouring the title, metadata or marker icons via inline style or a color prop on Icon",
++        "reason": "Heading/Text own their colour; marker icons take color.icon.subtle from the .marker svg rule in the CSS Module.",
++        "alternative": "Leave colours to the component."
++      }
++    ]
++  },
++  "variants": {
++    "size": {
++      "options": [
++        "sm",
++        "lg"
++      ],
++      "default": "lg",
++      "purpose": {
++        "sm": "Saved-courses carousel: fixed width size.card.min.sm, 3:2 thumbnail.",
++        "lg": "Catalog grid: fills its cell (min size.card.min.lg), 4:5 thumbnail."
++      }
++    }
++  },
++  "states": [
++    {
++      "state": "notStarted",
++      "description": "progress omitted: no ProgressBar, no Completed marker."
++    },
++    {
++      "state": "inProgress",
++      "description": "progress 0–99: ProgressBar under the thumbnail, labelled by the title."
++    },
++    {
++      "state": "completed",
++      "description": "progress ≥ 100: full ProgressBar plus a check + 'Completed' marker in the metadata row."
++    },
++    {
++      "state": "noThumbnail",
++      "description": "thumbnailSrc omitted: Image renders its placeholder glyph."
++    },
++    {
++      "state": "noMeta",
++      "description": "No duration, not certified, not completed: the metadata row is not rendered."
++    }
++  ],
++  "tokens": {
++    "color": [
++      "color.icon.subtle"
++    ],
++    "spacing": [
++      "space.stack.sm",
++      "space.inline.xs"
++    ],
++    "typography": [
++      "font.family.headline-serif",
++      "font.weight.medium",
++      "font.line-height.tight"
++    ],
++    "borderRadius": [],
++    "other": [
++      "size.card.min.sm",
++      "size.card.min.lg"
++    ]
++  },
++  "accessibility": {
++    "role": "article",
++    "ariaAttributes": [
++      "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type",
++      "thumbnailAlt defaults to empty (decorative) since the title names the card",
++      "ProgressBar aria-labelledby → the title id"
++    ],
++    "keyboardInteractions": []
++  },
++  "composition": {
++    "composedOf": [
++      "Image",
++      "ProgressBar",
++      "Heading",
++      "Text",
++      "Icon",
++      "Stack",
++      "Inline"
++    ],
++    "accepts": [],
++    "containedBy": [
++      "Box",
++      "Stack",
++      "Inline",
++      "ScrollArea"
++    ],
++    "layoutBehavior": {
++      "widthBehavior": "fill",
++      "displayType": "flex-column",
++      "canNest": false
++    }
++  }
++}
+diff --git a/packages/components/src/components/CardVertical/CardVertical.module.css b/packages/components/src/components/CardVertical/CardVertical.module.css
+new file mode 100644
+index 0000000..c50e770
+--- /dev/null
++++ b/packages/components/src/components/CardVertical/CardVertical.module.css
+@@ -0,0 +1,34 @@
++.card {
++  display: flex;
++  flex-direction: column;
++  gap: var(--ds-space-stack-sm);
++  min-width: 0;
++}
++
++.sm {
++  width: var(--ds-size-card-min-sm);
++  flex-shrink: 0;
++}
++
++.lg {
++  width: 100%;
++  min-width: var(--ds-size-card-min-lg);
++}
++
++/* Doubled to beat Heading's .title-small regardless of stylesheet order */
++.title.title {
++  font-family: var(--ds-font-family-headline-serif);
++  font-weight: var(--ds-font-weight-medium);
++  line-height: var(--ds-font-line-height-tight);
++  overflow-wrap: anywhere;
++}
++
++.marker {
++  display: inline-flex;
++  align-items: center;
++  gap: var(--ds-space-inline-xs);
++}
++
++.marker svg {
++  color: var(--ds-color-icon-subtle);
++}
+diff --git a/packages/components/src/components/CardVertical/CardVertical.stories.tsx b/packages/components/src/components/CardVertical/CardVertical.stories.tsx
+new file mode 100644
+index 0000000..19474c3
+--- /dev/null
++++ b/packages/components/src/components/CardVertical/CardVertical.stories.tsx
+@@ -0,0 +1,98 @@
++import type { Meta, StoryObj } from '@storybook/react'
++import { CardVertical } from './index'
++import { Inline } from '../Inline'
++import { Stack } from '../Stack'
++
++const meta = {
++  title: 'Components/CardVertical',
++  component: CardVertical,
++  argTypes: {
++    size: { control: 'radio', options: ['sm', 'lg'] },
++    progress: { control: { type: 'range', min: 0, max: 100, step: 1 } },
++  },
++  render: (args) => (
++    <Stack maxWidth={280}>
++      <CardVertical {...args} />
++    </Stack>
++  ),
++} satisfies Meta<typeof CardVertical>
++
++export default meta
++type Story = StoryObj<typeof meta>
++
++export const Default: Story = {
++  args: {
++    title: 'Creative Acts for Curious People',
++    duration: '12 Hours',
++    size: 'lg',
++  },
++}
++
++export const InProgress: Story = {
++  args: {
++    title: 'Creative Acts for Curious People',
++    duration: '12 Hours',
++    progress: 65,
++    size: 'lg',
++  },
++}
++
++export const Completed: Story = {
++  args: {
++    title: 'Creative Acts for Curious People',
++    duration: '12 Hours',
++    progress: 100,
++    size: 'lg',
++  },
++}
++
++export const CertifiedCompleted: Story = {
++  args: {
++    title: 'Creative Acts for Curious People',
++    duration: '12 Hours',
++    certified: true,
++    progress: 100,
++    size: 'sm',
++  },
++}
++
++export const Small: Story = {
++  args: {
++    title: 'Creative Acts for Curious People',
++    duration: '12 Hours',
++    progress: 30,
++    size: 'sm',
++  },
++}
++
++export const WithThumbnail: Story = {
++  args: {
++    thumbnailSrc: 'https://placehold.co/440x550/D15D50/ffffff?text=Course',
++    thumbnailAlt: '',
++    title: 'Creative Acts for Curious People',
++    duration: '2h 30m',
++    size: 'lg',
++  },
++}
++
++export const NoMeta: Story = {
++  args: {
++    title: 'Creative Acts for Curious People',
++    size: 'lg',
++  },
++}
++
++export const SavedCoursesRow: Story = {
++  args: {
++    title: 'Creative Acts for Curious People',
++    duration: '12 Hours',
++    size: 'sm',
++  },
++  render: (args) => (
++    <Inline gap="md" wrap={false} align="start">
++      <CardVertical {...args} />
++      <CardVertical {...args} progress={30} />
++      <CardVertical {...args} certified progress={100} />
++    </Inline>
++  ),
++}
+diff --git a/packages/components/src/components/CardVertical/index.tsx b/packages/components/src/components/CardVertical/index.tsx
+new file mode 100644
+index 0000000..012b544
+--- /dev/null
++++ b/packages/components/src/components/CardVertical/index.tsx
+@@ -0,0 +1,84 @@
++import { useId, type HTMLAttributes } from 'react'
++import { Heading } from '../Heading'
++import { Icon } from '../Icon'
++import { Image } from '../Image'
++import { Inline } from '../Inline'
++import { ProgressBar } from '../ProgressBar'
++import { Stack } from '../Stack'
++import { Text } from '../Text'
++import styles from './CardVertical.module.css'
++
++export type CardVerticalSize = 'sm' | 'lg'
++
++export type CardVerticalProps = {
++  thumbnailSrc?: string
++  thumbnailAlt?: string
++  title: string
++  duration?: string
++  certified?: boolean
++  progress?: number
++  size?: CardVerticalSize
++} & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'children' | 'aria-labelledby' | 'color'>
++
++const thumbnailAspectRatio: Record<CardVerticalSize, string> = {
++  sm: '3/2',
++  lg: '4/5',
++}
++
++function getStatus(progress?: number) {
++  if (progress === undefined) return 'notStarted'
++  return progress >= 100 ? 'completed' : 'inProgress'
++}
++
++export function CardVertical({
++  thumbnailSrc,
++  thumbnailAlt = '',
++  title,
++  duration,
++  certified = false,
++  progress,
++  size = 'lg',
++  className,
++  ...rest
++}: CardVerticalProps) {
++  const titleId = useId()
++  const status = getStatus(progress)
++  const completed = status === 'completed'
++
++  return (
++    <div
++      {...rest}
++      role="article"
++      aria-labelledby={titleId}
++      data-status={status}
++      className={[styles.card, styles[size], className].filter(Boolean).join(' ')}
++    >
++      <Stack gap="sm">
++        <Image src={thumbnailSrc} alt={thumbnailAlt} aspectRatio={thumbnailAspectRatio[size]} />
++        {progress !== undefined && <ProgressBar value={progress} aria-labelledby={titleId} />}
++      </Stack>
++      <Stack gap="xs">
++        <Heading as="h3" id={titleId} size="title-small" className={styles.title}>
++          {title}
++        </Heading>
++        {(duration || certified || completed) && (
++          <Inline gap="sm" wrap align="center">
++            {duration && <Text as="span" size="metadata" color="subtle">{duration}</Text>}
++            {certified && (
++              <span className={styles.marker}>
++                <Icon name="badge-check" size="sm" />
++                <Text as="span" size="metadata" color="subtle">Certified</Text>
++              </span>
++            )}
++            {completed && (
++              <span className={styles.marker}>
++                <Icon name="check" size="sm" />
++                <Text as="span" size="metadata" color="subtle">Completed</Text>
++              </span>
++            )}
++          </Inline>
++        )}
++      </Stack>
++    </div>
++  )
++}
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index 5b9492e..0975bb9 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -51,6 +51,9 @@ export type { AppHeaderProps, NavItem } from './components/AppHeader'
+ export { CardHorizontal } from './components/CardHorizontal'
+ export type { CardHorizontalProps, CardHorizontalVariant } from './components/CardHorizontal'
+ 
++export { CardVertical } from './components/CardVertical'
++export type { CardVerticalProps, CardVerticalSize } from './components/CardVertical'
++
+ export { Image } from './components/Image'
+ export type { ImageProps } from './components/Image'
+ 

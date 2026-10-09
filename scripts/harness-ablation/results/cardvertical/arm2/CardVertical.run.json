@@ -1,0 +1,23 @@
+{
+  "component": "CardVertical",
+  "ranAt": "2026-10-09T12:10:00Z",
+  "mode": "eval",
+  "outcome": "findings-applied",
+  "visualReview": "skipped-eval",
+  "apiProposal": "api-proposal.md",
+  "gate": {
+    "passes": 2,
+    "failures": 1,
+    "failureReasons": [
+      "metadata:validate: stray packages/components/src/components/packages/ directory created by a mkdir run from the wrong cwd (no component files in it); removed, not a component defect"
+    ]
+  },
+  "contextIsolationHeld": true,
+  "reviewerCaughtBeyondGate": [
+    "Marker icon colour set on the svg instead of the ancestor (icon colour rule), contradicting the component's own metadata anti-pattern",
+    "Stories repeated shared args per story instead of meta.args; Row showcase hard-coded prop values",
+    "Unused data-status hook / exported status type not documented"
+  ],
+  "manualRescues": [],
+  "notes": "Figma snapshot present and fresh (2 days); no Figma node for CardVertical, design input was reference.png. Brief/reference tension recorded in api-proposal.md: completed shows full bar + Completed marker (reference) rather than replacing the bar (brief wording 'instead'). ADR-023/024/026 describe an earlier parts-based CardVertical (Favorite/Menu/Media); the brief asks for a single prop-configured component, so no parts shipped. Applied low findings: icon colour moved to .marker ancestor, shared story args moved to meta.args, Row story controls disabled, data-status documented in metadata. Not applied: double announcement of the title via article + progressbar labelledby — kept for consistency with CardHorizontal; any fix belongs in ProgressBar. Pre-existing vite:dts type warning in src/a11y-stories.sweep.test.tsx (toHaveNoViolations) is unrelated to this component."
+}

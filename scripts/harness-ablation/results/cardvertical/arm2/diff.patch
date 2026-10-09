@@ -1,0 +1,511 @@
+diff --git a/.claude/component-patterns.json b/.claude/component-patterns.json
+index 0ad2399..9656c95 100644
+--- a/.claude/component-patterns.json
++++ b/.claude/component-patterns.json
+@@ -26,7 +26,7 @@
+       "pattern": "navigation"
+     }
+   ],
+-  "generatedFrom": "227ed63b064135c218cdbda8dc4ed1d9ae89564f",
++  "generatedFrom": "35253ba8c3301541aac89b952c4f1498550ddd45",
+   "patterns": {
+     "action-trigger": {
+       "architecturalStyle": "flat-props",
+@@ -536,6 +536,40 @@
+             "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
+           ]
+         },
++        {
++          "ariaContract": [
++            {
++              "aria-labelledby": "{titleId}",
++              "element": "div",
++              "role": "article"
++            },
++            {
++              "aria-labelledby": "{titleId}",
++              "element": "ProgressBar"
++            }
++          ],
++          "component": "CardVertical",
++          "composition": [
++            "Heading",
++            "Icon",
++            "Image",
++            "Inline",
++            "ProgressBar",
++            "Stack",
++            "Text"
++          ],
++          "idsFromUseId": [
++            "titleId"
++          ],
++          "maturity": "beta",
++          "stage": null,
++          "systemSpecificNotes": [
++            "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children, aria-labelledby and title are omitted from the props type so consumers cannot override them",
++            "thumbnailAlt (pass a meaningful description of the course image, or leave the empty-string default when the title already provides context)",
++            "Progress: ProgressBar aria-labelledby → the title id",
++            "Certified/Completed markers: icons are aria-hidden; the visible text carries the meaning"
++          ]
++        },
+         {
+           "component": "Divider",
+           "composition": [],
+diff --git a/api-proposal.md b/api-proposal.md
+new file mode 100644
+index 0000000..feefdb2
+--- /dev/null
++++ b/api-proposal.md
+@@ -0,0 +1,35 @@
++# CardVertical — API proposal (auto-approved, `/add-component --eval`)
++
++Design input: brief + `reference.png` (no Figma node). Top row of the reference = `size="lg"` (catalog grid, 340px thumbnail), bottom row = `size="sm"` (saved-courses carousel, 180px thumbnail). Columns, left to right: not started · in progress · completed (the last one also certified).
++
++## Anatomy (top to bottom)
++
++1. **Thumbnail** — `Image`, fills the card width; height `size.thumbnail.lg` (lg) or `size.thumbnail.md` (sm). No `thumbnailSrc` → Image's placeholder glyph.
++2. **Progress** — `ProgressBar`, only when `progress` is set; named by the title (`aria-labelledby`).
++3. **Title** — `Heading` `headline-serif`, wraps (no truncation).
++4. **Meta** — `Inline` row: duration (`Text metadata subtle`), Certified marker (`badge-check` icon + "Certified"), Completed marker (`check` icon + "Completed"). Row omitted when it would be empty.
++
++## Props
++
++| Prop | Concept | Kind | Type | Default | Figma property | Surface |
++|---|---|---|---|---|---|---|
++| `size` | Size | variant axis | `'sm' \| 'lg'` | `'lg'` | `Size` | both |
++| `title` | Content | content | `string` | — (required) | `Title` | both |
++| `thumbnailSrc` | Image (prefixed by part) | content | `string` | — (placeholder) | `Thumbnail` | both |
++| `thumbnailAlt` | Image (prefixed by part) | content | `string` | `''` | — | code-only |
++| `duration` | Content (one prop per datum) | content | `string` | — | `Duration` / `Has duration` | both |
++| `certified` | Boolean | content | `boolean` | `false` | `Certified` | both |
++| `progress` | Lifecycle (data prop; `status` derived) | lifecycle | `number` (0–100) | — | `Status` (`notStarted`/`inProgress`/`completed`) | both |
++| `headingLevel` | Inner heading | native | `'h2' \| 'h3' \| 'h4' \| 'h5' \| 'h6'` | `'h3'` | — | code-only |
++| `className`, native div attrs | — | native | `Omit<HTMLAttributes<HTMLDivElement>, 'role' \| 'children' \| 'aria-labelledby' \| 'title'>` | — | — | code-only |
++
++Lifecycle (ADR-025) is derived, never a prop: `progress` undefined → `notStarted`; `0 ≤ progress < 100` → `inProgress` (bar); `progress ≥ 100` → `completed` (full bar + Completed marker).
++
++## Divergences / decisions
++
++- **Single component, no parts.** ADR-023/024/026/028 describe an earlier CardVertical with `.Favorite`/`.Menu`/`.Media` parts. The brief explicitly asks for one component configured by props, and the reference has no overlay actions, so no parts ship. Those ADR references stay historical; adding parts later is additive (preset + parts, ADR-023).
++- **Completed keeps the bar.** The brief says a finished course "shows a completed marker instead"; the reference shows a full bar *and* a "✓ Completed" marker. Following the reference: the marker replaces the partial bar state, not the bar.
++- **`size` values `sm`/`lg`** (no `md`): only the two steps exist (vocabulary: "only the steps it has").
++- **`headingLevel`** is the vocabulary term; added so the card isn't locked to h3 (the CardHorizontal anti-pattern).
++- **`title` omitted from native attrs** so the string prop doesn't collide with the HTML `title` tooltip attribute.
++- Figma `Status` is a Figma-only preview of the derived lifecycle (ADR-025 naming), no code prop.
+diff --git a/packages/components/src/components/CardVertical/CardVertical.metadata.json b/packages/components/src/components/CardVertical/CardVertical.metadata.json
+new file mode 100644
+index 0000000..826b810
+--- /dev/null
++++ b/packages/components/src/components/CardVertical/CardVertical.metadata.json
+@@ -0,0 +1,157 @@
++{
++  "component": {
++    "name": "CardVertical",
++    "category": "molecule",
++    "type": "display",
++    "status": "beta",
++    "description": "A vertical course card (image-top layout) for course catalogs and carousels. Top to bottom: a full-width thumbnail (Image), an optional ProgressBar, the course title (Heading headline-serif, wraps), and a meta row (Inline gap sm) with optional duration, a Certified marker and a Completed marker. Lifecycle is derived from progress (ADR-025): omitted → not started, 0–99 → in progress (bar), ≥100 → completed (full bar + Completed marker); the derived value is exposed as data-status on the root for tests and page-level styling. Two sizes: sm (180px thumbnail, saved-courses carousel) and lg (340px thumbnail, catalog grid). A single component configured by props — no parts. For compact list rows use CardHorizontal; for generic surfaces use Card."
++  },
++  "usage": {
++    "keywords": [
++      "card",
++      "course card",
++      "vertical card",
++      "catalog card",
++      "carousel card",
++      "saved courses"
++    ],
++    "when": [
++      "Displaying courses in a catalog grid (size lg)",
++      "Displaying saved or recommended courses in a horizontal carousel (size sm)",
++      "Showing a learner's progress or completion on a course tile"
++    ],
++    "patterns": [
++      {
++        "name": "catalog-grid",
++        "description": "Course catalog: a .grid of large cards; each grid cell sets the card width.",
++        "tree": "Box(className=grid) > [CardVertical(size=lg, title, thumbnailSrc, duration), CardVertical(size=lg, title, thumbnailSrc, duration, progress=40), ...]"
++      },
++      {
++        "name": "saved-courses-carousel",
++        "description": "Saved courses: small cards in a horizontal ScrollArea; the wrapping item fixes the card width.",
++        "tree": "ScrollArea(orientation=horizontal) > Inline(gap=md, wrap=false, align=start) > [CardVertical(size=sm, title, thumbnailSrc, duration, progress), ...]"
++      }
++    ],
++    "antiPatterns": [
++      {
++        "scenario": "Nesting CardVertical inside Card",
++        "reason": "Creates doubled surface depth that loses hierarchy meaning.",
++        "alternative": "Place CardVertical directly in a grid, Inline or ScrollArea."
++      },
++      {
++        "scenario": "Mixing sm and lg CardVertical, or CardVertical and CardHorizontal, in the same row or grid",
++        "reason": "Different thumbnail heights and layout directions break the visual rhythm of a list or grid.",
++        "alternative": "Pick one size per section: lg for catalog grids, sm for saved-courses carousels."
++      },
++      {
++        "scenario": "Asking for a status, completed or started prop to drive the lifecycle look",
++        "reason": "Lifecycle is derived from progress (ADR-025); a separate flag allows impossible combinations.",
++        "alternative": "Pass progress (0–100). Omit it for a course not started; 100 shows the full bar plus the Completed marker."
++      },
++      {
++        "scenario": "Packing extra data into duration, e.g. duration=\"12 Hours · Certified\"",
++        "reason": "One prop per datum; the component renders the Certified marker with its icon and owns spacing between meta items.",
++        "alternative": "Pass duration=\"12 Hours\" certified."
++      },
++      {
++        "scenario": "Setting a colour on the marker Icon or an inline colour on the card",
++        "reason": "Icon inherits currentColor; the card's CSS Module sets color.icon.subtle on the .marker ancestor, and Text owns its colour through color=\"subtle\".",
++        "alternative": "Leave marker colouring to CardVertical; restyle only through tokens."
++      },
++      {
++        "scenario": "Placing CardVertical under a heading that is not one level above its title",
++        "reason": "The title renders as headingLevel (default h3); a mismatch skips or inverts a level in the document outline.",
++        "alternative": "Set headingLevel to one below the enclosing section heading (h3 under an h2)."
++      },
++      {
++        "scenario": "Wrapping CardVertical in an anchor or adding onClick to make the whole card a link",
++        "reason": "The card is a display article with no interactive contract; a clickable div has no keyboard support and a wrapping link reads the whole card as the link name.",
++        "alternative": "Navigation affordances belong to the page layout (e.g. a TextLink beside the grid) until the card gains a link prop through a component change."
++      }
++    ]
++  },
++  "variants": {
++    "size": {
++      "options": [
++        "sm",
++        "lg"
++      ],
++      "default": "lg",
++      "purpose": {
++        "sm": "Saved-courses carousel: thumbnail height size.thumbnail.md (180px), min width size.card.min.sm.",
++        "lg": "Catalog grid: thumbnail height size.thumbnail.lg (340px), min width size.card.min.lg."
++      }
++    }
++  },
++  "states": [
++    {
++      "state": "notStarted",
++      "description": "Lifecycle, derived: progress omitted. No ProgressBar, no Completed marker."
++    },
++    {
++      "state": "inProgress",
++      "description": "Lifecycle, derived: 0 ≤ progress < 100. ProgressBar between the thumbnail and the title, named by the title."
++    },
++    {
++      "state": "completed",
++      "description": "Lifecycle, derived: progress ≥ 100. Full ProgressBar plus a check-icon Completed marker in the meta row."
++    },
++    {
++      "state": "noThumbnail",
++      "description": "Content fallback: thumbnailSrc omitted → Image placeholder glyph on color.background.media-strong."
++    },
++    {
++      "state": "noMeta",
++      "description": "Content fallback: no duration, not certified and not completed → the meta row is not rendered."
++    }
++  ],
++  "tokens": {
++    "color": [
++      "color.icon.subtle"
++    ],
++    "spacing": [
++      "space.stack.sm",
++      "space.inline.xs"
++    ],
++    "typography": [],
++    "borderRadius": [],
++    "other": [
++      "size.thumbnail.md",
++      "size.thumbnail.lg",
++      "size.card.min.sm",
++      "size.card.min.lg"
++    ]
++  },
++  "accessibility": {
++    "role": "article",
++    "ariaAttributes": [
++      "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children, aria-labelledby and title are omitted from the props type so consumers cannot override them",
++      "thumbnailAlt (pass a meaningful description of the course image, or leave the empty-string default when the title already provides context)",
++      "Progress: ProgressBar aria-labelledby → the title id",
++      "Certified/Completed markers: icons are aria-hidden; the visible text carries the meaning"
++    ],
++    "keyboardInteractions": []
++  },
++  "composition": {
++    "composedOf": [
++      "Image",
++      "ProgressBar",
++      "Heading",
++      "Text",
++      "Icon",
++      "Stack",
++      "Inline"
++    ],
++    "accepts": [],
++    "containedBy": [
++      "Box",
++      "Inline",
++      "ScrollArea"
++    ],
++    "layoutBehavior": {
++      "widthBehavior": "fill",
++      "displayType": "flex-column",
++      "canNest": false
++    }
++  }
++}
+diff --git a/packages/components/src/components/CardVertical/CardVertical.module.css b/packages/components/src/components/CardVertical/CardVertical.module.css
+new file mode 100644
+index 0000000..2937c02
+--- /dev/null
++++ b/packages/components/src/components/CardVertical/CardVertical.module.css
+@@ -0,0 +1,33 @@
++.card {
++  display: flex;
++  flex-direction: column;
++  gap: var(--ds-space-stack-sm);
++  width: 100%;
++}
++
++.sm {
++  min-width: var(--ds-size-card-min-sm);
++}
++
++.lg {
++  min-width: var(--ds-size-card-min-lg);
++}
++
++.thumbnail {
++  width: 100%;
++}
++
++.sm .thumbnail {
++  height: var(--ds-size-thumbnail-md);
++}
++
++.lg .thumbnail {
++  height: var(--ds-size-thumbnail-lg);
++}
++
++.marker {
++  display: flex;
++  align-items: center;
++  gap: var(--ds-space-inline-xs);
++  color: var(--ds-color-icon-subtle);
++}
+diff --git a/packages/components/src/components/CardVertical/CardVertical.stories.tsx b/packages/components/src/components/CardVertical/CardVertical.stories.tsx
+new file mode 100644
+index 0000000..88d97be
+--- /dev/null
++++ b/packages/components/src/components/CardVertical/CardVertical.stories.tsx
+@@ -0,0 +1,97 @@
++import type { Meta, StoryObj } from '@storybook/react'
++import { CardVertical } from './index'
++import { Inline } from '../Inline'
++
++const THUMBNAIL = 'https://placehold.co/560x680/D15D50/ffffff?text=Course'
++
++const meta = {
++  title: 'Components/CardVertical',
++  component: CardVertical,
++  argTypes: {
++    size: { control: 'radio', options: ['sm', 'lg'] },
++    headingLevel: { control: 'select', options: ['h2', 'h3', 'h4', 'h5', 'h6'] },
++    progress: { control: { type: 'range', min: 0, max: 100, step: 1 } },
++  },
++  args: {
++    thumbnailSrc: THUMBNAIL,
++    title: 'Creative Acts for Curious People',
++    duration: '12 Hours',
++    size: 'lg',
++  },
++} satisfies Meta<typeof CardVertical>
++
++export default meta
++type Story = StoryObj<typeof meta>
++
++const cardWidth: Story['decorators'] = [(Story) => <div style={{ width: 280 }}><Story /></div>]
++
++export const Default: Story = {
++  decorators: cardWidth,
++}
++
++export const InProgress: Story = {
++  decorators: cardWidth,
++  args: {
++    progress: 65,
++  },
++}
++
++export const Completed: Story = {
++  decorators: cardWidth,
++  args: {
++    progress: 100,
++  },
++}
++
++export const CertifiedCompleted: Story = {
++  decorators: cardWidth,
++  args: {
++    certified: true,
++    progress: 100,
++  },
++}
++
++export const Small: Story = {
++  decorators: cardWidth,
++  args: {
++    progress: 30,
++    size: 'sm',
++  },
++}
++
++export const NoThumbnail: Story = {
++  decorators: cardWidth,
++  args: {
++    thumbnailSrc: undefined,
++  },
++}
++
++export const NoMeta: Story = {
++  decorators: cardWidth,
++  args: {
++    duration: undefined,
++  },
++}
++
++export const LongTitle: Story = {
++  decorators: cardWidth,
++  args: {
++    title: 'Creative Acts for Curious People: Building a Daily Practice of Making, Noticing and Sharing',
++    duration: '2h 30m',
++    certified: true,
++  },
++}
++
++export const Row: Story = {
++  parameters: { controls: { disable: true } },
++  args: {
++    size: 'sm',
++  },
++  render: (args) => (
++    <Inline gap="lg" align="start">
++      <div style={{ width: 280 }}><CardVertical {...args} /></div>
++      <div style={{ width: 280 }}><CardVertical {...args} progress={30} /></div>
++      <div style={{ width: 280 }}><CardVertical {...args} progress={100} certified /></div>
++    </Inline>
++  ),
++}
+diff --git a/packages/components/src/components/CardVertical/index.tsx b/packages/components/src/components/CardVertical/index.tsx
+new file mode 100644
+index 0000000..7a71b31
+--- /dev/null
++++ b/packages/components/src/components/CardVertical/index.tsx
+@@ -0,0 +1,86 @@
++import { useId, type HTMLAttributes } from 'react'
++import { Heading } from '../Heading'
++import { Icon } from '../Icon'
++import { Image } from '../Image'
++import { Inline } from '../Inline'
++import { ProgressBar } from '../ProgressBar'
++import { Stack } from '../Stack'
++import { Text } from '../Text'
++import styles from './CardVertical.module.css'
++
++export type CardVerticalSize = 'sm' | 'lg'
++
++export type CardVerticalHeadingLevel = 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
++
++export type CardVerticalStatus = 'notStarted' | 'inProgress' | 'completed'
++
++export type CardVerticalProps = {
++  title: string
++  thumbnailSrc?: string
++  thumbnailAlt?: string
++  duration?: string
++  certified?: boolean
++  /** Percent complete, 0–100. Omit for a course not started; 100 marks it completed. */
++  progress?: number
++  size?: CardVerticalSize
++  headingLevel?: CardVerticalHeadingLevel
++} & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'children' | 'aria-labelledby' | 'title'>
++
++function getCardVerticalStatus(progress: number | undefined): CardVerticalStatus {
++  if (progress === undefined) return 'notStarted'
++  return progress >= 100 ? 'completed' : 'inProgress'
++}
++
++export function CardVertical({
++  title,
++  thumbnailSrc,
++  thumbnailAlt = '',
++  duration,
++  certified = false,
++  progress,
++  size = 'lg',
++  headingLevel = 'h3',
++  className,
++  ...rest
++}: CardVerticalProps) {
++  const titleId = useId()
++  const status = getCardVerticalStatus(progress)
++  const completed = status === 'completed'
++
++  return (
++    <div
++      {...rest}
++      role="article"
++      aria-labelledby={titleId}
++      data-status={status}
++      className={[styles.card, styles[size], className].filter(Boolean).join(' ')}
++    >
++      <Image src={thumbnailSrc} alt={thumbnailAlt} className={styles.thumbnail} />
++      <Stack gap="sm">
++        {progress !== undefined && <ProgressBar value={progress} aria-labelledby={titleId} />}
++        <Stack gap="xs">
++          <Heading as={headingLevel} id={titleId} size="headline-serif">
++            {title}
++          </Heading>
++          {(duration || certified || completed) && (
++            <Inline gap="sm" wrap align="center">
++              {duration && <Text as="span" size="metadata" color="subtle">{duration}</Text>}
++              {certified && (
++                <span className={styles.marker}>
++                  <Icon name="badge-check" size="sm" />
++                  <Text as="span" size="metadata" color="subtle">Certified</Text>
++                </span>
++              )}
++              {completed && (
++                <span className={styles.marker}>
++                  <Icon name="check" size="sm" />
++                  <Text as="span" size="metadata" color="subtle">Completed</Text>
++                </span>
++              )}
++            </Inline>
++          )}
++        </Stack>
++      </Stack>
++    </div>
++  )
++}
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index 5b9492e..ea717ce 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -51,6 +51,14 @@ export type { AppHeaderProps, NavItem } from './components/AppHeader'
+ export { CardHorizontal } from './components/CardHorizontal'
+ export type { CardHorizontalProps, CardHorizontalVariant } from './components/CardHorizontal'
+ 
++export { CardVertical } from './components/CardVertical'
++export type {
++  CardVerticalProps,
++  CardVerticalSize,
++  CardVerticalHeadingLevel,
++  CardVerticalStatus,
++} from './components/CardVertical'
++
+ export { Image } from './components/Image'
+ export type { ImageProps } from './components/Image'
+ 

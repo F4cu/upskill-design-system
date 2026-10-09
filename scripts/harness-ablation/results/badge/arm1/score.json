@@ -1,0 +1,85 @@
+{
+  "task": "badge",
+  "arm": "1",
+  "run": 2,
+  "smoke": false,
+  "model": "claude-opus-5-5",
+  "product": {
+    "clean": true,
+    "violations": 0,
+    "gateViolations": 0,
+    "trapViolations": 0,
+    "trapCounts": {},
+    "gates": {
+      "typecheck": {
+        "violations": 0,
+        "detail": []
+      },
+      "lint": {
+        "violations": 0,
+        "detail": []
+      },
+      "a11y:stories": {
+        "violations": 0,
+        "detail": [],
+        "targetStories": 3
+      }
+    },
+    "traps": []
+  },
+  "system": {
+    "metadataPresent": true,
+    "metadata:validate": {
+      "ran": true,
+      "passed": true,
+      "detail": []
+    },
+    "a11y:coverage": {
+      "ran": true,
+      "passed": true,
+      "detail": []
+    },
+    "patternDrift": {
+      "ran": true,
+      "passed": true,
+      "detail": []
+    },
+    "storyInlineStyle": {
+      "violations": 0,
+      "detail": []
+    },
+    "storyVisibleText": {
+      "violations": 0,
+      "detail": []
+    },
+    "propVocabulary": {
+      "ran": true,
+      "passed": true,
+      "detail": [],
+      "reference": {
+        "label": null,
+        "variant": [
+          "filled",
+          "outline"
+        ]
+      },
+      "generated": {
+        "variant": [
+          "filled",
+          "outline"
+        ],
+        "children": null
+      }
+    },
+    "tokenSourceChanges": []
+  },
+  "process": {
+    "outcome": "success",
+    "totalCostUsd": 0.7252512,
+    "numTurns": 23,
+    "durationMs": 118553,
+    "subagentsSpawned": 0,
+    "reviewer": null,
+    "contaminationFlags": 0
+  }
+}

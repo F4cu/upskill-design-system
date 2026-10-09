@@ -1,0 +1,462 @@
+diff --git a/packages/components/screenshots/components-checkbox--default.dark.png b/packages/components/screenshots/components-checkbox--default.dark.png
+new file mode 100644
+index 0000000..4988b77
+Binary files /dev/null and b/packages/components/screenshots/components-checkbox--default.dark.png differ
+diff --git a/packages/components/screenshots/components-checkbox--default.light.png b/packages/components/screenshots/components-checkbox--default.light.png
+new file mode 100644
+index 0000000..311f444
+Binary files /dev/null and b/packages/components/screenshots/components-checkbox--default.light.png differ
+diff --git a/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx b/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx
+new file mode 100644
+index 0000000..0d5210c
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx
+@@ -0,0 +1,107 @@
++import { describe, it, expect, vi } from 'vitest'
++import { useState } from 'react'
++import { render, screen } from '@testing-library/react'
++import userEvent from '@testing-library/user-event'
++import { axe } from 'vitest-axe'
++import { Checkbox } from './index'
++
++// Tier-2 behavioral a11y (ADR-008). Asserts the dynamic contract the static
++// jsx-a11y lint can't see (Checkbox.metadata.json accessibility block): native
++// checkbox semantics named by its label, label click and Space toggling,
++// controlled use through checked + onChange, disabled blocking interaction,
++// and native form submission.
++
++describe('Checkbox — a11y behavior', () => {
++  it('exposes the checkbox role with its label as the accessible name', () => {
++    render(<Checkbox label="New courses" />)
++    expect(screen.getByRole('checkbox', { name: 'New courses' })).not.toBeChecked()
++  })
++
++  it('starts checked with defaultChecked', () => {
++    render(<Checkbox label="New courses" defaultChecked />)
++    expect(screen.getByRole('checkbox', { name: 'New courses' })).toBeChecked()
++  })
++
++  it('toggles when the label text is clicked', async () => {
++    const user = userEvent.setup()
++    render(<Checkbox label="New courses" />)
++    await user.click(screen.getByText('New courses'))
++    expect(screen.getByRole('checkbox', { name: 'New courses' })).toBeChecked()
++  })
++
++  it('toggles on Space and reports the change', async () => {
++    const user = userEvent.setup()
++    const onChange = vi.fn()
++    render(<Checkbox label="New courses" onChange={onChange} />)
++
++    await user.tab()
++    const checkbox = screen.getByRole('checkbox', { name: 'New courses' })
++    expect(checkbox).toHaveFocus()
++
++    await user.keyboard(' ')
++    expect(checkbox).toBeChecked()
++    expect(onChange).toHaveBeenCalledTimes(1)
++    expect(onChange.mock.calls[0][0].target.checked).toBe(true)
++  })
++
++  it('follows the checked prop when controlled', async () => {
++    const user = userEvent.setup()
++    function Controlled() {
++      const [checked, setChecked] = useState(true)
++      return <Checkbox label="Digest" checked={checked} onChange={e => setChecked(e.target.checked)} />
++    }
++    render(<Controlled />)
++    const checkbox = screen.getByRole('checkbox', { name: 'Digest' })
++    expect(checkbox).toBeChecked()
++    await user.click(checkbox)
++    expect(checkbox).not.toBeChecked()
++  })
++
++  it('blocks focus and toggling when disabled, in both states', async () => {
++    const user = userEvent.setup()
++    const onChange = vi.fn()
++    render(
++      <>
++        <Checkbox label="Off" disabled onChange={onChange} />
++        <Checkbox label="On" disabled defaultChecked onChange={onChange} />
++      </>,
++    )
++    const off = screen.getByRole('checkbox', { name: 'Off' })
++    const on = screen.getByRole('checkbox', { name: 'On' })
++    expect(off).toBeDisabled()
++    expect(on).toBeDisabled()
++
++    await user.tab()
++    expect(off).not.toHaveFocus()
++    expect(on).not.toHaveFocus()
++
++    await user.click(screen.getByText('Off'))
++    await user.click(on)
++    expect(off).not.toBeChecked()
++    expect(on).toBeChecked()
++    expect(onChange).not.toHaveBeenCalled()
++  })
++
++  it('submits its name/value with a native form when checked', () => {
++    render(
++      <form aria-label="Preferences">
++        <Checkbox label="New courses" name="notify" value="courses" defaultChecked />
++        <Checkbox label="Digest" name="notify" value="digest" />
++      </form>,
++    )
++    const form = screen.getByRole('form', { name: 'Preferences' }) as HTMLFormElement
++    expect(new FormData(form).getAll('notify')).toEqual(['courses'])
++  })
++
++  it('has no axe violations unchecked, checked and disabled', async () => {
++    const { container } = render(
++      <>
++        <Checkbox label="One" />
++        <Checkbox label="Two" defaultChecked />
++        <Checkbox label="Three" disabled />
++        <Checkbox label="Four" disabled defaultChecked />
++      </>,
++    )
++    expect(await axe(container, { rules: { 'color-contrast': { enabled: false } } })).toHaveNoViolations()
++  })
++})
+diff --git a/packages/components/src/components/Checkbox/Checkbox.metadata.json b/packages/components/src/components/Checkbox/Checkbox.metadata.json
+new file mode 100644
+index 0000000..63dea28
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.metadata.json
+@@ -0,0 +1,146 @@
++{
++  "component": {
++    "name": "Checkbox",
++    "category": "atom",
++    "type": "input",
++    "status": "beta",
++    "description": "A single on/off choice with a visible text label. Wraps a native <input type=\"checkbox\"> inside its <label>, so clicking the label toggles the box, the value submits with an ordinary HTML form, and controlled/uncontrolled use follows the native checked/defaultChecked/onChange contract. Unchecked: input background with a strong input border. Checked: brand-filled box with an inverted check glyph. Disabled works in both states."
++  },
++  "usage": {
++    "keywords": [
++      "checkbox",
++      "check",
++      "toggle",
++      "opt in",
++      "preference",
++      "boolean",
++      "form"
++    ],
++    "when": [
++      "A single independent on/off setting in a form (e.g. notification preferences)",
++      "A list of independent options where any number may be selected",
++      "Consent or opt-in that submits with a form"
++    ],
++    "patterns": [
++      {
++        "name": "preference-group",
++        "description": "A labelled vertical group of independent Checkboxes inside a settings Card. The group is a role=group named by the section heading.",
++        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=sm, role=group, aria-labelledby=<heading id>) > [Checkbox, Checkbox, Checkbox]]"
++      }
++    ],
++    "antiPatterns": [
++      {
++        "scenario": "Using Checkbox to filter content or trigger an immediate page action",
++        "reason": "Checkbox is a form input whose value is read on submit or by app state; filter toggles are buttons with aria-pressed.",
++        "alternative": "Use Chip for filter toggles and Button for actions."
++      },
++      {
++        "scenario": "Using several Checkboxes for mutually exclusive choices",
++        "reason": "Checkboxes are independent; screen readers announce each as its own on/off control.",
++        "alternative": "Use Select (or native radio inputs) for one-of-many choices."
++      },
++      {
++        "scenario": "Rendering the label as a separate Text next to the Checkbox",
++        "reason": "The label must live inside the component's <label> so it names the input and toggles it on click.",
++        "alternative": "Pass the text through the label prop."
++      },
++      {
++        "scenario": "Passing type, children or a custom check glyph",
++        "reason": "Checkbox owns its native type and glyph; the prop type excludes type and children.",
++        "alternative": "Use the label prop for text; the check glyph is fixed."
++      }
++    ]
++  },
++  "variants": {
++    "checked": {
++      "options": [
++        "false",
++        "true"
++      ],
++      "default": "false",
++      "purpose": {
++        "false": "Unchecked: input background with input-default border.",
++        "true": "Checked: brand-filled box (button.accent.default) with an inverted check glyph."
++      }
++    }
++  },
++  "states": [
++    {
++      "state": "default",
++      "description": "Unchecked. Input background, input-default border, default label text."
++    },
++    {
++      "state": "hover",
++      "description": "Unchecked: input-hover border. Checked: button.accent.hover fill."
++    },
++    {
++      "state": "checked",
++      "description": "Brand fill with inverted check; set via checked or defaultChecked."
++    },
++    {
++      "state": "disabled",
++      "description": "Disabled border (unchecked) or disabled fill (checked); label in disabled text; interaction blocked natively."
++    }
++  ],
++  "tokens": {
++    "color": [
++      "color.background.input",
++      "color.background.button.accent.default",
++      "color.background.button.accent.hover",
++      "color.background.disabled",
++      "color.border.input.default",
++      "color.border.input.hover",
++      "color.border.disabled",
++      "color.icon.inverted.default",
++      "color.text.default",
++      "color.text.disabled"
++    ],
++    "spacing": [
++      "space.inline.sm"
++    ],
++    "typography": [],
++    "borderRadius": [
++      "border-radius.xs"
++    ],
++    "other": [
++      "size.300",
++      "size.025"
++    ]
++  },
++  "accessibility": {
++    "role": "checkbox",
++    "ariaAttributes": [
++      "Native checked state (announced as checked/not checked) \u2014 no aria-checked needed",
++      "Accessible name from the wrapping <label> (the label prop)"
++    ],
++    "keyboardInteractions": [
++      {
++        "key": "Space",
++        "action": "Toggles the checkbox and fires onChange"
++      },
++      {
++        "key": "Tab",
++        "action": "Moves focus to the next focusable element; disabled checkboxes are skipped"
++      }
++    ],
++    "notes": "Native <input type=\"checkbox\"> with appearance: none, so focus ring, form submission (name/value), required and disabled are all native. The check glyph is aria-hidden. Group related checkboxes in a role=group container with an accessible name."
++  },
++  "composition": {
++    "composedOf": [
++      "Icon",
++      "Text"
++    ],
++    "accepts": [],
++    "containedBy": [
++      "Box",
++      "Stack",
++      "Inline",
++      "Card"
++    ],
++    "layoutBehavior": {
++      "widthBehavior": "hug",
++      "displayType": "inline",
++      "canNest": false
++    }
++  }
++}
+diff --git a/packages/components/src/components/Checkbox/Checkbox.module.css b/packages/components/src/components/Checkbox/Checkbox.module.css
+new file mode 100644
+index 0000000..8e053db
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.module.css
+@@ -0,0 +1,71 @@
++/* label.root (not .root): the root renders through <Text as="label">, whose
++   single-class .text/.body-default styles this must outrank regardless of
++   stylesheet order. */
++label.root {
++  display: inline-flex;
++  align-items: center;
++  gap: var(--ds-space-inline-sm);
++  color: var(--ds-color-text-default);
++  cursor: pointer;
++}
++
++label.disabled {
++  color: var(--ds-color-text-disabled);
++  cursor: not-allowed;
++}
++
++.control {
++  position: relative;
++  display: inline-flex;
++  flex-shrink: 0;
++  width: var(--ds-size-300);
++  height: var(--ds-size-300);
++  color: var(--ds-color-icon-inverted-default);
++}
++
++.input {
++  appearance: none;
++  margin: 0;
++  width: 100%;
++  height: 100%;
++  background: var(--ds-color-background-input);
++  border: var(--ds-size-025) solid var(--ds-color-border-input-default);
++  border-radius: var(--ds-border-radius-xs);
++  cursor: inherit;
++  transition: background 120ms ease, border-color 120ms ease;
++}
++
++.input:hover:not(:disabled) {
++  border-color: var(--ds-color-border-input-hover);
++}
++
++.input:checked {
++  background: var(--ds-color-background-button-accent-default);
++  border-color: var(--ds-color-background-button-accent-default);
++}
++
++.input:checked:hover:not(:disabled) {
++  background: var(--ds-color-background-button-accent-hover);
++  border-color: var(--ds-color-background-button-accent-hover);
++}
++
++.input:disabled {
++  border-color: var(--ds-color-border-disabled);
++}
++
++.input:checked:disabled {
++  background: var(--ds-color-background-disabled);
++  border-color: var(--ds-color-background-disabled);
++}
++
++.check {
++  position: absolute;
++  inset: 0;
++  margin: auto;
++  pointer-events: none;
++  visibility: hidden;
++}
++
++.input:checked + .check {
++  visibility: visible;
++}
+diff --git a/packages/components/src/components/Checkbox/Checkbox.stories.tsx b/packages/components/src/components/Checkbox/Checkbox.stories.tsx
+new file mode 100644
+index 0000000..7dc76bd
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.stories.tsx
+@@ -0,0 +1,66 @@
++import { useState } from 'react'
++import type { Meta, StoryObj } from '@storybook/react'
++import { Checkbox } from './index'
++import { Stack } from '../Stack'
++
++const meta: Meta<typeof Checkbox> = {
++  title: 'Components/Checkbox',
++  component: Checkbox,
++  argTypes: {
++    label: { control: 'text' },
++    defaultChecked: { control: 'boolean' },
++    disabled: { control: 'boolean' },
++    name: { control: 'text' },
++  },
++}
++
++export default meta
++type Story = StoryObj<typeof Checkbox>
++
++export const Default: Story = {
++  args: {
++    label: 'Email me about new courses',
++  },
++}
++
++export const Checked: Story = {
++  args: {
++    label: 'Email me about new courses',
++    defaultChecked: true,
++  },
++}
++
++export const Disabled: Story = {
++  args: {
++    label: 'Email me about new courses',
++    disabled: true,
++  },
++}
++
++export const DisabledChecked: Story = {
++  args: {
++    label: 'Email me about new courses',
++    defaultChecked: true,
++    disabled: true,
++  },
++}
++
++export const Controlled: Story = {
++  args: {
++    label: 'Weekly progress digest',
++  },
++  render: function Render(args) {
++    const [checked, setChecked] = useState(false)
++    return <Checkbox {...args} checked={checked} onChange={e => setChecked(e.target.checked)} />
++  },
++}
++
++export const NotificationPreferences: Story = {
++  render: () => (
++    <Stack gap="sm" role="group" aria-label="Notifications">
++      <Checkbox name="notifications" value="courses" label="New courses" defaultChecked />
++      <Checkbox name="notifications" value="digest" label="Weekly progress digest" />
++      <Checkbox name="notifications" value="security" label="Security alerts" defaultChecked disabled />
++    </Stack>
++  ),
++}
+diff --git a/packages/components/src/components/Checkbox/index.tsx b/packages/components/src/components/Checkbox/index.tsx
+new file mode 100644
+index 0000000..95ce319
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/index.tsx
+@@ -0,0 +1,20 @@
++import type { InputHTMLAttributes } from 'react'
++import { Icon } from '../Icon'
++import { Text } from '../Text'
++import styles from './Checkbox.module.css'
++
++export type CheckboxProps = {
++  label: string
++} & Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'children' | 'size'>
++
++export function Checkbox({ label, className, ...rest }: CheckboxProps) {
++  return (
++    <Text as="label" className={[styles.root, rest.disabled && styles.disabled, className].filter(Boolean).join(' ')}>
++      <span className={styles.control}>
++        <input type="checkbox" className={styles.input} {...rest} />
++        <Icon name="check" size="sm" className={styles.check} />
++      </span>
++      {label}
++    </Text>
++  )
++}
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index 367cc1f..0b82b6a 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -27,6 +27,9 @@ export type { TextFieldProps, TextFieldSize, TextFieldShape } from './components
+ export { Select } from './components/Select'
+ export type { SelectProps, SelectOption } from './components/Select'
+ 
++export { Checkbox } from './components/Checkbox'
++export type { CheckboxProps } from './components/Checkbox'
++
+ export { Card } from './components/Card'
+ export type { CardProps, CardVariant, CardPadding } from './components/Card'
+ 

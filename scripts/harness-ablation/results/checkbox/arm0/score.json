@@ -1,0 +1,178 @@
+{
+  "task": "checkbox",
+  "arm": "0",
+  "run": 3,
+  "smoke": false,
+  "model": "claude-opus-5-5",
+  "product": {
+    "clean": false,
+    "violations": 2,
+    "gateViolations": 0,
+    "trapViolations": 2,
+    "trapCounts": {
+      "callback-name-drift": 1,
+      "raw-text-prop-render": 1
+    },
+    "gates": {
+      "typecheck": {
+        "violations": 0,
+        "detail": []
+      },
+      "lint": {
+        "violations": 0,
+        "detail": []
+      },
+      "a11y:stories": {
+        "violations": 0,
+        "detail": [],
+        "targetStories": 7
+      }
+    },
+    "traps": [
+      {
+        "trap": "callback-name-drift",
+        "file": "Checkbox/Checkbox.stories.tsx",
+        "line": 66,
+        "detail": "<Checkbox onCheckedChange=…> — this system's Checkbox uses `onChange (native)`"
+      },
+      {
+        "trap": "raw-text-prop-render",
+        "file": "Checkbox/index.tsx",
+        "line": 32,
+        "detail": "text prop `label` rendered outside <Text>/<Heading> (nearest component: none)"
+      }
+    ]
+  },
+  "system": {
+    "metadataPresent": false,
+    "metadata:validate": {
+      "ran": false,
+      "reason": "arm has no such script"
+    },
+    "a11y:coverage": {
+      "ran": true,
+      "passed": true,
+      "detail": []
+    },
+    "patternDrift": {
+      "ran": false,
+      "reason": "arm has no pattern script"
+    },
+    "storyInlineStyle": {
+      "violations": 8,
+      "detail": [
+        {
+          "trap": "off-scale-inline-style",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 51,
+          "detail": "inline style key `display` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 51,
+          "detail": "inline style key `gridTemplateColumns` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 51,
+          "detail": "inline style key `gap` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 65,
+          "detail": "inline style key `display` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 65,
+          "detail": "inline style key `gap` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 79,
+          "detail": "inline style key `display` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 79,
+          "detail": "inline style key `gap` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 79,
+          "detail": "inline style key `justifyItems` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        }
+      ]
+    },
+    "storyVisibleText": {
+      "violations": 4,
+      "detail": [
+        {
+          "trap": "raw-visible-text",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 67,
+          "detail": "visible text \"Weekly digest is\" not wrapped in <Text>/<Heading> (nearest component: none)"
+        },
+        {
+          "trap": "raw-visible-text",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 89,
+          "detail": "visible text \"Save\" not wrapped in <Text>/<Heading> (nearest component: none)"
+        },
+        {
+          "trap": "raw-visible-text",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 90,
+          "detail": "visible text \"Reset\" not wrapped in <Text>/<Heading> (nearest component: none)"
+        },
+        {
+          "trap": "raw-visible-text",
+          "file": "Checkbox/Checkbox.stories.tsx",
+          "line": 91,
+          "detail": "visible text \"Submitted:\" not wrapped in <Text>/<Heading> (nearest component: none)"
+        }
+      ]
+    },
+    "propVocabulary": {
+      "ran": true,
+      "passed": false,
+      "detail": [
+        "naming drift: `onCheckedChange` has no `checked` prop"
+      ],
+      "reference": {
+        "label": null,
+        "checked": null,
+        "defaultChecked": null,
+        "onChange": null,
+        "disabled": null,
+        "name": null
+      },
+      "generated": {
+        "label": null,
+        "onCheckedChange": null,
+        "checked": null,
+        "defaultChecked": null,
+        "onChange": null,
+        "disabled": null,
+        "name": null
+      }
+    },
+    "tokenSourceChanges": []
+  },
+  "process": {
+    "outcome": "success",
+    "totalCostUsd": 0.6852017999999999,
+    "numTurns": 21,
+    "durationMs": 132850,
+    "subagentsSpawned": 0,
+    "reviewer": null,
+    "contaminationFlags": 0
+  }
+}

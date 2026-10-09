@@ -1,0 +1,104 @@
+{
+  "component": {
+    "name": "Badge",
+    "category": "atom",
+    "type": "display",
+    "status": "beta",
+    "description": "A small, non-interactive text label that tags content with a short category or status (e.g. a course topic). Text only \u2014 no icon, not clickable. Two looks: outline (default) and filled.",
+    "figmaNodeId": "none \u2014 no Figma component set exists"
+  },
+  "usage": {
+    "keywords": [
+      "badge",
+      "tag",
+      "label",
+      "topic",
+      "category",
+      "status"
+    ],
+    "when": [
+      "Tagging a course or piece of content with its topic or category",
+      "Showing a short, static status next to content"
+    ],
+    "patterns": [
+      {
+        "name": "topic-tags",
+        "description": "A row of Badges listing a course's topics, wrapping on narrow viewports.",
+        "tree": "Inline(gap=sm, wrap) > [Badge, Badge, ...]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Making a Badge clickable or using it as a filter toggle",
+        "reason": "Badge is a static label; onClick is excluded from its props and it has no focus or pressed state.",
+        "alternative": "Use Chip for filter toggles, TextLink for navigation."
+      },
+      {
+        "scenario": "Adding an icon inside a Badge",
+        "reason": "Badge is text only by design.",
+        "alternative": "Compose Icon and Text in an Inline next to the content instead."
+      },
+      {
+        "scenario": "Rendering the label text with a raw string style or overriding its color",
+        "reason": "Badge renders its children through <Text as=\"span\" size=\"body-small\" color=\"subtle\">; the color prop is excluded.",
+        "alternative": "Pass plain text as children and pick the look with variant."
+      }
+    ]
+  },
+  "variants": {
+    "variant": {
+      "options": [
+        "outline",
+        "filled"
+      ],
+      "default": "outline",
+      "purpose": {
+        "outline": "Transparent background with a subtle border. The default look.",
+        "filled": "Faint neutral fill inside the same subtle border, for a little more visual weight than outline."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "default",
+      "description": "Static label \u2014 no interactive states."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.border.default",
+      "color.background.overlay.subtlest"
+    ],
+    "spacing": [
+      "space.inset.xxs",
+      "space.inset.xs"
+    ],
+    "typography": [],
+    "borderRadius": [
+      "border-radius.sm"
+    ],
+    "other": []
+  },
+  "accessibility": {
+    "role": "none",
+    "ariaAttributes": [],
+    "keyboardInteractions": []
+  },
+  "composition": {
+    "composedOf": [
+      "Text"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Inline",
+      "Stack",
+      "Box",
+      "Card"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}

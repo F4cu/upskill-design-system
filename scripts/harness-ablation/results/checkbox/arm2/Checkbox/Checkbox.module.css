@@ -1,0 +1,63 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-inline-sm);
+  cursor: pointer;
+}
+
+.control {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: var(--ds-size-300);
+  height: var(--ds-size-300);
+}
+
+.input {
+  appearance: none;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--ds-color-background-input);
+  border: var(--ds-size-025) solid var(--ds-color-border-input-default);
+  border-radius: var(--ds-border-radius-xs);
+  cursor: inherit;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.root:hover .input:not(:disabled):not(:checked) {
+  border-color: var(--ds-color-border-input-hover);
+}
+
+.input:checked {
+  background: var(--ds-color-background-brand);
+  border-color: var(--ds-color-border-selected);
+}
+
+.input:disabled {
+  border-color: var(--ds-color-border-disabled);
+}
+
+.input:checked:disabled {
+  background: var(--ds-color-background-disabled);
+  border-color: var(--ds-color-border-disabled);
+}
+
+.check {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-icon-inverted-default);
+  pointer-events: none;
+}
+
+.input:checked + .check {
+  display: flex;
+}
+
+.disabled {
+  cursor: not-allowed;
+}

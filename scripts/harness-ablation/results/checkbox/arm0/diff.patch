@@ -1,0 +1,243 @@
+diff --git a/packages/components/src/components/Checkbox/Checkbox.module.css b/packages/components/src/components/Checkbox/Checkbox.module.css
+new file mode 100644
+index 0000000..47190c4
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.module.css
+@@ -0,0 +1,84 @@
++.root {
++  display: inline-flex;
++  align-items: center;
++  gap: var(--ds-space-inline-sm);
++  cursor: pointer;
++  font-family: var(--ds-font-family-body);
++  font-size: var(--ds-font-size-body-default);
++  line-height: var(--ds-font-line-height-tight);
++  color: var(--ds-color-text-default);
++}
++
++.disabled {
++  cursor: not-allowed;
++  color: var(--ds-color-text-disabled);
++}
++
++.control {
++  position: relative;
++  display: inline-flex;
++  flex-shrink: 0;
++  /* Sized to the body-text label: a touch taller than its cap height. */
++  width: calc(var(--ds-size-200) + var(--ds-size-025));
++  height: calc(var(--ds-size-200) + var(--ds-size-025));
++}
++
++/* The real input covers the box but is invisible; .box draws the state. */
++.input {
++  position: absolute;
++  inset: 0;
++  width: 100%;
++  height: 100%;
++  margin: 0;
++  opacity: 0;
++  cursor: inherit;
++}
++
++.box {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  width: 100%;
++  height: 100%;
++  box-sizing: border-box;
++  background: var(--ds-color-background-input);
++  border: var(--ds-size-025) solid var(--ds-color-border-input-default);
++  border-radius: var(--ds-border-radius-xs);
++  color: var(--ds-color-icon-inverted-default);
++  transition: background 120ms ease, border-color 120ms ease;
++}
++
++/* .box .check (not .check): must outrank Icon's single-class size rule. */
++.box .check {
++  width: 90%;
++  height: 90%;
++  visibility: hidden;
++}
++
++.input:hover:not(:disabled) + .box {
++  border-color: var(--ds-color-border-input-hover);
++}
++
++.input:checked + .box {
++  background: var(--ds-color-background-brand);
++  border-color: var(--ds-color-background-brand);
++}
++
++.input:checked + .box .check {
++  visibility: visible;
++}
++
++.input:disabled + .box {
++  border-color: var(--ds-color-border-disabled);
++}
++
++.input:disabled:checked + .box {
++  background: var(--ds-color-background-disabled);
++}
++
++/* The invisible input receives focus, so mirror the global ring (reset.css,
++   ADR-028) onto the visible box. */
++.input:focus-visible + .box {
++  outline: var(--ds-size-focus-width) solid var(--ds-color-border-focus);
++  outline-offset: var(--ds-size-focus-offset);
++}
+diff --git a/packages/components/src/components/Checkbox/Checkbox.stories.tsx b/packages/components/src/components/Checkbox/Checkbox.stories.tsx
+new file mode 100644
+index 0000000..e9020e2
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.stories.tsx
+@@ -0,0 +1,95 @@
++import { useState } from 'react'
++import type { Meta, StoryObj } from '@storybook/react'
++import { Checkbox } from './index'
++
++const meta = {
++  title: 'Components/Checkbox',
++  component: Checkbox,
++  argTypes: {
++    label: { control: 'text' },
++    defaultChecked: { control: 'boolean' },
++    disabled: { control: 'boolean' },
++    name: { control: 'text' },
++    value: { control: 'text' },
++  },
++} satisfies Meta<typeof Checkbox>
++
++export default meta
++type Story = StoryObj<typeof meta>
++
++export const Default: Story = {
++  args: {
++    label: 'Email me about new courses',
++  },
++}
++
++export const Checked: Story = {
++  args: {
++    label: 'Email me about new courses',
++    defaultChecked: true,
++  },
++}
++
++export const Disabled: Story = {
++  args: {
++    label: 'Email me about new courses',
++    disabled: true,
++  },
++}
++
++export const DisabledChecked: Story = {
++  args: {
++    label: 'Email me about new courses',
++    defaultChecked: true,
++    disabled: true,
++  },
++}
++
++export const AllStates: Story = {
++  args: { label: 'Label' },
++  render: () => (
++    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, max-content)', gap: '2rem 3rem' }}>
++      <Checkbox label="Label" />
++      <Checkbox label="Label" defaultChecked />
++      <Checkbox label="Label" disabled />
++      <Checkbox label="Label" defaultChecked disabled />
++    </div>
++  ),
++}
++
++export const Controlled: Story = {
++  args: { label: 'Weekly digest' },
++  render: function ControlledStory(args) {
++    const [checked, setChecked] = useState(false)
++    return (
++      <div style={{ display: 'grid', gap: '1rem' }}>
++        <Checkbox {...args} checked={checked} onCheckedChange={setChecked} />
++        <span>Weekly digest is {checked ? 'on' : 'off'}</span>
++      </div>
++    )
++  },
++}
++
++export const InForm: Story = {
++  args: { label: 'Product updates' },
++  render: function InFormStory() {
++    const [submitted, setSubmitted] = useState<string>('')
++    return (
++      <form
++        style={{ display: 'grid', gap: '1rem', justifyItems: 'start' }}
++        onSubmit={e => {
++          e.preventDefault()
++          const data = new FormData(e.currentTarget)
++          setSubmitted(JSON.stringify(data.getAll('notifications')))
++        }}
++      >
++        <Checkbox label="Product updates" name="notifications" value="product" defaultChecked />
++        <Checkbox label="Course reminders" name="notifications" value="reminders" />
++        <Checkbox label="Marketing emails" name="notifications" value="marketing" />
++        <button type="submit">Save</button>
++        <button type="reset">Reset</button>
++        {submitted && <output>Submitted: {submitted}</output>}
++      </form>
++    )
++  },
++}
+diff --git a/packages/components/src/components/Checkbox/index.tsx b/packages/components/src/components/Checkbox/index.tsx
+new file mode 100644
+index 0000000..222c7c8
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/index.tsx
+@@ -0,0 +1,35 @@
++import type { InputHTMLAttributes } from 'react'
++import { Icon } from '../Icon'
++import styles from './Checkbox.module.css'
++
++export type CheckboxProps = {
++  label: string
++  onCheckedChange?: (checked: boolean) => void
++} & Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'children' | 'size'>
++
++// A native <input type="checkbox"> inside its <label>: label clicks, Space,
++// form submission/reset and controlled (checked) or uncontrolled
++// (defaultChecked) use all come from the platform. The input sits invisibly
++// over the drawn box so it stays the real hit target and focus target.
++export function Checkbox({ label, onCheckedChange, onChange, disabled, className, ...rest }: CheckboxProps) {
++  return (
++    <label className={[styles.root, disabled && styles.disabled, className].filter(Boolean).join(' ')}>
++      <span className={styles.control}>
++        <input
++          type="checkbox"
++          className={styles.input}
++          disabled={disabled}
++          onChange={e => {
++            onChange?.(e)
++            onCheckedChange?.(e.target.checked)
++          }}
++          {...rest}
++        />
++        <span className={styles.box} aria-hidden="true">
++          <Icon name="check" size="sm" className={styles.check} />
++        </span>
++      </span>
++      <span className={styles.label}>{label}</span>
++    </label>
++  )
++}
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index 367cc1f..8577ae2 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -96,3 +96,6 @@ export type { UseSliderReturn } from './hooks/useSlider'
+ 
+ export { TextLink } from './components/TextLink'
+ export type { TextLinkProps, TextLinkSize } from './components/TextLink'
++
++export { Checkbox } from './components/Checkbox'
++export type { CheckboxProps } from './components/Checkbox'

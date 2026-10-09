@@ -1,0 +1,121 @@
+diff --git a/packages/components/src/components/Badge/Badge.module.css b/packages/components/src/components/Badge/Badge.module.css
+new file mode 100644
+index 0000000..b58de8e
+--- /dev/null
++++ b/packages/components/src/components/Badge/Badge.module.css
+@@ -0,0 +1,24 @@
++.badge {
++  display: inline-flex;
++  align-items: center;
++  max-width: 100%;
++  padding-block: var(--ds-space-inset-xxs);
++  padding-inline: var(--ds-space-inset-sm);
++  border: 1px solid var(--ds-color-border-subtle);
++  border-radius: var(--ds-border-radius-sm);
++  color: var(--ds-color-text-subtle);
++  font-family: var(--ds-font-family-body);
++  font-size: var(--ds-font-size-label);
++  font-weight: var(--ds-font-weight-regular);
++  line-height: var(--ds-font-line-height-default);
++  white-space: nowrap;
++}
++
++.bordered {
++  background: transparent;
++}
++
++/* The alpha border sits over the fill, so it reads a shade darker than on the bordered variant. */
++.filled {
++  background: var(--ds-color-background-overlay-subtlest);
++}
+diff --git a/packages/components/src/components/Badge/Badge.stories.tsx b/packages/components/src/components/Badge/Badge.stories.tsx
+new file mode 100644
+index 0000000..1c7161e
+--- /dev/null
++++ b/packages/components/src/components/Badge/Badge.stories.tsx
+@@ -0,0 +1,48 @@
++import type { Meta, StoryObj } from '@storybook/react'
++import { Badge } from './index'
++import { Inline } from '../Inline'
++
++const meta: Meta<typeof Badge> = {
++  title: 'Components/Badge',
++  component: Badge,
++  argTypes: {
++    variant: { control: 'inline-radio', options: ['bordered', 'filled'] },
++    children: { control: 'text' },
++  },
++}
++
++export default meta
++type Story = StoryObj<typeof Badge>
++
++export const Bordered: Story = {
++  args: {
++    children: 'Design',
++    variant: 'bordered',
++  },
++}
++
++export const Filled: Story = {
++  args: {
++    children: 'Design Thinking',
++    variant: 'filled',
++  },
++}
++
++export const Variants: Story = {
++  render: () => (
++    <Inline gap="md">
++      <Badge>Badge</Badge>
++      <Badge variant="filled">Badge</Badge>
++    </Inline>
++  ),
++}
++
++export const CourseTopics: Story = {
++  render: () => (
++    <Inline gap="sm" wrap>
++      <Badge>Design</Badge>
++      <Badge>Design Thinking</Badge>
++      <Badge variant="filled">Beginner</Badge>
++    </Inline>
++  ),
++}
+diff --git a/packages/components/src/components/Badge/index.tsx b/packages/components/src/components/Badge/index.tsx
+new file mode 100644
+index 0000000..5ff172f
+--- /dev/null
++++ b/packages/components/src/components/Badge/index.tsx
+@@ -0,0 +1,17 @@
++import type { HTMLAttributes } from 'react'
++import styles from './Badge.module.css'
++
++export type BadgeVariant = 'bordered' | 'filled'
++
++export type BadgeProps = {
++  variant?: BadgeVariant
++  children: React.ReactNode
++} & Omit<HTMLAttributes<HTMLSpanElement>, 'children'>
++
++export function Badge({ variant = 'bordered', children, className, ...rest }: BadgeProps) {
++  return (
++    <span className={[styles.badge, styles[variant], className].filter(Boolean).join(' ')} {...rest}>
++      {children}
++    </span>
++  )
++}
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index eb4ad0f..d6344b5 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -73,6 +73,9 @@ export type { ImageProps } from './components/Image'
+ export { DropdownMenu } from './components/DropdownMenu'
+ export type { DropdownMenuProps, DropdownMenuItem } from './components/DropdownMenu'
+ 
++export { Badge } from './components/Badge'
++export type { BadgeProps, BadgeVariant } from './components/Badge'
++
+ export { Chip } from './components/Chip'
+ export type { ChipProps } from './components/Chip'
+ 

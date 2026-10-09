@@ -1,0 +1,146 @@
+{
+  "component": {
+    "name": "Checkbox",
+    "category": "atom",
+    "type": "input",
+    "status": "beta",
+    "description": "A single on/off choice with a visible text label. Wraps a native <input type=\"checkbox\"> inside its <label>, so clicking the label toggles the box, the value submits with an ordinary HTML form, and controlled/uncontrolled use follows the native checked/defaultChecked/onChange contract. Unchecked: input background with a strong input border. Checked: brand-filled box with an inverted check glyph. Disabled works in both states."
+  },
+  "usage": {
+    "keywords": [
+      "checkbox",
+      "check",
+      "toggle",
+      "opt in",
+      "preference",
+      "boolean",
+      "form"
+    ],
+    "when": [
+      "A single independent on/off setting in a form (e.g. notification preferences)",
+      "A list of independent options where any number may be selected",
+      "Consent or opt-in that submits with a form"
+    ],
+    "patterns": [
+      {
+        "name": "preference-group",
+        "description": "A labelled vertical group of independent Checkboxes inside a settings Card. The group is a role=group named by the section heading.",
+        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=sm, role=group, aria-labelledby=<heading id>) > [Checkbox, Checkbox, Checkbox]]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Checkbox to filter content or trigger an immediate page action",
+        "reason": "Checkbox is a form input whose value is read on submit or by app state; filter toggles are buttons with aria-pressed.",
+        "alternative": "Use Chip for filter toggles and Button for actions."
+      },
+      {
+        "scenario": "Using several Checkboxes for mutually exclusive choices",
+        "reason": "Checkboxes are independent; screen readers announce each as its own on/off control.",
+        "alternative": "Use Select (or native radio inputs) for one-of-many choices."
+      },
+      {
+        "scenario": "Rendering the label as a separate Text next to the Checkbox",
+        "reason": "The label must live inside the component's <label> so it names the input and toggles it on click.",
+        "alternative": "Pass the text through the label prop."
+      },
+      {
+        "scenario": "Passing type, children or a custom check glyph",
+        "reason": "Checkbox owns its native type and glyph; the prop type excludes type and children.",
+        "alternative": "Use the label prop for text; the check glyph is fixed."
+      }
+    ]
+  },
+  "variants": {
+    "checked": {
+      "options": [
+        "false",
+        "true"
+      ],
+      "default": "false",
+      "purpose": {
+        "false": "Unchecked: input background with input-default border.",
+        "true": "Checked: brand-filled box (button.accent.default) with an inverted check glyph."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "default",
+      "description": "Unchecked. Input background, input-default border, default label text."
+    },
+    {
+      "state": "hover",
+      "description": "Unchecked: input-hover border. Checked: button.accent.hover fill."
+    },
+    {
+      "state": "checked",
+      "description": "Brand fill with inverted check; set via checked or defaultChecked."
+    },
+    {
+      "state": "disabled",
+      "description": "Disabled border (unchecked) or disabled fill (checked); label in disabled text; interaction blocked natively."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.background.input",
+      "color.background.button.accent.default",
+      "color.background.button.accent.hover",
+      "color.background.disabled",
+      "color.border.input.default",
+      "color.border.input.hover",
+      "color.border.disabled",
+      "color.icon.inverted.default",
+      "color.text.default",
+      "color.text.disabled"
+    ],
+    "spacing": [
+      "space.inline.sm"
+    ],
+    "typography": [],
+    "borderRadius": [
+      "border-radius.xs"
+    ],
+    "other": [
+      "size.300",
+      "size.025"
+    ]
+  },
+  "accessibility": {
+    "role": "checkbox",
+    "ariaAttributes": [
+      "Native checked state (announced as checked/not checked) \u2014 no aria-checked needed",
+      "Accessible name from the wrapping <label> (the label prop)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Space",
+        "action": "Toggles the checkbox and fires onChange"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus to the next focusable element; disabled checkboxes are skipped"
+      }
+    ],
+    "notes": "Native <input type=\"checkbox\"> with appearance: none, so focus ring, form submission (name/value), required and disabled are all native. The check glyph is aria-hidden. Group related checkboxes in a role=group container with an accessible name."
+  },
+  "composition": {
+    "composedOf": [
+      "Icon",
+      "Text"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}

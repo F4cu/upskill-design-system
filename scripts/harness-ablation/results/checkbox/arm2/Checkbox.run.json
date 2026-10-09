@@ -1,0 +1,25 @@
+{
+  "component": "Checkbox",
+  "ranAt": "2026-10-09T07:45:05Z",
+  "mode": "eval",
+  "visualReview": "skipped-eval",
+  "outcome": "findings-applied",
+  "apiProposal": "api-proposal.md",
+  "gate": {
+    "passes": 2,
+    "failures": 2,
+    "failureReasons": [
+      "metadata:validate — tokens declared but read only by composed Text/Icon (color.text.default, color.text.disabled, size.icon.sm)",
+      "metadata:validate — empty variants object (minProperties 1) and displayType 'inline-flex' not in enum; fixed with a checked false/true axis (Chip precedent) and flex-row"
+    ]
+  },
+  "contextIsolationHeld": true,
+  "reviewerCaughtBeyondGate": [
+    "Hover border keyed to the box only, not the whole clickable label row, and overrode the checked border on hover",
+    "a11y test gaps: Space untoggle, Enter must not toggle, disabled skipped in Tab order, controlled value not mutated when app doesn't update",
+    "visuallyHidden label under an unpositioned root (hideLabel)",
+    "ariaAttributes held prose instead of attribute names"
+  ],
+  "manualRescues": [],
+  "notes": "Figma snapshot present and fresh (2 days); component has no Figma node — design read from reference.png. Low findings applied: position:relative on root, ariaAttributes emptied, className/rest routing documented in metadata accessibility.notes (api-proposal.md left as written per eval rules; its 'generated id' cell is inaccurate — no id is generated, label wraps input). Deferred: Checkbox contrast PAIRS (glyph on background.brand, input border vs surface) — route to /extract-learnings. Gate runs used: 4 of 5. Pre-existing TS2339 in a11y-stories.sweep.test.tsx is printed by build but does not fail it."
+}

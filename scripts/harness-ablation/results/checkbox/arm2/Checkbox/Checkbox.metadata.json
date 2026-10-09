@@ -1,0 +1,156 @@
+{
+  "component": {
+    "name": "Checkbox",
+    "category": "atom",
+    "type": "input",
+    "status": "beta",
+    "description": "A single on/off choice with a visible text label, built on a native checkbox input so it submits with an ordinary HTML form. The whole row (box and label) is the click target. Supports uncontrolled (defaultChecked) and controlled (checked + onChange) use, and a disabled state whether checked or unchecked."
+  },
+  "usage": {
+    "keywords": [
+      "checkbox",
+      "check",
+      "toggle",
+      "option",
+      "preference",
+      "settings",
+      "form",
+      "boolean",
+      "opt-in"
+    ],
+    "when": [
+      "A single independent yes/no setting the user confirms with a form (notification preferences, terms acceptance)",
+      "Several independent options in a list where any combination can be chosen \u2014 one Checkbox per option",
+      "The choice is binary; use Select when choosing one value from a finite list"
+    ],
+    "patterns": [
+      {
+        "name": "preference-list",
+        "description": "A stack of independent notification preferences under a section heading inside a Card.",
+        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
+      },
+      {
+        "name": "form-consent-row",
+        "description": "A consent checkbox placed above the submit Button at the end of a form.",
+        "tree": "Stack(gap=lg) > [TextField, Checkbox(label='I agree to the terms'), Button]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Checkbox for mutually exclusive options",
+        "reason": "Checkboxes are independent; a group of them does not enforce a single choice.",
+        "alternative": "Use Select for choosing one value from a list."
+      },
+      {
+        "scenario": "Using Checkbox as a filter toggle in a toolbar",
+        "reason": "Filter toggles are pressed-state buttons with their own visual language.",
+        "alternative": "Use Chip (pressed / onPressedChange)."
+      },
+      {
+        "scenario": "Passing the label as children or wrapping Checkbox in an extra <label>",
+        "reason": "Checkbox already renders its own <label> around the input and the label Text; a second label nests labels and breaks the accessible name.",
+        "alternative": "Pass the visible text through the label prop; use hideLabel when the name must be assistive-technology only."
+      },
+      {
+        "scenario": "Overriding the label color for the disabled state",
+        "reason": "The label renders through <Text>, which switches to color='disabled' automatically when disabled is set.",
+        "alternative": "Set disabled on the Checkbox and let it style the label."
+      }
+    ]
+  },
+  "variants": {
+    "checked": {
+      "options": [
+        "false",
+        "true"
+      ],
+      "default": "false",
+      "purpose": {
+        "false": "Unchecked. Input background with a neutral input border.",
+        "true": "Checked. Brand-filled box with an inverted check glyph. Controlled via checked + onChange, or seeded with defaultChecked."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "unchecked",
+      "description": "Input background with a neutral input border."
+    },
+    {
+      "state": "checked",
+      "description": "Brand-filled box with an inverted check glyph. Set via checked (controlled) or defaultChecked (uncontrolled)."
+    },
+    {
+      "state": "hover",
+      "description": "Stronger input border on the unchecked box while the pointer is anywhere over the row (box or label), matching the click target."
+    },
+    {
+      "state": "focus",
+      "description": "Global :focus-visible ring on the box (ADR-028)."
+    },
+    {
+      "state": "disabled",
+      "description": "Disabled border, disabled label colour, not-allowed cursor; toggling blocked natively."
+    },
+    {
+      "state": "disabled-checked",
+      "description": "Disabled background fill with the inverted check glyph and disabled label colour."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.background.input",
+      "color.background.brand",
+      "color.background.disabled",
+      "color.border.input.default",
+      "color.border.input.hover",
+      "color.border.selected",
+      "color.border.disabled",
+      "color.icon.inverted.default"
+    ],
+    "spacing": [
+      "space.inline.sm"
+    ],
+    "typography": [],
+    "borderRadius": [
+      "border-radius.xs"
+    ],
+    "other": [
+      "size.300",
+      "size.025"
+    ]
+  },
+  "accessibility": {
+    "role": "checkbox",
+    "notes": "Native <input type=\"checkbox\"> restyled with appearance: none, wrapped in a <label> so the label text is both the accessible name and a click target. The check glyph is aria-hidden; checked state is conveyed natively. className lands on the root <label>; every other native attribute (id, name, value, style, aria-*) is forwarded to the input. No id is generated \u2014 the wrapping label associates the name.",
+    "ariaAttributes": [],
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Moves focus to the checkbox"
+      },
+      {
+        "key": "Space",
+        "action": "Toggles the checked state"
+      }
+    ]
+  },
+  "composition": {
+    "composedOf": [
+      "Icon",
+      "Text"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "flex-row",
+      "canNest": false
+    }
+  }
+}

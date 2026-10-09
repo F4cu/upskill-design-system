@@ -1,0 +1,106 @@
+{
+  "component": {
+    "name": "Badge",
+    "category": "atom",
+    "type": "display",
+    "status": "beta",
+    "description": "Small, non-interactive text label that tags content with a short category or status (e.g. a course topic such as 'Design'). Text only — no icon, not clickable, not focusable. Two looks: outlined (default, border only) and filled (subtle tinted background)."
+  },
+  "usage": {
+    "keywords": [
+      "badge",
+      "tag",
+      "label",
+      "category",
+      "topic",
+      "status label",
+      "pill"
+    ],
+    "when": [
+      "Tagging a course or item with its topic or category (e.g. 'Design', 'Design Thinking')",
+      "Showing a short, static status next to content where no action is expected"
+    ],
+    "patterns": [
+      {
+        "name": "topic-list",
+        "description": "A wrapping row of Badges listing an item's topics, placed next to the content it tags (e.g. under a course title). The surrounding heading or text provides context; the badges are read in order.",
+        "tree": "Inline(gap=sm, wrap=true) > [Badge, Badge, Badge]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Making a Badge clickable (onClick, href, tabIndex) to filter by its topic",
+        "reason": "Badge is a static label: it renders a <span>, has no focus or hover state, and its props type omits onClick/role/tabIndex.",
+        "alternative": "Use Chip for a filter toggle, or TextLink / Button for navigation and actions."
+      },
+      {
+        "scenario": "Adding an icon or long sentence inside a Badge",
+        "reason": "Badge is text-only and does not wrap (white-space: nowrap); long content breaks the row layout.",
+        "alternative": "Keep the label to one to three words. Use Text for longer descriptive content."
+      },
+      {
+        "scenario": "Overriding the label colour or typography via className or a nested Text",
+        "reason": "The label is always rendered by Badge through Text size=body-default color=subtle; pass a plain string as children.",
+        "alternative": "Choose variant=outlined or variant=filled; never wrap children in another Text or Heading."
+      }
+    ]
+  },
+  "variants": {
+    "variant": {
+      "options": [
+        "outlined",
+        "filled"
+      ],
+      "default": "outlined",
+      "purpose": {
+        "outlined": "Default look. Transparent background with the default border.",
+        "filled": "Subtle tinted background with a stronger border, for slightly more emphasis or contrast against a busy surface."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "default",
+      "description": "Static label — no interaction, lifecycle, or content fallback states."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.border.default",
+      "color.border.strong",
+      "color.background.overlay.subtlest"
+    ],
+    "spacing": [
+      "space.inset.xxs",
+      "space.inset.xs"
+    ],
+    "typography": [],
+    "borderRadius": [
+      "border-radius.sm"
+    ],
+    "other": []
+  },
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": [],
+    "notes": "Renders a plain <span>; the label text is read in reading order. Not focusable. Place badges next to the content they tag so the context is clear in reading order."
+  },
+  "composition": {
+    "composedOf": [
+      "Text"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Inline",
+      "Stack",
+      "Box",
+      "Card"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}

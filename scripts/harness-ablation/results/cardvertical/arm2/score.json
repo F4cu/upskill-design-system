@@ -1,0 +1,135 @@
+{
+  "task": "cardvertical",
+  "arm": "2",
+  "run": 1,
+  "smoke": false,
+  "model": "claude-opus-5-5",
+  "product": {
+    "clean": true,
+    "violations": 0,
+    "gateViolations": 0,
+    "trapViolations": 0,
+    "trapCounts": {},
+    "gates": {
+      "typecheck": {
+        "violations": 0,
+        "detail": []
+      },
+      "lint": {
+        "violations": 0,
+        "detail": []
+      },
+      "a11y:stories": {
+        "violations": 0,
+        "detail": [],
+        "targetStories": 9
+      }
+    },
+    "traps": []
+  },
+  "system": {
+    "metadataPresent": true,
+    "metadata:validate": {
+      "ran": true,
+      "passed": true,
+      "detail": []
+    },
+    "a11y:coverage": {
+      "ran": true,
+      "passed": true,
+      "detail": []
+    },
+    "patternDrift": {
+      "ran": true,
+      "passed": true,
+      "detail": []
+    },
+    "storyInlineStyle": {
+      "violations": 4,
+      "detail": [
+        {
+          "trap": "off-scale-inline-style",
+          "file": "CardVertical/CardVertical.stories.tsx",
+          "line": 26,
+          "detail": "inline style key `width` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "CardVertical/CardVertical.stories.tsx",
+          "line": 92,
+          "detail": "inline style key `width` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "CardVertical/CardVertical.stories.tsx",
+          "line": 93,
+          "detail": "inline style key `width` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        },
+        {
+          "trap": "off-scale-inline-style",
+          "file": "CardVertical/CardVertical.stories.tsx",
+          "line": 94,
+          "detail": "inline style key `width` — only flex/minWidth/maxWidth are sanctioned; use token-based props"
+        }
+      ]
+    },
+    "storyVisibleText": {
+      "violations": 0,
+      "detail": []
+    },
+    "propVocabulary": {
+      "ran": true,
+      "passed": true,
+      "detail": [],
+      "reference": {
+        "thumbnailSrc": null,
+        "thumbnailAlt": null,
+        "title": null,
+        "duration": null,
+        "certified": null,
+        "progress": null,
+        "size": [
+          "lg",
+          "sm"
+        ],
+        "action": null
+      },
+      "generated": {
+        "title": null,
+        "thumbnailSrc": null,
+        "thumbnailAlt": null,
+        "duration": null,
+        "certified": null,
+        "progress": null,
+        "size": [
+          "lg",
+          "sm"
+        ],
+        "headingLevel": [
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6"
+        ]
+      }
+    },
+    "tokenSourceChanges": []
+  },
+  "process": {
+    "outcome": "success",
+    "totalCostUsd": 1.7183114,
+    "numTurns": 27,
+    "durationMs": 274200,
+    "subagentsSpawned": 1,
+    "reviewer": {
+      "verdict": "clean",
+      "total": 4,
+      "bySeverity": {
+        "low": 4
+      },
+      "lintErrors": 0
+    },
+    "contaminationFlags": 0
+  }
+}

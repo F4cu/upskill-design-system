@@ -1,0 +1,45 @@
+{
+  "component": "Checkbox",
+  "reviewedAt": "2026-10-09T12:00:00.000Z",
+  "path": "full",
+  "lint": { "errors": 0, "warnings": 0, "findings": [] },
+  "codeReview": [
+    {
+      "severity": "medium",
+      "file": "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "issue": "Hover feedback does not match the click target. The whole <label> row is clickable and shows cursor: pointer, but the stronger hover border only appears through `.input:hover:not(:disabled)`. Hovering the label text, which toggles the box, gives no hover feedback on the box.",
+      "fix": "Key the hover rule off the root, e.g. `.root:hover .input:not(:disabled):not(:checked) { border-color: var(--ds-color-border-input-hover); }`. The `:not(:checked)` also matches the metadata, which says hover applies to the unchecked box. As written, the hover rule also overrides the checked border (`border-selected`) whenever the pointer is over a checked box."
+    },
+    {
+      "severity": "low",
+      "file": "packages/components/src/components/Checkbox/Checkbox.module.css",
+      "issue": "With hideLabel, the visuallyHidden span is `position: absolute`, but `.root` is not a positioned element. The hidden label is therefore placed against some unrelated ancestor, which can cause stray scroll overflow in some layouts.",
+      "fix": "Add `position: relative` to `.root`."
+    },
+    {
+      "severity": "low",
+      "file": "packages/components/src/components/Checkbox/index.tsx",
+      "issue": "The `...rest` spread (including `style`, `id`, and aria-*) goes to the <input>, while `className` goes to the root <label>. This split is undocumented. The API proposal also lists `id` as 'generated id', but no id is generated. That works because the label wraps the input, but the proposal and the code disagree.",
+      "fix": "Either fix the proposal/metadata to say that `className` targets the root and every other native attribute targets the input, with no generated id, or route `style` to the root alongside `className`. Do not add a generated id; it isn't needed."
+    },
+    {
+      "severity": "low",
+      "file": "scripts/token-contrast-check.js",
+      "issue": "Checkbox introduces new rendered pairs: the check glyph `color.icon.inverted.default` on `color.background.brand`, and the box border `color.border.input.default` / `color.border.selected` against the surface (WCAG 1.4.11 non-text contrast, 3:1). No curated PAIRS entry covers Checkbox.",
+      "fix": "Route to /extract-learnings: add Checkbox pairs to the curated PAIRS list (glyph on brand fill; unchecked border vs. surface/background.input)."
+    }
+  ],
+  "a11y": [
+    {
+      "severity": "medium",
+      "issue": "Checkbox.a11y.test.tsx covers the declared Tab and Space interactions, but only partly covers the toggling contract and APG semantics. Space is only tested from unchecked to checked; nothing confirms a second Space press unchecks it. There is no assertion that a disabled checkbox is skipped in the Tab order. There is no assertion that Enter does not toggle (APG: Space only, and a native checkbox in a form submits on Enter rather than toggling). The controlled test also never checks that the visual state follows the controlling state: if the parent doesn't update, the box should not change.",
+      "fix": "Extend the tests. (1) Press Space twice and assert checked, then not checked. (2) Render a disabled checkbox between two enabled ones, Tab twice, and assert focus skips the disabled one. (3) Press Enter on a focused checkbox and assert it is still unchecked. (4) Render a controlled `checked={false}` with a no-op onChange, click it, and assert onChange was called with true while the box stays not checked."
+    },
+    {
+      "severity": "low",
+      "issue": "In the metadata accessibility block, ariaAttributes contains a prose sentence ('none required — ...') instead of attribute names. Tooling that reads this array as attribute names will misread it.",
+      "fix": "Use an empty array and leave the 'state exposed natively' explanation in `notes`, which already says it. Check that metadata:validate still passes."
+    }
+  ],
+  "verdict": "changes-required"
+}

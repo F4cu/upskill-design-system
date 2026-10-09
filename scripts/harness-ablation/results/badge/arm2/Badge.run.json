@@ -1,0 +1,25 @@
+{
+  "component": "Badge",
+  "ranAt": "2026-10-08T14:13:02Z",
+  "mode": "eval",
+  "outcome": "findings-applied",
+  "visualReview": "skipped-eval",
+  "apiProposal": "api-proposal.md",
+  "gate": {
+    "passes": 2,
+    "failures": 1,
+    "failureReasons": [
+      "metadata:validate — tokens.color/typography listed text/typography tokens (color.text.subtle, font.*) consumed through <Text>, not read by Badge.module.css or index.tsx; removed from metadata"
+    ]
+  },
+  "contextIsolationHeld": true,
+  "reviewerCaughtBeyondGate": [
+    "children typed React.ReactNode despite the text-only hard constraint (type-enforced anti-pattern rule) — narrowed to string",
+    "text.subtle on overlay.subtle (filled variant) missing from curated contrast PAIRS; once added it failed 3.98–4.48:1 — filled background moved to overlay.subtlest (already-curated passing pair, closer to reference)",
+    "translucent fill painted under translucent border (background-clip) — set padding-box",
+    "aria-label/aria-labelledby spreadable onto a generic span — omitted from props type",
+    "empty .outlined rule — removed"
+  ],
+  "manualRescues": [],
+  "notes": "Figma snapshot present and fresh (1 day); no Figma node for Badge — design input was reference.png. patterns:generate drift count unchanged at 2 (pre-existing). Contrast fix required touching scripts/token-contrast-check.js only as a comment; tokens:contrast-check passes."
+}

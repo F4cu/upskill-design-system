@@ -1,0 +1,45 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-stack-sm);
+  width: 100%;
+}
+
+.sm {
+  min-width: var(--ds-size-card-min-sm);
+}
+
+.lg {
+  min-width: var(--ds-size-card-min-lg);
+}
+
+.thumbnail {
+  width: 100%;
+  aspect-ratio: auto;
+}
+
+.sm .thumbnail {
+  height: var(--ds-size-thumbnail-md);
+}
+
+.lg .thumbnail {
+  height: var(--ds-size-thumbnail-lg);
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-inline-xs);
+}
+
+.marker svg {
+  color: var(--ds-color-icon-subtle);
+}

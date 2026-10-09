@@ -1,0 +1,569 @@
+diff --git a/.claude/component-patterns.json b/.claude/component-patterns.json
+index 5d5aab6..ddeb068 100644
+--- a/.claude/component-patterns.json
++++ b/.claude/component-patterns.json
+@@ -26,7 +26,7 @@
+       "pattern": "navigation"
+     }
+   ],
+-  "generatedFrom": "8d53966b1104f5b84031676c1d4708f57a0e8c40",
++  "generatedFrom": "6cbc1c8f50c718fc193f18741c84ffd4a839a32d",
+   "patterns": {
+     "action-trigger": {
+       "architecturalStyle": "flat-props",
+@@ -606,6 +606,19 @@
+             "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
+           ]
+         },
++        {
++          "changeCallback": "onChange (native)",
++          "component": "Checkbox",
++          "composition": [
++            "Icon",
++            "Text"
++          ],
++          "maturity": "beta",
++          "stage": null,
++          "systemSpecificNotes": [
++            "Native <input type=\"checkbox\"> restyled with appearance: none, wrapped in a <label> so the label text is both the accessible name and a click target. The check glyph is aria-hidden; checked state is conveyed natively. className lands on the root <label>; every other native attribute (id, name, value, style, aria-*) is forwarded to the input. No id is generated — the wrapping label associates the name."
++          ]
++        },
+         {
+           "component": "Divider",
+           "composition": [],
+diff --git a/api-proposal.md b/api-proposal.md
+new file mode 100644
+index 0000000..1299ec0
+--- /dev/null
++++ b/api-proposal.md
+@@ -0,0 +1,33 @@
++# Checkbox — API proposal (auto-approved, `/add-component --eval`)
++
++Design input: brief + `reference.png` (no Figma node). Four states shown: unchecked, checked, disabled unchecked, disabled checked.
++
++## Anatomy
++
++1. **Root** — `<label>`; the whole row is the click target, so clicking the label text toggles the box.
++2. **Control** — wrapper holding the box and the glyph.
++   - **Box** — the native `<input type="checkbox">` itself, restyled with `appearance: none` (keeps native form participation, keyboard, and the global `:focus-visible` ring).
++   - **Check** — `<Icon name="check">`, `aria-hidden`, shown only when checked.
++3. **Label** — visible text rendered through `<Text as="span">`.
++
++## Props
++
++| Prop | Concept | Kind | Type | Default | Figma property | Surface |
++|---|---|---|---|---|---|---|
++| `label` | Accessible name | content | `string` | — (required) | `Text` (recorded mapping) | both |
++| `hideLabel` | Boolean (exception `hideLabel`) | content | `boolean` | `false` | — | code-only |
++| `checked` | Controlled state (native wrapper keeps native names) | controlled state | `boolean` | — | `Checked` | both |
++| `defaultChecked` | Controlled state, uncontrolled seed | native | `boolean` | — | — | code-only |
++| `onChange` | Controlled state callback (native name) | event | `ChangeEventHandler<HTMLInputElement>` | — | — | code-only |
++| `disabled` | Boolean | native | `boolean` | `false` | `Disabled` | both |
++| `name` / `value` / `required` / `form` | Native form participation | native | native | native (`value` → `"on"`) | — | code-only |
++| `id` / `className` | Element | native | `string` | generated id / — | — | code-only |
++| `...rest` | Native input attributes | native | `Omit<InputHTMLAttributes<HTMLInputElement>, 'type' \| 'children' \| 'size'>` | — | — | code-only |
++
++`type` is owned by the component and omitted from the spread type (type-enforced). `className` lands on the root label, matching TextField.
++
++## Divergences
++
++- No Figma node; Figma property names (`Checked`, `Disabled`, `Text`) are the expected mirror, not observed. Hover/focus are pseudo-classes (`State` preview in Figma, ADR-025).
++- No `size` axis: the reference shows one size.
++- No `indeterminate` and no `error`: not in the brief; not added.
+diff --git a/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx b/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx
+new file mode 100644
+index 0000000..98913d6
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx
+@@ -0,0 +1,144 @@
++import { useState } from 'react'
++import { describe, it, expect, vi } from 'vitest'
++import { render, screen } from '@testing-library/react'
++import userEvent from '@testing-library/user-event'
++import { axe } from 'vitest-axe'
++import { Checkbox } from './index'
++
++// Tier-2 behavioral a11y (ADR-008). Asserts the dynamic contract from the
++// metadata (role: checkbox): the label is the accessible name and a click
++// target, Space toggles, controlled use reports changes, disabled blocks
++// toggling, and the native input submits with its form.
++
++describe('Checkbox — a11y behavior', () => {
++  it('exposes the checkbox role with the label as the accessible name', () => {
++    render(<Checkbox label="Email updates" />)
++    expect(screen.getByRole('checkbox', { name: 'Email updates' })).not.toBeChecked()
++  })
++
++  it('keeps the accessible name when the label is visually hidden (hideLabel)', () => {
++    render(<Checkbox label="Select row" hideLabel />)
++    expect(screen.getByRole('checkbox', { name: 'Select row' })).toBeInTheDocument()
++  })
++
++  it('starts checked with defaultChecked and toggles when the label text is clicked', async () => {
++    const user = userEvent.setup()
++    render(<Checkbox label="Email updates" defaultChecked />)
++    const box = screen.getByRole('checkbox', { name: 'Email updates' })
++    expect(box).toBeChecked()
++
++    await user.click(screen.getByText('Email updates'))
++    expect(box).not.toBeChecked()
++  })
++
++  it('focuses on Tab and toggles both ways with Space, but not with Enter', async () => {
++    const user = userEvent.setup()
++    render(<Checkbox label="Email updates" />)
++    const box = screen.getByRole('checkbox', { name: 'Email updates' })
++
++    await user.tab()
++    expect(box).toHaveFocus()
++    await user.keyboard('{Enter}')
++    expect(box).not.toBeChecked()
++    await user.keyboard(' ')
++    expect(box).toBeChecked()
++    await user.keyboard(' ')
++    expect(box).not.toBeChecked()
++  })
++
++  it('is skipped in the Tab order when disabled', async () => {
++    const user = userEvent.setup()
++    render(
++      <>
++        <Checkbox label="First" />
++        <Checkbox label="Disabled" disabled />
++        <Checkbox label="Last" />
++      </>,
++    )
++    await user.tab()
++    expect(screen.getByRole('checkbox', { name: 'First' })).toHaveFocus()
++    await user.tab()
++    expect(screen.getByRole('checkbox', { name: 'Last' })).toHaveFocus()
++  })
++
++  it('stays unchanged when controlled and the app does not update it', async () => {
++    const user = userEvent.setup()
++    const onChange = vi.fn((event: React.ChangeEvent<HTMLInputElement>) => event.target.checked)
++    render(<Checkbox label="Email updates" checked={false} onChange={onChange} />)
++    const box = screen.getByRole('checkbox', { name: 'Email updates' })
++
++    await user.click(box)
++    expect(onChange).toHaveReturnedWith(true)
++    expect(box).not.toBeChecked()
++  })
++
++  it('reports changes when controlled', async () => {
++    const user = userEvent.setup()
++    const spy = vi.fn()
++    function Controlled() {
++      const [checked, setChecked] = useState(false)
++      return (
++        <Checkbox
++          label="Email updates"
++          checked={checked}
++          onChange={(event) => {
++            spy(event.target.checked)
++            setChecked(event.target.checked)
++          }}
++        />
++      )
++    }
++    render(<Controlled />)
++    const box = screen.getByRole('checkbox', { name: 'Email updates' })
++
++    await user.click(box)
++    expect(spy).toHaveBeenLastCalledWith(true)
++    expect(box).toBeChecked()
++  })
++
++  it('does not toggle when disabled, checked or unchecked', async () => {
++    const user = userEvent.setup()
++    const onChange = vi.fn()
++    render(
++      <>
++        <Checkbox label="Off" disabled onChange={onChange} />
++        <Checkbox label="On" disabled defaultChecked onChange={onChange} />
++      </>,
++    )
++    const off = screen.getByRole('checkbox', { name: 'Off' })
++    const on = screen.getByRole('checkbox', { name: 'On' })
++    expect(off).toBeDisabled()
++    expect(on).toBeDisabled()
++
++    await user.click(screen.getByText('Off'))
++    await user.click(on)
++    expect(off).not.toBeChecked()
++    expect(on).toBeChecked()
++    expect(onChange).not.toHaveBeenCalled()
++  })
++
++  it('submits its name and value with an ordinary form', () => {
++    render(
++      <form aria-label="Preferences">
++        <Checkbox label="Email updates" name="email" value="yes" defaultChecked />
++        <Checkbox label="SMS updates" name="sms" />
++      </form>,
++    )
++    const data = new FormData(screen.getByRole('form', { name: 'Preferences' }) as HTMLFormElement)
++    expect(data.get('email')).toBe('yes')
++    expect(data.has('sms')).toBe(false)
++  })
++
++  it('has no axe violations across states', async () => {
++    const { container } = render(
++      <>
++        <Checkbox label="Unchecked" />
++        <Checkbox label="Checked" defaultChecked />
++        <Checkbox label="Disabled" disabled />
++        <Checkbox label="Disabled checked" disabled defaultChecked />
++      </>,
++    )
++    // color-contrast is disabled: jsdom can't compute layout/colors.
++    expect(await axe(container, { rules: { 'color-contrast': { enabled: false } } })).toHaveNoViolations()
++  })
++})
+diff --git a/packages/components/src/components/Checkbox/Checkbox.metadata.json b/packages/components/src/components/Checkbox/Checkbox.metadata.json
+new file mode 100644
+index 0000000..fb302c2
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.metadata.json
+@@ -0,0 +1,156 @@
++{
++  "component": {
++    "name": "Checkbox",
++    "category": "atom",
++    "type": "input",
++    "status": "beta",
++    "description": "A single on/off choice with a visible text label, built on a native checkbox input so it submits with an ordinary HTML form. The whole row (box and label) is the click target. Supports uncontrolled (defaultChecked) and controlled (checked + onChange) use, and a disabled state whether checked or unchecked."
++  },
++  "usage": {
++    "keywords": [
++      "checkbox",
++      "check",
++      "toggle",
++      "option",
++      "preference",
++      "settings",
++      "form",
++      "boolean",
++      "opt-in"
++    ],
++    "when": [
++      "A single independent yes/no setting the user confirms with a form (notification preferences, terms acceptance)",
++      "Several independent options in a list where any combination can be chosen \u2014 one Checkbox per option",
++      "The choice is binary; use Select when choosing one value from a finite list"
++    ],
++    "patterns": [
++      {
++        "name": "preference-list",
++        "description": "A stack of independent notification preferences under a section heading inside a Card.",
++        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
++      },
++      {
++        "name": "form-consent-row",
++        "description": "A consent checkbox placed above the submit Button at the end of a form.",
++        "tree": "Stack(gap=lg) > [TextField, Checkbox(label='I agree to the terms'), Button]"
++      }
++    ],
++    "antiPatterns": [
++      {
++        "scenario": "Using Checkbox for mutually exclusive options",
++        "reason": "Checkboxes are independent; a group of them does not enforce a single choice.",
++        "alternative": "Use Select for choosing one value from a list."
++      },
++      {
++        "scenario": "Using Checkbox as a filter toggle in a toolbar",
++        "reason": "Filter toggles are pressed-state buttons with their own visual language.",
++        "alternative": "Use Chip (pressed / onPressedChange)."
++      },
++      {
++        "scenario": "Passing the label as children or wrapping Checkbox in an extra <label>",
++        "reason": "Checkbox already renders its own <label> around the input and the label Text; a second label nests labels and breaks the accessible name.",
++        "alternative": "Pass the visible text through the label prop; use hideLabel when the name must be assistive-technology only."
++      },
++      {
++        "scenario": "Overriding the label color for the disabled state",
++        "reason": "The label renders through <Text>, which switches to color='disabled' automatically when disabled is set.",
++        "alternative": "Set disabled on the Checkbox and let it style the label."
++      }
++    ]
++  },
++  "variants": {
++    "checked": {
++      "options": [
++        "false",
++        "true"
++      ],
++      "default": "false",
++      "purpose": {
++        "false": "Unchecked. Input background with a neutral input border.",
++        "true": "Checked. Brand-filled box with an inverted check glyph. Controlled via checked + onChange, or seeded with defaultChecked."
++      }
++    }
++  },
++  "states": [
++    {
++      "state": "unchecked",
++      "description": "Input background with a neutral input border."
++    },
++    {
++      "state": "checked",
++      "description": "Brand-filled box with an inverted check glyph. Set via checked (controlled) or defaultChecked (uncontrolled)."
++    },
++    {
++      "state": "hover",
++      "description": "Stronger input border on the unchecked box while the pointer is anywhere over the row (box or label), matching the click target."
++    },
++    {
++      "state": "focus",
++      "description": "Global :focus-visible ring on the box (ADR-028)."
++    },
++    {
++      "state": "disabled",
++      "description": "Disabled border, disabled label colour, not-allowed cursor; toggling blocked natively."
++    },
++    {
++      "state": "disabled-checked",
++      "description": "Disabled background fill with the inverted check glyph and disabled label colour."
++    }
++  ],
++  "tokens": {
++    "color": [
++      "color.background.input",
++      "color.background.brand",
++      "color.background.disabled",
++      "color.border.input.default",
++      "color.border.input.hover",
++      "color.border.selected",
++      "color.border.disabled",
++      "color.icon.inverted.default"
++    ],
++    "spacing": [
++      "space.inline.sm"
++    ],
++    "typography": [],
++    "borderRadius": [
++      "border-radius.xs"
++    ],
++    "other": [
++      "size.300",
++      "size.025"
++    ]
++  },
++  "accessibility": {
++    "role": "checkbox",
++    "notes": "Native <input type=\"checkbox\"> restyled with appearance: none, wrapped in a <label> so the label text is both the accessible name and a click target. The check glyph is aria-hidden; checked state is conveyed natively. className lands on the root <label>; every other native attribute (id, name, value, style, aria-*) is forwarded to the input. No id is generated \u2014 the wrapping label associates the name.",
++    "ariaAttributes": [],
++    "keyboardInteractions": [
++      {
++        "key": "Tab",
++        "action": "Moves focus to the checkbox"
++      },
++      {
++        "key": "Space",
++        "action": "Toggles the checked state"
++      }
++    ]
++  },
++  "composition": {
++    "composedOf": [
++      "Icon",
++      "Text"
++    ],
++    "accepts": [],
++    "containedBy": [
++      "Box",
++      "Stack",
++      "Inline",
++      "Card"
++    ],
++    "layoutBehavior": {
++      "widthBehavior": "hug",
++      "displayType": "flex-row",
++      "canNest": false
++    }
++  }
++}
+diff --git a/packages/components/src/components/Checkbox/Checkbox.module.css b/packages/components/src/components/Checkbox/Checkbox.module.css
+new file mode 100644
+index 0000000..bd8221f
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.module.css
+@@ -0,0 +1,63 @@
++.root {
++  position: relative;
++  display: inline-flex;
++  align-items: center;
++  gap: var(--ds-space-inline-sm);
++  cursor: pointer;
++}
++
++.control {
++  position: relative;
++  display: inline-flex;
++  flex-shrink: 0;
++  width: var(--ds-size-300);
++  height: var(--ds-size-300);
++}
++
++.input {
++  appearance: none;
++  margin: 0;
++  width: 100%;
++  height: 100%;
++  background: var(--ds-color-background-input);
++  border: var(--ds-size-025) solid var(--ds-color-border-input-default);
++  border-radius: var(--ds-border-radius-xs);
++  cursor: inherit;
++  transition: background-color 120ms ease, border-color 120ms ease;
++}
++
++.root:hover .input:not(:disabled):not(:checked) {
++  border-color: var(--ds-color-border-input-hover);
++}
++
++.input:checked {
++  background: var(--ds-color-background-brand);
++  border-color: var(--ds-color-border-selected);
++}
++
++.input:disabled {
++  border-color: var(--ds-color-border-disabled);
++}
++
++.input:checked:disabled {
++  background: var(--ds-color-background-disabled);
++  border-color: var(--ds-color-border-disabled);
++}
++
++.check {
++  position: absolute;
++  inset: 0;
++  display: none;
++  align-items: center;
++  justify-content: center;
++  color: var(--ds-color-icon-inverted-default);
++  pointer-events: none;
++}
++
++.input:checked + .check {
++  display: flex;
++}
++
++.disabled {
++  cursor: not-allowed;
++}
+diff --git a/packages/components/src/components/Checkbox/Checkbox.stories.tsx b/packages/components/src/components/Checkbox/Checkbox.stories.tsx
+new file mode 100644
+index 0000000..60ec19c
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.stories.tsx
+@@ -0,0 +1,64 @@
++import { useState } from 'react'
++import type { Meta, StoryObj } from '@storybook/react'
++import { Checkbox } from './index'
++
++const meta = {
++  title: 'Components/Checkbox',
++  component: Checkbox,
++  argTypes: {
++    label: { control: 'text' },
++    hideLabel: { control: 'boolean' },
++    defaultChecked: { control: 'boolean' },
++    disabled: { control: 'boolean' },
++    name: { control: 'text' },
++    value: { control: 'text' },
++  },
++} satisfies Meta<typeof Checkbox>
++
++export default meta
++type Story = StoryObj<typeof meta>
++
++export const Default: Story = {
++  args: {
++    label: 'Email me about new courses',
++  },
++}
++
++export const Checked: Story = {
++  args: {
++    label: 'Email me about new courses',
++    defaultChecked: true,
++  },
++}
++
++export const Disabled: Story = {
++  args: {
++    label: 'Email me about new courses',
++    disabled: true,
++  },
++}
++
++export const DisabledChecked: Story = {
++  args: {
++    label: 'Email me about new courses',
++    defaultChecked: true,
++    disabled: true,
++  },
++}
++
++export const HiddenLabel: Story = {
++  args: {
++    label: 'Select row',
++    hideLabel: true,
++  },
++}
++
++export const Controlled: Story = {
++  args: {
++    label: 'Weekly progress digest',
++  },
++  render: function ControlledCheckbox(args) {
++    const [checked, setChecked] = useState(true)
++    return <Checkbox {...args} checked={checked} onChange={(event) => setChecked(event.target.checked)} />
++  },
++}
+diff --git a/packages/components/src/components/Checkbox/index.tsx b/packages/components/src/components/Checkbox/index.tsx
+new file mode 100644
+index 0000000..a95653d
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/index.tsx
+@@ -0,0 +1,26 @@
++import type { InputHTMLAttributes } from 'react'
++import { Icon } from '../Icon'
++import { Text } from '../Text'
++import styles from './Checkbox.module.css'
++import utilStyles from '../../styles/utilities.module.css'
++
++export type CheckboxProps = {
++  label: string
++  hideLabel?: boolean
++} & Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'children' | 'size'>
++
++export function Checkbox({ label, hideLabel, disabled, className, ...rest }: CheckboxProps) {
++  return (
++    <label className={[styles.root, disabled && styles.disabled, className].filter(Boolean).join(' ')}>
++      <span className={styles.control}>
++        <input type="checkbox" className={styles.input} disabled={disabled} {...rest} />
++        <span className={styles.check}>
++          <Icon name="check" size="sm" />
++        </span>
++      </span>
++      <Text as="span" color={disabled ? 'disabled' : undefined} className={hideLabel ? utilStyles.visuallyHidden : undefined}>
++        {label}
++      </Text>
++    </label>
++  )
++}
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index 367cc1f..0b82b6a 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -27,6 +27,9 @@ export type { TextFieldProps, TextFieldSize, TextFieldShape } from './components
+ export { Select } from './components/Select'
+ export type { SelectProps, SelectOption } from './components/Select'
+ 
++export { Checkbox } from './components/Checkbox'
++export type { CheckboxProps } from './components/Checkbox'
++
+ export { Card } from './components/Card'
+ export type { CardProps, CardVariant, CardPadding } from './components/Card'
+ 
