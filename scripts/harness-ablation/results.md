@@ -1,8 +1,12 @@
 # Harness-ablation results
 
-Generated: 2026-10-09T12:44:46.028Z · 27 scored run(s) · model: claude-opus-5-5
+Generated: 2026-10-09T17:41:24.854Z · 42 scored run(s) · model: claude-opus-5-5
 
 Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (`/add-component <Name> --eval`). Scope, arms and scoring: `.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md`.
+
+Arm 1b = index only (ADR-029 Step 6): Arm 1 with the nested `packages/*/CLAUDE.md` removed, so the Tier 1 `AGENTS.md` files are reached only through the root index's pointers. Arms 0/1/2 on the component tasks ran on the 2026-10-09 HEAD before ADR-029 shipped (Option B: CLAUDE.md + `.claude/rules/`); Arm 1b and the `feedback` token task run on the post-ADR-029 HEAD, where Arm 1 is Option C. Scope: `.claude/handoff/2026-10-09-tiered-context-architecture.handoff.md` → Step 6.
+
+The `feedback` task is scored on tokens, not components: `tokens:build`, the baseline commit's `tokens:contrast-check` (its PAIRS and waivers, run on the workspace's build), and the traps `missing-token`, `raw-value`, `scale-mix`, `brand-slot`, `reserved-hue` (error on `red`, ADR-014), `hue-split`, `extensions` and `collateral-change`.
 
 A run is **clean** when it has zero product-quality violations: typecheck, lint, the axe sweep over every story, missing deliverables, the pattern-accuracy traps (on an arm's own stories file, `off-scale-inline-style` and `raw-visible-text` count as system compliance instead), `unknown-token`, `invented-import` and the brief checklist. **Cost per clean component** = an arm's total cost ÷ its clean runs.
 
@@ -14,15 +18,20 @@ A run is **clean** when it has zero product-quality violations: typecheck, lint,
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | badge | 0 · Bare repo | 3 | 100% (3/3) | 0.0 | $0.33 | $0.33 | 11 | 0.9 |
 | badge | 1 · Context only | 3 | 100% (3/3) | 0.0 | $0.72 | $0.72 | 23 | 2.0 |
+| badge | 1b · Index only | 3 | 100% (3/3) | 0.0 | $0.68 | $0.68 | 19 | 1.7 |
 | badge | 2 · Full harness | 3 | 100% (3/3) | 0.0 | $1.34 | $1.34 | 23 | 4.0 |
 | cardvertical | 0 · Bare repo | 3 | 100% (3/3) | 0.0 | $0.46 | $0.46 | 12 | 1.4 |
 | cardvertical | 1 · Context only | 3 | 100% (3/3) | 0.0 | $1.10 | $1.10 | 28 | 2.7 |
+| cardvertical | 1b · Index only | 3 | 100% (3/3) | 0.0 | $0.92 | $0.92 | 22 | 2.1 |
 | cardvertical | 2 · Full harness | 3 | 100% (3/3) | 0.0 | $1.70 | $1.70 | 27 | 4.8 |
 | checkbox | 0 · Bare repo | 3 | 0% (0/3) | 2.0 | — (0 clean, $2.02 spent) | $0.67 | 24 | 2.0 |
 | checkbox | 1 · Context only | 3 | 100% (3/3) | 0.0 | $0.92 | $0.92 | 24 | 3.4 |
+| checkbox | 1b · Index only | 3 | 100% (3/3) | 0.0 | $0.75 | $0.75 | 19 | 2.0 |
 | checkbox | 2 · Full harness | 3 | 100% (3/3) | 0.0 | $1.58 | $1.58 | 27 | 4.6 |
+| feedback | 1 · Context only | 3 | 33% (1/3) | 0.7 (0–1) | $2.11 | $0.70 | 14 | 1.8 |
+| feedback | 1b · Index only | 3 | 33% (1/3) | 0.7 (0–1) | $1.18 | $0.39 | 9 | 0.6 |
 
-## All tasks, per arm
+## Component tasks, per arm
 
 Arm 1 vs Arm 2 separates what the agent knows from the loop that checks it.
 
@@ -30,39 +39,50 @@ Arm 1 vs Arm 2 separates what the agent knows from the loop that checks it.
 |---|---:|---:|---:|---:|---:|
 | 0 · Bare repo | 9 | 67% (6/9) | 0.7 | $0.73 | $4.39 |
 | 1 · Context only | 9 | 100% (9/9) | 0.0 | $0.91 | $8.21 |
+| 1b · Index only | 9 | 100% (9/9) | 0.0 | $0.78 | $7.04 |
 | 2 · Full harness | 9 | 100% (9/9) | 0.0 | $1.54 | $13.85 |
 
 ## Where the product violations came from
 
 Summed over each cell's runs.
 
-| Task | Arm | callback-name-drift | raw-text-prop-render |
-|---|---|---:|---:|
-| badge | 0 | 0 | 0 |
-| badge | 1 | 0 | 0 |
-| badge | 2 | 0 | 0 |
-| cardvertical | 0 | 0 | 0 |
-| cardvertical | 1 | 0 | 0 |
-| cardvertical | 2 | 0 | 0 |
-| checkbox | 0 | 3 | 3 |
-| checkbox | 1 | 0 | 0 |
-| checkbox | 2 | 0 | 0 |
+| Task | Arm | callback-name-drift | collateral-change | raw-text-prop-render |
+|---|---|---:|---:|---:|
+| badge | 0 | 0 | 0 | 0 |
+| badge | 1 | 0 | 0 | 0 |
+| badge | 1b | 0 | 0 | 0 |
+| badge | 2 | 0 | 0 | 0 |
+| cardvertical | 0 | 0 | 0 | 0 |
+| cardvertical | 1 | 0 | 0 | 0 |
+| cardvertical | 1b | 0 | 0 | 0 |
+| cardvertical | 2 | 0 | 0 | 0 |
+| checkbox | 0 | 3 | 0 | 3 |
+| checkbox | 1 | 0 | 0 | 0 |
+| checkbox | 1b | 0 | 0 | 0 |
+| checkbox | 2 | 0 | 0 | 0 |
+| feedback | 1 | 0 | 2 | 0 |
+| feedback | 1b | 0 | 2 | 0 |
 
 ## System compliance and process (secondary, never in the headline)
 
 Arm 0 was never shown the metadata schema or the prop vocabulary, so these columns describe what the system additionally demands, not product quality.
 
-| Task | Arm | Metadata written | Prop-vocabulary issues (mean) | Story inline styles (mean) | Story raw text (mean) | Reviewer findings (mean, high+medium) | Budget cut-offs | Contamination flags |
-|---|---|---:|---:|---:|---:|---:|---:|---:|
-| badge | 0 | 0/3 | 0.7 | 0.0 | 0.0 | — | 0 | 0 |
-| badge | 1 | 3/3 | 0.0 | 0.0 | 0.0 | — | 0 | 0 |
-| badge | 2 | 3/3 | 0.7 | 0.0 | 0.0 | 6.7 (2.0) | 0 | 0 |
-| cardvertical | 0 | 0/3 | 0.0 | 1.3 | 0.0 | — | 0 | 1 |
-| cardvertical | 1 | 3/3 | 0.0 | 1.3 | 0.0 | — | 0 | 0 |
-| cardvertical | 2 | 3/3 | 0.0 | 1.3 | 0.0 | 4.7 (1.0) | 0 | 0 |
-| checkbox | 0 | 0/3 | 1.0 | 3.7 | 3.0 | — | 0 | 0 |
-| checkbox | 1 | 3/3 | 0.0 | 0.0 | 0.0 | — | 0 | 0 |
-| checkbox | 2 | 3/3 | 0.0 | 0.0 | 0.0 | 7.7 (2.0) | 0 | 1 |
+| Task | Arm | Metadata written | Prop-vocabulary issues (mean) | Story inline styles (mean) | Story raw text (mean) | Reference aliases matched (mean) | Reviewer findings (mean, high+medium) | Read a Tier 1 file | Context tokens / run (mean) | Budget cut-offs | Contamination flags |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| badge | 0 | 0/3 | 0.7 | 0.0 | 0.0 | — | — | — | 246K | 0 | 0 |
+| badge | 1 | 3/3 | 0.0 | 0.0 | 0.0 | — | — | — | 871K | 0 | 0 |
+| badge | 1b | 3/3 | 0.7 | 0.0 | 0.0 | — | — | 3/3 | 740K | 0 | 0 |
+| badge | 2 | 3/3 | 0.7 | 0.0 | 0.0 | — | 6.7 (2.0) | — | 1199K | 0 | 0 |
+| cardvertical | 0 | 0/3 | 0.0 | 1.3 | 0.0 | — | — | — | 345K | 0 | 1 |
+| cardvertical | 1 | 3/3 | 0.0 | 1.3 | 0.0 | — | — | — | 1284K | 0 | 0 |
+| cardvertical | 1b | 3/3 | 0.0 | 2.0 | 0.0 | — | — | 3/3 | 1056K | 0 | 0 |
+| cardvertical | 2 | 3/3 | 0.0 | 1.3 | 0.0 | — | 4.7 (1.0) | — | 1641K | 0 | 0 |
+| checkbox | 0 | 0/3 | 1.0 | 3.7 | 3.0 | — | — | — | 668K | 0 | 0 |
+| checkbox | 1 | 3/3 | 0.0 | 0.0 | 0.0 | — | — | — | 1060K | 0 | 0 |
+| checkbox | 1b | 2/3 | 0.0 | 0.0 | 0.0 | — | — | 3/3 | 770K | 0 | 0 |
+| checkbox | 2 | 3/3 | 0.0 | 0.0 | 0.0 | — | 7.7 (2.0) | — | 1474K | 0 | 1 |
+| feedback | 1 | 0/3 | — | — | — | 6.3/24 | — | 3/3 | 599K | 0 | 3 |
+| feedback | 1b | 0/3 | — | — | — | 9.7/24 | — | 3/3 | 282K | 0 | 0 |
 
 ## Median runs
 
@@ -70,13 +90,18 @@ The case-study figure uses each cell's median run, never the best (sorted by vio
 
 - badge · arm 0: run-3 (0 violations, $0.33) → `results/badge/arm0/`
 - badge · arm 1: run-2 (0 violations, $0.73) → `results/badge/arm1/`
+- badge · arm 1b: run-2 (0 violations, $0.68) → `results/badge/arm1b/`
 - badge · arm 2: run-3 (0 violations, $1.35) → `results/badge/arm2/`
 - cardvertical · arm 0: run-1 (0 violations, $0.46) → `results/cardvertical/arm0/`
 - cardvertical · arm 1: run-1 (0 violations, $1.12) → `results/cardvertical/arm1/`
+- cardvertical · arm 1b: run-1 (0 violations, $0.95) → `results/cardvertical/arm1b/`
 - cardvertical · arm 2: run-1 (0 violations, $1.72) → `results/cardvertical/arm2/`
 - checkbox · arm 0: run-3 (2 violations, $0.69) → `results/checkbox/arm0/`
 - checkbox · arm 1: run-3 (0 violations, $0.93) → `results/checkbox/arm1/`
+- checkbox · arm 1b: run-1 (0 violations, $0.77) → `results/checkbox/arm1b/`
 - checkbox · arm 2: run-3 (0 violations, $1.53) → `results/checkbox/arm2/`
+- feedback · arm 1: run-3 (1 violations, $0.71) → `results/feedback/arm1/`
+- feedback · arm 1b: run-1 (1 violations, $0.40) → `results/feedback/arm1b/`
 
 ## Visual match (human calibration, never in the headline)
 
@@ -86,4 +111,5 @@ Blind 3-point rating (matches / minor drift / wrong) of each cell's median run a
 |---|---|---|---|
 | 0 · Bare repo | minor drift: colours match but not the size and spacing tokens | minor drift: The card titles are bigger than the reference, and the small cards have a different typeface for the titles all together | matches |
 | 1 · Context only | matches: only slightly darker typeface and borders | wrong: wilder variation in card sizes besides font sizes | minor drift: bigger checkboxes |
+| 1b · Index only | — | — | — |
 | 2 · Full harness | minor drift: bigger badge size and darker colours | minor drift: The card titles are bigger than the reference but could be a match | minor drift: bigger checkboxes |

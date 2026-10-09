@@ -1,0 +1,513 @@
+diff --git a/docs/decisions/014-feedback-hue-and-ramp-regeneration.md b/docs/decisions/014-feedback-hue-and-ramp-regeneration.md
+index 5de6b0d..da2b294 100644
+--- a/docs/decisions/014-feedback-hue-and-ramp-regeneration.md
++++ b/docs/decisions/014-feedback-hue-and-ramp-regeneration.md
+@@ -4,6 +4,7 @@ title: "ADR-014 — Feedback Hue Separation and Terracotta-Luminance-Matched Ram
+ # ADR-014 — Feedback Hue Separation and Terracotta-Luminance-Matched Ramp Regeneration
+ 
+ **Date:** 2026-07-07
++**Amended:** 2026-10-09
+ **Status:** `accepted`
+ 
+ ## Context
+@@ -54,6 +55,23 @@ This was applied to cyan's entire light ramp in this pass. It is the documented
+ - **Trade-off accepted:** the `tomato`-vs-`red` choice and the whole-ramp cyan regen mean red and cyan no longer share step-by-step hex parity with any prior scale; contrast for the repointed `feedback.error` pairs was re-verified against the built theme CSS rather than assumed to carry over from terracotta.
+ - **Known debt tracked, not hidden:** cyan's dark-ramp dip (deferred) and issue #22's ProgressBar-fill waiver remain, each documented above and in the waiver ledger.
+ 
++## Amendment (2026-10-09) — `green` and `yellow` feedback hues; full feedback token set
++
++The theme layer had lost its `feedback.*` tokens while TextField and Select still referenced `color.text.feedback.error` / `color.border.feedback.error`, so their error state rendered uncoloured. The full set — `color.{background,text,border,icon}.feedback.{error,success,warning}` — is now defined in both themes.
++
++Applying rule (a) to the two new tones: the conventional candidates `teal` (success) and `amber` (warning) are brand slots (`upskill.accent`, `horizon.accent`), so they are ruled out. Two new non-brand-eligible hues were added, sourced verbatim from Radix (`@radix-ui/colors@3.0.0`) like `red`: **`green`** (success) and **`yellow`** (warning). Radix `orange` was not chosen for warning — it reads too close to terracotta and red, the same reason `tomato` was rejected. Like `red`, both hues are reserved for feedback and must never be mapped to a brand slot.
++
++Step mapping (light / dark):
++
++| Role | error | success | warning |
++|---|---|---|---|
++| `background` | `red.3` / `red.dark.3` | `green.3` / `green.dark.3` | `yellow.3` / `yellow.dark.3` |
++| `text` | `red.11` / `red.dark.11` | `green.12` / `green.dark.11` | `yellow.12` / `yellow.dark.11` |
++| `border` | `red.11` / `red.dark.11` | `green.11` / `green.dark.11` | `yellow.11` / `yellow.dark.11` |
++| `icon` | `red.11` / `red.dark.11` | `green.11` / `green.dark.11` | `yellow.11` / `yellow.dark.11` |
++
++Light success/warning text uses step 12 because Radix `green.11` (4.21:1) and `yellow.11` (4.27:1) miss 4.5:1 on their own step-3 band, and they still miss it on step 1. This means the verbatim `green.11`/`yellow.11` do not meet the step-11-as-text invariant above. They are kept verbatim and used only for 3:1 roles (border, icon) rather than darkened ad hoc. If either is ever needed as text, regenerate it with method (b). All feedback pairs in `scripts/token-contrast-check.js` pass for every brand and theme with no new waivers.
++
+ ## Related
+ 
+ - **ADR-002** (three-layer/now four-layer token model) — governs the primitive hue list; amended the same date to record the addition of `red`, cross-referencing this ADR.
+diff --git a/packages/tokens/AGENTS.md b/packages/tokens/AGENTS.md
+index cebcd49..3dc87fa 100644
+--- a/packages/tokens/AGENTS.md
++++ b/packages/tokens/AGENTS.md
+@@ -27,7 +27,7 @@ Each hue has three sub-scales. Don't mix scales on the same token:
+ - `dark-1` through `dark-12` — dark-mode scale
+ - `alpha-1` through `alpha-12` — transparent variants of the mid-tone
+ 
+-Current hues: `terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`, `red`. A brand's `color.brand`/`accent`/`neutral`/`surface` slots each alias one of these hues — e.g. `upskill` maps `brand → terracotta`, `surface → gold`; `horizon` maps `brand → cyan`, `neutral`/`surface → grey`. Only hues with a full light + dark ramp are eligible for a brand slot (ramp-regeneration history: ADR-014).
++Current hues: `terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `white`, `amber`, `red`, `green`, `yellow`. `red`/`green`/`yellow` are the feedback hues (error/success/warning) and are never brand-eligible (ADR-014). A brand's `color.brand`/`accent`/`neutral`/`surface` slots each alias one of these hues — e.g. `upskill` maps `brand → terracotta`, `surface → gold`; `horizon` maps `brand → cyan`, `neutral`/`surface → grey`. Only hues with a full light + dark ramp are eligible for a brand slot (ramp-regeneration history: ADR-014).
+ 
+ ## Line-height convention
+ 
+diff --git a/packages/tokens/src/primitives.json b/packages/tokens/src/primitives.json
+index 6629f6c..5e933fa 100644
+--- a/packages/tokens/src/primitives.json
++++ b/packages/tokens/src/primitives.json
+@@ -250,6 +250,206 @@
+         }
+       }
+     },
++    "green": {
++      "1": {
++        "$type": "color",
++        "$value": "#FBFEFC"
++      },
++      "2": {
++        "$type": "color",
++        "$value": "#F4FBF6"
++      },
++      "3": {
++        "$type": "color",
++        "$value": "#E6F6EB"
++      },
++      "4": {
++        "$type": "color",
++        "$value": "#D6F1DF"
++      },
++      "5": {
++        "$type": "color",
++        "$value": "#C4E8D1"
++      },
++      "6": {
++        "$type": "color",
++        "$value": "#ADDDC0"
++      },
++      "7": {
++        "$type": "color",
++        "$value": "#8ECEAA"
++      },
++      "8": {
++        "$type": "color",
++        "$value": "#5BB98B"
++      },
++      "9": {
++        "$type": "color",
++        "$value": "#30A46C"
++      },
++      "10": {
++        "$type": "color",
++        "$value": "#2B9A66"
++      },
++      "11": {
++        "$type": "color",
++        "$value": "#218358"
++      },
++      "12": {
++        "$type": "color",
++        "$value": "#193B2D"
++      },
++      "dark": {
++        "1": {
++          "$type": "color",
++          "$value": "#0E1512"
++        },
++        "2": {
++          "$type": "color",
++          "$value": "#121B17"
++        },
++        "3": {
++          "$type": "color",
++          "$value": "#132D21"
++        },
++        "4": {
++          "$type": "color",
++          "$value": "#113B29"
++        },
++        "5": {
++          "$type": "color",
++          "$value": "#174933"
++        },
++        "6": {
++          "$type": "color",
++          "$value": "#20573E"
++        },
++        "7": {
++          "$type": "color",
++          "$value": "#28684A"
++        },
++        "8": {
++          "$type": "color",
++          "$value": "#2F7C57"
++        },
++        "9": {
++          "$type": "color",
++          "$value": "#30A46C"
++        },
++        "10": {
++          "$type": "color",
++          "$value": "#33B074"
++        },
++        "11": {
++          "$type": "color",
++          "$value": "#3DD68C"
++        },
++        "12": {
++          "$type": "color",
++          "$value": "#B1F1CB"
++        }
++      }
++    },
++    "yellow": {
++      "1": {
++        "$type": "color",
++        "$value": "#FDFDF9"
++      },
++      "2": {
++        "$type": "color",
++        "$value": "#FEFCE9"
++      },
++      "3": {
++        "$type": "color",
++        "$value": "#FFFAB8"
++      },
++      "4": {
++        "$type": "color",
++        "$value": "#FFF394"
++      },
++      "5": {
++        "$type": "color",
++        "$value": "#FFE770"
++      },
++      "6": {
++        "$type": "color",
++        "$value": "#F3D768"
++      },
++      "7": {
++        "$type": "color",
++        "$value": "#E4C767"
++      },
++      "8": {
++        "$type": "color",
++        "$value": "#D5AE39"
++      },
++      "9": {
++        "$type": "color",
++        "$value": "#FFE629"
++      },
++      "10": {
++        "$type": "color",
++        "$value": "#FFDC00"
++      },
++      "11": {
++        "$type": "color",
++        "$value": "#9E6C00"
++      },
++      "12": {
++        "$type": "color",
++        "$value": "#473B1F"
++      },
++      "dark": {
++        "1": {
++          "$type": "color",
++          "$value": "#14120B"
++        },
++        "2": {
++          "$type": "color",
++          "$value": "#1B180F"
++        },
++        "3": {
++          "$type": "color",
++          "$value": "#2D2305"
++        },
++        "4": {
++          "$type": "color",
++          "$value": "#362B00"
++        },
++        "5": {
++          "$type": "color",
++          "$value": "#433500"
++        },
++        "6": {
++          "$type": "color",
++          "$value": "#524202"
++        },
++        "7": {
++          "$type": "color",
++          "$value": "#665417"
++        },
++        "8": {
++          "$type": "color",
++          "$value": "#836A21"
++        },
++        "9": {
++          "$type": "color",
++          "$value": "#FFE629"
++        },
++        "10": {
++          "$type": "color",
++          "$value": "#FFFF57"
++        },
++        "11": {
++          "$type": "color",
++          "$value": "#F5E147"
++        },
++        "12": {
++          "$type": "color",
++          "$value": "#F6EEB4"
++        }
++      }
++    },
+     "cyan": {
+       "1": {
+         "$type": "color",
+diff --git a/packages/tokens/src/theme/dark.json b/packages/tokens/src/theme/dark.json
+index 5ebf19b..9a00f15 100644
+--- a/packages/tokens/src/theme/dark.json
++++ b/packages/tokens/src/theme/dark.json
+@@ -116,6 +116,20 @@
+           "$type": "color",
+           "$value": "{color.black.alpha.5}"
+         }
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.dark.3}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.green.dark.3}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.yellow.dark.3}"
++        }
+       }
+     },
+     "text": {
+@@ -172,6 +186,20 @@
+       "disabled": {
+         "$type": "color",
+         "$value": "{color.neutral.dark.8}"
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.dark.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.green.dark.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.yellow.dark.11}"
++        }
+       }
+     },
+     "border": {
+@@ -220,6 +248,20 @@
+       "default": {
+         "$type": "color",
+         "$value": "{color.border.subtle}"
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.dark.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.green.dark.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.yellow.dark.11}"
++        }
+       }
+     },
+     "icon": {
+@@ -266,6 +308,20 @@
+           "$type": "color",
+           "$value": "{color.black.alpha.9}"
+         }
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.dark.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.green.dark.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.yellow.dark.11}"
++        }
+       }
+     }
+   }
+diff --git a/packages/tokens/src/theme/light.json b/packages/tokens/src/theme/light.json
+index 245ce63..736a010 100644
+--- a/packages/tokens/src/theme/light.json
++++ b/packages/tokens/src/theme/light.json
+@@ -116,6 +116,20 @@
+           "$type": "color",
+           "$value": "{color.black.alpha.5}"
+         }
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.3}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.green.3}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.yellow.3}"
++        }
+       }
+     },
+     "text": {
+@@ -172,6 +186,20 @@
+       "disabled": {
+         "$type": "color",
+         "$value": "{color.neutral.8}"
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.green.12}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.yellow.12}"
++        }
+       }
+     },
+     "border": {
+@@ -220,6 +248,20 @@
+       "default": {
+         "$type": "color",
+         "$value": "{color.border.subtle}"
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.green.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.yellow.11}"
++        }
+       }
+     },
+     "icon": {
+@@ -266,6 +308,20 @@
+           "$type": "color",
+           "$value": "{color.black.alpha.9}"
+         }
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.green.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.yellow.11}"
++        }
+       }
+     }
+   }
+diff --git a/packages/tokens/token-usage.json b/packages/tokens/token-usage.json
+index c1bb8de..3ff1b50 100644
+--- a/packages/tokens/token-usage.json
++++ b/packages/tokens/token-usage.json
+@@ -595,6 +595,15 @@
+       "packages/tokens/src/theme/dark.json",
+       "packages/tokens/src/theme/light.json"
+     ],
++    "color.red.dark.3": [
++      "packages/tokens/src/theme/dark.json"
++    ],
++    "color.green.dark.3": [
++      "packages/tokens/src/theme/dark.json"
++    ],
++    "color.yellow.dark.3": [
++      "packages/tokens/src/theme/dark.json"
++    ],
+     "color.neutral.dark.12": [
+       "packages/tokens/src/theme/dark.json"
+     ],
+@@ -618,6 +627,15 @@
+     "color.neutral.dark.5": [
+       "packages/tokens/src/theme/dark.json"
+     ],
++    "color.red.dark.11": [
++      "packages/tokens/src/theme/dark.json"
++    ],
++    "color.green.dark.11": [
++      "packages/tokens/src/theme/dark.json"
++    ],
++    "color.yellow.dark.11": [
++      "packages/tokens/src/theme/dark.json"
++    ],
+     "color.white.alpha.5": [
+       "packages/tokens/src/theme/dark.json"
+     ],
+@@ -688,6 +706,15 @@
+     "color.terracotta.6": [
+       "packages/tokens/src/theme/light.json"
+     ],
++    "color.red.3": [
++      "packages/tokens/src/theme/light.json"
++    ],
++    "color.green.3": [
++      "packages/tokens/src/theme/light.json"
++    ],
++    "color.yellow.3": [
++      "packages/tokens/src/theme/light.json"
++    ],
+     "color.neutral.12": [
+       "packages/tokens/src/theme/light.json"
+     ],
+@@ -703,12 +730,24 @@
+     "color.neutral.10": [
+       "packages/tokens/src/theme/light.json"
+     ],
++    "color.green.12": [
++      "packages/tokens/src/theme/light.json"
++    ],
++    "color.yellow.12": [
++      "packages/tokens/src/theme/light.json"
++    ],
+     "color.brand.default": [
+       "packages/tokens/src/theme/light.json"
+     ],
+     "color.accent.default": [
+       "packages/tokens/src/theme/light.json"
+     ],
++    "color.green.11": [
++      "packages/tokens/src/theme/light.json"
++    ],
++    "color.yellow.11": [
++      "packages/tokens/src/theme/light.json"
++    ],
+     "color.neutral.2": [
+       "packages/tokens/src/theme/light.json"
+     ],

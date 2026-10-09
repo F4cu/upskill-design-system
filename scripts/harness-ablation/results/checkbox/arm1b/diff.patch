@@ -1,0 +1,422 @@
+diff --git a/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx b/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx
+new file mode 100644
+index 0000000..3124e90
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.a11y.test.tsx
+@@ -0,0 +1,76 @@
++import { describe, it, expect, vi } from 'vitest'
++import { render, screen } from '@testing-library/react'
++import userEvent from '@testing-library/user-event'
++import { axe } from 'vitest-axe'
++import { Checkbox } from './index'
++
++// Tier-2 behavioral a11y (ADR-008). Asserts the contract from the metadata
++// (role: checkbox, named by its label) that static lint can't see: clicking the
++// label toggles, Space toggles, disabled blocks toggling, and the checked value
++// submits with a native form.
++
++describe('Checkbox — a11y behavior', () => {
++  it('exposes the checkbox role with the label as the accessible name', () => {
++    render(<Checkbox label="Email updates" />)
++    expect(screen.getByRole('checkbox', { name: 'Email updates' })).not.toBeChecked()
++  })
++
++  it('toggles when the label text is clicked and reports the change', async () => {
++    const user = userEvent.setup()
++    const onChange = vi.fn()
++    render(<Checkbox label="Email updates" onChange={onChange} />)
++
++    await user.click(screen.getByText('Email updates'))
++    expect(screen.getByRole('checkbox')).toBeChecked()
++    expect(onChange).toHaveBeenCalledTimes(1)
++    expect(onChange.mock.calls[0][0].target.checked).toBe(true)
++  })
++
++  it('focuses on Tab and toggles with Space', async () => {
++    const user = userEvent.setup()
++    render(<Checkbox label="Email updates" defaultChecked />)
++
++    const checkbox = screen.getByRole('checkbox')
++    await user.tab()
++    expect(checkbox).toHaveFocus()
++    await user.keyboard(' ')
++    expect(checkbox).not.toBeChecked()
++  })
++
++  it('does not toggle when disabled, checked or unchecked', async () => {
++    const user = userEvent.setup()
++    render(
++      <>
++        <Checkbox label="Off" disabled />
++        <Checkbox label="On" disabled defaultChecked />
++      </>,
++    )
++
++    await user.click(screen.getByText('Off'))
++    await user.click(screen.getByText('On'))
++    expect(screen.getByRole('checkbox', { name: 'Off' })).not.toBeChecked()
++    expect(screen.getByRole('checkbox', { name: 'On' })).toBeChecked()
++  })
++
++  it('submits its value with a native form when checked', () => {
++    render(
++      <form aria-label="Preferences">
++        <Checkbox name="notify" value="email" label="Email" defaultChecked />
++        <Checkbox name="notify" value="sms" label="SMS" />
++      </form>,
++    )
++    const form = screen.getByRole('form', { name: 'Preferences' }) as HTMLFormElement
++    expect(new FormData(form).getAll('notify')).toEqual(['email'])
++  })
++
++  it('has no axe violations in unchecked, checked, and disabled states', async () => {
++    const { container } = render(
++      <>
++        <Checkbox label="Unchecked" />
++        <Checkbox label="Checked" defaultChecked />
++        <Checkbox label="Disabled" disabled />
++      </>,
++    )
++    expect(await axe(container, { rules: { 'color-contrast': { enabled: false } } })).toHaveNoViolations()
++  })
++})
+diff --git a/packages/components/src/components/Checkbox/Checkbox.metadata.json b/packages/components/src/components/Checkbox/Checkbox.metadata.json
+new file mode 100644
+index 0000000..91b3891
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.metadata.json
+@@ -0,0 +1,138 @@
++{
++  "component": {
++    "name": "Checkbox",
++    "category": "atom",
++    "type": "input",
++    "status": "beta",
++    "description": "A single on/off choice with a visible text label, wrapping a native checkbox input. Clicking the label toggles it. Works uncontrolled (defaultChecked), controlled (checked + onChange), and inside native forms (name/value submit when checked)."
++  },
++  "usage": {
++    "keywords": [
++      "checkbox",
++      "toggle",
++      "option",
++      "boolean",
++      "form",
++      "settings",
++      "preferences",
++      "opt-in"
++    ],
++    "when": [
++      "A settings or form field is a single independent yes/no choice (e.g. a notification preference)",
++      "Several independent options can each be on or off at once",
++      "The choice is applied on form submit rather than immediately as a filter \u2014 use Chip for pressed filters"
++    ],
++    "patterns": [
++      {
++        "name": "preferences-stack",
++        "description": "A vertical list of independent preferences inside a Card, sharing a name so checked values submit together.",
++        "tree": "Card > Stack(gap=md) > [Heading, Checkbox, Checkbox, Checkbox]"
++      }
++    ],
++    "antiPatterns": [
++      {
++        "scenario": "Using Checkbox for mutually exclusive options",
++        "reason": "Checkboxes are independent; nothing prevents selecting several.",
++        "alternative": "Use Select for a single choice from a fixed list."
++      },
++      {
++        "scenario": "Rendering the label text yourself next to the Checkbox",
++        "reason": "The label prop is rendered inside the wrapping <label>, which makes the text clickable and gives the input its accessible name.",
++        "alternative": "Pass the visible text through the label prop."
++      },
++      {
++        "scenario": "Using pressed/onPressedChange or a custom value/onValueChange pair",
++        "reason": "Checkbox wraps a native input and keeps native names (ADR-026).",
++        "alternative": "Use checked/defaultChecked + onChange (read event.target.checked)."
++      }
++    ]
++  },
++  "variants": {
++    "checked": {
++      "options": [
++        "false",
++        "true"
++      ],
++      "default": "false",
++      "purpose": {
++        "false": "Unticked. Input background with a strong neutral border.",
++        "true": "Ticked. Brand-filled box with an inverted check glyph. Native checked/defaultChecked + onChange (ADR-026); disabled applies in either state."
++      }
++    }
++  },
++  "states": [
++    {
++      "state": "unchecked",
++      "description": "Input background with a strong neutral border."
++    },
++    {
++      "state": "checked",
++      "description": "Brand-filled box with an inverted check glyph. Set via checked or defaultChecked."
++    },
++    {
++      "state": "hover",
++      "description": "Stronger border while unchecked."
++    },
++    {
++      "state": "disabled",
++      "description": "Muted border and label; checked boxes fill with the disabled background. Interaction blocked natively; works checked or unchecked."
++    }
++  ],
++  "tokens": {
++    "color": [
++      "color.background.input",
++      "color.background.brand",
++      "color.background.disabled",
++      "color.border.input.default",
++      "color.border.input.hover",
++      "color.border.selected",
++      "color.border.disabled",
++      "color.icon.inverted.default"
++    ],
++    "spacing": [
++      "space.inline.sm"
++    ],
++    "typography": [],
++    "borderRadius": [
++      "border-radius.xs"
++    ],
++    "other": [
++      "size.300",
++      "size.025"
++    ]
++  },
++  "accessibility": {
++    "role": "checkbox",
++    "ariaAttributes": [
++      "checked state exposed natively by <input type=\"checkbox\">",
++      "accessible name from the wrapping <label>"
++    ],
++    "keyboardInteractions": [
++      {
++        "key": "Tab",
++        "action": "Moves focus to the checkbox"
++      },
++      {
++        "key": "Space",
++        "action": "Toggles the checked state"
++      }
++    ]
++  },
++  "composition": {
++    "composedOf": [
++      "Icon",
++      "Text"
++    ],
++    "accepts": [],
++    "containedBy": [
++      "Box",
++      "Stack",
++      "Card"
++    ],
++    "layoutBehavior": {
++      "widthBehavior": "hug",
++      "displayType": "flex-row",
++      "canNest": false
++    }
++  }
++}
+diff --git a/packages/components/src/components/Checkbox/Checkbox.module.css b/packages/components/src/components/Checkbox/Checkbox.module.css
+new file mode 100644
+index 0000000..0dbe6be
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.module.css
+@@ -0,0 +1,61 @@
++.root {
++  display: inline-flex;
++  align-items: center;
++  gap: var(--ds-space-inline-sm);
++  cursor: pointer;
++}
++
++.disabled {
++  cursor: not-allowed;
++}
++
++.control {
++  position: relative;
++  display: inline-flex;
++  flex-shrink: 0;
++  width: var(--ds-size-300);
++  height: var(--ds-size-300);
++}
++
++.input {
++  appearance: none;
++  margin: 0;
++  width: 100%;
++  height: 100%;
++  background: var(--ds-color-background-input);
++  border: var(--ds-size-025) solid var(--ds-color-border-input-default);
++  border-radius: var(--ds-border-radius-xs);
++  cursor: inherit;
++  transition: background 120ms ease, border-color 120ms ease;
++}
++
++.input:hover:not(:disabled) {
++  border-color: var(--ds-color-border-input-hover);
++}
++
++.input:checked {
++  background: var(--ds-color-background-brand);
++  border-color: var(--ds-color-border-selected);
++}
++
++.input:disabled {
++  border-color: var(--ds-color-border-disabled);
++}
++
++.input:checked:disabled {
++  background: var(--ds-color-background-disabled);
++}
++
++.mark {
++  position: absolute;
++  inset: 0;
++  display: none;
++  align-items: center;
++  justify-content: center;
++  color: var(--ds-color-icon-inverted-default);
++  pointer-events: none;
++}
++
++.input:checked + .mark {
++  display: flex;
++}
+diff --git a/packages/components/src/components/Checkbox/Checkbox.stories.tsx b/packages/components/src/components/Checkbox/Checkbox.stories.tsx
+new file mode 100644
+index 0000000..07a4a11
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/Checkbox.stories.tsx
+@@ -0,0 +1,79 @@
++import { useState } from 'react'
++import type { Meta, StoryObj } from '@storybook/react'
++import { Checkbox } from './index'
++import type { CheckboxProps } from './index'
++import { Stack } from '../Stack'
++import { Text } from '../Text'
++
++const meta: Meta<typeof Checkbox> = {
++  title: 'Components/Checkbox',
++  component: Checkbox,
++  argTypes: {
++    label: { control: 'text' },
++    defaultChecked: { control: 'boolean' },
++    disabled: { control: 'boolean' },
++  },
++}
++
++export default meta
++type Story = StoryObj<typeof Checkbox>
++
++export const Default: Story = {
++  args: {
++    label: 'Email me about new courses',
++  },
++}
++
++export const Checked: Story = {
++  args: {
++    label: 'Email me about new courses',
++    defaultChecked: true,
++  },
++}
++
++export const Disabled: Story = {
++  args: {
++    label: 'Email me about new courses',
++    disabled: true,
++  },
++}
++
++export const DisabledChecked: Story = {
++  args: {
++    label: 'Email me about new courses',
++    defaultChecked: true,
++    disabled: true,
++  },
++}
++
++function ControlledCheckbox(args: CheckboxProps) {
++  const [checked, setChecked] = useState(false)
++  return (
++    <Stack gap="sm">
++      <Checkbox {...args} checked={checked} onChange={e => setChecked(e.target.checked)} />
++      <Text size="body-small" color="subtle">
++        {checked ? 'Subscribed' : 'Not subscribed'}
++      </Text>
++    </Stack>
++  )
++}
++
++export const Controlled: Story = {
++  args: {
++    label: 'Weekly progress digest',
++  },
++  render: args => <ControlledCheckbox {...args} />,
++}
++
++export const InForm: Story = {
++  render: () => (
++    <form aria-label="Notification preferences" onSubmit={e => e.preventDefault()}>
++      <Stack gap="md">
++        <Checkbox name="notifications" value="newCourses" label="New courses" defaultChecked />
++        <Checkbox name="notifications" value="reminders" label="Learning reminders" />
++        <Checkbox name="notifications" value="digest" label="Weekly progress digest" />
++        <Checkbox name="notifications" value="billing" label="Billing updates" defaultChecked disabled />
++      </Stack>
++    </form>
++  ),
++}
+diff --git a/packages/components/src/components/Checkbox/index.tsx b/packages/components/src/components/Checkbox/index.tsx
+new file mode 100644
+index 0000000..22aa372
+--- /dev/null
++++ b/packages/components/src/components/Checkbox/index.tsx
+@@ -0,0 +1,24 @@
++import type { InputHTMLAttributes } from 'react'
++import { Icon } from '../Icon'
++import { Text } from '../Text'
++import styles from './Checkbox.module.css'
++
++export type CheckboxProps = {
++  label: string
++} & Omit<InputHTMLAttributes<HTMLInputElement>, 'children' | 'type' | 'size'>
++
++export function Checkbox({ label, disabled, className, ...rest }: CheckboxProps) {
++  return (
++    <label className={[styles.root, disabled && styles.disabled, className].filter(Boolean).join(' ')}>
++      <span className={styles.control}>
++        <input type="checkbox" className={styles.input} disabled={disabled} {...rest} />
++        <span className={styles.mark} aria-hidden="true">
++          <Icon name="check" size="sm" />
++        </span>
++      </span>
++      <Text as="span" color={disabled ? 'disabled' : undefined}>
++        {label}
++      </Text>
++    </label>
++  )
++}
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index 367cc1f..0b82b6a 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -27,6 +27,9 @@ export type { TextFieldProps, TextFieldSize, TextFieldShape } from './components
+ export { Select } from './components/Select'
+ export type { SelectProps, SelectOption } from './components/Select'
+ 
++export { Checkbox } from './components/Checkbox'
++export type { CheckboxProps } from './components/Checkbox'
++
+ export { Card } from './components/Card'
+ export type { CardProps, CardVariant, CardPadding } from './components/Card'
+ 

@@ -1,0 +1,56 @@
+{
+  "task": "feedback",
+  "arm": "1b",
+  "run": 1,
+  "smoke": false,
+  "model": "claude-opus-5-5",
+  "product": {
+    "clean": false,
+    "violations": 1,
+    "gateViolations": 0,
+    "trapViolations": 1,
+    "trapCounts": {
+      "collateral-change": 1
+    },
+    "gates": {
+      "tokens:build": {
+        "violations": 0,
+        "detail": []
+      },
+      "tokens:contrast-check": {
+        "violations": 0,
+        "detail": []
+      }
+    },
+    "traps": [
+      {
+        "trap": "collateral-change",
+        "file": "scripts/token-contrast-check.js",
+        "detail": "file outside the task changed"
+      }
+    ]
+  },
+  "system": {
+    "referenceMatch": {
+      "matched": 10,
+      "total": 24
+    },
+    "tokenSourceChanges": [
+      " M packages/tokens/src/theme/dark.json",
+      " M packages/tokens/src/theme/light.json"
+    ]
+  },
+  "process": {
+    "outcome": "success",
+    "totalCostUsd": 0.400315,
+    "numTurns": 7,
+    "durationMs": 35170,
+    "subagentsSpawned": 0,
+    "reviewer": null,
+    "contaminationFlags": 0,
+    "tier1Reads": [
+      "packages/tokens/AGENTS.md"
+    ],
+    "contextTokens": 248244
+  }
+}

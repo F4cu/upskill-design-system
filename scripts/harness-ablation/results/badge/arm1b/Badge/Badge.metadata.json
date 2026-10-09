@@ -1,0 +1,109 @@
+{
+  "component": {
+    "name": "Badge",
+    "category": "atom",
+    "type": "display",
+    "status": "beta",
+    "description": "Small, non-interactive text label that tags content with a short category or status (e.g. a course topic). Text only — no icon, not clickable. Two looks: outline (bordered, default) and filled (subtlest neutral fill plus border).",
+    "figmaNodeId": "none — designed from reference.png"
+  },
+  "usage": {
+    "keywords": [
+      "badge",
+      "tag",
+      "label",
+      "category",
+      "topic",
+      "status"
+    ],
+    "when": [
+      "Tagging a course or item with its topic (e.g. Design, Design Thinking)",
+      "Showing a short, static status or category next to content"
+    ],
+    "patterns": [
+      {
+        "name": "topic-list",
+        "description": "A wrapping row of outline Badges listing an item's topics.",
+        "tree": "Inline(gap=xs, wrap=true) > [Badge, Badge, Badge]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Making a Badge clickable or using it as a filter toggle",
+        "reason": "Badge is a display-only <span>; onClick, role and tabIndex are excluded from its props.",
+        "alternative": "Use Chip for filter toggles, TextLink or Button for navigation and actions."
+      },
+      {
+        "scenario": "Adding an icon to a Badge",
+        "reason": "Badge is text-only by design.",
+        "alternative": "Compose Icon and Text in an Inline if an icon label is needed."
+      },
+      {
+        "scenario": "Passing long sentences as Badge content",
+        "reason": "Badge does not wrap (white-space: nowrap); it is for one- to three-word labels.",
+        "alternative": "Use Text for longer descriptive content."
+      },
+      {
+        "scenario": "Overriding the label's typography or color",
+        "reason": "The label renders through Text size=body-small color=subtle; both looks are tuned around it.",
+        "alternative": "Pick the variant prop; don't restyle the inner Text."
+      }
+    ]
+  },
+  "variants": {
+    "variant": {
+      "options": [
+        "outline",
+        "filled"
+      ],
+      "default": "outline",
+      "purpose": {
+        "outline": "Transparent background with the default border. The baseline look.",
+        "filled": "Subtlest neutral overlay fill with the default border, for slightly more emphasis or busier surfaces."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "default",
+      "description": "Static label — no interactive, lifecycle or content states."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.border.default",
+      "color.background.overlay.subtlest"
+    ],
+    "spacing": [
+      "space.inset.xxs",
+      "space.inset.xs"
+    ],
+    "typography": [],
+    "borderRadius": [
+      "border-radius.sm"
+    ],
+    "other": []
+  },
+  "accessibility": {
+    "ariaAttributes": [],
+    "keyboardInteractions": [],
+    "notes": "Rendered as a plain <span>; its text is read inline with surrounding content. Not focusable."
+  },
+  "composition": {
+    "composedOf": [
+      "Text"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Inline",
+      "Stack",
+      "Box",
+      "Card"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "inline",
+      "canNest": false
+    }
+  }
+}
