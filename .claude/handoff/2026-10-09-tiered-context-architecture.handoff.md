@@ -193,7 +193,9 @@ This is the eval scope moved from the agents-md handoff, extended.
 4. **Readout against the revisit triggers in ADR-029.** Amend ADR-029 with the result even if nothing changes. Under the honest-outcome rule, a tie is a reportable result.
 5. **Separately (lower priority than Step 6.1–6.4 for this ADR, higher for ADR-007):** the pre-registered Accordion stretch task, Arms 1 and 2. It tests whether the reviewer earns its cost where Step 4 still spends it.
 
-> **Status (2026-10-09):** task built on `eval/accordion` (`tasks/accordion.{json,brief.md}`); `redactionsReviewed: false` until the developer locks the block below. **Open, blocks the runs:** `accordion.reference.png` (figma-cli wasn't connected), and the lock.
+> **Status (2026-10-09):** task built on `eval/accordion` (`tasks/accordion.{json,brief.md}`); `redactionsReviewed: false` until the developer locks the block below. **Open, blocks the runs:** the lock.
+>
+> **`accordion.reference.png` added 2026-10-09:** a 2× `figma-cli export node` of `Accordion list` / `Show more=false` (`94:15643`, set `94:15642`), cropped at 996×1136 to its 6 visible `Accordion` instances (`29:1153` set, `State=Default`: one `Open=true`, five `Open=false`, all with a subtitle). The `Show more` footer is cut, because it's Figma-only (ADR-026: code has no list component) and the brief doesn't describe it; the four hidden instances don't render. **Known Figma differences, not to count in the visual rating:** the open item's chevron is centred on the whole item (title, subtitle and content), where the code centres it on the header row; and the stack has no top border, where the code draws one.
 >
 > **Pre-registration (DRAFT, not locked; developer locks before any run):**
 > - **Arms 1 and 2 only**, `claude-opus-5-5`, effort medium, `--max-budget-usd 5`, N = 3, so 6 runs. Arm 2 runs `/add-component Accordion --eval`, which always spawns the reviewer (Step 4 left `--eval` unchanged; Accordion is `interactive` anyway). Estimated $12–18 (Checkbox: Arm 1 $0.92, Arm 2 $1.58 per run; Accordion is larger).
