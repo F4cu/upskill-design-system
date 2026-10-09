@@ -22,6 +22,7 @@ sources:
 # clock reset 2026-10-06: retired button tokens (default, hover, ghost, elevated, inverted, outline.hover) deleted from theme source; pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-07: adds primitives size.2000/2750 + device alias size.card.min.{sm,lg} for CardVertical min-width (#120); follows the existing size-alias pattern, page still accurate
 # clock reset 2026-10-07: adds color.border.focus (theme), size.025 primitive and size.focus.{width,offset} device aliases (ADR-028); follows the existing alias patterns, page still accurate
+# clock reset 2026-10-09: /tokens-author repoints its $deprecated pointer from .claude/rules/tokens.md to packages/tokens/AGENTS.md (ADR-029 Tier 1); the pipeline this page describes is unchanged, still accurate
 ---
 # Token pipeline
 
