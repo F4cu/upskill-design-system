@@ -11,12 +11,15 @@
 // it doesn't save them, so the effective size is what protects the prefix.
 // A line present in both root files fails: content moves, it isn't copied.
 //
-// Also enforces that every .claude/rules/*.md declares `paths:`
-// frontmatter — a rule without paths loads unconditionally into every
-// session, which silently defeats the point of moving it out of CLAUDE.md.
+// Tier 1 (ADR-029): package conventions live in nested AGENTS.md files.
+// Claude Code doesn't read a nested AGENTS.md on its own, so each needs a
+// sibling CLAUDE.md importing it; Claude Code loads that lazily, only when the
+// session reads a file under the directory. Each pair is budgeted, and
+// .claude/rules/ must stay empty so conventions have one home.
 //
 //   Usage: npm run claudemd:check
 
+import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -26,6 +29,7 @@ const MAX_LINES = 200;
 const MAX_BYTES = 20000;
 const MAX_AGENTS_BYTES = 8000;
 const MAX_EFFECTIVE_BYTES = 24000;
+const MAX_NESTED_BYTES = 16000;
 const MIN_DUPLICATE_LENGTH = 40;
 
 const failures = [];
@@ -97,13 +101,29 @@ for (const line of new Set(claudeMd.split("\n").map(normalise))) {
 const rulesDir = path.join(ROOT, ".claude", "rules");
 if (fs.existsSync(rulesDir)) {
   for (const file of fs.readdirSync(rulesDir).filter((f) => f.endsWith(".md"))) {
-    const content = fs.readFileSync(path.join(rulesDir, file), "utf8");
-    const frontmatter = content.match(/^---\n([\s\S]*?)\n---/);
-    if (!frontmatter || !/^paths:/m.test(frontmatter[1])) {
-      failures.push(
-        `.claude/rules/${file} has no \`paths:\` frontmatter — it would load into every session. Scope it or move it into CLAUDE.md within budget.`
-      );
-    }
+    failures.push(
+      `.claude/rules/${file} exists. Package conventions live in a nested AGENTS.md with a sibling CLAUDE.md importing it (ADR-029 Tier 1).`
+    );
+  }
+}
+
+const nested = execSync("git ls-files --cached --others --exclude-standard", { cwd: ROOT, encoding: "utf8" })
+  .split("\n")
+  .filter((rel) => /\/AGENTS\.md$/.test(rel) && fs.existsSync(path.join(ROOT, rel)));
+const nestedSummary = [];
+for (const rel of nested) {
+  const sibling = path.join(path.dirname(rel), "CLAUDE.md");
+  const siblingPath = path.join(ROOT, sibling);
+  if (!fs.existsSync(siblingPath) || !/^@AGENTS\.md\s*$/m.test(read(sibling))) {
+    failures.push(`${rel} has no sibling CLAUDE.md containing \`@AGENTS.md\`, so Claude Code never loads it.`);
+    continue;
+  }
+  const nestedBytes = size(read(rel)) + size(read(sibling));
+  nestedSummary.push(`${path.dirname(rel)} ${nestedBytes}/${MAX_NESTED_BYTES}`);
+  if (nestedBytes > MAX_NESTED_BYTES) {
+    failures.push(
+      `${rel} + ${sibling} is ${nestedBytes} bytes (budget: ${MAX_NESTED_BYTES}). Move procedures to commands and per-component knowledge to metadata.`
+    );
   }
 }
 
@@ -114,5 +134,6 @@ if (failures.length) {
 
 console.log(
   `claudemd:check passed: CLAUDE.md ${lines}/${MAX_LINES} lines, ${bytes}/${MAX_BYTES} bytes; ` +
-    `AGENTS.md ${agentsBytes}/${MAX_AGENTS_BYTES} bytes; always-loaded ${effectiveBytes}/${MAX_EFFECTIVE_BYTES} bytes.`
+    `AGENTS.md ${agentsBytes}/${MAX_AGENTS_BYTES} bytes; always-loaded ${effectiveBytes}/${MAX_EFFECTIVE_BYTES} bytes; ` +
+    `nested ${nestedSummary.join(", ") || "none"}.`
 );

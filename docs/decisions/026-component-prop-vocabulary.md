@@ -28,7 +28,7 @@ The options were:
 
 ## Decision
 
-Option 3. The vocabulary is a table in `.claude/rules/components.md` → "Prop vocabulary". The proposal step is in `/component-scaffold`.
+Option 3. The vocabulary is a table in `packages/components/AGENTS.md` → "Prop vocabulary". The proposal step is in `/component-scaffold`.
 
 ### Vocabulary
 

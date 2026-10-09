@@ -27,7 +27,7 @@
       "replace": ""
     },
     {
-      "file": ".claude/rules/components.md",
+      "file": "packages/components/AGENTS.md",
       "find": "; CardVertical `progress` ↔ `Status` (preview).",
       "replace": "."
     },

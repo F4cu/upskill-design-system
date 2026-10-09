@@ -15,7 +15,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 
 - Metadata schema — `packages/components/component.schema.json`
 - Existing component as structural template — pick the closest one in `packages/components/src/` (e.g. for Button use an interactive component; for Card use a container component)
-- Prop vocabulary — `.claude/rules/components.md` → "Prop vocabulary" (ADR-026)
+- Prop vocabulary — `packages/components/AGENTS.md` → "Prop vocabulary" (ADR-026)
 - Figma design context — use Figma MCP (`get_design_context` on the component's Figma node) to read variants, states, token usage, and layout
 
 ## Steps
@@ -39,7 +39,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
      | `size` | Size | variant axis | `'sm' \| 'md'` | `'md'` | `Size` | both |
      | `onValueChange` | Controlled state | event | `(value: string) => void` | — | — | code-only |
 
-     *Concept* is a row of `.claude/rules/components.md` → "Prop vocabulary", or **new term** with a one-line reason. *Kind* ∈ variant axis · lifecycle · content · controlled state · event · native. *Surface* ∈ both · code-only · Figma-only (`State`, `Has <x>`).
+     *Concept* is a row of `packages/components/AGENTS.md` → "Prop vocabulary", or **new term** with a one-line reason. *Kind* ∈ variant axis · lifecycle · content · controlled state · event · native. *Surface* ∈ both · code-only · Figma-only (`State`, `Has <x>`).
    - **Divergences:** every Figma property or value that differs from code by more than casing, and every departure from the vocabulary. Each one is a recorded mapping (ADR-026) or gets fixed; none passes silently.
 
    Inside `/add-component` this checkpoint is part of Stage 1. The approved names are final for steps 4–5. Under `/add-component --eval` it is auto-approved: write the proposal to `api-proposal.md` and continue (see that command's "Eval mode").

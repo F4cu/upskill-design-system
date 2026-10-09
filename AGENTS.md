@@ -18,7 +18,7 @@ Four layers, resolved in this order (later overrides earlier), W3C DTCG format i
 - Runtime selection: `data-brand` and `data-theme` attributes. The import order in `tokens.css` (primitives → default brand → other brands → device → theme.light → theme.dark) is load-bearing for the cascade (ADR-012).
 - DTCG: `$type`/`$value`, `{path.to.token}` aliases. Never commit `$extensions`; `$deprecated` is the exception (mirrored from Airtable).
 - `npm run tokens:build` (`packages/tokens/build.js`) emits CSS custom properties and JS/TS constants. **Components consume only the built output** (`var(--ds-*)`, generated constants), never source JSON, and never raw values.
-- Token conventions (scales, naming, line-heights, build detail): `.claude/rules/tokens.md`.
+- Token conventions (scales, naming, line-heights, build detail): `packages/tokens/AGENTS.md`.
 
 ## Figma
 
@@ -28,7 +28,7 @@ Four layers, resolved in this order (later overrides earlier), W3C DTCG format i
 
 ## Components
 
-Code lives in `packages/components/src/components/<Name>/` (`index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.metadata.json`, `<Name>.spec.json`). Per-component knowledge lives **only** in `metadata.json` / `spec.json`, validated by `packages/components/component.schema.json` and `component.spec.schema.json` (ADR-001). Never add a per-component rules file (ADR-029). Implementation conventions: `.claude/rules/components.md`.
+Code lives in `packages/components/src/components/<Name>/` (`index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.metadata.json`, `<Name>.spec.json`). Per-component knowledge lives **only** in `metadata.json` / `spec.json`, validated by `packages/components/component.schema.json` and `component.spec.schema.json` (ADR-001). Never add a per-component rules file (ADR-029). Implementation conventions: `packages/components/AGENTS.md`.
 
 **Fixed set.** Never add a component outside it unless the scope is explicitly expanded; compose existing ones instead.
 - Core: `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`.

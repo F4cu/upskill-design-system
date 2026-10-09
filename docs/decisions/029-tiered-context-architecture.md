@@ -98,3 +98,24 @@ A tie on any of these is a reportable result and is recorded here as an amendmen
 - **The ablation's Arm 0 would have leaked context.** `scripts/harness-ablation/prepare.js` stripped `CLAUDE.md` but not `AGENTS.md`, so a re-run of Arm 0 would have loaded the conventions it is meant to lack. `AGENTS.md` is now stripped in Arm 0, and the ancestor guard checks for it too. Arms 1 and 2 carry the same content as before, split across two files.
 
 **Portability is still unmeasured.** No non-Claude agent CLI is installed on the maintainer's machine, so the planned smoke test (ask Codex or Cursor for the component set and token layer order) has not run. It is recorded as pending in the PR, and the "Portability is unmeasured" line above still stands.
+
+## Amendment (2026-10-09) — Tier 1 delivery: nested `AGENTS.md` (option b)
+
+**The prerequisite holds.** It was checked on Claude Code 2.1.280 with headless probes in a scratch repo, using a codeword in each file and asking the session to list every codeword in its context:
+
+| Setup | Launch, no reads | After reading a file under the package | After writing a new file there (no read) |
+|---|---|---|---|
+| `pkg/CLAUDE.md` = `@AGENTS.md`, `pkg/AGENTS.md` | not loaded | loaded, import resolved | not loaded |
+| `pkg/AGENTS.md` alone | not loaded | **not loaded** | — |
+| `.claude/rules/x.md` with `paths: pkg/**` (the old mechanism) | not loaded | loaded | not loaded |
+
+A nested `CLAUDE.md` loads lazily and resolves its import, with the same trigger as the path-scoped rules it replaces: a read loads it, a write alone doesn't. Claude Code does **not** read a nested `AGENTS.md` without the sibling import, unlike the root one. So the sibling `CLAUDE.md` is required, not a convenience.
+
+**Decision: (b).** `.claude/rules/components.md` → `packages/components/AGENTS.md` and `.claude/rules/tokens.md` → `packages/tokens/AGENTS.md`, moved with `git mv` and with their `paths:` frontmatter dropped. Each package gets a one-line `CLAUDE.md` containing `@AGENTS.md`. `.claude/rules/` no longer exists. Codex and Cursor get the package conventions by path, natively. That's the portability gain (a) couldn't give, and it's still unmeasured here for the same reason as Tier 0.
+
+**Gate.** `claudemd:check` replaces its `paths:` frontmatter check with three Tier 1 checks:
+- every nested `AGENTS.md` (tracked or untracked, not gitignored) has a sibling `CLAUDE.md` with an `@AGENTS.md` line;
+- each pair is ≤ 16,000 bytes. There was no prior per-rule cap; components sits at 14,530, so the number fixes today's headroom rather than inventing a target;
+- any `.claude/rules/*.md` fails, so package conventions keep one home.
+
+**Harness.** `scripts/harness-ablation/prepare.js` now strips the four nested files in Arm 0 (it used to strip `.claude/`, which held the rules). The CardVertical task's redaction is repointed to `packages/components/AGENTS.md`. The text it removes is unchanged. Arms 1 and 2 carry the same conventions as before, at a new path, delivered by the same lazy trigger. Arm 1b (Step 6) will remove the nested files as well as `.claude/rules/`.

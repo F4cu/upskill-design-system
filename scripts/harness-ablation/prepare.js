@@ -33,6 +33,10 @@ const STRIP_ALL_ARMS = [
 const STRIP_ARM_0 = [
   'CLAUDE.md',
   'AGENTS.md',
+  'packages/components/AGENTS.md',
+  'packages/components/CLAUDE.md',
+  'packages/tokens/AGENTS.md',
+  'packages/tokens/CLAUDE.md',
   'ROADMAP.md',
   '.claude',
   'docs/decisions',

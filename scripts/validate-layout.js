@@ -11,7 +11,7 @@
 // --style-only restricts to the inline-style check alone (skips the
 // landmark/main/section/nav checks, which assume a full route page) — used to
 // gate component .stories.tsx files, which share the same inline-style ban
-// (AGENTS.md "Components" / .claude/rules/components.md) but aren't pages.
+// (AGENTS.md "Components" / packages/components/AGENTS.md) but aren't pages.
 
 import fs from 'fs'
 import path from 'path'

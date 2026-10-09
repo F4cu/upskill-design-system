@@ -15,8 +15,8 @@ This file loads into every session, and so does `AGENTS.md`. Budgets, enforced b
 | Knowledge | Home |
 |---|---|
 | Tool-agnostic invariant any coding agent needs | `AGENTS.md` |
-| Only matters when touching component code | `.claude/rules/components.md` (path-scoped: `packages/components/**`) |
-| Only matters when touching token source/build | `.claude/rules/tokens.md` (path-scoped: `packages/tokens/**`) |
+| Only matters when touching component code | `packages/components/AGENTS.md` (Tier 1; loaded via sibling `CLAUDE.md` when a file under the package is read) |
+| Only matters when touching token source/build | `packages/tokens/AGENTS.md` (Tier 1, same mechanism) |
 | A procedure or multi-step workflow | The relevant command in `.claude/commands/` |
 | Rationale, history, dated amendments, alternatives | The ADR |
 | Human-facing reference or tutorial | `docs/` |
@@ -106,7 +106,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 
 ## Layout and component scope
 
-Layout invariants live in `AGENTS.md`; the full grammar table lives in `/layout-generation`. The fixed component set in `AGENTS.md` is canonical; `/component-scaffold` and `/layout-generation` defer to it. CSS Modules, implementation rules, story conventions, metadata model, a11y tiers: `.claude/rules/components.md`. Token JSON conventions: `.claude/rules/tokens.md`.
+Layout invariants live in `AGENTS.md`; the full grammar table lives in `/layout-generation`. The fixed component set in `AGENTS.md` is canonical; `/component-scaffold` and `/layout-generation` defer to it. CSS Modules, implementation rules, story conventions, metadata model, a11y tiers: `packages/components/AGENTS.md`. Token JSON conventions: `packages/tokens/AGENTS.md`.
 
 ## Architectural decisions (ADRs)
 
@@ -114,7 +114,7 @@ Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-te
 
 **Record one** (as part of the change, not later) for: a change to a contract other code or tooling depends on; a new convention agents must follow to generate or reuse correctly; a reversal or material refinement of an earlier decision; a choice between real alternatives where the reasoning won't be obvious later. **Not** for routine work that follows an existing pattern. Keep the set small.
 
-**How:** new decision → copy the template to the next number, fill Context / Decision / Consequences, `Status: accepted`. Refinement → amend the existing ADR in place (bump `Amended:`, append a dated `## Amendment` section — see ADR-001); reserve a new `superseded by` ADR for a full reversal. The ADR holds the *why*; the *what to do* goes to the narrowest visible surface per "Where knowledge lives" — usually a path-scoped rule or command, CLAUDE.md only when cross-cutting.
+**How:** new decision → copy the template to the next number, fill Context / Decision / Consequences, `Status: accepted`. Refinement → amend the existing ADR in place (bump `Amended:`, append a dated `## Amendment` section — see ADR-001); reserve a new `superseded by` ADR for a full reversal. The ADR holds the *why*; the *what to do* goes to the narrowest visible surface per "Where knowledge lives" — usually a package `AGENTS.md` or command, CLAUDE.md only when cross-cutting.
 
 ## Common tasks
 
@@ -123,7 +123,7 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Task | How |
 |---|---|
 | Add/change a primitive token, semantic alias, or the SD build | `/tokens-author` |
-| Add a brand | Checklist in `.claude/rules/tokens.md` (ADR-012) |
+| Add a brand | Checklist in `packages/tokens/AGENTS.md` (ADR-012) |
 | Push tokens to Airtable, or pull governance state | `/airtable-sync` |
 | Scaffold a new component from the fixed set | `/component-scaffold` |
 | Verified component loop (sense → scaffold → review → PR) | `/add-component` |
@@ -140,6 +140,6 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Mechanical Figma canvas edits (rename, restructure, bind) | `/figma-cli` (local, never CI) |
 | Migrate deprecated token usages to successors | `/token-deprecation-pass` |
 | Build, run, or screenshot Storybook | `/run-storybook` |
-| Add a story to an existing component | Story conventions in `.claude/rules/components.md` |
+| Add a story to an existing component | Story conventions in `packages/components/AGENTS.md` |
 | Add a GitHub Action | Workflow YAML in `.github/workflows/`. Actions call scripts and REST directly — never MCP, never Claude. |
 | Record or amend an ADR | "Architectural decisions (ADRs)" above |
