@@ -80,7 +80,7 @@ packages/tokens/
 └── CLAUDE.md   ← one line, `@AGENTS.md` — what makes rung 2 work in Claude Code
 ```
 
-Claude Code does not read a nested `AGENTS.md` on its own; it does load a nested `CLAUDE.md` lazily, the first time the session reads a file under that directory, and resolves its import. Writing a new file there without reading one does not trigger it — the same behaviour the old `.claude/rules/` `paths:` frontmatter had (verified on 2.1.280, ADR-029).
+Claude Code does not read a nested `AGENTS.md` on its own; it does load a nested `CLAUDE.md` lazily, the first time the session reads a file under that directory, and resolves its import. Writing a new file there without reading one does not trigger it — the same behaviour the old `.claude/rules/` `paths:` frontmatter had (verified on 2.1.280, ADR-029). The root index's pointers are a working fallback when the lazy load doesn't happen. In the ablation's pointer-only arm (nested `CLAUDE.md` removed, ADR-029 Step 6), the agent opened the relevant package `AGENTS.md` itself in 12 of 12 runs, with the same results as path-loading.
 
 ### The tool-agnostic root
 
