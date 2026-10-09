@@ -310,7 +310,7 @@
         },
         "warning": {
           "$type": "color",
-          "$value": "{color.amber.7}"
+          "$value": "{color.amber.dark.9}"
         }
       },
       "on-media": {
