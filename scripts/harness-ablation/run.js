@@ -6,7 +6,7 @@
 // .claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md.
 //
 //   node scripts/harness-ablation/run.js --model <id> --max-budget-usd <n>
-//     [--task badge,checkbox] [--arm 0,1,2] [--runs 3] [--effort <level>] [--dry-run] [--smoke]
+//     [--task badge,checkbox] [--arm 0,1,1b,2] [--runs 3] [--effort <level>] [--dry-run] [--smoke]
 //
 // --smoke is for checking the plumbing on a cheap model: it allows a missing
 // reference.png and writes under .runs/_smoke/, never next to real results.
@@ -27,7 +27,7 @@ const TASKS_DIR = path.join(__dirname, 'tasks')
 const RUNS_DIR = path.join(__dirname, '.runs')
 const SCORE_SCRIPT = path.join(__dirname, 'score.js')
 const WORKSPACES_DIR = path.join(os.tmpdir(), 'upskill-ablation')
-const ARMS = ['0', '1', '2']
+const ARMS = ['0', '1', '1b', '2']
 
 // Same for every arm, so the only difference between arms is the workspace and
 // (Arm 2) the slash command. No MCP (Figma comes from reference.png), no user
@@ -63,7 +63,7 @@ export function isNetworkShaped(input) {
 
 function usage(msg) {
   if (msg) console.error(msg)
-  console.error('Usage: node scripts/harness-ablation/run.js --model <id> --max-budget-usd <n> [--task a,b] [--arm 0,1,2] [--runs N] [--effort <level>] [--dry-run] [--smoke]')
+  console.error('Usage: node scripts/harness-ablation/run.js --model <id> --max-budget-usd <n> [--task a,b] [--arm 0,1,1b,2] [--runs N] [--effort <level>] [--dry-run] [--smoke]')
   process.exit(1)
 }
 
@@ -148,6 +148,15 @@ export function toolUses(events) {
     .filter((c) => c.type === 'tool_use')
 }
 
+// Tier 1 files the session read itself. Arm 1 also gets them loaded by path, which
+// no tool call shows; Arm 1b only ever has them through a read like this.
+export function tier1Reads(uses) {
+  const TIER1_RE = /packages\/(components|tokens)\/AGENTS\.md/
+  return [...new Set(uses
+    .filter((u) => TIER1_RE.test(u.name === 'Bash' ? u.input?.command ?? '' : u.input?.file_path ?? ''))
+    .map((u) => (u.name === 'Bash' ? u.input.command : u.input.file_path).match(TIER1_RE)[0]))]
+}
+
 // What the pilot's transcript review checks first: did anything outside the arm's
 // workspace reach the session, and did the session try to reach out.
 export function contamination(init, result, uses, model) {
@@ -193,6 +202,7 @@ function summarize(task, arm, runIndex, args, ws, agent) {
     usage: result?.usage ?? null,
     subagents: result?.subagent_stats ?? null,
     toolCalls: uses.length,
+    tier1Reads: tier1Reads(uses),
     init: init && {
       tools: init.tools,
       agents: init.agents,
@@ -221,8 +231,9 @@ function collectOutputs(task, ws, runDir) {
   const out = path.join(runDir, 'output')
   fs.rmSync(out, { recursive: true, force: true })
   fs.mkdirSync(out, { recursive: true })
+  for (const rel of task.tokenFiles ?? []) fs.copyFileSync(path.join(ws, rel), path.join(out, path.basename(rel)))
   const componentDir = path.join(ws, 'packages/components/src/components', task.target)
-  if (fs.existsSync(componentDir)) fs.cpSync(componentDir, path.join(out, task.target), { recursive: true })
+  if (task.kind !== 'tokens' && fs.existsSync(componentDir)) fs.cpSync(componentDir, path.join(out, task.target), { recursive: true })
   const extras = ['api-proposal.md', `.claude/handoff/runs/${task.target}.review.json`, `.claude/handoff/runs/${task.target}.run.json`]
   for (const rel of extras) {
     const src = path.join(ws, rel)

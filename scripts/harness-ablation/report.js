@@ -17,8 +17,8 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const TASKS_DIR = path.join(__dirname, 'tasks')
-const ARMS = ['0', '1', '2']
-const ARM_NAMES = { 0: 'Bare repo', 1: 'Context only', 2: 'Full harness' }
+const ARMS = ['0', '1', '1b', '2']
+const ARM_NAMES = { 0: 'Bare repo', 1: 'Context only', '1b': 'Index only', 2: 'Full harness' }
 const PRE_REGISTERED_RUNS = 3
 
 const smoke = process.argv.includes('--smoke')
@@ -44,11 +44,25 @@ function readRuns(task, arm) {
   const pending = []
   for (const run of runs) {
     const file = path.join(dir, run, 'score.json')
-    if (fs.existsSync(file)) scored.push({ run, dir: path.join(dir, run), score: JSON.parse(fs.readFileSync(file, 'utf8')) })
+    if (fs.existsSync(file)) scored.push({ run, dir: path.join(dir, run), score: withProcessBackfill(path.join(dir, run), JSON.parse(fs.readFileSync(file, 'utf8'))) })
     else pending.push(run)
   }
   return { scored, pending }
 }
+
+// Runs scored before contextTokens existed get it from their own result.json, so
+// earlier cells stay comparable. tier1Reads stays null for them: the nested
+// AGENTS.md files didn't exist yet.
+function withProcessBackfill(runDir, score) {
+  const p = score.process
+  if (p.contextTokens === undefined) {
+    const u = JSON.parse(fs.readFileSync(path.join(runDir, 'result.json'), 'utf8')).usage
+    p.contextTokens = u ? (u.input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0) : null
+  }
+  return score
+}
+
+const taskKind = (id) => JSON.parse(fs.readFileSync(path.join(TASKS_DIR, `${id}.json`), 'utf8')).kind ?? 'component'
 
 // The showcase rule: the case study uses the median run, never the best. Runs
 // sort by product violations, then cost; with an even count the upper-middle
@@ -65,7 +79,10 @@ function summarise(task, arm, { scored, pending }) {
   const violations = scores.map((s) => s.product.violations)
   const costs = scores.map((s) => s.process.totalCostUsd ?? 0)
   const clean = scores.filter((s) => s.product.clean).length
-  const vocab = scores.map((s) => s.system.propVocabulary).filter((v) => v.ran)
+  const vocab = scores.map((s) => s.system.propVocabulary).filter((v) => v?.ran)
+  const tier1 = scores.map((s) => s.process.tier1Reads).filter(Array.isArray)
+  const context = scores.map((s) => s.process.contextTokens).filter((n) => typeof n === 'number')
+  const refMatch = scores.map((s) => s.system.referenceMatch).filter(Boolean)
   const reviewers = scores.map((s) => s.process.reviewer).filter(Boolean)
   return {
     task,
@@ -86,8 +103,11 @@ function summarise(task, arm, { scored, pending }) {
     contamination: sum(scores.map((s) => s.process.contaminationFlags)),
     metadataPresent: scores.filter((s) => s.system.metadataPresent).length,
     vocabularyIssues: vocab.length ? mean(vocab.map((v) => v.detail.length)) : null,
-    storyInlineStyle: mean(scores.map((s) => s.system.storyInlineStyle.violations)),
-    storyVisibleText: mean(scores.map((s) => s.system.storyVisibleText.violations)),
+    storyInlineStyle: mean(scores.map((s) => s.system.storyInlineStyle?.violations).filter((n) => n !== undefined)),
+    storyVisibleText: mean(scores.map((s) => s.system.storyVisibleText?.violations).filter((n) => n !== undefined)),
+    tier1Reads: tier1.length ? tier1.filter((r) => r.length).length : null,
+    meanContextTokens: mean(context),
+    referenceMatch: refMatch.length ? `${fmt(mean(refMatch.map((r) => r.matched)))}/${refMatch[0].total}` : null,
     reviewerFindings: reviewers.length ? mean(reviewers.map((r) => r.total)) : null,
     reviewerHighMedium: reviewers.length ? mean(reviewers.map((r) => (r.bySeverity.high ?? 0) + (r.bySeverity.medium ?? 0))) : null,
     breakdown: breakdown(scores),
@@ -124,16 +144,18 @@ function headlineTable(cells) {
     '| Task | Arm | Runs | Clean rate | Mean violations (min–max) | Cost per clean component | Mean cost / run | Mean turns | Mean minutes |',
     '|---|---|---:|---:|---:|---:|---:|---:|---:|',
   ]
-  for (const c of cells) {
+  for (const c of cells.filter((c) => c.runs || c.pending)) {
     const runs = c.pending ? `${c.runs} (+${c.pending} pending)` : `${c.runs}`
     rows.push(`| ${c.task} | ${c.arm} · ${ARM_NAMES[c.arm]} | ${runs} | ${cleanCell(c)} | ${violationsCell(c)} | ${costPerCleanCell(c)} | ${usd(c.meanCost)} | ${fmt(c.meanTurns, 0)} | ${fmt(c.meanMinutes)} |`)
   }
   return rows.join('\n')
 }
 
-// All tasks pooled per arm. Arm 1 vs Arm 2 is the loop-vs-context split: what the
-// agent knows against the loop that checks it.
+// Component tasks pooled per arm. Arm 1 vs Arm 2 is the loop-vs-context split: what
+// the agent knows against the loop that checks it. Token tasks stay out: they
+// run on a later HEAD and only in Arms 1/1b.
 function pooledTable(cells) {
+  cells = cells.filter((c) => taskKind(c.task) === 'component')
   const rows = [
     '| Arm | Runs | Clean rate | Mean violations | Cost per clean component | Total cost |',
     '|---|---:|---:|---:|---:|---:|',
@@ -163,12 +185,14 @@ function breakdownTable(cells) {
 
 function systemTable(cells) {
   const rows = [
-    '| Task | Arm | Metadata written | Prop-vocabulary issues (mean) | Story inline styles (mean) | Story raw text (mean) | Reviewer findings (mean, high+medium) | Budget cut-offs | Contamination flags |',
-    '|---|---|---:|---:|---:|---:|---:|---:|---:|',
+    '| Task | Arm | Metadata written | Prop-vocabulary issues (mean) | Story inline styles (mean) | Story raw text (mean) | Reference aliases matched (mean) | Reviewer findings (mean, high+medium) | Read a Tier 1 file | Context tokens / run (mean) | Budget cut-offs | Contamination flags |',
+    '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
   ]
   for (const c of cells.filter((c) => c.runs)) {
     const reviewer = c.reviewerFindings === null ? '—' : `${fmt(c.reviewerFindings)} (${fmt(c.reviewerHighMedium)})`
-    rows.push(`| ${c.task} | ${c.arm} | ${c.metadataPresent}/${c.runs} | ${fmt(c.vocabularyIssues)} | ${fmt(c.storyInlineStyle)} | ${fmt(c.storyVisibleText)} | ${reviewer} | ${c.budgetCutoffs} | ${c.contamination} |`)
+    const tier1 = c.tier1Reads === null ? '—' : `${c.tier1Reads}/${c.runs}`
+    const context = c.meanContextTokens === null ? '—' : `${Math.round(c.meanContextTokens / 1000)}K`
+    rows.push(`| ${c.task} | ${c.arm} | ${c.metadataPresent}/${c.runs} | ${fmt(c.vocabularyIssues)} | ${fmt(c.storyInlineStyle)} | ${fmt(c.storyVisibleText)} | ${c.referenceMatch ?? '—'} | ${reviewer} | ${tier1} | ${context} | ${c.budgetCutoffs} | ${c.contamination} |`)
   }
   return rows.join('\n')
 }
@@ -227,6 +251,10 @@ Generated: ${new Date().toISOString()} · ${sum(scored.map((c) => c.runs))} scor
 
 Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (\`/add-component <Name> --eval\`). Scope, arms and scoring: \`.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md\`.
 
+Arm 1b = index only (ADR-029 Step 6): Arm 1 with the nested \`packages/*/CLAUDE.md\` removed, so the Tier 1 \`AGENTS.md\` files are reached only through the root index's pointers. Arms 0/1/2 on the component tasks ran on the 2026-10-09 HEAD before ADR-029 shipped (Option B: CLAUDE.md + \`.claude/rules/\`); Arm 1b and the \`feedback\` token task run on the post-ADR-029 HEAD, where Arm 1 is Option C. Scope: \`.claude/handoff/2026-10-09-tiered-context-architecture.handoff.md\` → Step 6.
+
+The \`feedback\` task is scored on tokens, not components: \`tokens:build\`, the baseline commit's \`tokens:contrast-check\` (its PAIRS and waivers, run on the workspace's build), and the traps \`missing-token\`, \`raw-value\`, \`scale-mix\`, \`brand-slot\`, \`reserved-hue\` (error on \`red\`, ADR-014), \`hue-split\`, \`extensions\` and \`collateral-change\`.
+
 A run is **clean** when it has zero product-quality violations: typecheck, lint, the axe sweep over every story, missing deliverables, the pattern-accuracy traps (on an arm's own stories file, \`off-scale-inline-style\` and \`raw-visible-text\` count as system compliance instead), \`unknown-token\`, \`invented-import\` and the brief checklist. **Cost per clean component** = an arm's total cost ÷ its clean runs.
 ${models.length > 1 ? '\n> ⚠ More than one model across scored runs. Arms are comparable only on one model.\n' : ''}${underRun.length ? `\n> N = ${PRE_REGISTERED_RUNS} runs per task × arm is pre-registered; ${underRun.length} cell(s) have fewer. A cell with N = 1 is a pilot, not a result.\n` : ''}
 > **Honest-outcome rule** (handoff, Pre-registration): if Arm 2 doesn't beat Arm 1 by a meaningful margin, report that and question whether the loop and the reviewer earn their cost. Don't tune briefs or traps after seeing results.
@@ -235,7 +263,7 @@ ${models.length > 1 ? '\n> ⚠ More than one model across scored runs. Arms are 
 
 ${headlineTable(cells)}
 
-## All tasks, per arm
+## Component tasks, per arm
 
 Arm 1 vs Arm 2 separates what the agent knows from the loop that checks it.
 
