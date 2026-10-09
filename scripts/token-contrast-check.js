@@ -187,7 +187,7 @@ const PAIRS = [
   [BG("progress"), BG("overlay-subtle"), "icon"],
 
   // Feedback tokens are not yet composed into a shipped component (no
-  // Alert/Toast in the fixed set — see CLAUDE.md "Component scope"), but
+  // Alert/Toast in the fixed set — see AGENTS.md "Components"), but
   // they were part of this pass's fix and are meant to pair with their
   // matching feedback background band, so they're checked pre-emptively.
   [T("feedback-error"), BG("feedback-error")],

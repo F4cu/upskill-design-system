@@ -27,5 +27,5 @@ jobs:
       - name: Docs staleness check
         run: npm run docs:check
 
-      - name: CLAUDE.md context-budget check
+      - name: Context-budget check (CLAUDE.md + AGENTS.md)
         run: npm run claudemd:check

@@ -1,17 +1,20 @@
 # UpSkill Design System
 
+@AGENTS.md
+
+`AGENTS.md` (imported above) holds the tool-agnostic invariants: tokens, Figma vocabulary, component scope, layout grammar, code conventions. This file holds only what Claude sessions need on top: knowledge routing, frozen snapshots, MCP policy, git workflow, commands, agentic moments.
+
 ## Project purpose
 
-A learning-first, **lite agentic** design system for a small SaaS product. Lite means: a fixed, small component set (layout primitives, typography, Button, form inputs, Card — nothing more), and economic maintenance — recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to nine defined moments (see "Agentic moments"). One person must be able to maintain the whole system.
-
-Pipeline: Figma → token export → Style Dictionary build → CSS/JS outputs → coded components, with Airtable as the governance layer and GitHub Actions as the automation layer. See `ROADMAP.md` for phase status and integration/phase status detail.
+**Lite agentic** means economic maintenance: recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to nine defined moments (see "Agentic moments"). See `ROADMAP.md` for phase and integration status.
 
 ## Where knowledge lives (read before adding to this file)
 
-This file loads into every session. Its budget is **≤200 lines and ≤20KB**, enforced by `npm run claudemd:check` in CI (ADR-017). Before adding anything here, route it to the narrowest surface that is visible when it matters:
+This file loads into every session, and so does `AGENTS.md`. Budgets, enforced by `npm run claudemd:check` in CI (ADR-017): this file **≤200 lines and ≤20KB**, `AGENTS.md` **≤8KB**, both together **≤24KB**, and no line duplicated across the two. Before adding anything to either, route it to the narrowest surface that is visible when it matters:
 
 | Knowledge | Home |
 |---|---|
+| Tool-agnostic invariant any coding agent needs | `AGENTS.md` |
 | Only matters when touching component code | `.claude/rules/components.md` (path-scoped: `packages/components/**`) |
 | Only matters when touching token source/build | `.claude/rules/tokens.md` (path-scoped: `packages/tokens/**`) |
 | A procedure or multi-step workflow | The relevant command in `.claude/commands/` |
@@ -19,38 +22,11 @@ This file loads into every session. Its budget is **≤200 lines and ≤20KB**, 
 | Human-facing reference or tutorial | `docs/` |
 | Something that must happen every single time | A script or CI gate, never prose |
 
-This file keeps only cross-cutting invariants, indexes that point elsewhere, and policies that apply to any session. Litmus test per line: would removing it cause a mistake in *most* sessions? If not, it lives elsewhere. The same test applies to each rules file against its path scope.
+The root files keep only cross-cutting invariants, indexes that point elsewhere, and policies that apply to any session. Litmus test per line: would removing it cause a mistake in *most* sessions? If not, it lives elsewhere. If it would: needed by any coding tool → `AGENTS.md`; needed by Claude sessions only → this file. The same test applies to each rules file against its path scope.
 
-## Token architecture
+## Figma moments
 
-### Four-layer model
-
-Tokens resolve in this fixed order — later layers override earlier ones:
-
-| Layer | Files | Purpose |
-|---|---|---|
-| Primitives | `primitives.json` | Raw, context-free values. Single source of truth. Authored as code (hand-edited via PR); Figma is a downstream mirror. See ADR-002 amendment. |
-| Brand | `brands/<brand>.json` (e.g. `upskill`, `horizon`) | Per-brand color ramp mappings (`brand`, `accent`, `neutral`, `surface` slots), `font.family.*`, and literal `border-radius.*`. See ADR-012. |
-| Theme | `theme/light.json`, `theme/dark.json` | Brand-agnostic semantic color aliases. Reference brand slots or functional primitives via `{path.to.token}` — never a brand's underlying hue directly. |
-| Device | `device/desktop.json`, `device/tablet.json`, `device/mobile.json` | Responsive spacing, grid, typography per breakpoint. |
-
-Breakpoints: desktop ≥ 1440px, tablet ≥ 768px, mobile < 768px. Runtime brand selection is a `data-brand` attribute, mirroring `data-theme`; import order in `tokens.css` (primitives → default brand → non-default brands → device → theme.light → theme.dark) is load-bearing for cascade correctness at equal specificity — see ADR-012.
-
-Format is W3C DTCG (`$type`/`$value`, curly-brace aliases, never commit `$extensions` — `$deprecated` is the exception, machine-mirrored from Airtable). Scales, naming conventions, line-height convention, and build detail: `.claude/rules/tokens.md`. Authoring procedure: `/tokens-author`.
-
-## Style Dictionary build
-
-`npm run tokens:build` transforms DTCG source into CSS custom properties and JS/TS constants (`packages/tokens/build.js`). **Invariant:** components only ever consume the built output, never source JSON. Brand/theme build mechanics and post-build gates: `.claude/rules/tokens.md` and ADR-012.
-
-## Figma sync
-
-**Vocabulary:** A **token** is a committed DTCG JSON value in `packages/tokens/src/` (source of truth, code-side). A **variable** is the downstream representation of a token inside a Figma collection.
-
-**The committed DTCG JSON is the source of truth, not Figma** (ADR-002 amendment). Code-first is forced by plan limits: the Variables REST API and Code Connect are Enterprise/Org-only, so the only automatable sync direction is code→Figma (interactive, via figma-cli or Figma MCP). Figma is a downstream mirror and design-exploration surface; a value invented in Figma is a proposal until it lands in `primitives.json` via PR. Before pulling Figma changes into committed tokens, run `/figma-variable-audit` as a drift check — never overwrite primitives without diffing against current usage.
-
-**Representational divergences are not drift.** Figma cannot store unitless values, so line-heights (unitless ratios in code) always differ in Figma. The audit and push moments exclude them; the running list of accepted divergences lives in the drift memory note (`figma-file-variable-drift.md`). See ADR-002.
-
-**The brand layer is not mirrored to Figma.** `/figma-variable-audit` and `/figma-variable-push` operate on the single default brand only — deliberately scoped out, not a gap (ADR-012, Deferred).
+Token authoring: `/tokens-author`. Before pulling Figma changes into committed tokens, run `/figma-variable-audit` as a drift check. The variable moments (`/figma-variable-audit`, `/figma-variable-push`) exclude representational divergences (running list: the drift memory note `figma-file-variable-drift.md`) and operate on the single default brand (ADR-012, Deferred). Code-first is forced by plan limits: the Variables REST API and Code Connect are Enterprise/Org-only, so the only automatable sync direction is code → Figma, interactive via figma-cli or Figma MCP (ADR-002).
 
 ## Frozen-memory snapshots
 
@@ -128,39 +104,9 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 - **Fail-fast.** If the gate fails, bounce back to the scaffold stage with the error.
 - **No agent code reaches `main` unreviewed.** Deterministic gate + adversarial review before a human PR opens.
 
-## Layout grammar
+## Layout and component scope
 
-Every page follows a fixed hierarchy mapping Figma structure to HTML landmarks (ADR-011). The full grammar table lives in `/layout-generation`; enforce deterministically with `npm run layout:validate <file>`.
-
-Load-bearing invariants for **any** layout file (hand-edited or generated):
-- Exactly one `<Box as="main">` per route; every `<Box as="section">` has an accessible name (`aria-labelledby` → its `Heading`); every extra `<nav>` has a unique `aria-label`.
-- **Inline styles:** allowed only for `.container`/`.grid` classNames. Column fill and size constraints go through Box/Stack's `grow` / `minWidth` / `maxWidth` / `minHeight` / `maxHeight` props, never hand-written `style={{ flex: … }}`. Forbidden: raw color (use `<Text color=…>` / `<Heading>`), raw token values outside `var()`, arbitrary CSS that belongs in a CSS Module.
-- Rely on device tokens for responsive spacing/typography; reflow via `.grid` or `Inline wrap`. Never hand-write `@media` in layout files.
-
-## Coding conventions
-
-### JavaScript / TypeScript (components package, scripts)
-- No comments unless the why is non-obvious
-- No defensive error handling for internal paths — only validate at external boundaries (Figma API responses, Airtable webhooks)
-- Prefer explicit over clever
-
-### File naming
-- Token source files: lowercase, no spaces (`primitives.json`, `light.json`)
-- Scripts: `kebab-case.js` or `.ts`
-- Components: `PascalCase/index.tsx` with co-located styles
-
-Token JSON conventions: `.claude/rules/tokens.md`. CSS Modules, component implementation rules, story conventions, metadata model, and a11y tiers: `.claude/rules/components.md`.
-
-### Component scope
-
-Canonical list; `/component-scaffold` and `/layout-generation` defer to it.
-Core set (Phases 4–5): `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`.
-Phase 5b additions (User Settings page): `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`.
-Phase 5c additions (Homepage): `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`.
-Phase 5d additions (Course Overview page): `Accordion`, `Badge`; `Button` gains a `transparent` variant (ghost, ADR-024); `useSlider` hook (stepper state, no component). Also: `Image`, `DropdownMenu`, `TextLink`.
-Never add components outside these lists unless the user expands the scope; compose existing ones instead. `Icon` wraps a small fixed set of inline SVGs (no icon-library dependency); glyphs use `currentColor` and size via `size.*` tokens.
-
-Before proposing a new component file, apply ADR-009: (1) same semantic role → prop/variant on the existing component; (2) different role despite similar shape → new component; (3) single parent, no other consumer → molecule-internal element in the parent's CSS Module. Visual similarity alone never justifies creating or merging components. Parts (`<Parent.Part>`) are not new components: see ADR-023.
+Layout invariants live in `AGENTS.md`; the full grammar table lives in `/layout-generation`. The fixed component set in `AGENTS.md` is canonical; `/component-scaffold` and `/layout-generation` defer to it. CSS Modules, implementation rules, story conventions, metadata model, a11y tiers: `.claude/rules/components.md`. Token JSON conventions: `.claude/rules/tokens.md`.
 
 ## Architectural decisions (ADRs)
 

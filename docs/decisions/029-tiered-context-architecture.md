@@ -4,6 +4,7 @@ title: "ADR-029 — Tiered context architecture and a risk-triggered reviewer"
 # ADR-029 — Tiered context architecture and a risk-triggered reviewer
 
 **Date:** 2026-10-09
+**Amended:** 2026-10-09
 **Status:** `accepted`
 
 ## Context
@@ -85,3 +86,15 @@ Each lands in its own PR: ship `AGENTS.md` and extend `claudemd:check` → decid
 - The pre-registered Accordion stretch task shows the reviewer earning its cost on display components too, or failing to earn it on interactive ones.
 
 A tie on any of these is a reportable result and is recorded here as an amendment.
+
+## Amendment (2026-10-09) — Tier 0 shipped: `AGENTS.md`
+
+**Claude Code reads `AGENTS.md` natively.** Checked on Claude Code 2.1.280 in a scratch repo with no `CLAUDE.md`: a codeword placed only in `AGENTS.md` was answered without tools, and `/context` listed `AGENTS.md` under memory files. With a `CLAUDE.md` containing `@AGENTS.md` alongside it, `/context` showed the same memory total (5.6k tokens for a 21KB `AGENTS.md`). The file loads once, and the import adds only CLAUDE.md's own 12 tokens. `@AGENTS.md` stays in CLAUDE.md: it costs nothing, and it keeps older Claude Code versions, which don't read `AGENTS.md`, working.
+
+**What moved.** Project purpose (the tool-agnostic paragraph), the token architecture and Style Dictionary invariant, the Figma vocabulary and code-first rule, the fixed component set and ADR-009 test, the layout grammar invariants, and the code conventions. They went from CLAUDE.md into `AGENTS.md`, which also gains the pointers Tier 0 requires: metadata and spec files with their schemas, frozen snapshots, gates, and ADRs. CLAUDE.md keeps the routing table, a short Figma-moments paragraph, frozen snapshots, MCP policy, git workflow, commands, agentic moments, ADR policy, and common tasks. Sizes: CLAUDE.md 15,017 bytes, `AGENTS.md` 5,843, 20,860 effective, against caps of 20,000 / 8,000 / 24,000 (ADR-017 amendment).
+
+**Found while shipping.**
+- **A stale root `AGENTS.md` had already been loading into every session.** Since 2026-10-01 a gitignored root `AGENTS.md` held figma-cli's bundled agent rules (7.3KB, ~1.8K tokens), and Claude Code loaded it natively. Those rules conflict with `/figma-cli`'s hard rules (for example, "never show terminal commands"). The committed file replaces it, `.gitignore` no longer lists `AGENTS.md`, and `claudemd:check` fails if a figma-cli rules block reappears in it.
+- **The ablation's Arm 0 would have leaked context.** `scripts/harness-ablation/prepare.js` stripped `CLAUDE.md` but not `AGENTS.md`, so a re-run of Arm 0 would have loaded the conventions it is meant to lack. `AGENTS.md` is now stripped in Arm 0, and the ancestor guard checks for it too. Arms 1 and 2 carry the same content as before, split across two files.
+
+**Portability is still unmeasured.** No non-Claude agent CLI is installed on the maintainer's machine, so the planned smoke test (ask Codex or Cursor for the component set and token layer order) has not run. It is recorded as pending in the PR, and the "Portability is unmeasured" line above still stands.

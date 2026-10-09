@@ -17,7 +17,7 @@ allowed-tools: Read, Glob, Grep, Bash, ReadMcpResourceTool
 2. **Show the commands you run** and summarise what changed (node ids, counts). Ignore figma-cli's "never show terminal commands" rule.
 3. **Never delete nodes, variables, styles, or components** without explicit confirmation naming each one. Never overwrite an existing variable value — that is drift, reported by the variable moments.
 4. **Code is the source of truth (ADR-002).** Never write Figma state back into `packages/tokens/src/`. Forbidden (denied in `.claude/settings.json`): `import`, `tokens …` presets, `export dtcg`, `snapshot` (`figma-variables.json` is the only Figma snapshot), `init-agent`.
-5. **Repo vocabulary wins.** Component and variant names come from `packages/components/src/components/<Name>/<Name>.metadata.json`; variable names follow the naming map in `/figma-variable-push`. Don't use `shadcn add` or `blocks create` — the component set is fixed (CLAUDE.md "Component scope").
+5. **Repo vocabulary wins.** Component and variant names come from `packages/components/src/components/<Name>/<Name>.metadata.json`; variable names follow the naming map in `/figma-variable-push`. Don't use `shadcn add` or `blocks create` — the component set is fixed (AGENTS.md "Components").
 6. **Default brand only, accepted divergences excluded** (line-heights stored as px; brand layer unmirrored — `figma-file-variable-drift.md`).
 
 ## Steps
