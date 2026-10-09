@@ -1,0 +1,17 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding-block: var(--ds-space-inset-xxs);
+  padding-inline: var(--ds-space-inset-xs);
+  border: 1px solid var(--ds-color-border-default);
+  border-radius: var(--ds-border-radius-sm);
+  white-space: nowrap;
+}
+
+.outline {
+  background: transparent;
+}
+
+.filled {
+  background: var(--ds-color-background-overlay-subtlest);
+}

@@ -339,9 +339,169 @@ function reviewerFindings(runDir, target) {
   return { verdict: review.verdict ?? null, total: findings.length, bySeverity, lintErrors: review.lint?.errors ?? null }
 }
 
+// ---------- token tasks ----------
+
+const readJsonFile = (p) => JSON.parse(fs.readFileSync(p, 'utf8'))
+
+function tokenAt(json, dotPath) {
+  return dotPath.split('.').reduce((node, k) => node?.[k], json)
+}
+
+function baselineFile(ws, rel) {
+  const res = sh('git', ['show', `HEAD:${rel}`], ws)
+  return res.status === 0 ? res.stdout : null
+}
+
+// The contrast gate as the baseline commit had it (PAIRS and waivers), run on the
+// workspace's built CSS, so editing the script or waiving a pair can't pass it.
+function baselineContrast(ws) {
+  const dir = path.join(ws, '.ablation-score')
+  fs.rmSync(dir, { recursive: true, force: true })
+  fs.mkdirSync(path.join(dir, 'scripts'), { recursive: true })
+  fs.mkdirSync(path.join(dir, 'packages/tokens'), { recursive: true })
+  fs.symlinkSync(path.join(ws, 'packages/tokens/dist'), path.join(dir, 'packages/tokens/dist'))
+  fs.writeFileSync(path.join(dir, 'scripts/token-contrast-check.js'), baselineFile(ws, 'scripts/token-contrast-check.js'))
+  fs.writeFileSync(path.join(dir, 'scripts/token-contrast-waivers.json'), baselineFile(ws, 'scripts/token-contrast-waivers.json') ?? '[]')
+  fs.writeFileSync(path.join(dir, 'package.json'), '{"type":"module"}\n')
+  const res = sh('node', [path.join(dir, 'scripts/token-contrast-check.js')], ws)
+  fs.rmSync(dir, { recursive: true, force: true })
+  if (res.status === 0) return { violations: 0, detail: [] }
+  // Feedback aliases are brand-independent, so a failing pair repeats once per
+  // brand with the same line; count it once.
+  const failures = [...new Set(res.stderr.split('\n').filter((l) => l.trim().startsWith('✗')).map((l) => l.trim()))]
+  if (failures.length) return { violations: failures.length, detail: failures.slice(0, 20) }
+  const crash = res.stderr.match(/Error: .*/)?.[0] ?? 'contrast check exited non-zero'
+  return { violations: 1, detail: [crash] }
+}
+
+function tokensBuild(ws) {
+  const res = sh('npm', ['run', '-s', 'tokens:build'], ws)
+  if (res.status === 0) return { violations: 0, detail: [] }
+  return { violations: 1, detail: (res.stdout + res.stderr).split('\n').filter(Boolean).slice(-10) }
+}
+
+// Follows semantic-to-semantic aliases inside the theme file to the primitive
+// (or brand slot) the token finally points at.
+function resolveAlias(value, theme, seen = new Set()) {
+  const m = typeof value === 'string' && value.match(/^\{([^}]+)\}$/)
+  if (!m) return null
+  const target = tokenAt(theme, m[1])
+  if (target?.$value !== undefined && !seen.has(m[1])) return resolveAlias(target.$value, theme, new Set([...seen, m[1]])) ?? m[1]
+  return m[1]
+}
+
+const BRAND_SLOTS = ['brand', 'accent', 'neutral', 'surface']
+
+// Pre-registered (ADR-029 Step 6 handoff): what a consumer of the tokens would
+// notice, plus the rules that hold for the shipped reference.
+function tokenTraps(ws, task) {
+  const primitives = readJsonFile(path.join(ws, 'packages/tokens/src/primitives.json'))
+  const hasDarkRamp = (hue) => primitives.color?.[hue]?.dark !== undefined
+  const traps = []
+  const hueOf = {}
+
+  for (const rel of task.tokenFiles) {
+    const mode = path.basename(rel, '.json')
+    const theme = readJsonFile(path.join(ws, rel))
+    if (JSON.stringify(theme).includes('"$extensions"')) traps.push({ trap: 'extensions', file: rel, detail: '$extensions is never committed' })
+    for (const role of task.roles) {
+      for (const tone of task.tones) {
+        const name = `color.${role}.feedback.${tone}`
+        const token = tokenAt(theme, name)
+        if (token?.$value === undefined) {
+          traps.push({ trap: 'missing-token', file: rel, detail: name })
+          continue
+        }
+        const resolved = resolveAlias(token.$value, theme)
+        if (!resolved) {
+          traps.push({ trap: 'raw-value', file: rel, detail: `${name} = ${JSON.stringify(token.$value)}` })
+          continue
+        }
+        const [, hue, ...rest] = resolved.split('.')
+        if (BRAND_SLOTS.includes(hue)) traps.push({ trap: 'brand-slot', file: rel, detail: `${name} → {${resolved}}: feedback follows the active brand` })
+        const reserved = task.reservedHues?.[tone]
+        if (reserved && !reserved.includes(hue)) traps.push({ trap: 'reserved-hue', file: rel, detail: `${name} → {${resolved}}: ${tone} must use ${reserved.join('/')}` })
+        const scale = rest[0] === 'dark' ? 'dark' : rest[0] === 'alpha' ? 'alpha' : 'light'
+        if (hasDarkRamp(hue) && scale !== 'alpha' && scale !== (mode === 'dark' ? 'dark' : 'light')) {
+          traps.push({ trap: 'scale-mix', file: rel, detail: `${name} → {${resolved}} in the ${mode} theme` })
+        }
+        ;(hueOf[tone] ??= new Set()).add(hue)
+      }
+    }
+  }
+  for (const [tone, hues] of Object.entries(hueOf)) {
+    if (hues.size > 1) traps.push({ trap: 'hue-split', file: 'theme', detail: `${tone} spans ${[...hues].join(', ')} across roles or themes` })
+  }
+  return traps
+}
+
+function withoutTargets(json, task) {
+  const copy = structuredClone(json)
+  for (const dotPath of task.deleteTokenPaths) {
+    const keys = dotPath.split('.')
+    const parent = keys.slice(0, -1).reduce((node, k) => node?.[k], copy)
+    if (parent) delete parent[keys.at(-1)]
+  }
+  return copy
+}
+
+// Anything changed outside the target paths: other tokens, primitives, brands,
+// the contrast gate or its waivers. Consumers would see it.
+function collateralChanges(ws, task) {
+  const traps = []
+  const diff = sh('git', ['diff', '--name-only', 'HEAD', '--', 'packages/tokens/src', 'scripts/token-contrast-check.js', 'scripts/token-contrast-waivers.json'], ws)
+  for (const rel of diff.stdout.split('\n').filter(Boolean)) {
+    if (task.tokenFiles.includes(rel)) {
+      const before = baselineFile(ws, rel)
+      const after = fs.readFileSync(path.join(ws, rel), 'utf8')
+      if (JSON.stringify(withoutTargets(JSON.parse(before), task)) !== JSON.stringify(withoutTargets(JSON.parse(after), task))) {
+        traps.push({ trap: 'collateral-change', file: rel, detail: 'tokens outside the feedback group changed' })
+      }
+    } else {
+      traps.push({ trap: 'collateral-change', file: rel, detail: 'file outside the task changed' })
+    }
+  }
+  return traps
+}
+
+// Secondary: how many of the shipped reference's aliases the run reproduced.
+function referenceMatch(ws, task) {
+  let matched = 0
+  let total = 0
+  for (const rel of task.tokenFiles) {
+    const reference = JSON.parse(sh('git', ['show', `HEAD:${rel}`], ROOT).stdout)
+    const generated = readJsonFile(path.join(ws, rel))
+    for (const role of task.roles) {
+      for (const tone of task.tones) {
+        const name = `color.${role}.feedback.${tone}`
+        total++
+        if (resolveAlias(tokenAt(reference, name)?.$value, reference) === resolveAlias(tokenAt(generated, name)?.$value, generated)) matched++
+      }
+    }
+  }
+  return { matched, total }
+}
+
+function scoreTokenWorkspace(ws, task) {
+  const gates = { 'tokens:build': tokensBuild(ws) }
+  gates['tokens:contrast-check'] = gates['tokens:build'].violations ? { violations: 0, detail: ['skipped: build failed'] } : baselineContrast(ws)
+  const productTraps = [...tokenTraps(ws, task), ...collateralChanges(ws, task)]
+
+  const trapCounts = {}
+  for (const v of productTraps) trapCounts[v.trap] = (trapCounts[v.trap] ?? 0) + 1
+  const gateViolations = Object.values(gates).reduce((n, g) => n + g.violations, 0)
+  const violations = gateViolations + productTraps.length
+
+  return {
+    product: { clean: violations === 0, violations, gateViolations, trapViolations: productTraps.length, trapCounts, gates, traps: productTraps },
+    system: { referenceMatch: referenceMatch(ws, task), tokenSourceChanges: tokenSourceChanges(ws) },
+  }
+}
+
 // ---------- scoring ----------
 
 export function scoreWorkspace(ws, task) {
+  if (task.kind === 'tokens') return scoreTokenWorkspace(ws, task)
   const target = task.target
   sh('npm', ['run', '-s', 'tokens:build'], ws)
 
@@ -394,6 +554,8 @@ function scoreRun(runDir) {
       subagentsSpawned: result.subagents?.spawned ?? null,
       reviewer: reviewerFindings(runDir, task.target),
       contaminationFlags: result.contamination.length,
+      tier1Reads: result.tier1Reads ?? null,
+      contextTokens: result.usage ? (result.usage.input_tokens ?? 0) + (result.usage.cache_creation_input_tokens ?? 0) + (result.usage.cache_read_input_tokens ?? 0) : null,
     },
   }
   fs.writeFileSync(path.join(runDir, 'score.json'), JSON.stringify(score, null, 2) + '\n')
@@ -411,7 +573,8 @@ function calibrate(taskId) {
   const prep = sh('node', [path.join(__dirname, 'prepare.js'), taskId, arm, '--out', ws, '--allow-missing-reference'], ROOT)
   if (prep.status !== 0) usage(`prepare.js failed:\n${prep.stderr}`)
 
-  const archive = sh('sh', ['-c', `git archive HEAD ${COMPONENTS_REL}/${task.target} packages/components/src/index.ts | tar -x -C "${ws}"`], ROOT)
+  const restore = task.kind === 'tokens' ? task.tokenFiles.join(' ') : `${COMPONENTS_REL}/${task.target} packages/components/src/index.ts`
+  const archive = sh('sh', ['-c', `git archive HEAD ${restore} | tar -x -C "${ws}"`], ROOT)
   if (archive.status !== 0) usage(`Restoring the reference failed:\n${archive.stderr}`)
 
   const scored = scoreWorkspace(ws, task)
@@ -422,7 +585,7 @@ function calibrate(taskId) {
   for (const [name, g] of Object.entries(scored.product.gates)) if (g.violations) console.log(`  ${name}: ${g.detail.join('\n    ')}`)
   for (const v of scored.product.traps) console.log(`  ${v.trap} ${v.file}${v.line ? `:${v.line}` : ''} ${v.detail}`)
   const vocab = scored.system.propVocabulary
-  if (vocab.ran && !vocab.passed) console.log(`  prop-vocabulary (system): ${vocab.detail.join('; ')}`)
+  if (vocab?.ran && !vocab.passed) console.log(`  prop-vocabulary (system): ${vocab.detail.join('; ')}`)
   process.exit(scored.product.violations > 0 ? 1 : 0)
 }
 

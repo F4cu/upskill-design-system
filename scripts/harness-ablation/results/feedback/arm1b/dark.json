@@ -59,20 +59,6 @@
           "$value": "{color.neutral.dark.1}"
         }
       },
-      "feedback": {
-        "error": {
-          "$type": "color",
-          "$value": "{color.red.dark.5}"
-        },
-        "success": {
-          "$type": "color",
-          "$value": "{color.teal.dark.5}"
-        },
-        "warning": {
-          "$type": "color",
-          "$value": "{color.amber.dark.5}"
-        }
-      },
       "award": {
         "gold": {
           "$type": "color",
@@ -129,6 +115,20 @@
         "hover": {
           "$type": "color",
           "$value": "{color.black.alpha.5}"
+        }
+      },
+      "feedback": {
+        "error": {
+          "$type": "color",
+          "$value": "{color.red.dark.3}"
+        },
+        "success": {
+          "$type": "color",
+          "$value": "{color.teal.dark.3}"
+        },
+        "warning": {
+          "$type": "color",
+          "$value": "{color.amber.dark.3}"
         }
       }
     },
@@ -192,13 +192,13 @@
           "$type": "color",
           "$value": "{color.red.dark.11}"
         },
-        "warning": {
-          "$type": "color",
-          "$value": "{color.amber.dark.11}"
-        },
         "success": {
           "$type": "color",
           "$value": "{color.teal.dark.11}"
+        },
+        "warning": {
+          "$type": "color",
+          "$value": "{color.amber.dark.11}"
         }
       }
     },
@@ -260,7 +260,7 @@
         },
         "warning": {
           "$type": "color",
-          "$value": "{color.amber.dark.6}"
+          "$value": "{color.amber.dark.9}"
         }
       }
     },
@@ -299,20 +299,6 @@
         "$type": "color",
         "$value": "{color.neutral.dark.11}"
       },
-      "feedback": {
-        "error": {
-          "$type": "color",
-          "$value": "{color.red.dark.9}"
-        },
-        "success": {
-          "$type": "color",
-          "$value": "{color.teal.dark.9}"
-        },
-        "warning": {
-          "$type": "color",
-          "$value": "{color.amber.dark.9}"
-        }
-      },
       "on-media": {
         "default": {
           "$type": "color",
@@ -321,6 +307,20 @@
         "halo": {
           "$type": "color",
           "$value": "{color.black.alpha.9}"
+        }
+      },
+      "feedback": {
+        "error": {
+          "$type": "color",
+          "$value": "{color.red.dark.11}"
+        },
+        "success": {
+          "$type": "color",
+          "$value": "{color.teal.dark.11}"
+        },
+        "warning": {
+          "$type": "color",
+          "$value": "{color.amber.dark.11}"
         }
       }
     }

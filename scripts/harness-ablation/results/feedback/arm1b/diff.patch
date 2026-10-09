@@ -1,0 +1,195 @@
+diff --git a/packages/tokens/src/theme/dark.json b/packages/tokens/src/theme/dark.json
+index 5ebf19b..87f9204 100644
+--- a/packages/tokens/src/theme/dark.json
++++ b/packages/tokens/src/theme/dark.json
+@@ -116,6 +116,20 @@
+           "$type": "color",
+           "$value": "{color.black.alpha.5}"
+         }
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.dark.3}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.teal.dark.3}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.amber.dark.3}"
++        }
+       }
+     },
+     "text": {
+@@ -172,6 +186,20 @@
+       "disabled": {
+         "$type": "color",
+         "$value": "{color.neutral.dark.8}"
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.dark.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.teal.dark.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.amber.dark.11}"
++        }
+       }
+     },
+     "border": {
+@@ -220,6 +248,20 @@
+       "default": {
+         "$type": "color",
+         "$value": "{color.border.subtle}"
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.dark.9}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.teal.dark.9}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.amber.dark.9}"
++        }
+       }
+     },
+     "icon": {
+@@ -266,6 +308,20 @@
+           "$type": "color",
+           "$value": "{color.black.alpha.9}"
+         }
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.dark.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.teal.dark.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.amber.dark.11}"
++        }
+       }
+     }
+   }
+diff --git a/packages/tokens/src/theme/light.json b/packages/tokens/src/theme/light.json
+index 245ce63..a9706ca 100644
+--- a/packages/tokens/src/theme/light.json
++++ b/packages/tokens/src/theme/light.json
+@@ -116,6 +116,20 @@
+           "$type": "color",
+           "$value": "{color.black.alpha.5}"
+         }
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.3}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.teal.3}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.amber.2}"
++        }
+       }
+     },
+     "text": {
+@@ -172,6 +186,20 @@
+       "disabled": {
+         "$type": "color",
+         "$value": "{color.neutral.8}"
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.teal.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.amber.10}"
++        }
+       }
+     },
+     "border": {
+@@ -220,6 +248,20 @@
+       "default": {
+         "$type": "color",
+         "$value": "{color.border.subtle}"
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.10}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.teal.10}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.amber.8}"
++        }
+       }
+     },
+     "icon": {
+@@ -266,6 +308,20 @@
+           "$type": "color",
+           "$value": "{color.black.alpha.9}"
+         }
++      },
++      "feedback": {
++        "error": {
++          "$type": "color",
++          "$value": "{color.red.11}"
++        },
++        "success": {
++          "$type": "color",
++          "$value": "{color.teal.11}"
++        },
++        "warning": {
++          "$type": "color",
++          "$value": "{color.amber.9}"
++        }
+       }
+     }
+   }
+diff --git a/scripts/token-contrast-check.js b/scripts/token-contrast-check.js
+index 7142b30..9c27450 100644
+--- a/scripts/token-contrast-check.js
++++ b/scripts/token-contrast-check.js
+@@ -196,6 +196,14 @@ const PAIRS = [
+   [I("feedback-error"), BG("feedback-error")],
+   [I("feedback-success"), BG("feedback-success")],
+   [I("feedback-warning"), BG("feedback-warning")],
++  // Feedback text and status icons also render directly on the page surface.
++  ...AMBIENT.flatMap((bg) => [
++    [T("feedback-success"), bg],
++    [T("feedback-warning"), bg],
++    [I("feedback-error"), bg],
++    [I("feedback-success"), bg],
++    [I("feedback-warning"), bg],
++  ]),
+ 
+   // SplitChart (apps/showcase/src/pipeline/SplitChart.tsx, T5 dashboard
+   // chart primitive) — segment fills and legend swatches always render

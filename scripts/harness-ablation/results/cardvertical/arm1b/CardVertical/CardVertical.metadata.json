@@ -1,0 +1,138 @@
+{
+  "component": {
+    "name": "CardVertical",
+    "category": "molecule",
+    "type": "display",
+    "status": "beta",
+    "description": "A vertical course card (image-top layout): thumbnail, optional ProgressBar under it (stack sm), then a serif title and a meta row (Inline gap md) with optional duration, Certified marker and Completed marker. Completion is derived from progress (progress >= 100 renders the full bar plus a Completed marker). Two sizes: sm (3:2 thumbnail, card-min-sm) for saved-courses carousels, lg (4:5 thumbnail, card-min-lg) for catalog grids. For compact thumbnail-left lists use CardHorizontal; for generic surfaces use Card."
+  },
+  "usage": {
+    "keywords": [
+      "card",
+      "course card",
+      "vertical card",
+      "catalog",
+      "carousel",
+      "saved courses"
+    ],
+    "when": [
+      "Displaying courses in a catalog grid (size lg)",
+      "Displaying saved or started courses in a horizontal carousel (size sm)"
+    ],
+    "patterns": [
+      {
+        "name": "catalog-grid",
+        "description": "Catalog of courses in a responsive grid; each card fills its column.",
+        "tree": "Box(className=grid) > [CardVertical(size=lg, title, duration), CardVertical(size=lg, title, duration, progress=40), ...]"
+      },
+      {
+        "name": "saved-courses-carousel",
+        "description": "Horizontally scrollable row of small cards; each card sits at its min width.",
+        "tree": "ScrollArea(orientation=horizontal) > Inline(gap=md, wrap=false, align=start, style={width:'max-content'}) > [CardVertical(size=sm, ...), ...]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Adding a completed/status flag alongside progress",
+        "reason": "Lifecycle is derived from data (ADR-025): progress omitted = not started, 0–99 = in progress, 100 = completed.",
+        "alternative": "Pass progress={100} for a finished course."
+      },
+      {
+        "scenario": "Packing certification or completion text into duration, e.g. duration=\"12 Hours · Certified\"",
+        "reason": "One prop per datum; the component renders markers and spacing itself.",
+        "alternative": "Pass duration=\"12 Hours\" certified."
+      },
+      {
+        "scenario": "Mixing sizes or mixing CardVertical with CardHorizontal in the same row",
+        "reason": "Different thumbnail ratios break the row's visual rhythm.",
+        "alternative": "Use one size per section: sm in carousels, lg in catalog grids."
+      },
+      {
+        "scenario": "Setting a color on the marker Icons directly",
+        "reason": "Icons inherit currentColor; the card's CSS Module sets color.icon.subtle on the marker wrapper.",
+        "alternative": "Leave marker colouring to the component."
+      }
+    ]
+  },
+  "variants": {
+    "size": {
+      "options": [
+        "sm",
+        "lg"
+      ],
+      "default": "lg",
+      "purpose": {
+        "sm": "Saved-courses carousel: 3:2 thumbnail, min width size.card.min.sm.",
+        "lg": "Catalog grid: 4:5 thumbnail, min width size.card.min.lg."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "notStarted",
+      "description": "progress omitted: no ProgressBar."
+    },
+    {
+      "state": "inProgress",
+      "description": "progress 0–99: ProgressBar under the thumbnail."
+    },
+    {
+      "state": "completed",
+      "description": "progress >= 100: full ProgressBar plus a Completed marker in the meta row."
+    },
+    {
+      "state": "noThumbnail",
+      "description": "thumbnailSrc omitted: Image renders its placeholder."
+    },
+    {
+      "state": "noMeta",
+      "description": "No duration, certified or completion: the meta row is not rendered."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.icon.subtle"
+    ],
+    "spacing": [
+      "space.stack.sm",
+      "space.inline.xs"
+    ],
+    "typography": [],
+    "borderRadius": [],
+    "other": [
+      "size.card.min.sm",
+      "size.card.min.lg"
+    ]
+  },
+  "accessibility": {
+    "role": "article",
+    "ariaAttributes": [
+      "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children, title and aria-labelledby are omitted from the props type",
+      "ProgressBar aria-labelledby → the title id",
+      "headingLevel sets the title element (default h3) to fit the surrounding outline"
+    ],
+    "keyboardInteractions": []
+  },
+  "composition": {
+    "composedOf": [
+      "Image",
+      "ProgressBar",
+      "Heading",
+      "Text",
+      "Icon",
+      "Stack",
+      "Inline"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Inline",
+      "ScrollArea"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "flex-column",
+      "canNest": false
+    }
+  }
+}

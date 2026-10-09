@@ -1,0 +1,27 @@
+{
+  "id": "feedback",
+  "kind": "tokens",
+  "target": "feedback",
+  "redactionsReviewed": true,
+  "tokenFiles": [
+    "packages/tokens/src/theme/light.json",
+    "packages/tokens/src/theme/dark.json"
+  ],
+  "deleteTokenPaths": [
+    "color.background.feedback",
+    "color.text.feedback",
+    "color.border.feedback",
+    "color.icon.feedback"
+  ],
+  "tones": ["error", "success", "warning"],
+  "roles": ["background", "text", "border", "icon"],
+  "reservedHues": {
+    "error": ["red"]
+  },
+  "keyRedactions": [
+    {
+      "file": "packages/tokens/figma-variables.json",
+      "keyPattern": "^color/(background|text|border|icon)/feedback/"
+    }
+  ]
+}

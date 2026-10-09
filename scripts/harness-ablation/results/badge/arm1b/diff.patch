@@ -1,0 +1,267 @@
+diff --git a/.claude/component-patterns.json b/.claude/component-patterns.json
+index aaf5067..fc12f92 100644
+--- a/.claude/component-patterns.json
++++ b/.claude/component-patterns.json
+@@ -18,7 +18,7 @@
+       "pattern": "navigation"
+     }
+   ],
+-  "generatedFrom": "5398925d9d427eaae55e129b03084fafd8778d6f",
++  "generatedFrom": "2514923f763887ffe84d7cf32c65bfb29a51b46c",
+   "patterns": {
+     "action-trigger": {
+       "architecturalStyle": "flat-props",
+@@ -550,6 +550,17 @@
+             "alt (required — pass the person's full name, or empty string when adjacent text already identifies them)"
+           ]
+         },
++        {
++          "component": "Badge",
++          "composition": [
++            "Text"
++          ],
++          "maturity": "beta",
++          "stage": null,
++          "systemSpecificNotes": [
++            "Rendered as a plain <span>; its text is read inline with surrounding content. Not focusable."
++          ]
++        },
+         {
+           "ariaContract": [
+             {
+diff --git a/packages/components/src/components/Badge/Badge.metadata.json b/packages/components/src/components/Badge/Badge.metadata.json
+new file mode 100644
+index 0000000..c5b2a3b
+--- /dev/null
++++ b/packages/components/src/components/Badge/Badge.metadata.json
+@@ -0,0 +1,109 @@
++{
++  "component": {
++    "name": "Badge",
++    "category": "atom",
++    "type": "display",
++    "status": "beta",
++    "description": "Small, non-interactive text label that tags content with a short category or status (e.g. a course topic). Text only — no icon, not clickable. Two looks: outline (bordered, default) and filled (subtlest neutral fill plus border).",
++    "figmaNodeId": "none — designed from reference.png"
++  },
++  "usage": {
++    "keywords": [
++      "badge",
++      "tag",
++      "label",
++      "category",
++      "topic",
++      "status"
++    ],
++    "when": [
++      "Tagging a course or item with its topic (e.g. Design, Design Thinking)",
++      "Showing a short, static status or category next to content"
++    ],
++    "patterns": [
++      {
++        "name": "topic-list",
++        "description": "A wrapping row of outline Badges listing an item's topics.",
++        "tree": "Inline(gap=xs, wrap=true) > [Badge, Badge, Badge]"
++      }
++    ],
++    "antiPatterns": [
++      {
++        "scenario": "Making a Badge clickable or using it as a filter toggle",
++        "reason": "Badge is a display-only <span>; onClick, role and tabIndex are excluded from its props.",
++        "alternative": "Use Chip for filter toggles, TextLink or Button for navigation and actions."
++      },
++      {
++        "scenario": "Adding an icon to a Badge",
++        "reason": "Badge is text-only by design.",
++        "alternative": "Compose Icon and Text in an Inline if an icon label is needed."
++      },
++      {
++        "scenario": "Passing long sentences as Badge content",
++        "reason": "Badge does not wrap (white-space: nowrap); it is for one- to three-word labels.",
++        "alternative": "Use Text for longer descriptive content."
++      },
++      {
++        "scenario": "Overriding the label's typography or color",
++        "reason": "The label renders through Text size=body-small color=subtle; both looks are tuned around it.",
++        "alternative": "Pick the variant prop; don't restyle the inner Text."
++      }
++    ]
++  },
++  "variants": {
++    "variant": {
++      "options": [
++        "outline",
++        "filled"
++      ],
++      "default": "outline",
++      "purpose": {
++        "outline": "Transparent background with the default border. The baseline look.",
++        "filled": "Subtlest neutral overlay fill with the default border, for slightly more emphasis or busier surfaces."
++      }
++    }
++  },
++  "states": [
++    {
++      "state": "default",
++      "description": "Static label — no interactive, lifecycle or content states."
++    }
++  ],
++  "tokens": {
++    "color": [
++      "color.border.default",
++      "color.background.overlay.subtlest"
++    ],
++    "spacing": [
++      "space.inset.xxs",
++      "space.inset.xs"
++    ],
++    "typography": [],
++    "borderRadius": [
++      "border-radius.sm"
++    ],
++    "other": []
++  },
++  "accessibility": {
++    "ariaAttributes": [],
++    "keyboardInteractions": [],
++    "notes": "Rendered as a plain <span>; its text is read inline with surrounding content. Not focusable."
++  },
++  "composition": {
++    "composedOf": [
++      "Text"
++    ],
++    "accepts": [],
++    "containedBy": [
++      "Inline",
++      "Stack",
++      "Box",
++      "Card"
++    ],
++    "layoutBehavior": {
++      "widthBehavior": "hug",
++      "displayType": "inline",
++      "canNest": false
++    }
++  }
++}
+diff --git a/packages/components/src/components/Badge/Badge.module.css b/packages/components/src/components/Badge/Badge.module.css
+new file mode 100644
+index 0000000..735e501
+--- /dev/null
++++ b/packages/components/src/components/Badge/Badge.module.css
+@@ -0,0 +1,17 @@
++.badge {
++  display: inline-flex;
++  align-items: center;
++  padding-block: var(--ds-space-inset-xxs);
++  padding-inline: var(--ds-space-inset-xs);
++  border: 1px solid var(--ds-color-border-default);
++  border-radius: var(--ds-border-radius-sm);
++  white-space: nowrap;
++}
++
++.outline {
++  background: transparent;
++}
++
++.filled {
++  background: var(--ds-color-background-overlay-subtlest);
++}
+diff --git a/packages/components/src/components/Badge/Badge.stories.tsx b/packages/components/src/components/Badge/Badge.stories.tsx
+new file mode 100644
+index 0000000..be1f0ba
+--- /dev/null
++++ b/packages/components/src/components/Badge/Badge.stories.tsx
+@@ -0,0 +1,42 @@
++import type { Meta, StoryObj } from '@storybook/react'
++import { Badge } from './index'
++import { Inline } from '../Inline'
++
++const meta: Meta<typeof Badge> = {
++  title: 'Components/Badge',
++  component: Badge,
++  argTypes: {
++    variant: { control: 'inline-radio', options: ['outline', 'filled'] },
++    children: { control: 'text' },
++  },
++}
++
++export default meta
++type Story = StoryObj<typeof Badge>
++
++export const Default: Story = {
++  args: {
++    children: 'Design',
++    variant: 'outline',
++  },
++}
++
++export const Filled: Story = {
++  args: {
++    children: 'Design',
++    variant: 'filled',
++  },
++}
++
++export const TopicList: Story = {
++  args: {
++    variant: 'outline',
++  },
++  render: args => (
++    <Inline gap="xs" wrap>
++      <Badge {...args}>Design</Badge>
++      <Badge {...args}>Design Thinking</Badge>
++      <Badge {...args}>UX Research</Badge>
++    </Inline>
++  ),
++}
+diff --git a/packages/components/src/components/Badge/index.tsx b/packages/components/src/components/Badge/index.tsx
+new file mode 100644
+index 0000000..7a73abb
+--- /dev/null
++++ b/packages/components/src/components/Badge/index.tsx
+@@ -0,0 +1,20 @@
++import type { HTMLAttributes } from 'react'
++import { Text } from '../Text'
++import styles from './Badge.module.css'
++
++export type BadgeVariant = 'outline' | 'filled'
++
++export type BadgeProps = {
++  variant?: BadgeVariant
++  children: React.ReactNode
++} & Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'color' | 'onClick' | 'tabIndex' | 'role'>
++
++export function Badge({ variant = 'outline', children, className, ...rest }: BadgeProps) {
++  return (
++    <span className={[styles.badge, styles[variant], className].filter(Boolean).join(' ')} {...rest}>
++      <Text as="span" size="body-small" color="subtle">
++        {children}
++      </Text>
++    </span>
++  )
++}
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index eb4ad0f..0fd9e72 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -96,3 +96,6 @@ export type { UseSliderReturn } from './hooks/useSlider'
+ 
+ export { TextLink } from './components/TextLink'
+ export type { TextLinkProps, TextLinkSize } from './components/TextLink'
++
++export { Badge } from './components/Badge'
++export type { BadgeProps, BadgeVariant } from './components/Badge'
+diff --git a/scripts/token-contrast-check.js b/scripts/token-contrast-check.js
+index d4dcd66..434d279 100644
+--- a/scripts/token-contrast-check.js
++++ b/scripts/token-contrast-check.js
+@@ -114,6 +114,8 @@ const PAIRS = [
+   ]),
+   [T("subtle"), BG("overlay-subtlest")],
+   [T("selected"), BG("overlay-subtlest")],
++  // Badge — outline reuses the ambient text.subtle pair; filled sits on
++  // overlay.subtlest (the Chip hover pair above). Border is decorative.
+ 
+   // DropdownMenu — panel is container.canvas; hover/focus overlays overlay.hover
+   [T("default"), BG("container-canvas")],

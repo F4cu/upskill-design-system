@@ -17,7 +17,7 @@ import { execSync, spawnSync } from 'child_process'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '../..')
 const TASKS_DIR = path.join(__dirname, 'tasks')
-const ARMS = ['0', '1', '2']
+const ARMS = ['0', '1', '1b', '2']
 
 // Not part of any arm's context, and each describes the target's API, usage or
 // scoring: the consumer apps, the human reference docs, the eval harnesses, and
@@ -58,9 +58,14 @@ const STRIP_ARM_0 = [
 // Arm 1: the context without the loop.
 const STRIP_ARM_1 = ['.claude/commands', '.claude/agents', '.claude/skills']
 
+// Arm 1b: Arm 1 with Tier 1 delivery removed (ADR-029 Step 6). The nested
+// AGENTS.md files stay, so conventions are reachable only through the root
+// index's pointers, never loaded by path.
+const STRIP_ARM_1B = [...STRIP_ARM_1, 'packages/components/CLAUDE.md', 'packages/tokens/CLAUDE.md']
+
 function usage(msg) {
   if (msg) console.error(msg)
-  console.error('Usage: node scripts/harness-ablation/prepare.js <task> <arm 0|1|2> [--out <dir>] [--allow-missing-reference]')
+  console.error('Usage: node scripts/harness-ablation/prepare.js <task> <arm 0|1|1b|2> [--out <dir>] [--allow-missing-reference]')
   process.exit(1)
 }
 
@@ -127,6 +132,7 @@ function stripArm(ws, arm) {
     })
   }
   if (arm === '1') for (const rel of STRIP_ARM_1) rm(ws, rel)
+  if (arm === '1b') for (const rel of STRIP_ARM_1B) rm(ws, rel)
 }
 
 // Drop scripts whose file or workspace no longer exists, so the arm isn't
@@ -150,7 +156,47 @@ function prunePackageJson(ws) {
   fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n')
 }
 
+const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'))
+const writeJson = (p, data) => fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n')
+
+// Token tasks delete dot-paths (e.g. `color.text.feedback`) from each listed
+// source file. A path that isn't there is an error, like a stale redaction.
+function deleteTokens(ws, task) {
+  for (const rel of task.tokenFiles) {
+    const p = path.join(ws, rel)
+    const json = readJson(p)
+    for (const dotPath of task.deleteTokenPaths) {
+      const keys = dotPath.split('.')
+      const parent = keys.slice(0, -1).reduce((node, k) => node?.[k], json)
+      if (!parent || !(keys.at(-1) in parent)) throw new Error(`deleteTokenPaths entry not found in ${rel}: ${dotPath}`)
+      delete parent[keys.at(-1)]
+    }
+    writeJson(p, json)
+  }
+}
+
+function stripKeys(node, re) {
+  if (Array.isArray(node)) return node.map((v) => stripKeys(v, re))
+  if (node && typeof node === 'object') {
+    return Object.fromEntries(Object.entries(node).filter(([k]) => !re.test(k)).map(([k, v]) => [k, stripKeys(v, re)]))
+  }
+  return node
+}
+
+// Structured redaction for JSON files that mirror the answer (figma-variables.json
+// holds every theme value): drop every key matching the pattern, anywhere.
+function applyKeyRedactions(ws, task) {
+  for (const r of task.keyRedactions ?? []) {
+    const p = path.join(ws, r.file)
+    const raw = fs.readFileSync(p, 'utf8')
+    const next = JSON.stringify(stripKeys(JSON.parse(raw), new RegExp(r.keyPattern)), null, 2) + '\n'
+    if (next === raw) throw new Error(`keyRedactions pattern matched nothing in ${r.file}: ${r.keyPattern}`)
+    fs.writeFileSync(p, next)
+  }
+}
+
 function deleteTarget(ws, task) {
+  if (task.kind === 'tokens') return deleteTokens(ws, task)
   const target = task.target
   rm(ws, `packages/components/src/components/${target}`)
   for (const rel of task.deleteFiles ?? []) {
@@ -268,6 +314,7 @@ function regenerateAfterCommit(ws, arm) {
 }
 
 function copyReference(ws, task, allowMissing) {
+  if (!task.referencePng) return false
   const src = path.join(TASKS_DIR, task.referencePng)
   if (fs.existsSync(src)) {
     fs.copyFileSync(src, path.join(ws, 'reference.png'))
@@ -324,8 +371,9 @@ function main() {
   archiveHead(ws)
   stripArm(ws, arm)
   deleteTarget(ws, task)
-  if (arm !== '0') stripRelationships(ws, task.target)
+  if (arm !== '0' && task.kind !== 'tokens') stripRelationships(ws, task.target)
   const redacted = applyRedactions(ws, task)
+  applyKeyRedactions(ws, task)
   prunePackageJson(ws)
   linkNodeModules(ws)
   const hasReference = copyReference(ws, task, args.allowMissingReference)

@@ -119,3 +119,40 @@ A nested `CLAUDE.md` loads lazily and resolves its import, with the same trigger
 - any `.claude/rules/*.md` fails, so package conventions keep one home.
 
 **Harness.** `scripts/harness-ablation/prepare.js` now strips the four nested files in Arm 0 (it used to strip `.claude/`, which held the rules). The CardVertical task's redaction is repointed to `packages/components/AGENTS.md`. The text it removes is unchanged. Arms 1 and 2 carry the same conventions as before, at a new path, delivered by the same lazy trigger. Arm 1b (Step 6) will remove the nested files as well as `.claude/rules/`.
+
+## Amendment (2026-10-09) — Step 6 readout: Arm 1b and an out-of-path task
+
+**Setup, locked before any run** (handoff Step 6, developer decisions):
+- **Arm 1b is pointer-only:** Arm 1 minus the nested `packages/*/CLAUDE.md`. The nested `AGENTS.md` files stay, so Tier 1 conventions are reachable only by following the root index's pointers. That's Vercel-style index plus retrieval, and roughly what a tool that loads only the root `AGENTS.md` sees. The Tier 1 amendment above said Arm 1b would remove the nested files too. That was rejected, because it would leave the root pointer dangling and test content removal, not delivery.
+- **Baselines:** the three component tasks compare against the historical Arm 1 without re-running it. A new `feedback` token task runs Arms 1 and 1b on the same HEAD.
+- **Feedback task:** it deletes the 24 `color.{background,text,border,icon}.feedback.*` theme tokens and asks for them back. It's scored on `tokens:build`, the baseline contrast gate, and eight traps.
+- **Prediction:** a tie on violations, with 1b cheaper.
+- **Run settings:** `claude-opus-5-5`, effort medium, N = 3, 15 runs, $10.33.
+
+| Task set | Arm 1 | Arm 1b |
+|---|---|---|
+| badge · checkbox · cardvertical (Arm 1 historical, pre-ADR-029 HEAD) | 9/9 clean · $0.91 per clean · 871K / 1,060K / 1,284K context tokens per run | 9/9 clean · $0.78 per clean · 740K / 770K / 1,056K |
+| feedback (same HEAD) | 1/3 clean · $0.70 per run · 599K | 1/3 clean · $0.39 per run · 282K |
+| Read the relevant Tier 1 file itself | (loaded by path) | 12/12 runs |
+
+**Against the revisit triggers:**
+1. **Arm 1b vs Arm 1 on violations: no difference.** On tokens, 1b is cheaper on every task. That doesn't argue for dropping the nested `CLAUDE.md` siblings, for two reasons:
+   - When 1b follows the pointer and reads the file, the same bytes enter context that path-loading would have added. Delivery can't explain the gap.
+   - The component comparison is against a different HEAD, with a 20KB monolithic CLAUDE.md and `.claude/rules/`. On the same HEAD, the feedback gap comes from scope, not overhead. Two of Arm 1's three runs added `green`/`yellow` primitives and amended ADR-014 (below). Arm 1's one plain run used 272K, in line with 1b's 248K–339K.
+
+   Tier 1 delivery stays option (b).
+2. **The out-of-path task shows path-scoping didn't matter here.** Both arms read `packages/tokens/AGENTS.md` in 3/3 runs, and both produced the same violations. This is the first measurement on a task outside `packages/components/**`. The prediction held.
+3. **Accordion has not run.** Its trigger is still open.
+
+**Sensitivity of the feedback score.** All four feedback "violations" (two per arm) are the pre-registered `collateral-change` trap. None is a defect:
+- Arm 1 runs 1 and 3 found that `teal` and `amber` are brand-slot hues. They added Radix `green`/`yellow` as reserved feedback hues and amended ADR-014, which is option 1 of #128, unprompted.
+- Arm 1b runs 1 and 3 added feedback pairs to the contrast `PAIRS`, which is the documented convention. They only added pairs, and the score uses the baseline script, so the gate wasn't weakened.
+
+The headline keeps the locked trap (developer decision). Under a narrower trap (additive primitives and new PAIRS allowed; changes to existing tokens, removed pairs and waivers still counted), both arms are 3/3. The verdict is a tie either way.
+
+**Also seen:**
+- The pointers worked in 12/12 Arm 1b runs. For Claude, an index that names the Tier 1 file is enough to get it read.
+- Arm 1b's secondary drift: 2/3 Badge runs named the variant value `outlined` instead of `outline` (Arms 0 and 2 did the same; Arm 1 didn't). One Checkbox run wrote no metadata.
+- A Stage 0 calibration fix: dark `icon.feedback.warning` aliased a light-scale amber step. It now uses `amber.dark.9`.
+
+**Still unmeasured:** portability (no non-Claude CLI has run), and the Accordion task. Confidence stays limited: N = 3, and the component tasks were already at ceiling for Arm 1.

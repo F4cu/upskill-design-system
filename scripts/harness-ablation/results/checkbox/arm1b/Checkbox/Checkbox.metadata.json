@@ -1,0 +1,138 @@
+{
+  "component": {
+    "name": "Checkbox",
+    "category": "atom",
+    "type": "input",
+    "status": "beta",
+    "description": "A single on/off choice with a visible text label, wrapping a native checkbox input. Clicking the label toggles it. Works uncontrolled (defaultChecked), controlled (checked + onChange), and inside native forms (name/value submit when checked)."
+  },
+  "usage": {
+    "keywords": [
+      "checkbox",
+      "toggle",
+      "option",
+      "boolean",
+      "form",
+      "settings",
+      "preferences",
+      "opt-in"
+    ],
+    "when": [
+      "A settings or form field is a single independent yes/no choice (e.g. a notification preference)",
+      "Several independent options can each be on or off at once",
+      "The choice is applied on form submit rather than immediately as a filter \u2014 use Chip for pressed filters"
+    ],
+    "patterns": [
+      {
+        "name": "preferences-stack",
+        "description": "A vertical list of independent preferences inside a Card, sharing a name so checked values submit together.",
+        "tree": "Card > Stack(gap=md) > [Heading, Checkbox, Checkbox, Checkbox]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Using Checkbox for mutually exclusive options",
+        "reason": "Checkboxes are independent; nothing prevents selecting several.",
+        "alternative": "Use Select for a single choice from a fixed list."
+      },
+      {
+        "scenario": "Rendering the label text yourself next to the Checkbox",
+        "reason": "The label prop is rendered inside the wrapping <label>, which makes the text clickable and gives the input its accessible name.",
+        "alternative": "Pass the visible text through the label prop."
+      },
+      {
+        "scenario": "Using pressed/onPressedChange or a custom value/onValueChange pair",
+        "reason": "Checkbox wraps a native input and keeps native names (ADR-026).",
+        "alternative": "Use checked/defaultChecked + onChange (read event.target.checked)."
+      }
+    ]
+  },
+  "variants": {
+    "checked": {
+      "options": [
+        "false",
+        "true"
+      ],
+      "default": "false",
+      "purpose": {
+        "false": "Unticked. Input background with a strong neutral border.",
+        "true": "Ticked. Brand-filled box with an inverted check glyph. Native checked/defaultChecked + onChange (ADR-026); disabled applies in either state."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "unchecked",
+      "description": "Input background with a strong neutral border."
+    },
+    {
+      "state": "checked",
+      "description": "Brand-filled box with an inverted check glyph. Set via checked or defaultChecked."
+    },
+    {
+      "state": "hover",
+      "description": "Stronger border while unchecked."
+    },
+    {
+      "state": "disabled",
+      "description": "Muted border and label; checked boxes fill with the disabled background. Interaction blocked natively; works checked or unchecked."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.background.input",
+      "color.background.brand",
+      "color.background.disabled",
+      "color.border.input.default",
+      "color.border.input.hover",
+      "color.border.selected",
+      "color.border.disabled",
+      "color.icon.inverted.default"
+    ],
+    "spacing": [
+      "space.inline.sm"
+    ],
+    "typography": [],
+    "borderRadius": [
+      "border-radius.xs"
+    ],
+    "other": [
+      "size.300",
+      "size.025"
+    ]
+  },
+  "accessibility": {
+    "role": "checkbox",
+    "ariaAttributes": [
+      "checked state exposed natively by <input type=\"checkbox\">",
+      "accessible name from the wrapping <label>"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Moves focus to the checkbox"
+      },
+      {
+        "key": "Space",
+        "action": "Toggles the checked state"
+      }
+    ]
+  },
+  "composition": {
+    "composedOf": [
+      "Icon",
+      "Text"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "hug",
+      "displayType": "flex-row",
+      "canNest": false
+    }
+  }
+}
