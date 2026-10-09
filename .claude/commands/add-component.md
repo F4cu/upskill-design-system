@@ -75,7 +75,7 @@ Delegate to `/review-component <Name>` — the **full** review path (`path: "ful
 
 ## Eval mode (`--eval`)
 
-Arm 2 of the harness-ablation eval (`.claude/handoff/2026-10-07-harness-ablation-eval.handoff.md`) runs this loop under `claude -p` with no human present. `--eval` keeps every stage that measures the harness — sense, the API proposal, the gate, the adversarial reviewer, the fix pass — and replaces only the human checkpoints and the outward-facing steps. Everything not listed here runs exactly as above.
+Arm 2 of the harness-ablation eval (`.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md`) runs this loop under `claude -p` with no human present. `--eval` keeps every stage that measures the harness — sense, the API proposal, the gate, the adversarial reviewer, the fix pass — and replaces only the human checkpoints and the outward-facing steps. Everything not listed here runs exactly as above.
 
 **Guard.** Before Stage 0, check that `.ablation-workspace` exists at the repo root (written by `scripts/harness-ablation/prepare.js`; never committed). If it is absent, stop and say `--eval` only runs in an ablation workspace. This keeps the review-skipping path off the real repo.
 

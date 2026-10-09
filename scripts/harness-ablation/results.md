@@ -2,7 +2,7 @@
 
 Generated: 2026-10-09T12:44:46.028Z · 27 scored run(s) · model: claude-opus-5-5
 
-Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (`/add-component <Name> --eval`). Scope, arms and scoring: `.claude/handoff/2026-10-07-harness-ablation-eval.handoff.md`.
+Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (`/add-component <Name> --eval`). Scope, arms and scoring: `.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md`.
 
 A run is **clean** when it has zero product-quality violations: typecheck, lint, the axe sweep over every story, missing deliverables, the pattern-accuracy traps (on an arm's own stories file, `off-scale-inline-style` and `raw-visible-text` count as system compliance instead), `unknown-token`, `invented-import` and the brief checklist. **Cost per clean component** = an arm's total cost ÷ its clean runs.
 

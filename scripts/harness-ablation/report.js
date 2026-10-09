@@ -3,7 +3,7 @@
 // and copies each cell's median run into results/<task>/arm<N>/ for the
 // case-study figure. Kept separate from run.js so a partial run regenerates the
 // report from everything accumulated. Metrics and rules:
-// .claude/handoff/2026-10-07-harness-ablation-eval.handoff.md → "Scoring",
+// .claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md → "Scoring",
 // "Pre-registration".
 //
 //   node scripts/harness-ablation/report.js [--smoke]
@@ -225,7 +225,7 @@ function main() {
 
 Generated: ${new Date().toISOString()} · ${sum(scored.map((c) => c.runs))} scored run(s) · model${models.length === 1 ? '' : 's'}: ${models.join(', ') || '—'}
 
-Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (\`/add-component <Name> --eval\`). Scope, arms and scoring: \`.claude/handoff/2026-10-07-harness-ablation-eval.handoff.md\`.
+Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (\`/add-component <Name> --eval\`). Scope, arms and scoring: \`.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md\`.
 
 A run is **clean** when it has zero product-quality violations: typecheck, lint, the axe sweep over every story, missing deliverables, the pattern-accuracy traps (on an arm's own stories file, \`off-scale-inline-style\` and \`raw-visible-text\` count as system compliance instead), \`unknown-token\`, \`invented-import\` and the brief checklist. **Cost per clean component** = an arm's total cost ÷ its clean runs.
 ${models.length > 1 ? '\n> ⚠ More than one model across scored runs. Arms are comparable only on one model.\n' : ''}${underRun.length ? `\n> N = ${PRE_REGISTERED_RUNS} runs per task × arm is pre-registered; ${underRun.length} cell(s) have fewer. A cell with N = 1 is a pilot, not a result.\n` : ''}

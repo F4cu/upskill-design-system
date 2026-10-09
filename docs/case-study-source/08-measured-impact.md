@@ -21,7 +21,7 @@ Every number below is tagged **Measured** (read directly off a committed artifac
 
 **Higher-quality output.** Lint runs on every commit (Tier 1), and coverage plus behavioral accessibility tests run before merge (Tier 2, ADR-008) — designers and developers inherit accessible components rather than auditing them after the fact.
 
-- Gate, then human, then reviewer: across `/add-component` runs the deterministic gate passed 12 of 12; a human visual go/no-go (Stage 2b/2c, ADR-007) runs *before* the adversarial reviewer is even spawned, so the fresh-context reviewer only ever sees a component the maintainer has already accepted on sight — and it still caught extra findings in 7 of 12 runs before a human read the code (18 findings total, measured — see "Gates and the adversarial reviewer" below).
+- Gate, then human, then reviewer: across `/add-component` runs the deterministic gate passed 12 of 12; a human visual go/no-go (Stage 2b/2c, ADR-007) runs *before* the adversarial reviewer is even spawned, so the fresh-context reviewer only ever sees a component the maintainer has already accepted on sight — and it still caught extra findings in 7 of 12 runs before a human read the code (18 findings total, measured — see "Gates and the adversarial reviewer" below). Caveat: in the controlled harness ablation, the full loop never beat context alone on the product-quality headline and cost about 1.7× as much per clean component — the reviewer's catches there were real but fell outside what the scorer counts (see "The harness ablation" below).
 - Learning loop: each finding routes back into component metadata via `/extract-learnings`, so the next generation inherits the fix as a checked rule rather than repeating the mistake — reviewers spend their time on judgment, not on catching regressions the system already knows about.
 - Caveat: the routing mechanism is measured as a process (findings do get written back); no before/after experiment measures whether later generations actually produce fewer of the same mistake, so the compounding-quality effect itself stays a reasoned claim, not a tracked one.
 
@@ -91,6 +91,73 @@ The one controlled experiment in the repo (`scripts/pattern-accuracy-harness/`, 
 
 External anchors for the gate-plus-generator architecture generally: the LLM-Modulo position paper (Kambhampati et al., ICML 2024, [arXiv:2402.01817](https://arxiv.org/abs/2402.01817)) — LLMs generate candidates, external sound critics verify, because the models cannot reliably self-verify; Huang et al. (ICLR 2024, [arXiv:2310.01798](https://arxiv.org/abs/2310.01798)) — intrinsic self-correction without external feedback often *degrades* output, which is why the gate is a script and not a "please double-check" prompt. For the fresh-context reviewer specifically, a 2026 controlled study ([arXiv:2603.12123](https://arxiv.org/abs/2603.12123)) found fresh-session review outperformed same-session self-review (F1 28.6% vs 24.6%) on 150 injected errors — a single-author preprint, not yet peer-reviewed, so it's suggestive corroboration paired with the peer-reviewed self-correction result, not settled proof.
 
+## The harness ablation: what the context buys, and what the loop doesn't (yet)
+
+The pattern-schema harness measured *context*: single-shot prompts, no tools. The second controlled experiment (`scripts/harness-ablation/`, October 2026) measures the *harness* — tools, gates, the retry loop, the reviewer — by taking pieces of it away. It follows the with/without method of Vercel's AGENTS.md eval and Atlassian's context-delivery eval. Three arms, the same brief, the same model (`claude-opus-5-5`, effort medium, $5 cap per run), each run agentic (`claude -p` with tools) in a fresh workspace:
+
+- **Arm 0, bare repo.** Components, tokens, stories and the standard npm scripts. No `CLAUDE.md`, no `.claude/`, no ADRs, no metadata. The fair baseline: a team with a good component library and no agent harness, not "Claude with nothing".
+- **Arm 1, context only.** Arm 0 plus `CLAUDE.md`, rules, ADRs and metadata, but no commands, agents or skills — the agent knows the conventions, nothing checks it.
+- **Arm 2, full harness.** Everything, driven by `/add-component <Name> --eval`: scaffold, deterministic gate with retries, one adversarial reviewer subagent, fix step.
+
+Each task deletes a component that already ships and asks for it back, so the shipped version is the answer key: `Badge` (display-only, token-heavy), `Checkbox` (input, a11y contract), `CardVertical` (composite preset). 3 tasks × 3 arms × 3 runs = 27 runs, sequential. Leakage was controlled rather than assumed: the workspace is a `git archive` with a fresh history and an expired reflog; the target's directory, export, stories and screenshot baselines go; lines in ADRs and rules that describe the target's own API or Figma mapping are redacted by exact match (a redaction that stops matching fails the run instead of leaking silently); every transcript was read for leaks and git archaeology before any score was trusted.
+
+**Pre-registered before the first run:** a prediction (violations Arm 0 > Arm 1 > Arm 2, Arm 2 most expensive per run), the same honest-outcome rule as the pattern harness ("if Arm 2 doesn't beat Arm 1 by a meaningful margin, report that and question whether the loop and the reviewer earn their cost"), median-run-only figures, and N = 3. Every task brief, trap and checklist was locked before its task ran.
+
+Scoring is a script, run inside each workspace with the repo's real gates, in two buckets kept apart so Arm 0 isn't penalised for conventions it was never shown. **Product quality** (the headline — what a consumer would notice): typecheck, lint with jsx-a11y, axe over every story, missing deliverables, raw hex/px traps, an `unknown-token` trap (every `var(--ds-*)` must exist in the built CSS), an `invented-import` trap, and a per-task checklist. **System compliance** (reported, never added in): metadata, prop vocabulary (ADR-026), story conventions.
+
+### Results (measured)
+
+| Arm | Clean runs | Mean violations | Total cost | Cost per clean component |
+|---|---:|---:|---:|---:|
+| 0 · Bare repo | 6 / 9 | 0.7 | $4.39 | $0.73 |
+| 1 · Context only | 9 / 9 | 0.0 | $8.21 | $0.91 |
+| 2 · Full harness | 9 / 9 | 0.0 | $13.85 | $1.54 |
+
+Per task, only one separates the arms:
+
+| Task | Arm 0 | Arm 1 | Arm 2 |
+|---|---|---|---|
+| Badge | 3/3 clean · $0.33/run | 3/3 · $0.72 | 3/3 · $1.34 |
+| Checkbox | **0/3 clean** · 2.0 violations/run · $0.67/run | 3/3 · $0.92 | 3/3 · $1.58 |
+| CardVertical | 3/3 · $0.46 | 3/3 · $1.10 | 3/3 · $1.70 |
+
+Arm 0's Checkbox failures are real and identical in all three runs: the label rendered as raw text outside `Text`, and the change callback named `onCheckedChange` instead of the native `onChange` the system's ADR-025 contract keeps for form inputs. Both are conventions a reader of the neighbouring components could have inferred and didn't; both are written down in the context Arm 1 gets.
+
+### The honest reading
+
+The pre-registered prediction held on one half and failed on the other.
+
+- **Context earns its cost.** Arm 0 → Arm 1 is the only step that changes the headline: 6/9 → 9/9 clean, for about 1.9× the spend per run. On the task where the conventions mattered, the bare repo produced zero shippable components for $2.02; context produced three for $2.76.
+- **The loop and the reviewer don't show up in the headline.** Arm 2 never beats Arm 1 on any task, and costs about 1.7× as much per clean component. Under the honest-outcome rule, that is the result, and it is reported as one.
+
+Two things qualify that result without overturning it.
+
+**What the loop's retries actually fixed.** Arm 2's gate failed 12 times across its 9 runs, and every failure was `metadata:validate` — tokens listed that the component reads only through `Text` or `Icon`, a schema enum, a CSS-spelled token path, one stray directory from a `mkdir` in the wrong folder. The retry loop repaired system-compliance artefacts every time and never a product defect, because Arm 2 never produced one for it to catch (measured, from each run's `.run.json`).
+
+**What the reviewer caught that the instrument doesn't score.** The reviewer reported findings beyond the gate in 9 of 9 Arm 2 runs (mean 4.7–7.7 per task, 1–2 of them high or medium). Some are real product changes in a dimension the headline doesn't measure:
+
+- **Badge, all three runs:** the filled look on `overlay.subtle` failed WCAG contrast at 3.98–4.48:1; the reviewer added the pair to the contrast check and moved the fill to `overlay.subtlest`. Arms 0 and 1 had picked `overlay.subtlest` on their own, so the shipped products don't differ — but the axe sweep runs in jsdom with `color-contrast` off, so a contrast miss in another arm on a harder task would have gone uncounted. That is a known instrument gap, stated here rather than patched after the fact.
+- **Checkbox:** forced-colors handling (in 2 of 3 Arm 2 runs, absent from every Arm 0/1 run *and* from the shipped reference), whole-row hover targets, and test gaps the APG keyboard pattern requires (Space un-toggling, Enter not toggling, disabled skipped in Tab order).
+- **CardVertical:** type-level narrowing of props the metadata forbids (`onClick` on the card root), and one run that correctly flagged its own preset as contradicting ADR-023's parts model.
+
+None of that is in the clean rate, by design: extra quality beyond the reference isn't a violation avoided. Whether it is worth $0.63 more per component than Arm 1 is a judgment, and the data to make it is now on the record.
+
+**The visual axis doesn't follow the headline either.** A blind 3-point rating of each cell's median run against the Figma reference (one rater, the developer, arms shuffled to letters, N = 1 per cell) gave Arm 2 no "matches" on any task, gave the only matching Checkbox to Arm 0 — the arm that failed the headline 0/3 — and rated Arm 1's CardVertical "wrong". Traced causes include Arms 1 and 2 sizing the Checkbox box with the `size.300` primitive where the reference uses the semantic `size.icon.sm`. Neither the gates nor the reviewer check visual fidelity against the design; they check conventions. This is a calibration signal for the case-study figure, not a result.
+
+### What the task set taught
+
+Two of three tasks didn't discriminate, for different reasons. Badge is the easiest task by construction. CardVertical was picked as the hard composite and turned out to be a near-copy of a neighbour: all nine runs, Arm 0 included, reproduced the reference's props, icons, progress pattern and size tokens, and Arm 0 got them by reading `CardHorizontal`. That is a property of the task, not an Arm 0 win. The one CardVertical difference the scorer deliberately doesn't count — Arm 2 exposed an ADR-026 `headingLevel` in every run where Arm 0 always hard-coded `h3` — points the same way as the reviewer findings: the harness's extra output is real but sits above the reference, where a violations count can't see it.
+
+The instrument also earned its keep on itself: the pilot and the score reviews caught three scorer false positives (a forbidden `onClick` pattern matching inside `Omit<…>`, a prop-vocabulary entry where the shipped `label` was itself the drift, a label check that missed `<Text as="label">`). Each was fixed before the next task ran, recorded with its reason, and rescored from retained workspaces — no brief or trap changed after a result existed for its task.
+
+### What would change the verdict
+
+- **A task where conventions and keyboard/ARIA behaviour both matter** — the pre-registered `Accordion` stretch task — is the obvious next run; it is the kind of component where the ledger already shows the reviewer earning its cost (4 findings in its own review).
+- **Contrast in the headline** (axe in a real browser, or the token contrast check run per workspace) would make the reviewer's Badge catch countable.
+- **The model axis:** Arm 0 on Opus vs Arm 2 on a cheaper model tests the other way the loop could pay for itself — making a cheaper model good enough.
+
+Until one of those runs, the defensible claim is narrow: **in this system, written-down context is what turns an agent's output from plausible into shippable; the gate-and-reviewer loop adds quality the headline doesn't measure, at about 1.7× the cost per clean component.** No ADR changes on the strength of 27 runs; the loop stays as built (ADR-007), and the question stays open with the instrument kept in the repo to re-ask it.
+
 ## Context budget: a cap that bites
 
 `CLAUDE.md` sits at **19,615 bytes / 197 lines against a CI-enforced cap of 20,000 / 200 — 98% utilized** (measured). The budget isn't a comfortable margin nobody tests; it's full, and the "Where knowledge lives" routing table exists because it's full. Path-scoping keeps **~3,100 tokens** out of sessions that don't need them: `.claude/rules/components.md` (~1,900 tokens) loads only when touching `packages/components/**`, `.claude/rules/tokens.md` (~1,200) only for `packages/tokens/**`. ADR-017's before-state (289 lines / ~35KB) is the ADR's own record, not independently re-derived from git history — consistent with the current measured size representing a ~44% reduction, and labeled here as self-reported.
@@ -115,5 +182,6 @@ Keeping the gaps on the record is the same discipline as keeping the ledger:
 - `.github/workflows/*.yml` (all 7, read in full), `scripts/`, `package.json`
 - `.claude/handoff/run-ledger.json` (12 entries, recomputed)
 - `scripts/pattern-accuracy-harness/results.md`, `docs/decisions/013-cross-component-pattern-schema.md` (+ amendment)
+- `scripts/harness-ablation/results.md`, `scripts/harness-ablation/results/visual-rating.json`, per-run `.run.json`/`.review.json` (gitignored `.runs/`), `.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md` (scope, pre-registration, every scorer fix)
 - `docs/decisions/017-claude-md-context-budget.md`, `scripts/claude-md-check.js`
 - External: Anthropic engineering posts (code-execution-with-mcp; building-effective-agents; writing-tools-for-agents), Anthropic prompt-caching docs, arXiv:2402.01817, arXiv:2310.01798, arXiv:2603.12123, arXiv:2401.01701, Sparkbox Carbon ROI study

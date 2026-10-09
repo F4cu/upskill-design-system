@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Scores one harness-ablation run inside its workspace, with the workspace's own
 // npm gates and the pattern-accuracy traps. Scope and buckets:
-// .claude/handoff/2026-10-07-harness-ablation-eval.handoff.md → "Scoring".
+// .claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md → "Scoring".
 //
 //   node scripts/harness-ablation/score.js <runDir>           (run.js calls this)
 //   node scripts/harness-ablation/score.js --calibrate <task> (Stage 0: the shipped

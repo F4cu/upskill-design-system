@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-10-07
-completed:
+completed: 2026-10-09
 ---
 
 # Harness-ablation eval — scope

@@ -8,7 +8,7 @@ completed: 2026-10-08
 
 **Question:** does giving the scaffold the approved `<Name>.spec.json` keep component scaffolding from getting worse? This is the remaining condition for accepting [ADR-027](../../../docs/decisions/027-component-spec-file.md). The other condition (CardVertical's parts fit the schema) was met on 2026-10-07 (`69c2a7e`).
 
-**Why this is its own handoff:** [the harness-ablation eval](../2026-10-07-harness-ablation-eval.handoff.md) measures the *harness* (tools, gates, loop, reviewer) agentically in a real workspace. This measures *context*, single-shot, in the existing `scripts/pattern-accuracy-harness/`. The two have different questions and different tools, and this one closes when ADR-027 is accepted or rejected, long before the ablation eval finishes. Shared dependencies are listed under "Before running".
+**Why this is its own handoff:** [the harness-ablation eval](2026-10-07-harness-ablation-eval.handoff.md) measures the *harness* (tools, gates, loop, reviewer) agentically in a real workspace. This measures *context*, single-shot, in the existing `scripts/pattern-accuracy-harness/`. The two have different questions and different tools, and this one closes when ADR-027 is accepted or rejected, long before the ablation eval finishes. Shared dependencies are listed under "Before running".
 
 ## Arms
 

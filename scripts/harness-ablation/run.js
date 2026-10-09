@@ -3,7 +3,7 @@
 // fresh workspace, `claude -p` runs in it agentically, the outputs are collected
 // into .runs/, and score.js scores them (once it exists). Sequential, never
 // parallel (CLAUDE.md on-demand loop guardrails). Scope and arms:
-// .claude/handoff/2026-10-07-harness-ablation-eval.handoff.md.
+// .claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md.
 //
 //   node scripts/harness-ablation/run.js --model <id> --max-budget-usd <n>
 //     [--task badge,checkbox] [--arm 0,1,2] [--runs 3] [--effort <level>] [--dry-run] [--smoke]

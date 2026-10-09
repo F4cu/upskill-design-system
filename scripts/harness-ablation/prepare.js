@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Builds one harness-ablation workspace: `prepare.js <task> <arm> [--out <dir>]`.
-// Arms and leakage controls: .claude/handoff/2026-10-07-harness-ablation-eval.handoff.md.
+// Arms and leakage controls: .claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md.
 //
 // HEAD is archived (never the working tree) into a fresh dir outside the repo, so
 // no ancestor CLAUDE.md loads, then stripped per arm, the target removed, the
