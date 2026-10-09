@@ -2,7 +2,7 @@
   "id": "accordion",
   "target": "Accordion",
   "referencePng": "accordion.reference.png",
-  "redactionsReviewed": false,
+  "redactionsReviewed": true,
   "deleteFiles": [
     "packages/components/src/stories/CourseModuleList.stories.tsx"
   ],
