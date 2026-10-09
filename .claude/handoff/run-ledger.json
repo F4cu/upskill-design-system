@@ -9,7 +9,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 0,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "display"
   },
   {
     "component": "Checkbox",
@@ -21,7 +23,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 0,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "interactive"
   },
   {
     "component": "Stack",
@@ -33,7 +37,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 0,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "display"
   },
   {
     "component": "Inline",
@@ -45,7 +51,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 0,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "display"
   },
   {
     "component": "Text",
@@ -57,7 +65,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 1,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "display"
   },
   {
     "component": "Heading",
@@ -69,7 +79,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 0,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "display"
   },
   {
     "component": "Accordion",
@@ -81,7 +93,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 4,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "interactive"
   },
   {
     "component": "ButtonArrow",
@@ -93,7 +107,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 3,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "interactive"
   },
   {
     "component": "Chip",
@@ -105,7 +121,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 2,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "interactive"
   },
   {
     "component": "DropdownMenu",
@@ -117,7 +135,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 3,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "interactive"
   },
   {
     "component": "TextField",
@@ -129,7 +149,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 3,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "interactive"
   },
   {
     "component": "TextLink",
@@ -141,7 +163,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 2,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "interactive"
   },
   {
     "component": "CardVertical",
@@ -155,7 +179,9 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 6,
-    "manualRescuesCount": 0
+    "manualRescuesCount": 0,
+    "path": "full",
+    "risk": "interactive"
   },
   {
     "component": "CardHorizontal",
@@ -167,6 +193,8 @@
     },
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 5,
-    "manualRescuesCount": 1
+    "manualRescuesCount": 1,
+    "path": "full",
+    "risk": "display"
   }
 ]

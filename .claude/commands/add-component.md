@@ -1,5 +1,5 @@
 ---
-description: Add a new component from the fixed set with built-in verification (sense → scaffold → deterministic gate → one adversarial reviewer → fix → PR). Sequential, at most two agents (ADR-007).
+description: Add a new component from the fixed set with built-in verification (sense → scaffold → deterministic gate → review → fix → PR). The adversarial reviewer subagent runs only for interactive components; display components get in-session /code-review. Sequential, at most two agents (ADR-007, ADR-029).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Agent, SlashCommand, Skill, AskUserQuestion
 ---
 
@@ -7,17 +7,17 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Agent, SlashCommand, S
 
 **Trigger:** Developer, when building any component from the fixed set that will go to `main`. This is the production path — use it instead of `/component-scaffold` directly. Scaffold alone skips the gate and adversarial review, meaning agent-written code reaches human review unverified.
 
-**Invocation:** `/add-component <Name>` (e.g. `/add-component Accordion`). `/add-component <Name> --eval` runs the unattended harness-ablation variant — see "Eval mode" below; it is valid only inside an ablation workspace.
+**Invocation:** `/add-component <Name>` (e.g. `/add-component Accordion`). `--review` forces the adversarial reviewer for a display component; `--no-review` skips it for an interactive one (Stage 3). `/add-component <Name> --eval` runs the unattended harness-ablation variant — see "Eval mode" below; it is valid only inside an ablation workspace.
 
-This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps `/component-scaffold` (Stage 1) in a deterministic gate and one adversarial review pass, then opens the PR. It is **sequential and uses at most two agents**: the main session orchestrates every stage; exactly one fresh subagent runs the adversarial review (Stage 3), because independent context is the whole point of that stage. **Never** spawn parallel workers — on Claude Pro the scarce resource is the rolling usage window, and a fan-out drains it N× and trips rate limits.
+This is the ad-hoc agentic loop of ADR-007 / ROADMAP Phase 9. It wraps `/component-scaffold` (Stage 1) in a deterministic gate and a review pass, then opens the PR. It is **sequential and uses at most two agents**: the main session orchestrates every stage; for **interactive** components, exactly one fresh subagent runs the adversarial review (Stage 3), because independent context is the whole point of that stage. Display components get the in-session `/code-review` path instead: the harness ablation measured the always-on reviewer at +69% cost per clean component with no change in outcome, and its real catches clustered in interactive components (ADR-029, ADR-007 amendment). **Never** spawn parallel workers — on Claude Pro the scarce resource is the rolling usage window, and a fan-out drains it N× and trips rate limits.
 
 ## Binding rules (from ADR-007 — do not violate)
 
-- **Sequential, ≤2 agents.** Main session + one reviewer subagent. No parallel agents, ever.
+- **Sequential, ≤2 agents.** Main session + at most one reviewer subagent, spawned only on the `full` path (interactive, or `--review`). No parallel agents, ever.
 - **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot — `.claude/STATUS_QUO.md`, `.claude/handoff/runs/<Name>.snapshot.json`, `.claude/handoff/runs/<Name>.review.json`. No stage makes its own live API call; no streaming raw data between stages.
 - **Deterministic work stays a script.** Sensing, validation, typecheck, build, lint are `npm`/CLI commands, not agent steps. The agent only does what a script can't (scaffold, judge, fix).
 - **Fail-fast.** If the gate fails, bounce back to the scaffold stage with the exact error — do not push forward.
-- **No agent code reaches `main` unreviewed.** Generated code must clear the gate *and* the adversarial review before the human PR opens.
+- **No agent code reaches `main` unreviewed.** Generated code must clear the gate *and* a review (adversarial subagent or in-session `/code-review`, per Stage 3) before the human PR opens.
 - **Fixed set only.** Scaffold nothing outside the component scope declared in CLAUDE.md. Compose existing components instead.
 
 ## Stages
@@ -45,9 +45,9 @@ If any step fails, go back to Stage 1, fix the cause the error names, and re-run
 `a11y:coverage` (ADR-008) enforces the **Tier-2 behavioral a11y** rule: if the component is *interactive* — `component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a non-trivial keyboard contract (anything beyond plain Tab / native browser behaviour) — it **must** ship a co-located `<Name>.a11y.test.tsx` asserting the dynamic contract (state attributes toggling, focus, keyboard) plus an axe scan. Non-interactive components (display/landmark, e.g. Badge) need none — the gate is a no-op for them. Do **not** add a new interactive component to `scripts/a11y-backlog.json`; that ledger only waives pre-existing components pending backfill. Write the test in Stage 1 alongside the component, model it on `Button/Button.a11y.test.tsx`, and disable axe's `color-contrast` rule (jsdom can't judge it).
 
 ### Stage 2b · Visual checkpoint (human go/no-go)
-Gate passed. Before spawning the adversarial reviewer, surface the component for a quick human visual check:
+Gate passed. Before the review stage, surface the component for a quick human visual check:
 
-> "Gate passed. Start Storybook with `npm run storybook` if it isn't already running (http://localhost:6006). Open the **<Name>** Default story and toggle both light and dark themes. Reply **`go`** to proceed to adversarial review, or describe any issues to fix first."
+> "Gate passed. Start Storybook with `npm run storybook` if it isn't already running (http://localhost:6006). Open the **<Name>** Default story and toggle both light and dark themes. Reply **`go`** to proceed to review, or describe any issues to fix first."
 
 Wait for the developer's reply. Three cases:
 
@@ -69,7 +69,16 @@ A `changes-requested` answer records the state but does **not** block committing
 
 ### Stage 3+ · Review + PR
 
-Delegate to `/review-component <Name>` — the **full** review path (`path: "full"` in review-state). That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
+Run `npm run component:risk -- <Name>`. It prints `interactive` or `display` from the component's metadata, using the same derivation as the `a11y:coverage` gate (`component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab). A component that owes a Tier-2 a11y test also gets the reviewer. Flags override the tier: `--review` → full path, `--no-review` → standard path.
+
+**`interactive` (or `--review`): full path.** Delegate to `/review-component <Name>` (`path: "full"` in review-state). That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path, the risk tier, and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
+
+**`display` (or `--no-review`): standard path.** No subagent. In the main session:
+1. Run `/code-review` on the component diff (`git add -N packages/components/src/components/<Name>` first so the new files show up). Apply every high/medium finding; for low ones, apply or note why not.
+2. Re-run the Stage 2 gate. Fail-fast as before.
+3. Record the review in `.claude/component-review-state.json` under the component's entry: set `reviewedAt` (ISO) and `path: "standard"`, keep `visualReview`, leave `learningsBackfilled: false`. Then run `npm run sense`.
+4. Write `.claude/handoff/runs/<Name>.run.json` in the `/review-component` Stage 3 shape, plus `"path": "standard"` and `"risk": "display"`. `reviewerCaughtBeyondGate` lists the `/code-review` findings the gate could not have caught, so `run-ledger.json` can compare the two paths per risk tier. No `.review.json`.
+5. Create branch `component/<kebab-name>`, commit the component files (plus `component-patterns.json` and the snapshots `sense` refreshed), and open the PR against `main` with `gh`. The body names the path (`standard`, display tier), the gate result, and the findings applied.
 
 `/review-component` is also the standalone entry point for reviewing existing components — the same command works in both contexts.
 
@@ -88,9 +97,9 @@ Arm 2 of the harness-ablation eval (`.claude/handoff/archive/2026-10-07-harness-
 | 2 · Gate | Run as normal, fail-fast. **Cap: 5 gate runs.** If the 5th still fails, stop: write `.run.json` with the failures and `"outcome": "gate-failed"`, skip Stage 3. |
 | 2b · Visual checkpoint | Skipped. |
 | 2c · Record visual review | Skipped. Don't write `visualReview` to `component-review-state.json`; record `"visualReview": "skipped-eval"` in `.run.json`. |
-| 3+ · Review | Run `/review-component <Name> --eval` (see that command's eval section): same single reviewer subagent, same fix pass and gate, but no branch, commit or PR. |
+| 3+ · Review | Always the full path, whatever `component:risk` says, so Arm 2 stays re-runnable; `--no-review` is ignored. Run `/review-component <Name> --eval` (see that command's eval section): same single reviewer subagent, same fix pass and gate, but no branch, commit or PR. |
 
 **Outputs, all in the workspace:** the component files, `api-proposal.md`, `.claude/handoff/runs/<Name>.review.json` and `<Name>.run.json`. Don't run `npm run handoff:tidy`: eval runs never enter the committed `run-ledger.json`. End with a one-paragraph summary of the outcome; the harness reads cost and turns from `--output-format json`, not from the summary.
 
 ## Success signal
-The component ships *through* the loop — meeting its roadmap success signal with no manual restructuring, the human reviewing only clean code. Stages 0–2c complete cleanly, then `/review-component` clears the adversarial review and opens the PR. Update this prompt with anything learned from each run.
+The component ships *through* the loop — meeting its roadmap success signal with no manual restructuring, the human reviewing only clean code. Stages 0–2c complete cleanly, then the Stage 3 review (adversarial for interactive, in-session for display) clears and the PR opens. A display component finishes with no subagent spawned; an interactive one spawns exactly one. Update this prompt with anything learned from each run.

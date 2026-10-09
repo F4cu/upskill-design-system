@@ -32,6 +32,7 @@ sources:
 # clock reset 2026-10-07: validate-metadata.js and lib.js share the package-export component set (#98); this page doesn't describe how validators define a component, still accurate
 # rewritten 2026-10-08: /add-component, /component-scaffold and /review-component gain an --eval mode; the Evaluation Harness entry said the repo had none and now names the pattern-accuracy harness and the harness-ablation eval
 # clock reset 2026-10-09: ADR-007 amendment (ADR-029) records a risk-triggered reviewer, not yet implemented in the commands; no glossary term changed, still accurate
+# 2026-10-09: Review path entry names the risk-tier choice /add-component now makes (ADR-029)
 ---
 # Glossary
 
@@ -84,7 +85,7 @@ Props are the inputs you pass to a component to control its appearance or behavi
 The four items a component clears while in the `in review` stage: automated gate, visual review, code review, learnings back-fill. Derivation rules, per-path behavior, and the `n/a — reason` convention live in [Component lifecycle](02-component-lifecycle.md#two-axes-because-one-field-kept-lying) — the single prose owner of the checklist mechanics. See also Review path, Visual review.
 
 **Review path**
-Which review route a component or layout took, recorded as `reviewPath` in the review artifacts. Two values: `full` (`/review-component` — one fresh, read-only adversarial subagent reviews with independent context, followed by the `/extract-learnings` loop) and `standard` (`/code-review` run on the diff inside the working session — no subagent, no separate learnings step, so checklist item 4 is `n/a`). See also Adversarial Review, Subagent.
+Which review route a component or layout took, recorded as `reviewPath` in the review artifacts. Two values: `full` (`/review-component` — one fresh, read-only adversarial subagent reviews with independent context, followed by the `/extract-learnings` loop) and `standard` (`/code-review` run on the diff inside the working session — no subagent, no separate learnings step, so checklist item 4 is `n/a`). `/add-component` picks the path by risk tier: `full` for interactive components, `standard` for display ones (`npm run component:risk`, ADR-029). See also Adversarial Review, Subagent.
 
 **Scaffold**
 To generate the skeleton files for a new component — the `index.tsx`, CSS module, stories file, and `metadata.json` — from a template, before any real logic is written. Scaffolding creates the structure; the developer (or agent) fills in the details afterward. In this repo the `/component-scaffold` command does this.

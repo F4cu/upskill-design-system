@@ -14,45 +14,12 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { isInteractive } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const COMPONENTS_DIR = path.resolve(ROOT, "packages/components/src/components");
 const BACKLOG_PATH = path.resolve(__dirname, "a11y-backlog.json");
-
-// Whole-word interactive ARIA roles. Matched with word boundaries so a prose
-// role like "menu or listbox (controlled via listRole prop)" still resolves.
-const INTERACTIVE_ROLES = [
-  "button", "link", "checkbox", "radio", "switch", "tab", "menuitem",
-  "menuitemcheckbox", "menuitemradio", "combobox", "listbox", "option",
-  "slider", "textbox", "spinbutton",
-];
-
-// A keyboard interaction signals a custom widget contract only if it goes
-// beyond plain focus traversal (Tab/Shift+Tab) or native browser behavior.
-function hasWidgetKeyboard(keyboardInteractions) {
-  return (keyboardInteractions || []).some((k) => {
-    const action = (k.action || "").toLowerCase();
-    if (action.includes("native browser")) return false;
-    const keyTokens = (k.key || "")
-      .toLowerCase()
-      .replace(/shift/g, "")
-      .split(/[+/\s]+/)
-      .filter(Boolean);
-    return keyTokens.some((t) => t !== "tab");
-  });
-}
-
-function isInteractive(meta) {
-  const type = meta.component?.type;
-  if (type === "interactive" || type === "input") return true;
-
-  const a11y = meta.accessibility || {};
-  const role = (a11y.role || "").toLowerCase();
-  if (INTERACTIVE_ROLES.some((r) => new RegExp(`\\b${r}\\b`).test(role))) return true;
-
-  return hasWidgetKeyboard(a11y.keyboardInteractions);
-}
 
 const backlog = fs.existsSync(BACKLOG_PATH)
   ? JSON.parse(fs.readFileSync(BACKLOG_PATH, "utf8"))

@@ -15,6 +15,7 @@ sources:
 # rewritten 2026-10-07: drift example replaced (the change-callback rule was retired); paragraph on the ADR-026 naming checks in generate-pattern-schema.js
 # clock reset 2026-10-07: ADR-013 amendment corrects the harness totals after a scorer fix (scaffold 17→22, overall 30→26); decision and split unchanged, and this page cites neither total, still accurate
 # clock reset 2026-10-08: generate-pattern-schema.js exports parseFile/namingDrift for the ablation scorer and runs main() only as an entry point; output and checks unchanged, still accurate
+# 2026-10-09: isInteractive moved to scripts/lib.js and now also drives component:risk (ADR-029)
 ---
 # Machine-readable metadata
 
@@ -51,7 +52,7 @@ The same graph goes one level down for components with subcomponents. An optiona
 
 ### Interactivity is derived, not declared twice
 
-`a11y-coverage.js` doesn't add an `isInteractive` field to the schema — it derives the fact from data the schema already requires: `component.type ∈ {interactive, input}`, or an `accessibility.role` on its interactive-ARIA-role list, or a `keyboardInteractions` entry beyond plain Tab. That keeps the schema from growing a redundant flag that could drift from the fields it would be summarizing, and it means declaring a keyboard interaction in metadata has a real consequence: the component now owes a behavioral `<Name>.a11y.test.tsx`, or the gate fails (see [Accessibility](03-accessibility.md)).
+`a11y-coverage.js` doesn't add an `isInteractive` field to the schema. It derives the fact from data the schema already requires: `component.type ∈ {interactive, input}`, or an `accessibility.role` on its interactive-ARIA-role list, or a `keyboardInteractions` entry beyond plain Tab. That keeps the schema from growing a redundant flag that could drift from the fields it would be summarizing, and it means declaring a keyboard interaction in metadata has a real consequence: the component now owes a behavioral `<Name>.a11y.test.tsx`, or the gate fails (see [Accessibility](03-accessibility.md)). The derivation lives in `scripts/lib.js` as `isInteractive`, and `npm run component:risk` uses the same function to decide whether `/add-component` spawns the adversarial reviewer (ADR-029). The same metadata fields therefore decide both the a11y test obligation and the review path.
 
 ### The write-back loop makes metadata the system's memory
 

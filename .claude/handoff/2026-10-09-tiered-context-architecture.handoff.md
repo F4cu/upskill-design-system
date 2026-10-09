@@ -133,6 +133,8 @@ Decide between the two options and record the choice in ADR-029 (amend in place 
 
 ## Step 4 · Risk-triggered reviewer in `/add-component` (its own PR)
 
+> **Status (2026-10-09):** shipped on `context/risk-triggered-reviewer`. `isInteractive` lives in `scripts/lib.js` (shared by `a11y-coverage.js` and `scripts/component-risk.js`). The in-session path keeps the repo's existing name, `standard`, not `in-session` (that's a legacy alias `sense.js` normalizes). `run-ledger.json` entries carry `path` + `risk`; the 14 earlier entries were back-filled as `full` (7 interactive, 7 display). **Open:** the live "display finishes with no subagent" check happens on the next real `/add-component` run.
+
 1. **Extract the interactivity derivation** from `scripts/a11y-coverage.js` into a small exported function, e.g. `isInteractive(metadata)`, so the gate and the loop share one definition. Expose it as `npm run component:risk -- <Name>`, which prints `interactive` or `display`.
 2. **Edit `.claude/commands/add-component.md`, Stage 3:**
    - Run `component:risk` first.
