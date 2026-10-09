@@ -33,6 +33,7 @@ sources:
 # clock reset 2026-10-07: ADR-013 amendment corrects the harness totals after a scorer fix (scaffold 17→22, overall 30→26); decision and split unchanged, and this page cites neither total, still accurate
 # clock reset 2026-10-07: validate-metadata.js and lib.js share the package-export component set (#98); this page doesn't describe how validators define a component, still accurate
 # clock reset 2026-10-09: ADR-017 amendment (ADR-029) records the planned AGENTS.md root index and an effective-size budget; neither has shipped, so the layering/budget mechanics this page describes are unchanged, still accurate
+# clock reset 2026-10-09: CLAUDE.md moment 6 row names the risk-triggered reviewer; handoff-tidy.js adds path/risk to ledger entries; the surfaces this page describes are unchanged, still accurate
 ---
 # Context engineering
 

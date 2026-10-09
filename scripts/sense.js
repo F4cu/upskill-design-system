@@ -17,7 +17,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { readJson, rel, usagesFor, daysBetween } from "./lib.js";
+import { readJson, rel, usagesFor, daysBetween, normalizeReviewPath } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -197,15 +197,13 @@ function readSignoff() {
 // merged over the committed baseline (a local review wins; learningsBackfilled
 // latches true) and written back, so CI reads the file as-is and can never
 // regress a stage it has no artifacts for. See ADR-015 amendment.
-const LEGACY_PATHS = { adversarial: "full", "in-session": "standard", lighter: "standard" };
-const normalizePath = (p) => LEGACY_PATHS[p] ?? p ?? "full";
 
 function promoteReviewState() {
   const state = fs.existsSync(REVIEW_STATE_PATH)
     ? JSON.parse(fs.readFileSync(REVIEW_STATE_PATH, "utf8"))
     : {};
   for (const rec of Object.values(state)) {
-    if (rec.path) rec.path = normalizePath(rec.path);
+    if (rec.path) rec.path = normalizeReviewPath(rec.path);
   }
 
   const names = new Set(
@@ -220,7 +218,7 @@ function promoteReviewState() {
     const prev = state[name] ?? {};
     state[name] = {
       reviewedAt: review?.reviewedAt ?? prev.reviewedAt ?? null,
-      path: normalizePath(review ? review.path : prev.path),
+      path: normalizeReviewPath(review ? review.path : prev.path),
       learningsBackfilled: learnings || prev.learningsBackfilled === true,
       ...(prev.visualReview ? { visualReview: prev.visualReview } : {}),
     };

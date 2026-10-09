@@ -88,7 +88,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 | 3 | Component scaffold | `/component-scaffold` | Read schema + template + Figma context; produce the four component files. |
 | 4 | Layout generation | `/layout-generation` | Only fixed-set components and tokens; every structural choice cites a metadata rule. |
 | 5 | Figma variable push (code → Figma) | `/figma-variable-push` | Write only clean-missing variables; never delete or overwrite without explicit confirmation. |
-| 6 | Add component (verified scaffold) | `/add-component` | Sense → scaffold → gate → visual checkpoint → moment 7. Frozen snapshot is the only handoff. ADR-007. |
+| 6 | Add component (verified scaffold) | `/add-component` | Sense → scaffold → gate → visual checkpoint → reviewer if interactive (moment 7), else in-session `/code-review`. Frozen snapshot is the only handoff. ADR-007, ADR-029. |
 | 7 | Review component | `/review-component` | One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for moment 8. |
 | 8 | Extract learnings | `/extract-learnings` | Route each finding to its durable home — component metadata first; token conventions → `/tokens-author`; contrast misses → the curated `PAIRS` list. `--all` proposals require developer confirmation. |
 | 9 | Docs sync | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is developer-triggered, never CI. Rewrite only stale sections; never touch Autodocs/docgen-owned content. One read-only `docs-scribe` subagent reviews rewritten sections before the PR (ADR-018). PR on `docs-sync/<date>`. |
@@ -98,7 +98,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 **Ad-hoc loops vs continuous loops.** A developer-triggered loop that runs a bounded sequence once and stops (moment 6) is allowed. A *continuous* loop, scheduled agent run, or always-on watcher is not: push back and propose a script, a GitHub Action, or one of these moments instead.
 
 **On-demand loop guardrails** (moment 6 and any future loop):
-- **Sequential, ≤2 agents.** Spawn at most one fresh subagent (the adversarial reviewer). No parallel swarm: on Claude Pro the scarce resource is the rolling usage window; parallel agents drain it N× and trip rate limits.
+- **Sequential, ≤2 agents.** Spawn at most one fresh subagent (the adversarial reviewer, risk-triggered). No parallel swarm: on Claude Pro the scarce resource is the rolling usage window; parallel agents drain it N× and trip rate limits.
 - **Frozen-file handoffs only.** Each stage reads a committed/cached snapshot — never stream raw data between stages or make live API calls mid-loop.
 - **Deterministic work stays a script.** Sensing, validation, typecheck, build are `npm` scripts. Agents only do what a script can't.
 - **Fail-fast.** If the gate fails, bounce back to the scaffold stage with the error.

@@ -27,6 +27,49 @@ export function rel(absPath) {
   return path.relative(ROOT, absPath);
 }
 
+// Interactivity derivation (ADR-008), shared by the Tier-2 a11y gate
+// (a11y-coverage.js) and /add-component's risk-triggered reviewer (ADR-029,
+// via component-risk.js) so both agree on what counts as interactive.
+//
+// Whole-word interactive ARIA roles. Matched with word boundaries so a prose
+// role like "menu or listbox (controlled via listRole prop)" still resolves.
+const INTERACTIVE_ROLES = [
+  "button", "link", "checkbox", "radio", "switch", "tab", "menuitem",
+  "menuitemcheckbox", "menuitemradio", "combobox", "listbox", "option",
+  "slider", "textbox", "spinbutton",
+];
+
+// A keyboard interaction signals a custom widget contract only if it goes
+// beyond plain focus traversal (Tab/Shift+Tab) or native browser behavior.
+function hasWidgetKeyboard(keyboardInteractions) {
+  return (keyboardInteractions || []).some((k) => {
+    const action = (k.action || "").toLowerCase();
+    if (action.includes("native browser")) return false;
+    const keyTokens = (k.key || "")
+      .toLowerCase()
+      .replace(/shift/g, "")
+      .split(/[+/\s]+/)
+      .filter(Boolean);
+    return keyTokens.some((t) => t !== "tab");
+  });
+}
+
+export function isInteractive(meta) {
+  const type = meta.component?.type;
+  if (type === "interactive" || type === "input") return true;
+
+  const a11y = meta.accessibility || {};
+  const role = (a11y.role || "").toLowerCase();
+  if (INTERACTIVE_ROLES.some((r) => new RegExp(`\\b${r}\\b`).test(role))) return true;
+
+  return hasWidgetKeyboard(a11y.keyboardInteractions);
+}
+
+// Review paths: `full` (adversarial subagent) or `standard` (in-session
+// /code-review). Legacy artifact values are normalized on read; see sense.js.
+const LEGACY_REVIEW_PATHS = { adversarial: "full", "in-session": "standard", lighter: "standard" };
+export const normalizeReviewPath = (p) => LEGACY_REVIEW_PATHS[p] ?? p ?? "full";
+
 // dot-path token → SD CSS custom property, e.g. color.terracotta.9 → --ds-color-terracotta-9
 export function dotPathToCssVar(dotPath) {
   return "--ds-" + dotPath.replace(/\./g, "-");

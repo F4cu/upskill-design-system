@@ -8,6 +8,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { isInteractive, normalizeReviewPath } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -15,6 +16,7 @@ const HANDOFF_DIR = path.resolve(ROOT, ".claude/handoff");
 const ARCHIVE_DIR = path.join(HANDOFF_DIR, "archive");
 const RUNS_DIR = path.join(HANDOFF_DIR, "runs");
 const LEDGER_PATH = path.join(HANDOFF_DIR, "run-ledger.json");
+const COMPONENTS_DIR = path.resolve(ROOT, "packages/components/src/components");
 
 const ARCHIVABLE_STATUSES = new Set(["done", "superseded"]);
 
@@ -57,10 +59,28 @@ function mtimeIso(filePath) {
 // .run.json is gitignored (per-run scratch state under runs/); this promotes each
 // record into a committed, append-only ledger so /review-component's ROI question
 // ("is the adversarial stage earning its cost") has surviving evidence across runs.
+//
+// `path` and `risk` let a readout compare reviewer vs no-reviewer runs per risk
+// tier (ADR-029). Records that predate them are back-filled: every earlier run
+// came from /review-component (`full`), and risk is derived from current metadata.
+
+function riskOf(component) {
+  const metaFile = path.join(COMPONENTS_DIR, component, `${component}.metadata.json`);
+  if (!fs.existsSync(metaFile)) return null;
+  return isInteractive(JSON.parse(fs.readFileSync(metaFile, "utf8"))) ? "interactive" : "display";
+}
+
 function updateRunLedger() {
   const existing = fs.existsSync(LEDGER_PATH)
     ? JSON.parse(fs.readFileSync(LEDGER_PATH, "utf8"))
     : [];
+  let backfilled = 0;
+  for (const e of existing) {
+    if (e.path && e.risk !== undefined) continue;
+    e.path ??= "full";
+    if (e.risk === undefined) e.risk = riskOf(e.component);
+    backfilled++;
+  }
   const seen = new Set(existing.map((e) => `${e.component}@${e.ranAt}`));
 
   const added = [];
@@ -77,6 +97,8 @@ function updateRunLedger() {
       const entry = {
         component: r.component,
         ranAt: r.ranAt,
+        path: normalizeReviewPath(r.path),
+        risk: r.risk ?? riskOf(r.component),
         gate: r.gate ?? { passes: 0, failures: 0 },
         contextIsolationHeld: r.contextIsolationHeld ?? null,
         reviewerFindingsBeyondGateCount: (r.reviewerCaughtBeyondGate ?? []).length,
@@ -87,11 +109,12 @@ function updateRunLedger() {
     }
   }
 
-  if (added.length === 0) return;
+  if (added.length === 0 && backfilled === 0) return;
 
   existing.sort((a, b) => (a.ranAt < b.ranAt ? -1 : a.ranAt > b.ranAt ? 1 : 0));
   fs.writeFileSync(LEDGER_PATH, JSON.stringify(existing, null, 2) + "\n");
-  console.log(`Appended ${added.length} record(s) to ${rel(LEDGER_PATH)}`);
+  if (added.length) console.log(`Appended ${added.length} record(s) to ${rel(LEDGER_PATH)}`);
+  if (backfilled) console.log(`Back-filled path/risk on ${backfilled} ledger record(s)`);
 }
 
 function main() {
