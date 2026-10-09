@@ -114,24 +114,27 @@ function a11yStories(ws, target) {
 }
 
 // Traps from the pattern-accuracy harness, on the component's own files. A story
-// file's off-scale-inline-style hits are system compliance, not the headline
-// (decided 2026-10-08): consumers never see story wrappers.
+// file's off-scale-inline-style (decided 2026-10-08) and raw-visible-text (decided
+// 2026-10-09) hits are system compliance, not the headline: consumers never see
+// story scaffolding.
+const STORY_SYSTEM_TRAPS = { 'off-scale-inline-style': 'storyInlineStyle', 'raw-visible-text': 'storyVisibleText' }
+
 function traps(ws, target) {
   const componentsDir = path.join(ws, COMPONENTS_REL)
   const dir = path.join(componentsDir, target)
   const product = []
-  const storyStyle = []
+  const story = { storyInlineStyle: [], storyVisibleText: [] }
   const parts = typographyParts(dir)
   for (const file of listFiles(dir)) {
     const rel = path.relative(componentsDir, file)
     if (file.endsWith('.tsx') && !isTest(file)) {
       const found = []
       trapChecksTsx(rel, fs.readFileSync(file, 'utf8'), found, parts)
-      for (const v of found) (isStory(file) && v.trap === 'off-scale-inline-style' ? storyStyle : product).push(v)
+      for (const v of found) (isStory(file) && STORY_SYSTEM_TRAPS[v.trap] ? story[STORY_SYSTEM_TRAPS[v.trap]] : product).push(v)
     }
     if (file.endsWith('.css')) trapChecksCss(rel, fs.readFileSync(file, 'utf8'), product)
   }
-  return { product, storyStyle }
+  return { product, story }
 }
 
 function definedTokens(ws) {
@@ -342,7 +345,7 @@ export function scoreWorkspace(ws, task) {
   const target = task.target
   sh('npm', ['run', '-s', 'tokens:build'], ws)
 
-  const { product: trapHits, storyStyle } = traps(ws, target)
+  const { product: trapHits, story } = traps(ws, target)
   const checklist = []
   runPatternChecks(ws, task, checklist)
   const productTraps = [...deliverables(ws, target), ...trapHits, ...unknownTokens(ws, target), ...inventedImports(ws, target), ...checklist]
@@ -359,7 +362,8 @@ export function scoreWorkspace(ws, task) {
     'metadata:validate': npmScript(ws, 'metadata:validate'),
     'a11y:coverage': npmScript(ws, 'a11y:coverage'),
     patternDrift: patternDrift(ws, target),
-    storyInlineStyle: { violations: storyStyle.length, detail: storyStyle },
+    storyInlineStyle: { violations: story.storyInlineStyle.length, detail: story.storyInlineStyle },
+    storyVisibleText: { violations: story.storyVisibleText.length, detail: story.storyVisibleText },
     propVocabulary: propVocabulary(ws, task),
     tokenSourceChanges: tokenSourceChanges(ws),
   }

@@ -87,6 +87,7 @@ function summarise(task, arm, { scored, pending }) {
     metadataPresent: scores.filter((s) => s.system.metadataPresent).length,
     vocabularyIssues: vocab.length ? mean(vocab.map((v) => v.detail.length)) : null,
     storyInlineStyle: mean(scores.map((s) => s.system.storyInlineStyle.violations)),
+    storyVisibleText: mean(scores.map((s) => s.system.storyVisibleText.violations)),
     reviewerFindings: reviewers.length ? mean(reviewers.map((r) => r.total)) : null,
     reviewerHighMedium: reviewers.length ? mean(reviewers.map((r) => (r.bySeverity.high ?? 0) + (r.bySeverity.medium ?? 0))) : null,
     breakdown: breakdown(scores),
@@ -162,12 +163,12 @@ function breakdownTable(cells) {
 
 function systemTable(cells) {
   const rows = [
-    '| Task | Arm | Metadata written | Prop-vocabulary issues (mean) | Story inline styles (mean) | Reviewer findings (mean, high+medium) | Budget cut-offs | Contamination flags |',
-    '|---|---|---:|---:|---:|---:|---:|---:|',
+    '| Task | Arm | Metadata written | Prop-vocabulary issues (mean) | Story inline styles (mean) | Story raw text (mean) | Reviewer findings (mean, high+medium) | Budget cut-offs | Contamination flags |',
+    '|---|---|---:|---:|---:|---:|---:|---:|---:|',
   ]
   for (const c of cells.filter((c) => c.runs)) {
     const reviewer = c.reviewerFindings === null ? '—' : `${fmt(c.reviewerFindings)} (${fmt(c.reviewerHighMedium)})`
-    rows.push(`| ${c.task} | ${c.arm} | ${c.metadataPresent}/${c.runs} | ${fmt(c.vocabularyIssues)} | ${fmt(c.storyInlineStyle)} | ${reviewer} | ${c.budgetCutoffs} | ${c.contamination} |`)
+    rows.push(`| ${c.task} | ${c.arm} | ${c.metadataPresent}/${c.runs} | ${fmt(c.vocabularyIssues)} | ${fmt(c.storyInlineStyle)} | ${fmt(c.storyVisibleText)} | ${reviewer} | ${c.budgetCutoffs} | ${c.contamination} |`)
   }
   return rows.join('\n')
 }
@@ -203,7 +204,7 @@ Generated: ${new Date().toISOString()} · ${sum(scored.map((c) => c.runs))} scor
 
 Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (\`/add-component <Name> --eval\`). Scope, arms and scoring: \`.claude/handoff/2026-10-07-harness-ablation-eval.handoff.md\`.
 
-A run is **clean** when it has zero product-quality violations: typecheck, lint, the axe sweep over every story, missing deliverables, the pattern-accuracy traps, \`unknown-token\`, \`invented-import\` and the brief checklist. **Cost per clean component** = an arm's total cost ÷ its clean runs.
+A run is **clean** when it has zero product-quality violations: typecheck, lint, the axe sweep over every story, missing deliverables, the pattern-accuracy traps (on an arm's own stories file, \`off-scale-inline-style\` and \`raw-visible-text\` count as system compliance instead), \`unknown-token\`, \`invented-import\` and the brief checklist. **Cost per clean component** = an arm's total cost ÷ its clean runs.
 ${models.length > 1 ? '\n> ⚠ More than one model across scored runs. Arms are comparable only on one model.\n' : ''}${underRun.length ? `\n> N = ${PRE_REGISTERED_RUNS} runs per task × arm is pre-registered; ${underRun.length} cell(s) have fewer. A cell with N = 1 is a pilot, not a result.\n` : ''}
 > **Honest-outcome rule** (handoff, Pre-registration): if Arm 2 doesn't beat Arm 1 by a meaningful margin, report that and question whether the loop and the reviewer earn their cost. Don't tune briefs or traps after seeing results.
 
