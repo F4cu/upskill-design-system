@@ -20,6 +20,7 @@ sources:
 # clock reset 2026-10-06: contrast pairs move to button.neutral/transparent.hover; two hover-only near-misses join the #96 waivers; curation and waiver conventions unchanged, still accurate
 # clock reset 2026-10-06: Button accent pairs renamed to button.accent.*; same colors, curation convention unchanged, still accurate
 # clock reset 2026-10-09: ADR-007 amendment makes the adversarial reviewer risk-triggered, reusing a11y-coverage.js's interactive derivation (not yet implemented); the Tier 2 gate this page describes is unchanged, still accurate
+# clock reset 2026-10-09: token-contrast-check.js comment repoints "Component scope" from CLAUDE.md to AGENTS.md (ADR-029); no behavior change, still accurate
 ---
 # Accessibility
 
