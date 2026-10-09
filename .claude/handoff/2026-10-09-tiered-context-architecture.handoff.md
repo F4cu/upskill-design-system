@@ -1,0 +1,186 @@
+---
+status: active
+created: 2026-10-09
+completed:
+---
+
+# Tiered context architecture (ADR-029) + implementation
+
+**Question:** the harness ablation (`archive/2026-10-07-harness-ablation-eval.handoff.md`, `scripts/harness-ablation/results.md`) showed that written-down context is what makes components shippable, and that the always-on gate + reviewer loop doesn't move the headline. Which context architecture should the system commit to, and what does the loop look like afterwards?
+
+**Answer to record:** Option C, the tiered hybrid. A tool-agnostic `AGENTS.md` root index + package-scoped conventions + machine-readable metadata/spec JSON as the main carrier of per-component knowledge + deterministic gates as scripts/CI. The adversarial reviewer becomes **risk-triggered** (interactive components), not the default.
+
+**Supersedes:** `2026-10-08-agents-md.handoff.md`. Its product scope (ship `AGENTS.md`, extend `claudemd:check`, amend ADR-017) and its eval scope (Arm 1b) are absorbed into Steps 2 and 6 below, unchanged in substance.
+
+## Evidence (measured, 27 runs, `claude-opus-5-5`, N = 3 per cell)
+
+| Arm | Clean | $/clean | Context tokens / run (badge · cardvertical · checkbox) |
+|---|---:|---:|---|
+| 0 · Bare repo | 6/9 | $0.73 | 246K · 345K · 668K |
+| 1 · Context only | 9/9 | $0.91 | 871K · 1,284K · 1,060K |
+| 2 · Full harness | 9/9 | $1.54 (+69% vs Arm 1) | 1,199K · 1,641K · 1,474K (main session only) |
+
+Token counts are summed from `scripts/harness-ablation/.runs/*/arm*/run-*/result.json` (input + cache write + cache read). They're not in `results.md`.
+
+- **Context earns its cost:** the only change in the headline is Arm 0 → Arm 1 (Checkbox 0/3 → 3/3). The six Arm 0 product violations (`callback-name-drift`, `raw-text-prop-render`) are conventions written in ADRs and metadata.
+- **The loop doesn't:** Arm 2 never beats Arm 1 on any task. All 12 gate retries were `metadata:validate` (self-inflicted compliance churn, zero product defects repaired). Arm 2 regressed Badge prop-vocabulary (0.7 vs Arm 1's 0.0).
+- **The reviewer finds real things above the headline:** forced-colors handling, APG keyboard test gaps, type narrowing. Those are concentrated in **interactive** components. On Badge (display-only), its main fix repaired a contrast miss Arm 2 created itself.
+- **Static vs pulled context:** in Arm 1, CLAUDE.md (~5K tokens) + `components.md` (~3.6K) × 23 turns ≈ 200K, about 23% of Badge's 871K. The rest is the agent reading ADRs, metadata and specs on demand.
+- **The monolith ceiling is already measured:** CLAUDE.md is at 19,993 / 20,000 bytes with 27 components.
+
+## What the data does NOT support
+
+Write these into the ADR. Don't round them up.
+
+- **Option A vs Option B is unmeasured.** Arm 1b never ran and `AGENTS.md` doesn't exist. All 27 tasks touched `packages/components/**`, so path-scoping never saved anything in this task set. Option C is chosen on structure and low regret, not on a measured A/B difference.
+- **Portability is unmeasured.** Every run used Claude Code.
+- **Confidence is limited.** N = 3, and only 1 of 3 tasks separated the arms. The scorer has a contrast blind spot (jsdom axe has `color-contrast` off).
+
+---
+
+## Step 1 · Write ADR-029 (its own PR, first)
+
+`docs/decisions/029-tiered-context-architecture.md`, copied from `000-template.md`. Status `accepted`. ADR-028 is the latest, so 029 is next.
+
+**Context:** the three candidate architectures:
+- **A**, a monolithic always-loaded `AGENTS.md` index (Vercel style)
+- **B**, path-scoped on-demand rules (Atlassian style; this is what we run today, with a 20KB always-loaded CLAUDE.md on top)
+- **C**, the tiered hybrid
+
+Then the ablation evidence and the "does NOT support" list above, verbatim, plus the four pillars: scalability, portability, cost per clean component, deterministic QC.
+
+**Decision:**
+1. **Tier 0, root index:** `AGENTS.md`, ≤8KB, tool-agnostic. It holds invariants and pointers, never procedures. It contains:
+   - the fixed component set
+   - the token layer order and the `var(--ds-*)`-only rule
+   - the layout grammar invariants
+   - the ADR-009 extend/new/internal test
+   - pointers to metadata, specs, the schema and the frozen snapshots
+2. **Tier 0b, Claude-specific root:** `CLAUDE.md` imports `@AGENTS.md` and keeps only Claude-specific content: agentic moments, commands/skills, MCP policy, git workflow, knowledge routing.
+3. **Tier 1, package-scoped conventions:** loaded by path, never globally. The delivery mechanism is decided in Step 3. Either keep `.claude/rules/` with `AGENTS.md` pointers for other tools, or move to nested `packages/*/AGENTS.md` with Claude delivery through a nested `CLAUDE.md` → `@AGENTS.md`.
+4. **Tier 2, per-component knowledge:** lives in `metadata.json` / `*.spec.json` only (schema-validated, tool-neutral). Never add a per-component rules file. That rule is what keeps Option B's fragmentation risk from materialising at 100+ components.
+5. **Tier 3, enforcement:** deterministic scripts and CI (`components-check.yml` already runs the full gate on every PR). Prose never enforces what a gate can.
+6. **Loop change (amends ADR-007):** `/add-component` spawns the adversarial reviewer **only for interactive components**. Use the same derivation `scripts/a11y-coverage.js` uses for Tier 2: `component.type ∈ {interactive, input}`, an interactive ARIA role, or a keyboard contract. Every other component gets the in-session `/code-review` path. `--review` forces the subagent and `--no-review` skips it. `--eval` keeps current behaviour, so Arm 2 stays re-runnable.
+
+**Alternatives:** Option A alone (rejected: CLAUDE.md already at its cap with 27 components, plus the Atlassian ~92% token inflation when conventions are dumped instead of indexed); Option B alone (rejected: `.claude/rules/` is Claude-only, which locks the system to one tool); keeping the reviewer always-on (rejected: +69% $/clean with no change to the headline across 9 runs).
+
+**Consequences:**
+- Two always-loaded files to keep in sync, with a budget gate on both.
+- Non-Claude tools don't get automatic path-scoped loading unless Step 3 picks nested `AGENTS.md`.
+- Display-only components lose the reviewer's above-headline catches. Accept this; the contrast blind spot is tracked separately.
+- **Revisit triggers:** Arm 1b ≠ Arm 1 on violations or tokens (Step 6); the out-of-path task shows path-scoping matters; Accordion shows the reviewer earning its cost on display components too.
+
+**Cross-amend in the same PR:**
+- **ADR-017:** dated `## Amendment (2026-10-…)` section covering the second always-loaded file and the budget contract counting imported content. Bump `Amended:`.
+- **ADR-007:** dated amendment covering reviewer triggering. "≤2 agents" still holds; the second agent is now conditional. Bump `Amended:`.
+
+**Docs touch:** `docs/case-study-source/08-measured-impact.md` → the ablation section's "No ADR changes on the strength of 27 runs" line becomes a pointer to ADR-029. Also fix the stale context-budget numbers: `components.md` is now 14,428 bytes (~3.6K tokens, not ~1,900), and CLAUDE.md is 19,993 bytes.
+
+**Done when:** ADR-029 is merged, ADR-017 and ADR-007 carry dated amendments, `npm run docs:check` is green.
+
+---
+
+## Step 2 · Ship `AGENTS.md` (its own PR)
+
+1. **Check native support first.** Does the current Claude Code read `AGENTS.md` without an import? Record the answer in ADR-029. Keep `@AGENTS.md` in CLAUDE.md either way if it's harmless (no double load). Check with `/context` in a fresh session.
+2. **Draft `AGENTS.md` by moving content out of CLAUDE.md, not copying it.** Candidates:
+   - Project purpose (one paragraph)
+   - Token architecture summary (layer order, breakpoints, DTCG + `$deprecated` rule)
+   - The Style Dictionary "consume built output only" invariant
+   - Figma-sync vocabulary + "code is source of truth"
+   - Layout grammar invariants
+   - Coding conventions + file naming
+   - Component scope + ADR-009 test
+   - ADR index pointer
+
+   Leave in CLAUDE.md: agentic moments, commands/skills, MCP policy, git workflow, frozen-memory table (Claude-loop specific), knowledge routing table, common tasks.
+3. **Compress.** Use an index style: one line per invariant plus a pointer. Hard cap 8KB.
+4. **Extend `scripts/claude-md-check.js`:**
+   - `AGENTS.md` ≤ 8,000 bytes.
+   - CLAUDE.md's **effective** size (its own bytes + resolved `@imports`) gets its own budget. Choose a number and record it in the ADR-017 amendment; ~24KB total keeps the effective prefix flat.
+   - Fail if an invariant appears in both files: compare normalised lines and flag exact duplicates.
+5. **Update CLAUDE.md "Where knowledge lives":**
+   - Add a row: "Tool-agnostic invariant any coding agent needs → `AGENTS.md`".
+   - Change the litmus test to two questions. Needed by any tool → `AGENTS.md`. Needed by Claude sessions only → CLAUDE.md.
+6. **Smoke-test portability (manual, record the result in the PR):** open the repo in one non-Claude tool (Codex CLI or Cursor) and ask it to list the fixed component set and the token layer order. It passes if it answers from `AGENTS.md`.
+7. **Docs touch:** `docs/07-cli-reference.md` (or whichever doc covers `claudemd:check`), plus a short section in the context-engineering chapter.
+
+**Done when:** `npm run claudemd:check` is green with both budgets, CLAUDE.md is smaller by what moved, and the portability smoke test is recorded.
+
+---
+
+## Step 3 · Decide and wire Tier 1 delivery (its own PR)
+
+Decide between the two options and record the choice in ADR-029 (amend in place if ADR-029 is already merged).
+
+- **(a) Keep `.claude/rules/`** (measured in Arm 1, zero migration). Add to `AGENTS.md`: "Editing `packages/components/**`? Read `.claude/rules/components.md` first." Other tools get the conventions by pointer, not by auto-loading.
+- **(b) Nested `packages/components/AGENTS.md` and `packages/tokens/AGENTS.md` become canonical.** Each package gets a nested `CLAUDE.md` containing `@AGENTS.md`, and `.claude/rules/` is removed. Codex and Cursor load nested `AGENTS.md` natively.
+  - **Prerequisite:** verify that Claude Code loads a nested `CLAUDE.md` lazily, only when it reads files under that directory, and resolves its `@import`. If it loads at launch, (b) breaks the path-scoping that ADR-017 depends on. In that case pick (a).
+  - If (b): `claude-md-check.js` replaces its `paths:` frontmatter check with "every nested `AGENTS.md` has a sibling `CLAUDE.md` importing it, and each is ≤ the old rule's budget".
+
+**Recommendation:** (b) if the prerequisite holds; it's the only option that gives non-Claude tools path-scoping. Otherwise (a).
+
+**Done when:**
+- The choice is recorded.
+- A session touching only `packages/tokens/**` doesn't load component conventions. Check with `/context`.
+- `claudemd:check` gates the chosen layout.
+
+---
+
+## Step 4 · Risk-triggered reviewer in `/add-component` (its own PR)
+
+1. **Extract the interactivity derivation** from `scripts/a11y-coverage.js` into a small exported function, e.g. `isInteractive(metadata)`, so the gate and the loop share one definition. Expose it as `npm run component:risk -- <Name>`, which prints `interactive` or `display`.
+2. **Edit `.claude/commands/add-component.md`, Stage 3:**
+   - Run `component:risk` first.
+   - `interactive` (or `--review`): Stage 3 runs unchanged (`/review-component`, one adversarial subagent).
+   - `display` (or `--no-review`): Stage 3 becomes the in-session path. Run `/code-review` on the diff, then the gate, then open the PR. No subagent, and record `reviewPath: in-session` the way ADR-010's two-path model already does.
+   - Update the description frontmatter and the ADR-007 invariant line ("Sequential, ≤2 agents"; the reviewer is conditional).
+   - `--eval` stays exactly as today (always reviewer) so the ablation can re-run Arm 2.
+3. **Update CLAUDE.md's agentic moments table**, row 6, invariant text: "Sense → scaffold → gate → visual checkpoint → reviewer if interactive (moment 7)". Stay within budget.
+4. **Make sure the run ledger (`run-ledger.json`) still separates the two paths,** so a later readout can compare reviewer vs no-reviewer findings per risk tier.
+
+**Done when:**
+- `/add-component` on a display component finishes with no subagent spawned.
+- An interactive one still spawns exactly one.
+- `metadata:validate`, `typecheck` and `docs:check` are green.
+
+---
+
+## Step 5 · Cut gate churn at its source (optional, its own PR)
+
+All 12 Arm 2 retries were `metadata:validate`. The recurring causes:
+- tokens listed that the component reads only through `Text`/`Icon`
+- a schema enum value
+- a CSS-spelled token path
+- a stray directory
+
+1. Read the 12 failure messages in the Arm 2 `.run.json` files and group them by cause.
+2. For the token-list cause: add a script (`npm run metadata:derive-tokens <Name>`) that fills `tokens` from the CSS module's `var(--ds-*)` refs. The scaffold then calls the script instead of hand-writing the list.
+3. For enum and path spelling: make the `metadata:validate` error message show the expected value, so a retry takes one turn.
+
+**Done when:** a scaffold of a known component passes `metadata:validate` on the first attempt.
+
+---
+
+## Step 6 · Close the evidence gaps (eval, after Steps 2–3)
+
+This is the eval scope moved from the agents-md handoff, extended.
+
+1. **Arm 1b in `scripts/harness-ablation/prepare.js`:** copy Arm 1 and replace Tier 1 delivery with the shipped `AGENTS.md` only (no `.claude/rules/`, no nested files). It uses the real shipped file, not an eval copy.
+2. **Add one task outside `packages/components/**`.** It's the only kind of task where path-scoping and an always-loaded index can behave differently. Candidates: a token alias change, or a small showcase layout section validated by `layout:validate`.
+   - Lock its brief, traps and checklist before any run, and pre-register the prediction.
+   - Run Arms 1 and 1b only.
+3. **Runs:** 1b × 3 existing tasks × 3 runs + (1, 1b) × new task × 3 runs = 15 runs, about $15.
+4. **Readout against the revisit triggers in ADR-029.** Amend ADR-029 with the result even if nothing changes. Under the honest-outcome rule, a tie is a reportable result.
+5. **Separately (lower priority than Step 6.1–6.4 for this ADR, higher for ADR-007):** the pre-registered Accordion stretch task, Arms 1 and 2. It tests whether the reviewer earns its cost where Step 4 still spends it.
+
+**Done when:** `results.md` has an Arm 1b row, ADR-029 carries a dated amendment with the readout, and `08-measured-impact.md` is updated.
+
+---
+
+## Order and PR hygiene
+
+Step 1 → Step 2 → Step 3 → Step 4 → (Step 5 any time) → Step 6.
+
+- Each step touches a declared doc source, so each PR needs a same-PR doc touch (docs-check coupling).
+- Run `npm run handoff:tidy` when this handoff's status changes.
