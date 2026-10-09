@@ -46,7 +46,7 @@
     },
     {
       "file": "packages/components/src/components/Checkbox/index.tsx",
-      "pattern": "<label\\b|htmlFor",
+      "pattern": "<label\\b|htmlFor|as=[\"']label[\"']",
       "reason": "the brief says clicking the label toggles it"
     }
   ]
