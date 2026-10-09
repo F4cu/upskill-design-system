@@ -40,7 +40,7 @@ The tables below are the full reference — most entries are composite children,
 | `npm run screenshot:check` / `npm run screenshot:approve` | After a visual change, to catch or accept pixel diffs. |
 | `npm run status` / `status:board` / `status:component -- <Name>` | Any time you want a quick read on where things stand. |
 | `npm run sense` | Before kicking off an agent loop. |
-| `npm run docs:check` / `npm run claudemd:check` | After touching a doc's declared source, or `CLAUDE.md`. |
+| `npm run docs:check` / `npm run claudemd:check` | After touching a doc's declared source, `CLAUDE.md`, or `AGENTS.md`. |
 | `npm run handoff:tidy` | After finishing the work a handoff describes. |
 
 Everything else either runs itself — a composite child chained by one of the commands above, or a step CI fires on every PR/push to `main` — or is a rare, deliberate one-off (`airtable:setup`, `harness:run`, `ablation:run`). The "When it runs" column in each table below tells you which bucket a given command falls into.
@@ -158,7 +158,7 @@ The self-documenting side of the system: two gates that keep the human docs and 
 | Command | What it does | When it runs |
 |---|---|---|
 | `npm run docs:check` | Staleness gate for the `docs/` site. Each `docs/NN-*.md` declares its load-bearing source files in frontmatter; the check fails when any source has a commit newer than the doc — i.e. the thing the doc describes changed after the doc was last touched. Detection only; the rewrite is `/docs-sync`. | CI runs it on every PR; you type it when `/docs-sync` seems warranted or after changing anything a doc declares as a source. |
-| `npm run claudemd:check` | Context-budget gate for `CLAUDE.md` (ADR-017): fails if it exceeds 200 lines / 20KB, and if any `.claude/rules/*.md` lacks `paths:` frontmatter (a rule without paths loads into every session, defeating the budget). | CI runs it on every PR; you type it after editing `CLAUDE.md` or adding a rules file, before committing. |
+| `npm run claudemd:check` | Context-budget gate for the always-loaded files (ADR-017, ADR-029): fails if `CLAUDE.md` exceeds 200 lines / 20KB, `AGENTS.md` exceeds 8KB, the two together (plus any `@import`) exceed 24KB, a line appears in both, or if any `.claude/rules/*.md` lacks `paths:` frontmatter (a rule without paths loads into every session, defeating the budget). | CI runs it on every PR; you type it after editing `CLAUDE.md` or `AGENTS.md`, or adding a rules file, before committing. |
 | `npm run docs:serve` | Local preview of this Starlight reference site (`apps/docs/`, which loads the markdown straight from `docs/` — ADR-022). | You type it while writing or reviewing docs pages; never CI. |
 | `npm run docs:build` | Static build of the Starlight site into `apps/docs/dist/`. Fails on a page missing `title:` frontmatter or a broken link. The published copy ships inside the showcase's Pages artifact — `deploy-showcase.yml` builds it and copies the output into the deploy, serving it at `/upskill-design-system/docs/`. | CI runs it on PRs touching `docs/**` or `apps/docs/**` (`docs-build.yml`) and on deploy; you type it after adding an ADR or page. |
 

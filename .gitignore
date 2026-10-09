@@ -7,7 +7,7 @@ dist/
 
 # figma-cli writes its own agent rules into any project it connects from — the
 # repo's figma-cli rules live in .claude/commands/figma-cli.md (ADR-002, 2026-10-01).
-AGENTS.md
+# AGENTS.md is committed (ADR-029); `figma-cli init-agent` is denied in settings.
 .cursor/
 design.json
 

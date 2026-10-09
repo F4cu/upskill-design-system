@@ -3,7 +3,7 @@
 // Arms and leakage controls: .claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md.
 //
 // HEAD is archived (never the working tree) into a fresh dir outside the repo, so
-// no ancestor CLAUDE.md loads, then stripped per arm, the target removed, the
+// no ancestor CLAUDE.md or AGENTS.md loads, then stripped per arm, the target removed, the
 // frozen files regenerated without it, and the result committed as the baseline
 // the Arm 2 reviewer diffs against. `.ablation-workspace` is written last and
 // left untracked: it is the guard `/add-component --eval` checks.
@@ -32,6 +32,7 @@ const STRIP_ALL_ARMS = [
 // Arm 0: a good component library with no agent harness.
 const STRIP_ARM_0 = [
   'CLAUDE.md',
+  'AGENTS.md',
   'ROADMAP.md',
   '.claude',
   'docs/decisions',
@@ -96,7 +97,9 @@ function assertOutsideRepo(out) {
   const real = path.resolve(out)
   if (real === ROOT || real.startsWith(ROOT + path.sep)) usage(`--out must be outside the repo: ${real}`)
   for (let dir = path.dirname(real); dir !== path.dirname(dir); dir = path.dirname(dir)) {
-    if (fs.existsSync(path.join(dir, 'CLAUDE.md'))) usage(`An ancestor of --out has a CLAUDE.md, which Claude Code would load: ${dir}`)
+    for (const file of ['CLAUDE.md', 'AGENTS.md']) {
+      if (fs.existsSync(path.join(dir, file))) usage(`An ancestor of --out has a ${file}, which Claude Code would load: ${dir}`)
+    }
   }
 }
 

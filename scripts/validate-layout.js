@@ -4,14 +4,14 @@
 // elements when duplicated, fixed-set component names only (plus declared
 // <Parent.Part> subcomponents and their composition rules, ADR-023), no raw container
 // divs, Button emphasis by context (ADR-024), and the inline-style
-// reconciliation rule (CLAUDE.md "Layout grammar").
+// reconciliation rule (AGENTS.md "Layout grammar").
 // Exits non-zero on any violation so it can gate the layout-generation skill.
 // Accepts a file path or a directory (scans *.tsx recursively).
 //
 // --style-only restricts to the inline-style check alone (skips the
 // landmark/main/section/nav checks, which assume a full route page) — used to
 // gate component .stories.tsx files, which share the same inline-style ban
-// (CLAUDE.md "Component scope" / .claude/rules/components.md) but aren't pages.
+// (AGENTS.md "Components" / .claude/rules/components.md) but aren't pages.
 
 import fs from 'fs'
 import path from 'path'

@@ -82,6 +82,8 @@ Then the ablation evidence and the "does NOT support" list above, verbatim, plus
 
 ## Step 2 · Ship `AGENTS.md` (its own PR)
 
+> **Status (2026-10-09):** shipped in PR #124. Claude Code 2.1.280 loads `AGENTS.md` natively, with no double load when imported (recorded in the ADR-029 amendment). Effective budget is 24,000 B (20,860 used). **Open:** the portability smoke test (6) hasn't run because no Codex or Cursor is installed.
+
 1. **Check native support first.** Does the current Claude Code read `AGENTS.md` without an import? Record the answer in ADR-029. Keep `@AGENTS.md` in CLAUDE.md either way if it's harmless (no double load). Check with `/context` in a fresh session.
 2. **Draft `AGENTS.md` by moving content out of CLAUDE.md, not copying it.** Candidates:
    - Project purpose (one paragraph)

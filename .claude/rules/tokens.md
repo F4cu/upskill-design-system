@@ -36,7 +36,7 @@ Current hues: `terracotta`, `cyan`, `gold`, `teal`, `sand`, `grey`, `black`, `wh
 
 ## Line-height convention
 
-Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never use fixed px values — the ratio adapts to any font size automatically. Figma cannot store unitless variables, so these are entered there as fixed values and are an accepted code↔Figma divergence, not drift (see CLAUDE.md → Figma sync).
+Line-heights are **unitless ratios** (`1`, `1.25`, `1.4`, `1.5`, `1.75`). Never use fixed px values — the ratio adapts to any font size automatically. Figma cannot store unitless variables, so these are entered there as fixed values and are an accepted code↔Figma divergence, not drift (see AGENTS.md → Figma).
 
 ## Style Dictionary build detail
 
