@@ -33,7 +33,7 @@ Every component ships a `<Name>.metadata.json` file — a structured fact sheet 
 
 ### `usage.antiPatterns` carries implementation constraints, not just usage advice
 
-The schema requires all three fields of an anti-pattern — `scenario`, `reason`, `alternative` — because partial guidance isn't useful to an agent (ADR-001). In practice the field does more than warn against misuse: several of Accordion's anti-patterns document a hard-won implementation constraint (the `aria-controls`/always-mounted-panel rule below is one). `.claude/rules/components.md`'s type-enforced anti-pattern rule tightens this further — when a constraint is a hard "never do X," the component's prop type must make the violation a compile error (a narrowed `Omit<...>` on the spread native-attributes type), not just a documented warning. The metadata is the source the type narrowing is checked against.
+The schema requires all three fields of an anti-pattern — `scenario`, `reason`, `alternative` — because partial guidance isn't useful to an agent (ADR-001). In practice the field does more than warn against misuse: several of Accordion's anti-patterns document a hard-won implementation constraint (the `aria-controls`/always-mounted-panel rule below is one). `packages/components/AGENTS.md`'s type-enforced anti-pattern rule tightens this further — when a constraint is a hard "never do X," the component's prop type must make the violation a compile error (a narrowed `Omit<...>` on the spread native-attributes type), not just a documented warning. The metadata is the source the type narrowing is checked against.
 
 ### Tokens are existence-checked, not just format-checked
 

@@ -3,8 +3,8 @@ title: "Context engineering"
 sources:
   - AGENTS.md
   - CLAUDE.md
-  - .claude/rules/components.md
-  - .claude/rules/tokens.md
+  - packages/components/AGENTS.md
+  - packages/tokens/AGENTS.md
   - scripts/claude-md-check.js
   - scripts/handoff-tidy.js
   - scripts/docs-check.js
@@ -46,7 +46,7 @@ The organizing idea is a ladder of surfaces, each loaded at the narrowest possib
 |---|---|---|---|
 | 1a | `AGENTS.md` | Every session, always, in any coding agent (Claude Code loads it natively) | Tool-agnostic invariants and pointers: token layers, Figma vocabulary, the fixed component set, the ADR-009 test, layout grammar, code conventions. CI-capped at 8KB. |
 | 1b | `CLAUDE.md` | Every Claude Code session, always (imports `@AGENTS.md`) | Claude-specific policy: knowledge routing, frozen snapshots, MCP policy, git workflow, agentic moments. CI-capped at 200 lines / 20KB on its own and 24KB together with `AGENTS.md`. |
-| 2 | `.claude/rules/*.md` | Only when the session touches a file matching the rule's `paths:` [globs](08-glossary.md) | Package-scoped conventions — `components.md` (`packages/components/**`), `tokens.md` (`packages/tokens/**`). |
+| 2 | Nested `packages/*/AGENTS.md` | Only when the session reads a file under that package (Claude Code through a sibling `CLAUDE.md` that holds just `@AGENTS.md`; Codex and Cursor natively) | Package-scoped conventions — `packages/components/AGENTS.md`, `packages/tokens/AGENTS.md`. |
 | 3 | `.claude/commands/` and `.claude/skills/` | Only when invoked by name | Full procedures for the [nine agentic moments](06-agentic-moments.md) plus `/tokens-author` and `/airtable-sync`. |
 | 4 | Frozen snapshots (`.claude/STATUS_QUO.md`, `component-pipeline.json`, `airtable-governance.json`, …) | Read by a moment that needs external state | The status quo of Airtable, Figma, and the repo — captured by scripts, never fetched live mid-task. |
 | 5 | `.claude/handoff/` | Read by the specific loop stage or session resuming the work | Cross-session markdown handoffs (committed, lifecycle-tracked), per-run JSON under `runs/` (gitignored, regenerable), and the append-only `run-ledger.json`. |
@@ -57,7 +57,7 @@ Each rung defers cost until the knowledge is actually needed. A token-authoring 
 
 The always-loaded surface competes with the actual task for [context-window](08-glossary.md) space, and every line in it is a recurring cost paid on every session forever. [ADR-017](decisions/017-claude-md-context-budget.md) records the failure this page exists to prevent: `CLAUDE.md` had grown to 289 lines / ~35KB, past the point where Anthropic's guidance warns that adherence measurably drops — instructions get lost in the noise and are silently ignored. Worse, the growth was *structural*, not accidental: the old ADR convention said "reflect the rule in the relevant CLAUDE.md section too," making the always-loaded file the dumping ground for every *what to do* simply because it was the only surface guaranteed to be visible.
 
-The fix follows the repo's standing principle — never enforce by prose what a script can gate. Pruning once and relying on discipline treats the symptom; `@imports` (CLAUDE.md's built-in mechanism for pulling other files into the always-loaded instructions) reorganize the text but still load it all at launch, saving zero context. The chosen design (path-scoped rules + a routing table + a deterministic budget gate) attacks the growth engine itself.
+The fix follows the repo's standing principle — never enforce by prose what a script can gate. Pruning once and relying on discipline treats the symptom; `@imports` (CLAUDE.md's built-in mechanism for pulling other files into the always-loaded instructions) reorganize the text but still load it all at launch, saving zero context. The chosen design (path-scoped package conventions — `.claude/rules/` then, nested `AGENTS.md` since ADR-029 — + a routing table + a deterministic budget gate) attacks the growth engine itself.
 
 The handoff area went through the same correction one ADR earlier. [ADR-015](decisions/015-handoff-artifact-lifecycle.md) found `.claude/handoff/` holding three artifact kinds with no lifecycle signal — done and active work indistinguishable without opening each file. The whole directory was also excluded from version control (gitignored), contradicting the project's own convention that durable handoffs are committed. The pattern of the fix is identical: a small mandatory convention (3-line frontmatter), a script that enforces it by failing loudly (`npm run handoff:tidy`), and a generated index (`handoff/index.json`) so future sessions read one file instead of globbing a directory.
 
@@ -67,19 +67,19 @@ A third principle governs what gets *added* to any of these surfaces: **measure,
 
 ### The routing table and its litmus test
 
-`CLAUDE.md`'s "Where knowledge lives" section is the map every addition must pass through. Each kind of knowledge routes to the narrowest surface visible when it matters: a tool-agnostic invariant → `AGENTS.md`; component-only detail → `.claude/rules/components.md`; token-only detail → `.claude/rules/tokens.md`; procedures → the relevant command; rationale and history → the ADR; human-facing reference → this docs site; anything that must happen every time → a script or CI gate, never prose. The per-line litmus test: *would removing it cause a mistake in most sessions?* If not, it lives elsewhere. The ADR convention was amended to match — the ADR holds the *why*; the *what to do* lands on the narrowest visible surface, `CLAUDE.md` only when cross-cutting.
+`CLAUDE.md`'s "Where knowledge lives" section is the map every addition must pass through. Each kind of knowledge routes to the narrowest surface visible when it matters: a tool-agnostic invariant → `AGENTS.md`; component-only detail → `packages/components/AGENTS.md`; token-only detail → `packages/tokens/AGENTS.md`; procedures → the relevant command; rationale and history → the ADR; human-facing reference → this docs site; anything that must happen every time → a script or CI gate, never prose. The per-line litmus test: *would removing it cause a mistake in most sessions?* If not, it lives elsewhere. The ADR convention was amended to match — the ADR holds the *why*; the *what to do* lands on the narrowest visible surface, `CLAUDE.md` only when cross-cutting.
 
 ### The budget gate
 
-`npm run claudemd:check` (`scripts/claude-md-check.js`, wired into `docs-check.yml` on every PR) fails when `CLAUDE.md` exceeds 200 lines or 20KB, when `AGENTS.md` exceeds 8KB, when the two together (plus anything CLAUDE.md `@imports`) exceed 24KB, or when a line appears in both — and, just as importantly, when any `.claude/rules/*.md` is missing `paths:` frontmatter, because an unscoped rule loads unconditionally into every session and silently defeats the entire split. Future bloat is caught at PR time, not by noticing degraded agent behavior months later.
+`npm run claudemd:check` (`scripts/claude-md-check.js`, wired into `docs-check.yml` on every PR) fails when `CLAUDE.md` exceeds 200 lines or 20KB, when `AGENTS.md` exceeds 8KB, when the two together (plus anything CLAUDE.md `@imports`) exceed 24KB, or when a line appears in both — and, just as importantly, when a nested `AGENTS.md` has no sibling `CLAUDE.md` importing it (Claude Code would never load it), when a nested pair exceeds 16KB, or when a file reappears in `.claude/rules/` (a second home for package conventions). Future bloat is caught at PR time, not by noticing degraded agent behavior months later.
 
-```yaml
-# .claude/rules/tokens.md — the frontmatter that makes rung 2 work
----
-paths:
-  - packages/tokens/**
----
+```text
+packages/tokens/
+├── AGENTS.md   ← the conventions (any agent)
+└── CLAUDE.md   ← one line, `@AGENTS.md` — what makes rung 2 work in Claude Code
 ```
+
+Claude Code does not read a nested `AGENTS.md` on its own; it does load a nested `CLAUDE.md` lazily, the first time the session reads a file under that directory, and resolves its import. Writing a new file there without reading one does not trigger it — the same behaviour the old `.claude/rules/` `paths:` frontmatter had (verified on 2.1.280, ADR-029).
 
 ### The tool-agnostic root
 
@@ -97,7 +97,7 @@ Markdown handoffs are committed, named `YYYY-MM-DD-slug.handoff.md`, and carry `
 
 | Gate | Script | Fails when |
 |---|---|---|
-| Context budget | `npm run claudemd:check` | `CLAUDE.md` > 200 lines / 20KB, `AGENTS.md` > 8KB, both > 24KB, a line duplicated across them, or a rules file lacks `paths:` |
+| Context budget | `npm run claudemd:check` | `CLAUDE.md` > 200 lines / 20KB, `AGENTS.md` > 8KB, both > 24KB, a line duplicated across them, a nested `AGENTS.md` without its importing `CLAUDE.md` or over 16KB, or any `.claude/rules/*.md` |
 | Docs staleness | `npm run docs:check` (`docs-check.yml`) | Any `sources:` file of a `docs/NN-*.md` page has a commit newer than the page |
 | Snapshot staleness | `components-check.yml` | A PR touches components while `component-patterns.json` is stale |
 | Handoff convention | `npm run handoff:tidy` | Any handoff/spec markdown lacks lifecycle frontmatter |
@@ -107,8 +107,8 @@ The division of labor is the same everywhere: **detection is a script; judgment 
 ```mermaid
 flowchart TD
     A[Session starts] --> B["AGENTS.md + CLAUDE.md<br/>(always, ≤24KB together — CI-gated)"]
-    B -->|touches packages/components/**| C[.claude/rules/components.md]
-    B -->|touches packages/tokens/**| D[.claude/rules/tokens.md]
+    B -->|touches packages/components/**| C[packages/components/AGENTS.md]
+    B -->|touches packages/tokens/**| D[packages/tokens/AGENTS.md]
     B -->|"/command invoked"| E[".claude/commands/*.md<br/>(full procedure)"]
     E -->|moment needs external state| F["Frozen snapshots<br/>(committed, script-captured)"]
     E -->|loop stage resumes work| G[".claude/handoff/<br/>(index.json → handoff → runs/)"]
@@ -119,5 +119,5 @@ flowchart TD
 - ADRs: [013 — Cross-component pattern schema](decisions/013-cross-component-pattern-schema.md), [015 — Handoff artifact lifecycle](decisions/015-handoff-artifact-lifecycle.md), [017 — CLAUDE.md context budget](decisions/017-claude-md-context-budget.md), [029 — Tiered context architecture](decisions/029-tiered-context-architecture.md)
 - `CLAUDE.md` sections: "Where knowledge lives", "Frozen-memory snapshots", "Commands and skills"
 - Scripts: `npm run claudemd:check`, `npm run handoff:tidy`, `npm run docs:check`, `npm run sense` — see the [CLI reference](07-cli-reference.md)
-- Glossary entries this page connects: CLAUDE.md, Rules (path-scoped), Progressive disclosure, Frozen snapshot, Handoff, Ledger — [Glossary](08-glossary.md)
+- Glossary entries this page connects: CLAUDE.md, Nested AGENTS.md, Progressive disclosure, Frozen snapshot, Handoff, Ledger — [Glossary](08-glossary.md)
 - The lite-agentic charter these mechanics serve: [Agentic moments](06-agentic-moments.md)

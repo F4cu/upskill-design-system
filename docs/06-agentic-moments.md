@@ -25,6 +25,7 @@ sources:
 # rewritten 2026-10-08: Eval mode paragraph for /add-component --eval and /review-component --eval (harness-ablation Arm 2: guard, auto-approved API proposal, no visual checkpoint, no branch/PR)
 # clock reset 2026-10-09: ADR-007 amendment (ADR-029) records a risk-triggered reviewer for /add-component; the command change ships in a later PR and the loop still runs as this page describes, still accurate
 # clock reset 2026-10-09: three command files repoint the component set from CLAUDE.md to AGENTS.md (ADR-029); the moments index, MCP table and loop rules this page cites stay in CLAUDE.md, still accurate
+# clock reset 2026-10-09: /add-component, /component-scaffold and /tokens-author repoint .claude/rules/*.md to the nested packages/*/AGENTS.md (ADR-029 Tier 1); the moments are unchanged, still accurate
 ---
 # Agentic moments
 

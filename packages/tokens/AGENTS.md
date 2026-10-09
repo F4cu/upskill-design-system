@@ -1,11 +1,6 @@
----
-paths:
-  - packages/tokens/**
----
+# Token conventions
 
-# Token rules
-
-Loaded only when working under `packages/tokens/`. The four-layer model, source-of-truth rule, and Figma sync policy stay in CLAUDE.md; the authoring procedure is `/tokens-author`.
+Tier 1 conventions for `packages/tokens/` (ADR-029), loaded natively by agents that read nested `AGENTS.md` and by Claude Code through the sibling `CLAUDE.md`. The four-layer model, source-of-truth rule, and Figma sync policy live in the root `AGENTS.md`; the authoring procedure is `/tokens-author`.
 
 ## Token format (W3C DTCG)
 

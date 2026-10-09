@@ -1,11 +1,6 @@
----
-paths:
-  - packages/components/**
----
+# Component conventions
 
-# Component rules
-
-Loaded only when working under `packages/components/`. Cross-cutting policy (component scope, agentic moments, git workflow) stays in CLAUDE.md.
+Tier 1 conventions for `packages/components/` (ADR-029). Agents that read nested `AGENTS.md` load this when working here; Claude Code loads it through the sibling `CLAUDE.md`. Cross-cutting invariants (fixed set, ADR-009 test, layout grammar) live in the root `AGENTS.md`.
 
 ## CSS Modules
 

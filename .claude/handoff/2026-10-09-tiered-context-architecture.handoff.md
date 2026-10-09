@@ -113,6 +113,8 @@ Then the ablation evidence and the "does NOT support" list above, verbatim, plus
 
 ## Step 3 · Decide and wire Tier 1 delivery (its own PR)
 
+> **Status (2026-10-09):** option (b) shipped on `context/tier1-delivery`. Headless probes on 2.1.280: a nested `CLAUDE.md` loads lazily on Read (not on Write alone, same as `paths:` rules) and resolves `@AGENTS.md`; a nested `AGENTS.md` without that sibling never loads. In-repo probe: reading a tokens file loads only `packages/tokens/AGENTS.md`, and vice versa. Recorded in the ADR-029 and ADR-017 amendments. `.claude/rules/` is gone, and `claudemd:check` gates the sibling import, 16KB per pair, and an empty `.claude/rules/`. Harness Arm 0 strips the nested files.
+
 Decide between the two options and record the choice in ADR-029 (amend in place if ADR-029 is already merged).
 
 - **(a) Keep `.claude/rules/`** (measured in Arm 1, zero migration). Add to `AGENTS.md`: "Editing `packages/components/**`? Read `.claude/rules/components.md` first." Other tools get the conventions by pointer, not by auto-loading.

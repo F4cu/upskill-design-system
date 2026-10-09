@@ -12,7 +12,7 @@ title: "ADR-025 — Component state model"
 
 ## Decision
 
-Each kind of state has its own home (rule table in `.claude/rules/components.md` → "State model"):
+Each kind of state has its own home (rule table in `packages/components/AGENTS.md` → "State model"):
 
 - **Interaction** is CSS pseudo-classes only, never a prop. It shows up in Figma as a `State` variant used for previews. The exception is interaction state the app owns (`pressed`, `selected`, `open`), which is a controlled prop with `default*`/`on*Change`.
 - **Lifecycle** is derived from a data prop when possible. When it can't be derived, it is one `status` enum, never a set of booleans. In Figma it is named for its axis (`Status`), never `State`.
