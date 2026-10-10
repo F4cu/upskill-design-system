@@ -2,10 +2,11 @@
 // Validates every component metadata file against component.schema.json.
 // Also checks each metadata file's component.name matches its folder name,
 // resolves tokens.* and composition.parts cross-references, checks tokens.*
-// against what the component's own CSS Module and TSX read, and validates the
-// canonical example file, and parses every <Name>.spec.json. Exits non-zero on any failure so it can
-// gate CI. This is the contract the component-scaffold and layout-generation
-// agentic moments consume — keep it green.
+// against what the component's own CSS Module and TSX read, validates the
+// canonical example file, and checks every <Name>.spec.json parses. Exits
+// non-zero on any failure so it can gate CI. This is the contract the
+// component-scaffold and layout-generation agentic moments consume — keep it
+// green.
 
 import fs from "fs";
 import path from "path";

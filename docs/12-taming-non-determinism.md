@@ -13,6 +13,7 @@ sources:
 # clock reset 2026-10-11: component.schema.json adds a figmaNodeId pattern (node id or "none", ADR-026 Tier 3 amendment); the constraints this page describes are unchanged, still accurate
 # 2026-10-09: reviewer sentence notes it is now risk-triggered (interactive only, ADR-029)
 # 2026-10-09: tokens.* derived by script; validator errors name the fix (ADR-029 Step 5)
+# clock reset 2026-10-10: validate-metadata.js also checks every <Name>.spec.json parses; this page describes the gate's role, not its check list, still accurate
 ---
 # Taming non-determinism
 
