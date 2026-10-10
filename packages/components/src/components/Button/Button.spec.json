@@ -42,7 +42,7 @@
       "options": ["accent", "neutral", "transparent", "danger"],
       "default": "neutral",
       "concept": "Visual weight/style",
-      "figma": { "surface": "both", "property": "Style", "note": "ADR-026 recorded mapping variant ↔ Style; values recased (Accent, Neutral, Transparent, Danger)." }
+      "figma": { "surface": "both", "property": "Variant", "note": "Values recased (Accent, Neutral, Transparent, Danger)." }
     },
     "size": {
       "kind": "variantAxis",
