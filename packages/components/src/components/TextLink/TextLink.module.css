@@ -9,6 +9,10 @@
   color: var(--ds-color-text-interactive-hover);
 }
 
+.textLink:active {
+  color: var(--ds-color-text-default);
+}
+
 /* Size modifiers — match Text scale but lock weight to semibold */
 
 .body-default {

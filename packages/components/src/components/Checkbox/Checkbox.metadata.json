@@ -69,6 +69,10 @@
       "description": "Stronger border on hover to signal interactivity."
     },
     {
+      "state": "active",
+      "description": "Momentary press feedback (CSS :active) in both checked and unchecked boxes: an overlay.active layer darkens the fill one step; unchecked also takes the hover border. Orthogonal to checked."
+    },
+    {
       "state": "checked",
       "description": "Brand-fill background with white checkmark."
     },
@@ -91,7 +95,8 @@
       "color.text.inverted.default",
       "color.border.input.default",
       "color.border.input.hover",
-      "color.border.disabled"
+      "color.border.disabled",
+      "color.background.overlay.active"
     ],
     "spacing": [
       "space.inline.sm"

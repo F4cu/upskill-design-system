@@ -45,3 +45,7 @@
 .link:hover .label {
   color: var(--ds-color-text-brand);
 }
+
+.link:active .label {
+  color: var(--ds-color-text-interactive-hover);
+}

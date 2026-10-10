@@ -42,6 +42,10 @@
   background: var(--ds-color-background-on-media-hover);
 }
 
+.onMedia.onMedia:active:not(:disabled) {
+  background: var(--ds-color-background-on-media-active);
+}
+
 .onMedia svg {
   filter:
     drop-shadow(0 0 var(--ds-size-halo) var(--ds-color-icon-on-media-halo))

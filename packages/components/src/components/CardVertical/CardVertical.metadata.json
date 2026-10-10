@@ -203,6 +203,10 @@
       "description": "Favorite's aria-pressed is true; the heart fills with color.icon.brand, keeping the on-media halo."
     },
     {
+      "state": "action-active",
+      "description": "Momentary press feedback on the favorite and menu buttons (CSS :active): on-media.active background, one step past on-media.hover. Orthogonal to the favorite pressed state."
+    },
+    {
       "state": "menu-open",
       "description": "Menu trigger has aria-expanded=true and a DropdownMenu panel opens below it, right-aligned; focus moves to the first item."
     }
@@ -213,7 +217,8 @@
       "color.icon.brand",
       "color.icon.on-media.default",
       "color.icon.on-media.halo",
-      "color.background.on-media.hover"
+      "color.background.on-media.hover",
+      "color.background.on-media.active"
     ],
     "spacing": [
       "space.stack.sm",

@@ -17,6 +17,10 @@
   border-color: var(--ds-color-border-strong);
 }
 
+.button:active:not(:disabled) {
+  background: var(--ds-color-background-overlay-active);
+}
+
 .button:disabled {
   background: transparent;
   border-color: var(--ds-color-border-default);

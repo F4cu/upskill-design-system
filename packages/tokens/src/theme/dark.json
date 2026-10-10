@@ -149,6 +149,10 @@
         "hover": {
           "$type": "color",
           "$value": "{color.black.alpha.5}"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{color.black.alpha.6}"
         }
       }
     },
