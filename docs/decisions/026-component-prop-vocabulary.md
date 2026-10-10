@@ -86,7 +86,7 @@ Figma-only properties with no code counterpart, recorded 2026-10-07:
 | Input Group + button | The whole component | Search input plus icon button, for page mock-ups. Code composes `TextField` and `Button` (AppHeader search). |
 | Image | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
 
-Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`. TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand).
+Known gaps (code props with no Figma property): TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand).
 
 ### API proposal step
 
@@ -173,3 +173,13 @@ Badge now takes its text as `children: ReactNode`, like Chip. All call sites mov
 - `type=Default|highlight` → `Variant=Outline|Filled`. The values match code's `outline|filled` (Default had the `border/default` stroke only; highlight had the `background/overlay/subtlest` fill).
 - A new `Text` text property drives the label layer: the recorded `children` ↔ `Text` mapping, as on Button and Chip.
 - The Filled variant's visible `border/default` stroke is now a 1px transparent stroke, matching the CSS `border: 1px solid transparent`. Code is the source of truth (ADR-002).
+
+## Amendment (2026-10-10) — Button `trailingIcon` and `shape` in Figma
+
+Two of the three known gaps are closed. `TextField` `hideLabel` remains.
+
+- **`shape` was never a gap.** The icon-only `Button icon` set (`54:1192`) already had `Shape` (`Square` / `Round`), so code `shape` maps to it with recased values. That set's own drift is fixed in place, the same way as the Button alignment pass: `size=Small|Medium|Large` → `Size=sm|md|lg`, and `icon` → `Icon`.
+- **`trailingIcon`:** every one of the `Button` set's (`57:1265`) 36 variants gains a `TrailingIcon` layer after the label, sized like that variant's leading icon (16px at `sm`, 24px otherwise). The layer is driven by `Has trailing icon` (default `false`) and `Trailing icon` (an instance swap, default `chevron-down`): the recorded "optional prop omitted ↔ `Has <x>`" mapping. All 54 placed instances keep the layer hidden, with variant, text, leading icon and width unchanged.
+- **Verification gap:** the before-snapshot was cut off by figma-cli's 20,000-character output limit, so 75 of the 136 `Button icon` instances have no before-state to compare against. The 61 that do were unchanged, and all 136 have valid `Size` values after the rename.
+- **`Button icon` Disabled and default, fixed the same day.** The set gains `State=Disabled` for every size, shape and variant (18 variants), colored per the CSS: Accent fill `background/button/disabled` with an `icon/inverted/disabled` glyph; Neutral border `border/disabled` with a `text/disabled` glyph; Transparent a `text/disabled` glyph. Each Disabled variant is cloned from its Default and re-wired to the `Icon` swap. The set is re-gridded (rows Size × Shape, columns Variant × State), so the default is now `Size=md, Shape=Square, Variant=Neutral, State=Default`; code's `shape` has no default. All 136 instances were compared before and after, with no difference.
+- **`Button` Neutral Disabled matches the CSS.** Its three variants (one per size) used `border/default` and the raw primitive `neutral/neutral-8` on both glyphs. They now use `border/disabled` and `text/disabled`, as `.neutral:disabled` does; the label was already `text/disabled`. All 54 instances were compared before and after, with no difference.

@@ -38,6 +38,7 @@ allowed-tools: Read, Glob, Grep, Bash, ReadMcpResourceTool
 - **A parent variant flip keeps nested overrides only for properties the two presets agree on.** Make variants that drive a nested part differ only in the driving state.
 - **A variant dragged outside its set's boundary becomes a standalone component renamed `Set/value`** (for example, `TextField/true`). If a variant seems to be missing, search by the set name, not by the variant name, then regroup it with `combineAsVariants`. Snapshot the instances first, because regrouping can re-key the properties.
 - **Changing a component default changes every layer that inherits it.** Before changing a box or part default, pin the values the variants and instances rely on, then compare a read-back with the values from before.
+- **A truncated snapshot fails silently.** Output past 20,000 characters is cut mid-JSON. Parse the before-snapshot (and slice it by instance index if it is large) before running the write, never in the same command (2026-10-10: 75 Button icon instances lost their before-state this way).
 
 ## Output
 

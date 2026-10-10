@@ -58,7 +58,7 @@
       "options": ["square", "round"],
       "default": null,
       "concept": "Corners",
-      "figma": { "surface": "both", "set": "Button icon", "note": "Icon-only buttons are a separate Figma set; its shape property name is not yet captured." }
+      "figma": { "surface": "both", "set": "Button icon", "property": "Shape", "note": "Values recased (Square, Round). Icon-only buttons are a separate Figma set." }
     },
     "icon": {
       "kind": "content",
@@ -72,7 +72,7 @@
       "type": "IconName",
       "default": null,
       "concept": "Icon",
-      "figma": { "surface": "code-only", "note": "Known gap (ADR-026): the Figma set has one icon slot." }
+      "figma": { "surface": "both", "property": "Has trailing icon + Trailing icon", "note": "ADR-026 recorded mapping: optional prop omitted ↔ Has <x> (default false), plus the Trailing icon instance swap (default chevron-down). Layer: TrailingIcon." }
     },
     "children": {
       "kind": "content",
@@ -199,12 +199,7 @@
       { "name": "Button icon", "nodeId": "54:1192", "covers": "Icon-only buttons (shape set)" }
     ],
     "divergences": [
-      { "what": "trailingIcon has no Figma property.", "decision": "Known gap, ADR-026." },
-      { "what": "The Button icon set has no Danger style.", "decision": "Accepted 2026-10-02: no icon-only danger button is used anywhere." },
-      {
-        "what": "ADR-026 lists shape as a code prop with no Figma property, but icon-only buttons exist as the Button icon set.",
-        "decision": "Recorded as a set mapping, not a gap. Correct the ADR-026 known-gaps line if ADR-027 is accepted."
-      }
+      { "what": "The Button icon set has no Danger style.", "decision": "Accepted 2026-10-02: no icon-only danger button is used anywhere." }
     ]
   }
 }
