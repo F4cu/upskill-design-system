@@ -3,7 +3,7 @@
 // Also checks each metadata file's component.name matches its folder name,
 // resolves tokens.* and composition.parts cross-references, checks tokens.*
 // against what the component's own CSS Module and TSX read, and validates the
-// canonical example file. Exits non-zero on any failure so it can
+// canonical example file, and parses every <Name>.spec.json. Exits non-zero on any failure so it can
 // gate CI. This is the contract the component-scaffold and layout-generation
 // agentic moments consume — keep it green.
 
@@ -176,8 +176,22 @@ for (const { file, expectedName, stray } of targets) {
   }
 }
 
+// Specs (ADR-027) get their full check from spec:validate, which needs built
+// tokens; parsing here keeps a broken spec from passing the token-free gate.
+for (const { expectedName } of targets) {
+  if (!expectedName) continue;
+  const file = path.join(COMPONENTS_DIR, expectedName, `${expectedName}.spec.json`);
+  if (!fs.existsSync(file)) continue;
+  try {
+    JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (e) {
+    console.error(`✗ ${path.relative(ROOT, file)} — not valid JSON: ${e.message}`);
+    failures++;
+  }
+}
+
 if (failures) {
-  console.error(`\n${failures} metadata file(s) failed validation.`);
+  console.error(`\n${failures} file(s) failed validation.`);
   process.exit(1);
 }
 console.log(`\n✓ All ${targets.length} metadata files valid.`);
