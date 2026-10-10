@@ -17,6 +17,7 @@ sources:
 # clock reset 2026-10-07: ADR-013 amendment corrects the harness totals after a scorer fix (scaffold 17→22, overall 30→26); decision and split unchanged, and this page cites neither total, still accurate
 # clock reset 2026-10-08: generate-pattern-schema.js exports parseFile/namingDrift for the ablation scorer and runs main() only as an entry point; output and checks unchanged, still accurate
 # 2026-10-09: isInteractive moved to scripts/lib.js and now also drives component:risk (ADR-029)
+# rewritten 2026-10-10: validate-metadata.js gains a fifth check (every <Name>.spec.json parses); the checks list names it
 ---
 # Machine-readable metadata
 
@@ -83,12 +84,13 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 ]
 ```
 
-`scripts/validate-metadata.js` runs four checks beyond the Ajv schema pass:
+`scripts/validate-metadata.js` runs five checks beyond the Ajv schema pass:
 
 - `component.name` must equal the containing directory name.
 - Every dot-path under `tokens.*` must resolve to a `$value` node in the merged primitives+brands+theme+device tree.
 - `tokens.*` must list exactly the tokens the component itself reads: every `var(--ds-*)` in its CSS Module must be listed, and every listed token must appear in the CSS Module or `index.tsx` (a TSX template prefix such as `` var(--ds-size-avatar-${size}) `` counts). Tokens a child component applies belong to the child's metadata (ADR-001 amendment 2026-10-07).
 - Every `composition.parts` entry must be internally consistent: names are unique and don't collide with a component name, `accepts` appears only on `slot`/`open` parts (and is required there), each `accepts` entry is a component or a sibling part, each `containedBy` entry is a sibling part, and `builtOn` is a component or `null`. "Component" means one exported by `@upskill/components` (`publicComponents()` in `scripts/lib.js`), the same list `layout:validate` uses (#98).
+- Every `<Name>.spec.json` must parse as JSON. The full spec check (schema, props, styles against the code) is `spec:validate`, which needs built tokens and runs as its own CI step (ADR-027); the parse check keeps a malformed spec from passing the token-free local gate.
 
 `scripts/validate-layout.js` then uses the same block to check layouts that compose a component from its parts.
 
