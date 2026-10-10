@@ -36,6 +36,7 @@ sources:
 # clock reset 2026-10-09: CLAUDE.md moment 6 row names the risk-triggered reviewer; handoff-tidy.js adds path/risk to ledger entries; the surfaces this page describes are unchanged, still accurate
 # clock reset 2026-10-10: ADR-029 gains the Step 6.5 Accordion readout (reviewer cost vs headline); this page describes context surfaces, not reviewer outcomes, still accurate
 # clock reset 2026-10-10: components AGENTS.md Figma line drops the variant ↔ Style mapping and names default slots Children (ADR-026 amendment); this page describes no per-prop detail, still accurate
+# clock reset 2026-10-10: packages/components/AGENTS.md State model gains one active-vs-pressed line (ADR-025 amendment); layering/budget mechanics unchanged, still accurate
 ---
 # Context engineering
 

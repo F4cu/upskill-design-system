@@ -22,6 +22,7 @@ sources:
 # clock reset 2026-10-09: ADR-007 amendment makes the adversarial reviewer risk-triggered, reusing a11y-coverage.js's interactive derivation (not yet implemented); the Tier 2 gate this page describes is unchanged, still accurate
 # clock reset 2026-10-09: token-contrast-check.js comment repoints "Component scope" from CLAUDE.md to AGENTS.md (ADR-029); no behavior change, still accurate
 # clock reset 2026-10-09: a11y-coverage.js imports isInteractive from scripts/lib.js (shared with component:risk); the Tier 2 derivation and gate are unchanged, still accurate
+# clock reset 2026-10-10: token-contrast-check.js gains Button/Chip :active pairs; active text darkens a step instead of new waivers; curation and waiver conventions unchanged, still accurate
 ---
 # Accessibility
 
