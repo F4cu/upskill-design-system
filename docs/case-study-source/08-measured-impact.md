@@ -152,7 +152,7 @@ The instrument also earned its keep on itself: the pilot and the score reviews c
 
 ### What would change the verdict
 
-- **A task where conventions and keyboard/ARIA behaviour both matter** — the pre-registered `Accordion` stretch task — is the obvious next run; it is the kind of component where the ledger already shows the reviewer earning its cost (4 findings in its own review).
+- **A task where conventions and keyboard/ARIA behaviour both matter** — the pre-registered `Accordion` stretch task. It has since run; see the follow-up below.
 - **Contrast in the headline** (axe in a real browser, or the token contrast check run per workspace) would make the reviewer's Badge catch countable.
 - **The model axis:** Arm 0 on Opus vs Arm 2 on a cheaper model tests the other way the loop could pay for itself — making a cheaper model good enough.
 
@@ -167,7 +167,18 @@ ADR-029's first revisit trigger asked whether loading conventions by file path b
 - **1b was cheaper on every task:** $0.78 vs $0.91 per clean component; $0.39 vs $0.70 per token-task run (measured). But the gap isn't the delivery mechanism. A pointer read adds the same bytes a path load would. The component baseline ran on the pre-ADR-029 HEAD, and on the token task two of Arm 1's three runs did extra work.
 - **That extra work is the more interesting finding.** Those two runs noticed that `teal` and `amber` are brand hues, so ADR-014's rule bars them from feedback. Each added dedicated `green`/`yellow` hues and amended the ADR. Nobody asked them to, and the shipped reference doesn't do it. It's now issue #128. The scorer counted it as a collateral change: the pre-registered trap counts anything outside the task, and the developer kept it that way.
 
-The prediction ("tie, 1b cheaper") held. ADR-029 records the readout as an amendment and keeps nested `AGENTS.md` with lazy loading. Portability and the Accordion stretch task remain the open gaps.
+The prediction ("tie, 1b cheaper") held. ADR-029 records the readout as an amendment and keeps nested `AGENTS.md` with lazy loading. Portability remains open.
+
+### Follow-up: does the reviewer earn its cost on an interactive component? (Accordion)
+
+Step 4 of ADR-029 kept the adversarial reviewer for interactive components only. The Accordion stretch task tested that choice: 6 runs (2026-10-10, Arms 1 and 2, same model and settings, $10.15), rebuilding `Accordion` from a behaviour-only brief. The pre-registered test said the reviewer earns its cost if Arm 2 gets more clean runs than Arm 1, or if Arm 1 ships the dead-`aria-controls` bug the July reviewer caught and Arm 2 doesn't.
+
+- **The headline tips to the loop, narrowly:** Arm 2 3/3 clean, Arm 1 2/3, at $2.19 vs $1.79 per clean component (measured). Arm 1's one miss is four hits of a typography trap in its own stories file, on text the component wraps in `<Text>` at runtime. The developer kept the locked rule that counts it. If story files were scoped out, as an earlier rule already does for raw story text, it would be a tie. That's the only such hit in all 48 ablation runs.
+- **The targeted bug never appeared.** All six runs kept the panel mounted and wrote a behavioural a11y test, including Arm 1, which no loop told to.
+- **The reviewer bought depth, not rescue:** about twice as many test cases (11–13 vs 5–7). Of ten high or medium findings, one would have shown on the headline (a lint error, fixed before the gate). The other nine were above it: keyboard test gaps, a run-together accessible name, a broken controlled story.
+- **It also missed one:** an Arm 2 run renamed the open-state API to `value`/`onValueChange`, away from the system's `open`/`onOpenChange`, and the loop passed it.
+
+ADR-029 records the readout. The decision stands: the reviewer stays on interactive components, where this is the first measured case of it being no worse than context alone on the headline while buying deeper tests. Whether it would earn its cost on display components can't be tested by this task, and stays open.
 
 ## Context budget: a cap that bites
 
