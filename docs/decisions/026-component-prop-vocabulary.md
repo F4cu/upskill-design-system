@@ -5,7 +5,7 @@ title: "ADR-026 — Component prop vocabulary and API proposal step"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-08
+**Amended:** 2026-10-10
 
 ## Context
 
@@ -87,7 +87,7 @@ Figma-only properties with no code counterpart, recorded 2026-10-07:
 | Input Group + button | The whole component | Search input plus icon button, for page mock-ups. Code composes `TextField` and `Button` (AppHeader search). |
 | Image | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
 
-Known gaps (code props with no Figma property): Button `trailingIcon` (the set has one icon slot, the leading `Icon` with `Has icon`) and Button `shape`. TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand).
+Known gaps (code props with no Figma property): TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand).
 
 ### API proposal step
 
@@ -148,3 +148,12 @@ The file was brought in line with the vocabulary by renaming properties in place
 ## Amendment (2026-10-08) — Badge `label` is drift
 
 The harness-ablation pilot rebuilt Badge three times and every run named its text `children`, which is what the Content row prescribes for single free-form content. Badge's shipped `label` predates the vocabulary. It joins the migration table as open drift; the rename is a separate breaking PR like the others.
+
+## Amendment (2026-10-10) — Button `trailingIcon` and `shape` in Figma
+
+Two of the three known gaps are closed. `TextField` `hideLabel` remains.
+
+- **`shape` was never a gap.** The icon-only `Button icon` set (`54:1192`) already had `Shape` (`Square` / `Round`), so code `shape` maps to it with recased values. That set's own drift is fixed in place, the same way as the Button alignment pass: `size=Small|Medium|Large` → `Size=sm|md|lg`, and `icon` → `Icon`.
+- **`trailingIcon`:** every one of the `Button` set's (`57:1265`) 36 variants gains a `TrailingIcon` layer after the label, sized like that variant's leading icon (16px at `sm`, 24px otherwise). The layer is driven by `Has trailing icon` (default `false`) and `Trailing icon` (an instance swap, default `chevron-down`): the recorded "optional prop omitted ↔ `Has <x>`" mapping. All 54 placed instances keep the layer hidden, with variant, text, leading icon and width unchanged.
+- **Verification gap:** the before-snapshot was cut off by figma-cli's 20,000-character output limit, so 75 of the 136 `Button icon` instances have no before-state to compare against. The 61 that do were unchanged, and all 136 have valid `Size` values after the rename.
+- **Still open on `Button icon`:** no `Disabled` state, and the default variant is `Size=lg, Variant=Accent` where code defaults to `md` and `neutral`. Fixing the default means moving variants on the canvas (the default variant is the top-left one).
