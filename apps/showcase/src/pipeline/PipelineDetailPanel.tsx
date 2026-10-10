@@ -63,13 +63,12 @@ export function PipelineDetailPanel({ node, status, panelId, onClose }: Pipeline
             <Stack gap="xs">
               <Text size="label">Last known status</Text>
               {status.tone === 'snapshot' ? (
-                <Badge label="Backed by a committed snapshot" variant="outline" />
+                <Badge variant="outline">Backed by a committed snapshot</Badge>
               ) : (
                 <Stack gap="xs">
-                  <Badge
-                    label={status.tone === 'success' ? 'Passing' : 'Failing'}
-                    variant="filled"
-                  />
+                  <Badge variant="filled">
+                    {status.tone === 'success' ? 'Passing' : 'Failing'}
+                  </Badge>
                   <Text size="metadata" color="subtle">
                     Updated {new Date(status.run.updatedAt).toLocaleString()}
                   </Text>

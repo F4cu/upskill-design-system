@@ -250,7 +250,7 @@ export const GroupedMeta: Story = {
         <CardVertical.Meta>
           <CardVertical.Duration>{duration}</CardVertical.Duration>
           <Inline gap="xs" align="center">
-            <Badge label="New" />
+            <Badge>New</Badge>
             <Text as="span" size="metadata" color="subtle">Updated this week</Text>
           </Inline>
         </CardVertical.Meta>

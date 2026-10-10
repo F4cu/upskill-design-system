@@ -1,15 +1,15 @@
-import type { HTMLAttributes } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 import { Text } from '../Text'
 import styles from './Badge.module.css'
 
 export type BadgeVariant = 'outline' | 'filled'
 
 export type BadgeProps = {
-  label: string
   variant?: BadgeVariant
+  children: ReactNode
 } & Omit<HTMLAttributes<HTMLSpanElement>, 'children'>
 
-export function Badge({ label, variant = 'outline', className, ...rest }: BadgeProps) {
+export function Badge({ variant = 'outline', className, children, ...rest }: BadgeProps) {
   return (
     <Text
       {...rest}
@@ -18,7 +18,7 @@ export function Badge({ label, variant = 'outline', className, ...rest }: BadgeP
       color="subtle"
       className={[styles.badge, styles[variant], className].filter(Boolean).join(' ')}
     >
-      {label}
+      {children}
     </Text>
   )
 }
