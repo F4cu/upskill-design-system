@@ -34,6 +34,7 @@ sources:
 # clock reset 2026-10-09: ADR-007 amendment (ADR-029) records a risk-triggered reviewer, not yet implemented in the commands; no glossary term changed, still accurate
 # 2026-10-09: Review path entry names the risk-tier choice /add-component now makes (ADR-029)
 # clock reset 2026-10-09: /component-scaffold and /add-component Stage 1 fill tokens.* via metadata:derive-tokens (ADR-029 Step 5); no new term, Scaffold and gate entries still accurate
+# clock reset 2026-10-10: /figma-cli pitfalls gain the truncated-snapshot note; no glossary term changed, still accurate
 ---
 # Glossary
 

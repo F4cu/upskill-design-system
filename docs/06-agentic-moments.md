@@ -28,6 +28,7 @@ sources:
 # clock reset 2026-10-09: /add-component, /component-scaffold and /tokens-author repoint .claude/rules/*.md to the nested packages/*/AGENTS.md (ADR-029 Tier 1); the moments are unchanged, still accurate
 # rewritten 2026-10-09: /add-component Stage 3 is risk-triggered (component:risk → full path for interactive, in-session standard path for display); moment 6 row updated
 # 2026-10-09: Stage 1 bullet notes tokens.* is derived by metadata:derive-tokens (ADR-029 Step 5)
+# clock reset 2026-10-10: /figma-cli pitfalls gain the truncated-snapshot note; this page describes no Plugin API pitfalls, still accurate
 ---
 # Agentic moments
 

@@ -53,6 +53,7 @@ sources:
 # clock reset 2026-10-09: /component-scaffold and /add-component Stage 1 fill tokens.* via metadata:derive-tokens (ADR-029 Step 5); this page's level of detail is unaffected, still accurate
 # clock reset 2026-10-09: ADR-029 gains the Step 6 readout amendment (Arm 1b ties Arm 1); this page lists no ADR contents, still accurate
 # clock reset 2026-10-10: ADR-029 gains the Step 6.5 Accordion readout amendment; this page lists no ADR contents, still accurate
+# clock reset 2026-10-10: ADR-026 amendment closes the Button trailingIcon/shape Figma gaps; /figma-cli gains a truncated-snapshot pitfall; this page describes no Figma property names or per-command steps, still accurate
 ---
 # Start here
 
