@@ -26,7 +26,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "d8f2b01f3d4d12b09afd8287472321aea6fab284",
+  "generatedFrom": "0c83a9c709b728d91a8a3a4860ea6f15cf819f2c",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
