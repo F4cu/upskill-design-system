@@ -36,6 +36,7 @@ sources:
 # clock reset 2026-10-09: /component-scaffold and /add-component Stage 1 fill tokens.* via metadata:derive-tokens (ADR-029 Step 5); no new term, Scaffold and gate entries still accurate
 # rewritten 2026-10-10: Props and variants and Open part say how Figma names them (ADR-026 amendment 2026-10-10: Style → Variant, default native slot → Children)
 # clock reset 2026-10-10: /figma-cli pitfalls gain the truncated-snapshot note; no glossary term changed, still accurate
+# clock reset 2026-10-10: vocabulary gains a current (aria-current) row and /layout-generation's navItems use current (ADR-026 Tier 1); no glossary term changed, still accurate
 ---
 # Glossary
 

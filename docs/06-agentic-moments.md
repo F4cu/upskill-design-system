@@ -29,6 +29,7 @@ sources:
 # rewritten 2026-10-09: /add-component Stage 3 is risk-triggered (component:risk → full path for interactive, in-session standard path for display); moment 6 row updated
 # 2026-10-09: Stage 1 bullet notes tokens.* is derived by metadata:derive-tokens (ADR-029 Step 5)
 # clock reset 2026-10-10: /figma-cli pitfalls gain the truncated-snapshot note; this page describes no Plugin API pitfalls, still accurate
+# clock reset 2026-10-10: /layout-generation grammar table: navItems active → current (ADR-026 Tier 1); moment 4 description unchanged, still accurate
 ---
 # Agentic moments
 

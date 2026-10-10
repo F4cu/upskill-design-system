@@ -22,6 +22,7 @@ sources:
 # clock reset 2026-10-07: ADR-013 amendment corrects the harness totals after a scorer fix (scaffold 17→22, overall 30→26); decision and split unchanged, and this page cites neither total, still accurate
 # clock reset 2026-10-09: validate-layout.js comments and /layout-generation repoint the component set and layout grammar from CLAUDE.md to AGENTS.md (ADR-029); grammar and validator unchanged, still accurate
 # clock reset 2026-10-09: a validate-layout.js comment repoints .claude/rules/components.md to packages/components/AGENTS.md (ADR-029 Tier 1); the grammar is unchanged, still accurate
+# clock reset 2026-10-10: /layout-generation grammar table: AppHeader navItems take current instead of active (ADR-026 Tier 1); this page names no NavItem field, still accurate
 ---
 # Layout grammar
 
