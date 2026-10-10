@@ -19,15 +19,17 @@ completed:
 | Tier | What | Branch | State |
 |---|---|---|---|
 | 0 | Audit: this matrix + Figma property read-back | — | done 2026-10-10 |
-| 1 | Breaking renames (AppHeader `NavItem.active` → `current`; Accordion metadata states `collapsed/expanded` → `closed/open`; record `listRole` and `logoSrcDark` as new terms) | `refactor/contract-vocabulary-tier1` | PR #137 (2026-10-10) |
-| 2 | `:active` state on interactive components + ADR-025 "applied to" amendment | `feat/active-state-tier2` | todo |
+| 1 | Breaking renames (AppHeader `NavItem.active` → `current`; Accordion metadata states `collapsed/expanded` → `closed/open`; record `listRole` and `logoSrcDark` as new terms) | `refactor/contract-vocabulary-tier1` | merged, PR #137 (2026-10-10) |
+| 2 | `:active` state on interactive components + ADR-025 "applied to" amendment | `feat/active-state-tier2` | PR open (2026-10-10) |
 | 3 | Figma alignment of linked sets + `Active` variants + `figmaNodeId` normalization | `chore/figma-contract-alignment` | todo |
 | 4 | Close-out: ADR-026 table, sense, pattern schema (+ 3 `composedOf` mismatches), Airtable push, docs clocks, drift memory | last PR | todo |
 
 ## Decisions made during planning
 
 - **AppHeader `onUserClick` stays.** It fires on every user-button click, with or without a menu, and the menu's open state is internal (`useMenuButton`). It is a discrete event that already follows `on<Part><Verb>`, not a controlled open state.
-- **TextField and Select get no `:active`.** On a text input or native select it carries no feedback meaning. Record this in the ADR-025 amendment.
+- **TextField and Select get no `:active`.** On a text input or native select it carries no feedback meaning. Recorded in the ADR-025 amendment.
+- **Tier 2 choices (2026-10-10):** Checkbox gets `:active` (an `overlay.active` image layer over either fill, orthogonal to `checked`). Accordion also gets the missing `:hover` (`overlay.hover` layer). TextLink's active state is `text.default` (the brand text ramp ends at hover). New token `color.background.on-media.active` (`black.alpha.6`) for CardVertical's on-media actions. Its Figma variable push belongs to Tier 3.
+- **Tier 3 `State=Active` previews needed for:** Accordion item, ButtonArrow, DropdownMenu/Item, `_Breadcrumb/Link`, `_AppHeader/NavItem`, and Checkbox if a set gets linked. Values are in the ADR-025 Tier 2 table.
 
 ## Code matrix (from the props types, 2026-10-10)
 
