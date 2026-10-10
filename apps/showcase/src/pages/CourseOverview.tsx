@@ -123,7 +123,7 @@ export default function CourseOverview() {
         logoAlt="UpSkill"
         navItems={[
           { label: 'Homepage', href: `${BASE}showcase/homepage` },
-          { label: 'Course', href: `${BASE}showcase/course`, active: true },
+          { label: 'Course', href: `${BASE}showcase/course`, current: true },
         ]}
         userAvatarSrc="https://placehold.co/24x24/D15D50/ffffff?text=S"
         userName="Sarah"

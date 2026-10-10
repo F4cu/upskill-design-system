@@ -137,7 +137,7 @@ export default function Homepage() {
         logoSrcDark={`${BASE}logo-dark.svg`}
         logoAlt="UpSkill"
         navItems={[
-          { label: 'Homepage', href: `${BASE}showcase/homepage`, active: true },
+          { label: 'Homepage', href: `${BASE}showcase/homepage`, current: true },
           { label: 'Course', href: `${BASE}showcase/course` },
         ]}
         userAvatarSrc="https://placehold.co/24x24/D15D50/ffffff?text=S"

@@ -12,8 +12,16 @@
     "kind": "handoff",
     "status": "active",
     "created": "2026-10-09",
-    "updated": "2026-10-09",
+    "updated": "2026-10-10",
     "path": ".claude/handoff/2026-10-09-tiered-context-architecture.handoff.md"
+  },
+  {
+    "name": "2026-10-10-component-contract-migration",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-10-10",
+    "updated": "2026-10-10",
+    "path": ".claude/handoff/2026-10-10-component-contract-migration.handoff.md"
   },
   {
     "name": "2026-07-03-multi-brand-refactor",

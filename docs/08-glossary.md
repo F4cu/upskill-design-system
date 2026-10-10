@@ -37,6 +37,7 @@ sources:
 # rewritten 2026-10-10: Props and variants and Open part say how Figma names them (ADR-026 amendment 2026-10-10: Style → Variant, default native slot → Children)
 # clock reset 2026-10-10: /figma-cli pitfalls gain the truncated-snapshot note; no glossary term changed, still accurate
 # rewritten 2026-10-10: State entry adds active (momentary :active) and contrasts it with pressed (aria-pressed toggle), per the packages/components/AGENTS.md State model line (ADR-025 amendment 2026-10-10)
+# clock reset 2026-10-10: vocabulary gains a current (aria-current) row and /layout-generation's navItems use current (ADR-026 Tier 1); no glossary term changed, still accurate
 ---
 # Glossary
 
