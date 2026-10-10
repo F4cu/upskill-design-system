@@ -247,9 +247,11 @@ function omitted(text) {
 }
 
 // The vocabulary a component exposes: the props declared on `<Target>Props` (or
-// on every *Props type when that one doesn't exist), plus the native props a spread
-// of an HTML attributes type supplies, with any string-literal union values.
-function vocabulary(sf, target) {
+// on every *Props type when that one doesn't exist, or when the task sets
+// `allPropTypes` because the API lives on an item type, e.g. Accordion), plus the
+// native props a spread of an HTML attributes type supplies, with any
+// string-literal union values.
+function vocabulary(sf, target, allPropTypes = false) {
   const aliases = new Map()
   const propTypes = []
   sf.forEachChild(function visit(node) {
@@ -261,7 +263,7 @@ function vocabulary(sf, target) {
     node.forEachChild(visit)
   })
   const own = propTypes.filter((t) => t.name.text === `${target}Props`)
-  const chosen = own.length ? own : propTypes
+  const chosen = own.length && !allPropTypes ? own : propTypes
 
   const props = new Map()
   const explicit = new Set()
@@ -291,8 +293,9 @@ function propVocabulary(ws, task) {
   const target = task.target
   const file = path.join(ws, COMPONENTS_REL, target, 'index.tsx')
   if (!fs.existsSync(file)) return { ran: false, reason: 'no index.tsx' }
-  const reference = vocabulary(ts.createSourceFile('ref.tsx', referenceSource(target), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX), target).props
-  const { props: generated, explicit } = vocabulary(parseFile(file), target)
+  const all = task.propVocabulary?.allPropTypes ?? false
+  const reference = vocabulary(ts.createSourceFile('ref.tsx', referenceSource(target), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX), target, all).props
+  const { props: generated, explicit } = vocabulary(parseFile(file), target, all)
   const ignore = new Set(task.propVocabulary?.ignore ?? [])
   // A reference prop that is itself recorded drift (ADR-026 migration table) is
   // satisfied by its vocabulary name too, e.g. Badge `label` → `children`.

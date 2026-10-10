@@ -1,0 +1,30 @@
+{
+  "component": "Accordion",
+  "ranAt": "2026-10-10T13:05:00Z",
+  "path": "full",
+  "risk": "interactive",
+  "mode": "eval",
+  "visualReview": "skipped-eval",
+  "outcome": "findings-applied",
+  "apiProposal": "api-proposal.md",
+  "gate": {
+    "passes": 2,
+    "failures": 3,
+    "failureReasons": [
+      "metadata:validate — variants must have at least one axis (added open axis)",
+      "metadata:validate — variant axis options/purpose must use string options + per-option purpose object (Chip shape)",
+      "a11y:test — region accessible name included the subtitle because aria-labelledby → header button is not followed recursively; panel now labelled by the title id"
+    ]
+  },
+  "contextIsolationHeld": true,
+  "reviewerCaughtBeyondGate": [
+    "Lint error jsx-a11y/no-static-element-interactions: roving keydown on root div (lint is not in the Stage 2 gate) — moved onto header buttons",
+    "Chevron centred on the open item had pointer-events:none, so clicking the visible chevron-up did nothing — chevron (a DOM child of the button) now receives clicks",
+    "Dead classNames styles.heading/styles.title and raw <span> title — title now Text size=inherit",
+    "Spread types: root now omits role; Item no longer omits onClick arbitrarily",
+    "Subtitle bloated heading/button accessible name — button aria-labelledby → title, aria-describedby → subtitle",
+    "Test gaps: Shift+Tab, open-panel content in tab order, closed-panel content skipped, keys inside panel content ignored, nested-accordion roving scope, chevron aria-hidden, region exposure after opening"
+  ],
+  "manualRescues": [],
+  "notes": "Figma snapshot fresh (3 days), no Figma node; design read from reference.png. Low finding recorded not applied: ADR-023 'Parent.Root' guard shape — Accordion itself is the provider (no preset content props), rationale recorded in metadata composition.parts. Hairline item border uses 1px literal per repo precedent (Box/Badge/Divider) since no border-width token exists. Open-state background color.background.container.elevated equals canvas in dark theme. Build prints a pre-existing dts TS2339 in src/a11y-stories.sweep.test.tsx (untouched file). Gate cap reached at run 5 (passed)."
+}

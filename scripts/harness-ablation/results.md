@@ -1,6 +1,6 @@
 # Harness-ablation results
 
-Generated: 2026-10-09T17:41:24.854Z · 42 scored run(s) · model: claude-opus-5-5
+Generated: 2026-10-10T08:20:26.114Z · 48 scored run(s) · model: claude-opus-5-5
 
 Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (`/add-component <Name> --eval`). Scope, arms and scoring: `.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md`.
 
@@ -16,6 +16,8 @@ A run is **clean** when it has zero product-quality violations: typecheck, lint,
 
 | Task | Arm | Runs | Clean rate | Mean violations (min–max) | Cost per clean component | Mean cost / run | Mean turns | Mean minutes |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
+| accordion | 1 · Context only | 3 | 67% (2/3) | 1.3 (0–4) | $1.79 | $1.19 | 28 | 3.5 |
+| accordion | 2 · Full harness | 3 | 100% (3/3) | 0.0 | $2.19 | $2.19 | 34 | 7.5 |
 | badge | 0 · Bare repo | 3 | 100% (3/3) | 0.0 | $0.33 | $0.33 | 11 | 0.9 |
 | badge | 1 · Context only | 3 | 100% (3/3) | 0.0 | $0.72 | $0.72 | 23 | 2.0 |
 | badge | 1b · Index only | 3 | 100% (3/3) | 0.0 | $0.68 | $0.68 | 19 | 1.7 |
@@ -38,9 +40,9 @@ Arm 1 vs Arm 2 separates what the agent knows from the loop that checks it.
 | Arm | Runs | Clean rate | Mean violations | Cost per clean component | Total cost |
 |---|---:|---:|---:|---:|---:|
 | 0 · Bare repo | 9 | 67% (6/9) | 0.7 | $0.73 | $4.39 |
-| 1 · Context only | 9 | 100% (9/9) | 0.0 | $0.91 | $8.21 |
+| 1 · Context only | 12 | 92% (11/12) | 0.3 | $1.07 | $11.79 |
 | 1b · Index only | 9 | 100% (9/9) | 0.0 | $0.78 | $7.04 |
-| 2 · Full harness | 9 | 100% (9/9) | 0.0 | $1.54 | $13.85 |
+| 2 · Full harness | 12 | 100% (12/12) | 0.0 | $1.70 | $20.42 |
 
 ## Where the product violations came from
 
@@ -48,6 +50,8 @@ Summed over each cell's runs.
 
 | Task | Arm | callback-name-drift | collateral-change | raw-text-prop-render |
 |---|---|---:|---:|---:|
+| accordion | 1 | 0 | 0 | 4 |
+| accordion | 2 | 0 | 0 | 0 |
 | badge | 0 | 0 | 0 | 0 |
 | badge | 1 | 0 | 0 | 0 |
 | badge | 1b | 0 | 0 | 0 |
@@ -69,6 +73,8 @@ Arm 0 was never shown the metadata schema or the prop vocabulary, so these colum
 
 | Task | Arm | Metadata written | Prop-vocabulary issues (mean) | Story inline styles (mean) | Story raw text (mean) | Reference aliases matched (mean) | Reviewer findings (mean, high+medium) | Read a Tier 1 file | Context tokens / run (mean) | Budget cut-offs | Contamination flags |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| accordion | 1 | 3/3 | 5.0 | 0.0 | 1.7 | — | — | 1/3 | 1479K | 0 | 0 |
+| accordion | 2 | 3/3 | 4.0 | 0.0 | 0.0 | — | 10.0 (3.3) | 3/3 | 2165K | 0 | 0 |
 | badge | 0 | 0/3 | 0.7 | 0.0 | 0.0 | — | — | — | 246K | 0 | 0 |
 | badge | 1 | 3/3 | 0.0 | 0.0 | 0.0 | — | — | — | 871K | 0 | 0 |
 | badge | 1b | 3/3 | 0.7 | 0.0 | 0.0 | — | — | 3/3 | 740K | 0 | 0 |
@@ -88,6 +94,8 @@ Arm 0 was never shown the metadata schema or the prop vocabulary, so these colum
 
 The case-study figure uses each cell's median run, never the best (sorted by violations, then cost; an even count takes the worse middle run).
 
+- accordion · arm 1: run-3 (0 violations, $1.02) → `results/accordion/arm1/`
+- accordion · arm 2: run-3 (0 violations, $2.15) → `results/accordion/arm2/`
 - badge · arm 0: run-3 (0 violations, $0.33) → `results/badge/arm0/`
 - badge · arm 1: run-2 (0 violations, $0.73) → `results/badge/arm1/`
 - badge · arm 1b: run-2 (0 violations, $0.68) → `results/badge/arm1b/`

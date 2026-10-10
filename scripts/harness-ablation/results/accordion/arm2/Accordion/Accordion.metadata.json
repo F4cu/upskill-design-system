@@ -1,0 +1,178 @@
+{
+  "component": {
+    "name": "Accordion",
+    "category": "molecule",
+    "type": "interactive",
+    "status": "beta",
+    "description": "A vertical list of collapsible sections (Accordion.Item). Each section has a header button with a title, an optional subtitle and a chevron, inside a heading of the page's outline (h3 by default, headingLevel on the root). Activating the header shows or hides the section's content. Sections open independently — several can be open at once — and each is uncontrolled (defaultOpen) or controlled (open + onOpenChange). Used for course curricula and FAQs."
+  },
+  "usage": {
+    "keywords": [
+      "accordion",
+      "collapsible",
+      "disclosure",
+      "expand",
+      "collapse",
+      "faq",
+      "curriculum",
+      "modules",
+      "syllabus",
+      "sections"
+    ],
+    "when": [
+      "Listing course modules where each can be expanded to read its description",
+      "An FAQ where each question reveals its answer",
+      "Pass subtitle for a secondary line under the title (e.g. a module's duration '4 hours, 30min')",
+      "Set headingLevel on Accordion so section titles sit one level below the surrounding section heading (default 3, under an h2 section)",
+      "Use defaultOpen for a section that starts open; use open + onOpenChange when the app needs to drive or track the open state"
+    ],
+    "patterns": [
+      {
+        "name": "course-curriculum",
+        "description": "A course page's curriculum: one item per module, subtitle carries the module duration, content is the module description. Story: Default.",
+        "tree": "Box(as=section, aria-labelledby) > [Heading(as=h2), Accordion(headingLevel=3) > [Accordion.Item(title, subtitle) > Text, ...]]"
+      },
+      {
+        "name": "faq",
+        "description": "Question/answer list without subtitles. Story: WithoutSubtitle.",
+        "tree": "Accordion(headingLevel=2) > [Accordion.Item(title) > Text, ...]"
+      },
+      {
+        "name": "controlled-sections",
+        "description": "The app owns which sections are open (e.g. persisted progress). Story: Controlled.",
+        "tree": "Accordion > [Accordion.Item(title, subtitle, open, onOpenChange) > Text, ...]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Rendering Accordion.Item outside Accordion",
+        "reason": "The item reads headingLevel from the root's context and throws without it.",
+        "alternative": "Always wrap items in <Accordion>."
+      },
+      {
+        "scenario": "Passing a heading, button or link as the title, or putting interactive controls in the subtitle",
+        "reason": "The title and subtitle render inside the header <button>; nested interactive or heading content is invalid and breaks the button's accessible name.",
+        "alternative": "Pass plain strings to title and subtitle; put links and actions in the item's children."
+      },
+      {
+        "scenario": "Using Accordion for navigation or for a single show/hide toggle elsewhere on the page",
+        "reason": "Accordion is a list of headed sections that belong to the page outline.",
+        "alternative": "Use TextLink/nav for navigation; use a transparent Button with aria-expanded for a one-off toggle."
+      },
+      {
+        "scenario": "Setting headingLevel that skips levels in the outline (e.g. h5 directly under an h2 section)",
+        "reason": "Section titles are real headings; skipped levels confuse screen-reader heading navigation.",
+        "alternative": "Set headingLevel to one below the nearest enclosing heading."
+      }
+    ]
+  },
+  "variants": {
+    "open": {
+      "options": [
+        "false",
+        "true"
+      ],
+      "default": "false",
+      "purpose": {
+        "false": "Closed Accordion.Item: header only, chevron-down, content hidden. Uncontrolled default (defaultOpen=false).",
+        "true": "Open Accordion.Item: elevated background, chevron-up, content shown under the subtitle. Set via defaultOpen, or controlled via open + onOpenChange. Independent per item — several can be open at once."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "closed",
+      "description": "Header only; chevron-down; content hidden (hidden attribute). Story: AllClosed."
+    },
+    {
+      "state": "open",
+      "description": "Elevated container background; chevron-up; content shown under the subtitle. Story: Default (second item)."
+    },
+    {
+      "state": "no-subtitle",
+      "description": "subtitle omitted — header shows the title only. Story: WithoutSubtitle."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.border.default",
+      "color.background.container.elevated",
+      "color.background.transparent",
+      "color.background.overlay.hover",
+      "color.icon.subtle"
+    ],
+    "spacing": [
+      "space.inset.sm",
+      "space.inset.md",
+      "space.stack.xs"
+    ],
+    "typography": [],
+    "borderRadius": [],
+    "other": [
+      "size.icon.md"
+    ]
+  },
+  "accessibility": {
+    "role": "button (header, inside a heading) + region (panel)",
+    "ariaAttributes": [
+      "Header <button> inside an h{headingLevel} (default h3) — WAI-ARIA APG accordion pattern",
+      "aria-expanded on the header button reflects whether the section is open",
+      "aria-controls on the header button → the panel id",
+      "aria-labelledby on the header button → the title, so the heading and button are named by the title alone; aria-describedby → the subtitle when present",
+      "Panel: role=region, aria-labelledby → the title (same id the header button uses); hidden attribute when closed",
+      "Chevron Icon is decorative (aria-hidden)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Tab / Shift+Tab",
+        "action": "Moves focus between section headers and any focusable content in open panels"
+      },
+      {
+        "key": "Enter / Space",
+        "action": "Toggles the focused section open or closed"
+      },
+      {
+        "key": "ArrowDown / ArrowUp",
+        "action": "Moves focus to the next / previous section header, wrapping at the ends"
+      },
+      {
+        "key": "Home / End",
+        "action": "Moves focus to the first / last section header"
+      }
+    ]
+  },
+  "composition": {
+    "composedOf": [
+      "Heading",
+      "Text",
+      "Icon"
+    ],
+    "accepts": [
+      "Text",
+      "Stack",
+      "Inline",
+      "TextLink",
+      "Button",
+      "Badge",
+      "Image"
+    ],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "flex-column",
+      "canNest": false
+    },
+    "parts": [
+      {
+        "name": "Item",
+        "kind": "fixed",
+        "description": "One collapsible section. Props: title (string), subtitle (string, optional), open, defaultOpen (false), onOpenChange, and children — the section content shown in the panel (free-form; accepts lists the expected components). Layout of header, subtitle, chevron and panel is owned by Accordion.module.css. Accordion itself is the context provider (no separate Accordion.Root): it has no preset content props to rebuild from parts, so the guard reads 'Accordion.Item must be rendered inside Accordion'.",
+        "builtOn": null
+      }
+    ]
+  }
+}

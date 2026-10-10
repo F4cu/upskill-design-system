@@ -1,0 +1,108 @@
+{
+  "id": "accordion",
+  "target": "Accordion",
+  "referencePng": "accordion.reference.png",
+  "redactionsReviewed": true,
+  "deleteFiles": [
+    "packages/components/src/stories/CourseModuleList.stories.tsx"
+  ],
+  "redactions": [
+    {
+      "file": "docs/decisions/013-cross-component-pattern-schema.md",
+      "find": "(e.g. Accordion `onOpenChange` vs DropdownMenu `onSelect` vs Select `onValueChange` — three names for the same change-callback axis)",
+      "replace": "(e.g. DropdownMenu `onSelect` vs Select `onValueChange` — two names for the same change-callback axis)"
+    },
+    {
+      "file": "docs/decisions/013-cross-component-pattern-schema.md",
+      "find": "`Accordion` (`title`), `Select`/`TextField` (`label`), and `Checkbox` (`label`) render",
+      "replace": "`Select`/`TextField` (`label`) and `Checkbox` (`label`) render"
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "`onOpenChange` (Accordion), ",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "`headingLevel` sets a heading the component renders inside itself (`Accordion`).",
+      "replace": "`headingLevel` sets a heading the component renders inside itself."
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "| Accordion list | The whole set, `Show more` = `false` / `true` | A stack of `Accordion` instances plus a Show more link, for page mock-ups. Code composes Accordions directly and has no list component. |\n",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "- **Accordion list item:** `isExpanded=on|off|isExpanded3` → `Open` (`true`/`false`, default `false`) × `State` (`Default`/`Hover`). The third variant was the collapsed hover state.\n",
+      "replace": ""
+    },
+    {
+      "file": "docs/decisions/026-component-prop-vocabulary.md",
+      "find": "`Accordion list item` → `Accordion`; the former `Accordion` composite → `Accordion list`, with its `State=Expanded|Collapsed` axis renamed `Show more` (default `false`), since `State` is reserved for interaction; ",
+      "replace": ""
+    },
+    {
+      "file": "scripts/lib.js",
+      "find": "// Includes exported sub-components (AccordionItem); excludes hooks and types.",
+      "replace": "// Includes exported sub-components; excludes hooks and types."
+    },
+    {
+      "file": "scripts/token-contrast-check.js",
+      "find": "  // (Accordion, Card, Divider) — not checked here either; the variant is",
+      "replace": "  // (Card, Divider) — not checked here either; the variant is"
+    },
+    {
+      "file": "scripts/token-contrast-check.js",
+      "find": "  // Accordion — title/chevron render on the ambient trigger surface when\n  // collapsed, and on container.elevated once the panel is open\n  ...[BG(\"container-elevated\"), ...AMBIENT].flatMap((bg) => [\n    [T(\"default\"), bg],\n    [I(\"default\"), bg],\n  ]),\n\n",
+      "replace": ""
+    },
+    {
+      "file": "ROADMAP.md",
+      "find": "caught a silent `aria-controls` dead-reference bug the gate and axe scanner both missed",
+      "replace": "caught a bug the gate and axe scanner both missed"
+    },
+    {
+      "file": ".claude/commands/layout-generation.md",
+      "find": "(e.g. Accordion `onOpenChange` vs Select `onValueChange`)",
+      "replace": "(e.g. DropdownMenu `onSelect` vs Select `onValueChange`)"
+    },
+    {
+      "file": ".claude/commands/layout-generation.md",
+      "find": "### Accordion with show-more\nWhen the design has an accordion list with a \"Show more / Show less\" trigger, use the CourseModuleList pattern (`Layout/Examples/CourseModuleList` in Storybook):\n- Keep the full data array outside the component.\n- Add `const [showAll, setShowAll] = useState(false)` (import `useState` from `'react'`).\n- Slice: `const visible = showAll ? ALL : ALL.slice(0, DEFAULT_COUNT)`.\n- Render only `visible` items inside `<Accordion>`.\n- Below the accordion, render a `<Button variant=\"transparent\" size=\"sm\" trailingIcon={…} onClick={…}>` whose label and icon reflect the toggle state.\n- Wrap the `<Accordion>` + button in a `<div>` (not `<Stack>`) so button indentation via `marginLeft` isn't overridden.\n\n",
+      "replace": ""
+    }
+  ],
+  "propVocabulary": {
+    "allPropTypes": true
+  },
+  "requiredPatterns": [
+    {
+      "file": "packages/components/src/index.ts",
+      "pattern": "from '\\./components/Accordion'",
+      "reason": "the brief asks for the export from the package entry"
+    },
+    {
+      "file": "packages/components/src/components/Accordion/index.tsx",
+      "pattern": "aria-expanded|<details\\b",
+      "reason": "the brief says screen-reader users must be told whether each section is open (aria-expanded on the header, or a native <details>)"
+    },
+    {
+      "file": "packages/components/src/components/Accordion/index.tsx",
+      "pattern": "<button\\b|<summary\\b|<Button\\b|as=[\"']button[\"']",
+      "reason": "the brief says the header is fully usable with a keyboard, which a native button or summary gives"
+    },
+    {
+      "file": "packages/components/src/components/Accordion/index.tsx",
+      "pattern": "<h[2-6]\\b|[\"'`]h[2-6][\"'`]|`h\\$\\{|<Heading\\b",
+      "reason": "the brief says section titles belong to the page's heading outline"
+    }
+  ],
+  "forbiddenPatterns": [
+    {
+      "file": "packages/components/src/components/Accordion/index.tsx",
+      "pattern": "(?:\\{\\s*!?\\s*\\(?\\s*\\w*(?:[oO]pen|[eE]xpanded)\\w*\\s*\\)?\\s*&&|\\?\\s*children\\s*:\\s*null)(?:(?<=aria-controls[\\s\\S]*)|(?=[\\s\\S]*aria-controls))",
+      "reason": "the header's aria-controls must resolve while the section is closed; rendering the panel only when open leaves a dead reference that screen readers hit and axe doesn't flag (the 2026-07 pilot's reviewer catch)"
+    }
+  ]
+}

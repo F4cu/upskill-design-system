@@ -1,0 +1,894 @@
+diff --git a/.claude/component-patterns.json b/.claude/component-patterns.json
+index fcec53b..0a6d6c5 100644
+--- a/.claude/component-patterns.json
++++ b/.claude/component-patterns.json
+@@ -1,5 +1,5 @@
+ {
+-  "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
++  "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): Accordion, CardVertical",
+   "drift": [
+     {
+       "components": [
+@@ -26,7 +26,7 @@
+       "pattern": "navigation"
+     }
+   ],
+-  "generatedFrom": "65bc07b4c06f01258323461be61f09ca8dc0e898",
++  "generatedFrom": "1a32dc83ebb933d86d1e6857c8962e7ada97db79",
+   "patterns": {
+     "action-trigger": {
+       "architecturalStyle": "flat-props",
+@@ -236,6 +236,64 @@
+       "architecturalStyle": "flat-props",
+       "description": "A trigger toggling the visibility of an associated panel (aria-expanded + aria-controls, boolean open state).",
+       "implementedBy": [
++        {
++          "architecturalStyle": "compound",
++          "ariaContract": [
++            {
++              "aria-controls": "{panelId}",
++              "aria-describedby": "{subtitle ? subtitleId : undefined}",
++              "aria-expanded": "{isOpen}",
++              "aria-labelledby": "{titleId}",
++              "element": "button",
++              "id": "{headerId}"
++            },
++            {
++              "aria-hidden": "true",
++              "element": "span"
++            },
++            {
++              "aria-labelledby": "{titleId}",
++              "element": "div",
++              "id": "{panelId}",
++              "role": "region"
++            }
++          ],
++          "changeCallback": "onOpenChange",
++          "component": "Accordion",
++          "composition": [
++            "Heading",
++            "Icon",
++            "Text"
++          ],
++          "idsFromUseId": [
++            "headerId",
++            "id",
++            "panelId",
++            "subtitleId",
++            "titleId"
++          ],
++          "maturity": "beta",
++          "parts": [
++            "Item"
++          ],
++          "stage": null,
++          "state": {
++            "controlled": "always",
++            "props": [
++              "open",
++              "defaultOpen",
++              "onOpenChange"
++            ]
++          },
++          "systemSpecificNotes": [
++            "Header <button> inside an h{headingLevel} (default h3) — WAI-ARIA APG accordion pattern",
++            "aria-expanded on the header button reflects whether the section is open",
++            "aria-controls on the header button → the panel id",
++            "aria-labelledby on the header button → the title, so the heading and button are named by the title alone; aria-describedby → the subtitle when present",
++            "Panel: role=region, aria-labelledby → the title (same id the header button uses); hidden attribute when closed",
++            "Chevron Icon is decorative (aria-hidden)"
++          ]
++        },
+         {
+           "ariaContract": [
+             {
+diff --git a/api-proposal.md b/api-proposal.md
+new file mode 100644
+index 0000000..0948152
+--- /dev/null
++++ b/api-proposal.md
+@@ -0,0 +1,45 @@
++# Accordion — API proposal (auto-approved, `--eval`)
++
++Design input: brief + `reference.png` (no Figma node).
++
++## Anatomy (top → bottom; names = Figma layer names)
++
++- **Accordion** (root, `div`) — vertical list; provides `headingLevel` to its items via context.
++  - **Item** (part `Accordion.Item`, kind `fixed` with free-form `children` content) — one collapsible section; bottom border separator; `container.elevated` background when open.
++    - **Header** — `Heading` (`as` = `h{headingLevel}`, `size="title-small"`) wrapping a native `<button aria-expanded aria-controls>`.
++      - **Title** — heading text.
++      - **Subtitle** (optional) — `Text as="span" size="body-default" color="subtle"`.
++      - **Chevron** — `Icon` `chevron-down` / `chevron-up`, `aria-hidden`, colour from `color.icon.subtle` on its wrapper; vertically centred on the whole item (matches reference open state).
++    - **Panel** — `div role="region" aria-labelledby=<button id>`, `hidden` when closed; renders `children`.
++
++## Props
++
++### `Accordion`
++
++| Prop | Concept | Kind | Type | Default | Figma property | Surface |
++|---|---|---|---|---|---|---|
++| `headingLevel` | Inner heading | native | `2 \| 3 \| 4 \| 5 \| 6` | `3` | — | code-only |
++| `children` | Content | content | `ReactNode` (`Accordion.Item`s) | — | slot | both |
++| `className`, `id`, other `div` attrs | — | native | `HTMLAttributes<HTMLDivElement>` | — | — | code-only |
++
++### `Accordion.Item`
++
++| Prop | Concept | Kind | Type | Default | Figma property | Surface |
++|---|---|---|---|---|---|---|
++| `title` | Content | content | `string` | — (required) | `Title` | both |
++| `subtitle` | Content | content | `string` | — | `Has subtitle` + `Subtitle` | both |
++| `children` | Content | content | `ReactNode` | — | `Content` | both |
++| `open` | Controlled state (disclosure) | controlled state | `boolean` | — | `Open` | both |
++| `defaultOpen` | Controlled state | controlled state | `boolean` | `false` | — | code-only |
++| `onOpenChange` | Controlled state | event | `(open: boolean) => void` | — | — | code-only |
++
++## Keyboard
++
++Native `<button>`: Tab/Shift+Tab between headers, Enter/Space toggles. Plus the optional APG accordion keys: ArrowDown/ArrowUp move focus to next/previous header (wrapping), Home/End to first/last.
++
++## Divergences
++
++- `headingLevel` typed `2–6` (not 1): an accordion section title is never the page's `h1`.
++- No Figma node: `figmaNodeId` omitted; Figma property names above are proposals following ADR-026 casing.
++- Open-state background uses `color.background.container.elevated`; in dark theme that token equals canvas, so the open state is carried by the chevron + content only there.
++- Multiple items may be open at once; there is no container-level `value` (each section owns its own `open`, the canonical disclosure name), so no single-open mode.
+diff --git a/packages/components/src/components/Accordion/Accordion.a11y.test.tsx b/packages/components/src/components/Accordion/Accordion.a11y.test.tsx
+new file mode 100644
+index 0000000..c6f7671
+--- /dev/null
++++ b/packages/components/src/components/Accordion/Accordion.a11y.test.tsx
+@@ -0,0 +1,235 @@
++import { describe, it, expect, vi } from 'vitest'
++import { render, screen } from '@testing-library/react'
++import userEvent from '@testing-library/user-event'
++import { axe } from 'vitest-axe'
++import { Accordion } from './index'
++
++// Tier-2 behavioral a11y (ADR-008). Asserts the dynamic ARIA contract from
++// Accordion.metadata.json: each header is a button inside a heading of the
++// chosen level, aria-expanded toggles with the panel's visibility, the panel
++// is a region named by its header, Enter/Space toggle, and Arrow/Home/End
++// move focus between headers.
++
++function renderAccordion(props: { headingLevel?: 2 | 3 | 4 | 5 | 6 } = {}) {
++  return render(
++    <Accordion {...props}>
++      <Accordion.Item title="One" subtitle="4 hours, 30min">
++        First content
++      </Accordion.Item>
++      <Accordion.Item title="Two" defaultOpen>
++        Second content
++      </Accordion.Item>
++      <Accordion.Item title="Three">Third content</Accordion.Item>
++    </Accordion>,
++  )
++}
++
++describe('Accordion — a11y behavior', () => {
++  it('renders each header as a button inside an h3 by default', () => {
++    renderAccordion()
++    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(3)
++    expect(screen.getByRole('heading', { level: 3, name: /One/ })).toContainElement(
++      screen.getByRole('button', { name: /One/ }),
++    )
++  })
++
++  it('uses the headingLevel prop for the heading level', () => {
++    renderAccordion({ headingLevel: 4 })
++    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(3)
++    expect(screen.queryByRole('heading', { level: 3 })).not.toBeInTheDocument()
++  })
++
++  it('reflects open state in aria-expanded and panel visibility, with aria-controls wired', () => {
++    renderAccordion()
++    const one = screen.getByRole('button', { name: /One/ })
++    const two = screen.getByRole('button', { name: /Two/ })
++
++    expect(one).toHaveAttribute('aria-expanded', 'false')
++    expect(two).toHaveAttribute('aria-expanded', 'true')
++    expect(screen.getByText('First content')).not.toBeVisible()
++    expect(screen.getByText('Second content')).toBeVisible()
++
++    const panel = screen.getByRole('region', { name: /Two/ })
++    expect(two).toHaveAttribute('aria-controls', panel.id)
++    expect(panel).toHaveTextContent('Second content')
++  })
++
++  it('toggles with Enter and Space and allows several open sections', async () => {
++    const user = userEvent.setup()
++    renderAccordion()
++    const one = screen.getByRole('button', { name: /One/ })
++    const two = screen.getByRole('button', { name: /Two/ })
++
++    one.focus()
++    await user.keyboard('{Enter}')
++    expect(one).toHaveAttribute('aria-expanded', 'true')
++    expect(two).toHaveAttribute('aria-expanded', 'true')
++    expect(screen.getByText('First content')).toBeVisible()
++
++    await user.keyboard(' ')
++    expect(one).toHaveAttribute('aria-expanded', 'false')
++    expect(screen.getByText('First content')).not.toBeVisible()
++  })
++
++  it('calls onOpenChange and follows the open prop when controlled', async () => {
++    const user = userEvent.setup()
++    const onOpenChange = vi.fn()
++    const { rerender } = render(
++      <Accordion>
++        <Accordion.Item title="One" open={false} onOpenChange={onOpenChange}>
++          Content
++        </Accordion.Item>
++      </Accordion>,
++    )
++    const button = screen.getByRole('button', { name: /One/ })
++
++    await user.click(button)
++    expect(onOpenChange).toHaveBeenCalledWith(true)
++    expect(button).toHaveAttribute('aria-expanded', 'false')
++
++    rerender(
++      <Accordion>
++        <Accordion.Item title="One" open onOpenChange={onOpenChange}>
++          Content
++        </Accordion.Item>
++      </Accordion>,
++    )
++    expect(button).toHaveAttribute('aria-expanded', 'true')
++    await user.click(button)
++    expect(onOpenChange).toHaveBeenLastCalledWith(false)
++  })
++
++  it('moves focus between headers with ArrowDown/ArrowUp (wrapping), Home and End', async () => {
++    const user = userEvent.setup()
++    renderAccordion()
++    const [one, two, three] = screen.getAllByRole('button')
++
++    one.focus()
++    await user.keyboard('{ArrowDown}')
++    expect(two).toHaveFocus()
++    await user.keyboard('{ArrowDown}')
++    expect(three).toHaveFocus()
++    await user.keyboard('{ArrowDown}')
++    expect(one).toHaveFocus()
++    await user.keyboard('{ArrowUp}')
++    expect(three).toHaveFocus()
++    await user.keyboard('{Home}')
++    expect(one).toHaveFocus()
++    await user.keyboard('{End}')
++    expect(three).toHaveFocus()
++  })
++
++  it('Tab / Shift+Tab move through headers and open-panel content, skipping closed panels', async () => {
++    const user = userEvent.setup()
++    render(
++      <Accordion>
++        <Accordion.Item title="One">
++          <button type="button">Hidden action</button>
++        </Accordion.Item>
++        <Accordion.Item title="Two" defaultOpen>
++          <button type="button">Visible action</button>
++        </Accordion.Item>
++        <Accordion.Item title="Three">Third content</Accordion.Item>
++      </Accordion>,
++    )
++    const one = screen.getByRole('button', { name: 'One' })
++    const two = screen.getByRole('button', { name: 'Two' })
++    const three = screen.getByRole('button', { name: 'Three' })
++    const visibleAction = screen.getByRole('button', { name: 'Visible action' })
++
++    await user.tab()
++    expect(one).toHaveFocus()
++    await user.tab()
++    expect(two).toHaveFocus()
++    await user.tab()
++    expect(visibleAction).toHaveFocus()
++    await user.tab()
++    expect(three).toHaveFocus()
++
++    await user.tab({ shift: true })
++    expect(visibleAction).toHaveFocus()
++    await user.tab({ shift: true })
++    expect(two).toHaveFocus()
++    await user.tab({ shift: true })
++    expect(one).toHaveFocus()
++  })
++
++  it('ignores Arrow/Home/End pressed inside panel content', async () => {
++    const user = userEvent.setup()
++    render(
++      <Accordion>
++        <Accordion.Item title="One" defaultOpen>
++          <button type="button">Inner action</button>
++        </Accordion.Item>
++        <Accordion.Item title="Two">Second content</Accordion.Item>
++      </Accordion>,
++    )
++    const inner = screen.getByRole('button', { name: 'Inner action' })
++
++    inner.focus()
++    await user.keyboard('{ArrowDown}')
++    expect(inner).toHaveFocus()
++    await user.keyboard('{Home}')
++    expect(inner).toHaveFocus()
++  })
++
++  it('roves only within its own accordion when nested', async () => {
++    const user = userEvent.setup()
++    render(
++      <Accordion>
++        <Accordion.Item title="Outer one" defaultOpen>
++          <Accordion headingLevel={4}>
++            <Accordion.Item title="Inner one">a</Accordion.Item>
++            <Accordion.Item title="Inner two">b</Accordion.Item>
++          </Accordion>
++        </Accordion.Item>
++        <Accordion.Item title="Outer two">c</Accordion.Item>
++      </Accordion>,
++    )
++    const outerOne = screen.getByRole('button', { name: 'Outer one' })
++    const outerTwo = screen.getByRole('button', { name: 'Outer two' })
++    const innerOne = screen.getByRole('button', { name: 'Inner one' })
++    const innerTwo = screen.getByRole('button', { name: 'Inner two' })
++
++    innerOne.focus()
++    await user.keyboard('{ArrowDown}')
++    expect(innerTwo).toHaveFocus()
++    await user.keyboard('{ArrowDown}')
++    expect(innerOne).toHaveFocus()
++
++    outerOne.focus()
++    await user.keyboard('{ArrowDown}')
++    expect(outerTwo).toHaveFocus()
++  })
++
++  it('names the header by its title, describes it by the subtitle, and hides the chevron', () => {
++    renderAccordion()
++    const one = screen.getByRole('button', { name: 'One' })
++    expect(one).toHaveAccessibleDescription('4 hours, 30min')
++    expect(one.querySelector('svg')?.closest('[aria-hidden="true"]')).not.toBeNull()
++  })
++
++  it('exposes a closed panel only once it opens, labelled by its header', async () => {
++    const user = userEvent.setup()
++    renderAccordion()
++    const one = screen.getByRole('button', { name: 'One' })
++
++    expect(screen.queryByRole('region', { name: 'One' })).not.toBeInTheDocument()
++    await user.click(one)
++    const panel = screen.getByRole('region', { name: 'One' })
++    expect(one).toHaveAttribute('aria-labelledby', panel.getAttribute('aria-labelledby'))
++    expect(one).toHaveAttribute('aria-controls', panel.id)
++  })
++
++  it('throws when Accordion.Item is rendered outside Accordion', () => {
++    vi.spyOn(console, 'error').mockImplementation(() => {})
++    expect(() => render(<Accordion.Item title="Orphan" />)).toThrow(
++      'Accordion.Item must be rendered inside Accordion',
++    )
++  })
++
++  it('has no axe violations', async () => {
++    const { container } = renderAccordion()
++    expect(await axe(container, { rules: { 'color-contrast': { enabled: false } } })).toHaveNoViolations()
++  })
++})
+diff --git a/packages/components/src/components/Accordion/Accordion.metadata.json b/packages/components/src/components/Accordion/Accordion.metadata.json
+new file mode 100644
+index 0000000..884313a
+--- /dev/null
++++ b/packages/components/src/components/Accordion/Accordion.metadata.json
+@@ -0,0 +1,178 @@
++{
++  "component": {
++    "name": "Accordion",
++    "category": "molecule",
++    "type": "interactive",
++    "status": "beta",
++    "description": "A vertical list of collapsible sections (Accordion.Item). Each section has a header button with a title, an optional subtitle and a chevron, inside a heading of the page's outline (h3 by default, headingLevel on the root). Activating the header shows or hides the section's content. Sections open independently — several can be open at once — and each is uncontrolled (defaultOpen) or controlled (open + onOpenChange). Used for course curricula and FAQs."
++  },
++  "usage": {
++    "keywords": [
++      "accordion",
++      "collapsible",
++      "disclosure",
++      "expand",
++      "collapse",
++      "faq",
++      "curriculum",
++      "modules",
++      "syllabus",
++      "sections"
++    ],
++    "when": [
++      "Listing course modules where each can be expanded to read its description",
++      "An FAQ where each question reveals its answer",
++      "Pass subtitle for a secondary line under the title (e.g. a module's duration '4 hours, 30min')",
++      "Set headingLevel on Accordion so section titles sit one level below the surrounding section heading (default 3, under an h2 section)",
++      "Use defaultOpen for a section that starts open; use open + onOpenChange when the app needs to drive or track the open state"
++    ],
++    "patterns": [
++      {
++        "name": "course-curriculum",
++        "description": "A course page's curriculum: one item per module, subtitle carries the module duration, content is the module description. Story: Default.",
++        "tree": "Box(as=section, aria-labelledby) > [Heading(as=h2), Accordion(headingLevel=3) > [Accordion.Item(title, subtitle) > Text, ...]]"
++      },
++      {
++        "name": "faq",
++        "description": "Question/answer list without subtitles. Story: WithoutSubtitle.",
++        "tree": "Accordion(headingLevel=2) > [Accordion.Item(title) > Text, ...]"
++      },
++      {
++        "name": "controlled-sections",
++        "description": "The app owns which sections are open (e.g. persisted progress). Story: Controlled.",
++        "tree": "Accordion > [Accordion.Item(title, subtitle, open, onOpenChange) > Text, ...]"
++      }
++    ],
++    "antiPatterns": [
++      {
++        "scenario": "Rendering Accordion.Item outside Accordion",
++        "reason": "The item reads headingLevel from the root's context and throws without it.",
++        "alternative": "Always wrap items in <Accordion>."
++      },
++      {
++        "scenario": "Passing a heading, button or link as the title, or putting interactive controls in the subtitle",
++        "reason": "The title and subtitle render inside the header <button>; nested interactive or heading content is invalid and breaks the button's accessible name.",
++        "alternative": "Pass plain strings to title and subtitle; put links and actions in the item's children."
++      },
++      {
++        "scenario": "Using Accordion for navigation or for a single show/hide toggle elsewhere on the page",
++        "reason": "Accordion is a list of headed sections that belong to the page outline.",
++        "alternative": "Use TextLink/nav for navigation; use a transparent Button with aria-expanded for a one-off toggle."
++      },
++      {
++        "scenario": "Setting headingLevel that skips levels in the outline (e.g. h5 directly under an h2 section)",
++        "reason": "Section titles are real headings; skipped levels confuse screen-reader heading navigation.",
++        "alternative": "Set headingLevel to one below the nearest enclosing heading."
++      }
++    ]
++  },
++  "variants": {
++    "open": {
++      "options": [
++        "false",
++        "true"
++      ],
++      "default": "false",
++      "purpose": {
++        "false": "Closed Accordion.Item: header only, chevron-down, content hidden. Uncontrolled default (defaultOpen=false).",
++        "true": "Open Accordion.Item: elevated background, chevron-up, content shown under the subtitle. Set via defaultOpen, or controlled via open + onOpenChange. Independent per item — several can be open at once."
++      }
++    }
++  },
++  "states": [
++    {
++      "state": "closed",
++      "description": "Header only; chevron-down; content hidden (hidden attribute). Story: AllClosed."
++    },
++    {
++      "state": "open",
++      "description": "Elevated container background; chevron-up; content shown under the subtitle. Story: Default (second item)."
++    },
++    {
++      "state": "no-subtitle",
++      "description": "subtitle omitted — header shows the title only. Story: WithoutSubtitle."
++    }
++  ],
++  "tokens": {
++    "color": [
++      "color.border.default",
++      "color.background.container.elevated",
++      "color.background.transparent",
++      "color.background.overlay.hover",
++      "color.icon.subtle"
++    ],
++    "spacing": [
++      "space.inset.sm",
++      "space.inset.md",
++      "space.stack.xs"
++    ],
++    "typography": [],
++    "borderRadius": [],
++    "other": [
++      "size.icon.md"
++    ]
++  },
++  "accessibility": {
++    "role": "button (header, inside a heading) + region (panel)",
++    "ariaAttributes": [
++      "Header <button> inside an h{headingLevel} (default h3) — WAI-ARIA APG accordion pattern",
++      "aria-expanded on the header button reflects whether the section is open",
++      "aria-controls on the header button → the panel id",
++      "aria-labelledby on the header button → the title, so the heading and button are named by the title alone; aria-describedby → the subtitle when present",
++      "Panel: role=region, aria-labelledby → the title (same id the header button uses); hidden attribute when closed",
++      "Chevron Icon is decorative (aria-hidden)"
++    ],
++    "keyboardInteractions": [
++      {
++        "key": "Tab / Shift+Tab",
++        "action": "Moves focus between section headers and any focusable content in open panels"
++      },
++      {
++        "key": "Enter / Space",
++        "action": "Toggles the focused section open or closed"
++      },
++      {
++        "key": "ArrowDown / ArrowUp",
++        "action": "Moves focus to the next / previous section header, wrapping at the ends"
++      },
++      {
++        "key": "Home / End",
++        "action": "Moves focus to the first / last section header"
++      }
++    ]
++  },
++  "composition": {
++    "composedOf": [
++      "Heading",
++      "Text",
++      "Icon"
++    ],
++    "accepts": [
++      "Text",
++      "Stack",
++      "Inline",
++      "TextLink",
++      "Button",
++      "Badge",
++      "Image"
++    ],
++    "containedBy": [
++      "Box",
++      "Stack",
++      "Card"
++    ],
++    "layoutBehavior": {
++      "widthBehavior": "fill",
++      "displayType": "flex-column",
++      "canNest": false
++    },
++    "parts": [
++      {
++        "name": "Item",
++        "kind": "fixed",
++        "description": "One collapsible section. Props: title (string), subtitle (string, optional), open, defaultOpen (false), onOpenChange, and children — the section content shown in the panel (free-form; accepts lists the expected components). Layout of header, subtitle, chevron and panel is owned by Accordion.module.css. Accordion itself is the context provider (no separate Accordion.Root): it has no preset content props to rebuild from parts, so the guard reads 'Accordion.Item must be rendered inside Accordion'.",
++        "builtOn": null
++      }
++    ]
++  }
++}
+diff --git a/packages/components/src/components/Accordion/Accordion.module.css b/packages/components/src/components/Accordion/Accordion.module.css
+new file mode 100644
+index 0000000..02a13d5
+--- /dev/null
++++ b/packages/components/src/components/Accordion/Accordion.module.css
+@@ -0,0 +1,52 @@
++.root {
++  display: flex;
++  flex-direction: column;
++}
++
++.item {
++  position: relative;
++  border-block-end: 1px solid var(--ds-color-border-default);
++}
++
++.itemOpen {
++  background: var(--ds-color-background-container-elevated);
++}
++
++.header {
++  display: flex;
++  flex-direction: column;
++  width: 100%;
++  padding-block: var(--ds-space-inset-sm);
++  padding-inline: var(--ds-space-inset-md) calc(var(--ds-space-inset-md) * 2 + var(--ds-size-icon-md));
++  background: var(--ds-color-background-transparent);
++  border: none;
++  color: inherit;
++  text-align: start;
++  cursor: pointer;
++}
++
++.header:hover {
++  background: var(--ds-color-background-overlay-hover);
++}
++
++.itemOpen .header {
++  padding-block-end: 0;
++}
++
++.subtitle {
++  display: block;
++}
++
++.chevron {
++  position: absolute;
++  inset-block-start: 50%;
++  inset-inline-end: var(--ds-space-inset-md);
++  transform: translateY(-50%);
++  display: flex;
++  color: var(--ds-color-icon-subtle);
++}
++
++.panel {
++  padding-block: var(--ds-space-stack-xs) var(--ds-space-inset-sm);
++  padding-inline: var(--ds-space-inset-md) calc(var(--ds-space-inset-md) * 2 + var(--ds-size-icon-md));
++}
+diff --git a/packages/components/src/components/Accordion/Accordion.stories.tsx b/packages/components/src/components/Accordion/Accordion.stories.tsx
+new file mode 100644
+index 0000000..58166b5
+--- /dev/null
++++ b/packages/components/src/components/Accordion/Accordion.stories.tsx
+@@ -0,0 +1,122 @@
++import { useState } from 'react'
++import type { Meta, StoryObj } from '@storybook/react'
++import { Accordion } from './index'
++import { Box } from '../Box'
++import { Text } from '../Text'
++
++const MODULES = [
++  {
++    title: 'The Anthropologist',
++    description:
++      'The Anthropologist observes people in their natural setting to uncover needs they cannot articulate, turning field notes into insight.',
++  },
++  {
++    title: 'The Experimenter',
++    description:
++      'The Experimenter is a curious, hands-on innovator who learns by testing and prototyping. They take calculated risks, embrace failure as learning, and drive innovation through rapid iteration and experimentation.',
++  },
++  {
++    title: 'The Cross-Pollinator',
++    description: 'The Cross-Pollinator borrows ideas from unrelated fields and recombines them into something new.',
++  },
++  {
++    title: 'The Hurdler',
++    description: 'The Hurdler treats obstacles as design constraints and finds a way over, around, or through them.',
++  },
++  {
++    title: 'The Collaborator',
++    description: 'The Collaborator brings people together and helps mixed teams work as one.',
++  },
++  {
++    title: 'The Director',
++    description: 'The Director sets the stage, assembles the cast, and keeps the project moving toward its goal.',
++  },
++]
++
++const meta: Meta<typeof Accordion> = {
++  title: 'Components/Accordion',
++  component: Accordion,
++  subcomponents: {
++    'Accordion.Item': Accordion.Item,
++  },
++  decorators: [
++    (Story) => (
++      <Box maxWidth={520}>
++        <Story />
++      </Box>
++    ),
++  ],
++  argTypes: {
++    headingLevel: { control: 'select', options: [2, 3, 4, 5, 6] },
++    children: { control: false },
++  },
++}
++
++export default meta
++type Story = StoryObj<typeof Accordion>
++
++export const Default: Story = {
++  args: {
++    headingLevel: 3,
++    children: MODULES.map((module, index) => (
++      <Accordion.Item key={module.title} title={module.title} subtitle="4 hours, 30min" defaultOpen={index === 1}>
++        <Text>{module.description}</Text>
++      </Accordion.Item>
++    )),
++  },
++}
++
++export const AllClosed: Story = {
++  args: {
++    headingLevel: 3,
++    children: MODULES.map(module => (
++      <Accordion.Item key={module.title} title={module.title} subtitle="4 hours, 30min">
++        <Text>{module.description}</Text>
++      </Accordion.Item>
++    )),
++  },
++}
++
++export const WithoutSubtitle: Story = {
++  args: {
++    headingLevel: 2,
++    children: [
++      <Accordion.Item key="refund" title="Can I get a refund?" defaultOpen>
++        <Text>Yes. Request a refund within 30 days of purchase from your account settings.</Text>
++      </Accordion.Item>,
++      <Accordion.Item key="certificate" title="Do I get a certificate?">
++        <Text>Certified courses issue a certificate once every module is completed.</Text>
++      </Accordion.Item>,
++      <Accordion.Item key="offline" title="Can I watch offline?">
++        <Text>Lessons can be downloaded in the mobile app.</Text>
++      </Accordion.Item>,
++    ],
++  },
++}
++
++function ControlledAccordion() {
++  const [openTitles, setOpenTitles] = useState<string[]>([MODULES[0].title])
++  return (
++    <Accordion>
++      {MODULES.slice(0, 3).map(module => (
++        <Accordion.Item
++          key={module.title}
++          title={module.title}
++          subtitle="4 hours, 30min"
++          open={openTitles.includes(module.title)}
++          onOpenChange={open =>
++            setOpenTitles(current =>
++              open ? [...current, module.title] : current.filter(title => title !== module.title),
++            )
++          }
++        >
++          <Text>{module.description}</Text>
++        </Accordion.Item>
++      ))}
++    </Accordion>
++  )
++}
++
++export const Controlled: Story = {
++  render: () => <ControlledAccordion />,
++}
+diff --git a/packages/components/src/components/Accordion/index.tsx b/packages/components/src/components/Accordion/index.tsx
+new file mode 100644
+index 0000000..54eaa85
+--- /dev/null
++++ b/packages/components/src/components/Accordion/index.tsx
+@@ -0,0 +1,128 @@
++import { createContext, useContext, useId, useRef, useState } from 'react'
++import type { HTMLAttributes, KeyboardEvent, ReactNode, RefObject } from 'react'
++import { Heading } from '../Heading'
++import { Text } from '../Text'
++import { Icon } from '../Icon'
++import styles from './Accordion.module.css'
++
++export type AccordionHeadingLevel = 2 | 3 | 4 | 5 | 6
++
++type AccordionContextValue = {
++  headingLevel: AccordionHeadingLevel
++  rootRef: RefObject<HTMLDivElement | null>
++}
++
++const AccordionContext = createContext<AccordionContextValue | null>(null)
++
++function useAccordion(part: string) {
++  const context = useContext(AccordionContext)
++  if (!context) throw new Error(`Accordion.${part} must be rendered inside Accordion`)
++  return context
++}
++
++export type AccordionProps = {
++  headingLevel?: AccordionHeadingLevel
++  children: ReactNode
++} & Omit<HTMLAttributes<HTMLDivElement>, 'role'>
++
++function AccordionRoot({ headingLevel = 3, className, children, ...rest }: AccordionProps) {
++  const rootRef = useRef<HTMLDivElement>(null)
++
++  return (
++    <AccordionContext.Provider value={{ headingLevel, rootRef }}>
++      <div ref={rootRef} data-accordion="" className={[styles.root, className].filter(Boolean).join(' ')} {...rest}>
++        {children}
++      </div>
++    </AccordionContext.Provider>
++  )
++}
++
++export type AccordionItemProps = {
++  title: string
++  subtitle?: string
++  open?: boolean
++  defaultOpen?: boolean
++  onOpenChange?: (open: boolean) => void
++  children?: ReactNode
++} & Omit<HTMLAttributes<HTMLDivElement>, 'title'>
++
++function Item({
++  title,
++  subtitle,
++  open,
++  defaultOpen = false,
++  onOpenChange,
++  className,
++  children,
++  ...rest
++}: AccordionItemProps) {
++  const { headingLevel, rootRef } = useAccordion('Item')
++  const id = useId()
++  const headerId = `${id}-header`
++  const titleId = `${id}-title`
++  const subtitleId = `${id}-subtitle`
++  const panelId = `${id}-panel`
++  const [internalOpen, setInternalOpen] = useState(defaultOpen)
++  const isOpen = open ?? internalOpen
++
++  function toggle() {
++    const next = !isOpen
++    if (open === undefined) setInternalOpen(next)
++    onOpenChange?.(next)
++  }
++
++  function handleKeyDown(e: KeyboardEvent<HTMLButtonElement>) {
++    const root = rootRef.current
++    if (!root) return
++    const headers = Array.from(root.querySelectorAll<HTMLElement>('[data-accordion-header]')).filter(
++      header => header.closest('[data-accordion]') === root,
++    )
++    const index = headers.indexOf(e.currentTarget)
++    const last = headers.length - 1
++    const next =
++      e.key === 'ArrowDown' ? (index === last ? 0 : index + 1)
++      : e.key === 'ArrowUp' ? (index === 0 ? last : index - 1)
++      : e.key === 'Home' ? 0
++      : e.key === 'End' ? last
++      : null
++    if (next === null) return
++    e.preventDefault()
++    headers[next].focus()
++  }
++
++  return (
++    <div className={[styles.item, isOpen && styles.itemOpen, className].filter(Boolean).join(' ')} {...rest}>
++      <Heading as={`h${headingLevel}`} size="title-small">
++        <button
++          type="button"
++          id={headerId}
++          data-accordion-header=""
++          aria-expanded={isOpen}
++          aria-controls={panelId}
++          aria-labelledby={titleId}
++          aria-describedby={subtitle ? subtitleId : undefined}
++          className={styles.header}
++          onClick={toggle}
++          onKeyDown={handleKeyDown}
++        >
++          <Text as="span" size="inherit" id={titleId}>
++            {title}
++          </Text>
++          {subtitle && (
++            <Text as="span" size="body-default" color="subtle" id={subtitleId} className={styles.subtitle}>
++              {subtitle}
++            </Text>
++          )}
++          <span className={styles.chevron} aria-hidden="true">
++            <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} />
++          </span>
++        </button>
++      </Heading>
++      <div id={panelId} role="region" aria-labelledby={titleId} hidden={!isOpen} className={styles.panel}>
++        {children}
++      </div>
++    </div>
++  )
++}
++
++export const Accordion = Object.assign(AccordionRoot, { Item })
+diff --git a/packages/components/src/index.ts b/packages/components/src/index.ts
+index e6f2bfe..df1bd09 100644
+--- a/packages/components/src/index.ts
++++ b/packages/components/src/index.ts
+@@ -94,5 +94,8 @@ export type { BadgeProps, BadgeVariant } from './components/Badge'
+ export { useSlider } from './hooks/useSlider'
+ export type { UseSliderReturn } from './hooks/useSlider'
+ 
++export { Accordion } from './components/Accordion'
++export type { AccordionProps, AccordionItemProps, AccordionHeadingLevel } from './components/Accordion'
++
+ export { TextLink } from './components/TextLink'
+ export type { TextLinkProps, TextLinkSize } from './components/TextLink'

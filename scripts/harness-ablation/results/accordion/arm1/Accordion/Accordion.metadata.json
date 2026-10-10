@@ -1,0 +1,160 @@
+{
+  "component": {
+    "name": "Accordion",
+    "category": "molecule",
+    "type": "interactive",
+    "status": "beta",
+    "description": "Vertical list of independently collapsible sections (course curriculum, FAQ). Each section has a header row — title, optional subtitle (e.g. duration), and an up/down chevron — that toggles its content. Several sections can be open at once. An open section takes the elevated surface background; sections are separated by a default border. Titles join the page outline as headings (h3 by default, set via headingLevel)."
+  },
+  "usage": {
+    "keywords": [
+      "accordion",
+      "collapsible",
+      "disclosure",
+      "expand",
+      "collapse",
+      "curriculum",
+      "modules",
+      "syllabus",
+      "faq"
+    ],
+    "when": [
+      "A course curriculum where each module expands to show its description",
+      "An FAQ where each question reveals its answer",
+      "Pass defaultOpen on an item to start it expanded; pass open + onOpenChange when the app must drive or observe a section"
+    ],
+    "patterns": [
+      {
+        "name": "course-curriculum",
+        "description": "A labelled section listing course modules with their duration as subtitle; the first relevant module may start open.",
+        "tree": "Box(as=section, aria-labelledby=<heading id>) > Stack(gap=md) > [Heading(as=h2), Accordion(headingLevel=3, items=[{title, subtitle, content, defaultOpen}])]"
+      },
+      {
+        "name": "faq",
+        "description": "Questions as titles without subtitle, answers as string content.",
+        "tree": "Box(as=section, aria-labelledby=<heading id>) > Stack(gap=md) > [Heading(as=h2), Accordion(items=[{title, content}])]"
+      }
+    ],
+    "antiPatterns": [
+      {
+        "scenario": "Rendering title, subtitle or string content as raw text or with other sizes",
+        "reason": "The design fixes the type: title is Heading size=title-small, subtitle is Text size=body-default color=subtle, string content is Text size=body-default.",
+        "alternative": "Pass strings through the props; the component applies Heading/Text with those values."
+      },
+      {
+        "scenario": "Setting headingLevel that skips levels in the page outline (e.g. h4 under an h2)",
+        "reason": "Section titles are real headings; skipped levels break screen-reader heading navigation.",
+        "alternative": "Set headingLevel to one below the nearest enclosing heading."
+      },
+      {
+        "scenario": "Packing the duration into title (\"Module 1 — 4 hours\")",
+        "reason": "One prop per datum; the subtitle renders in subtle body text under the title.",
+        "alternative": "Pass the duration as subtitle."
+      },
+      {
+        "scenario": "Passing open without onOpenChange",
+        "reason": "A controlled section ignores user activation unless the app updates open; it looks broken.",
+        "alternative": "Pair open with onOpenChange, or use defaultOpen for uncontrolled use."
+      },
+      {
+        "scenario": "Putting interactive controls or headings inside the header row",
+        "reason": "The header is a native button inside a heading; nested interactive content is invalid.",
+        "alternative": "Place actions and rich content in the item's content."
+      },
+      {
+        "scenario": "Setting a color on the chevron Icon",
+        "reason": "Icon inherits currentColor; the chevron wrapper owns color.icon.default.",
+        "alternative": "Leave the chevron to the component."
+      }
+    ]
+  },
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "purpose": {
+        "default": "The only look: bordered rows, elevated surface on open sections."
+      }
+    }
+  },
+  "states": [
+    {
+      "state": "collapsed",
+      "description": "Header only; chevron points down; content hidden."
+    },
+    {
+      "state": "open",
+      "description": "Elevated surface background; content shown under the subtitle; chevron points up. Per item via open/defaultOpen."
+    },
+    {
+      "state": "no subtitle",
+      "description": "Content fallback when subtitle is omitted: title only (story WithoutSubtitle)."
+    },
+    {
+      "state": "hover",
+      "description": "Chevron gains a round overlay-subtle fill."
+    },
+    {
+      "state": "focus",
+      "description": "Global :focus-visible ring on the header button."
+    }
+  ],
+  "tokens": {
+    "color": [
+      "color.border.default",
+      "color.background.container.elevated",
+      "color.background.overlay.subtle",
+      "color.text.default",
+      "color.icon.default"
+    ],
+    "spacing": [
+      "space.inset.md",
+      "space.400",
+      "space.800"
+    ],
+    "typography": [],
+    "borderRadius": [
+      "border-radius.full"
+    ],
+    "other": []
+  },
+  "accessibility": {
+    "role": "region",
+    "ariaAttributes": [
+      "aria-expanded — on each header button, reflects whether its section is open",
+      "aria-controls — header button points at its content region",
+      "aria-labelledby — each content region is named by its header button"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Enter / Space",
+        "action": "Toggles the focused section open or closed (native button)"
+      },
+      {
+        "key": "Tab / Shift+Tab",
+        "action": "Moves between section headers and any focusable content in open sections"
+      }
+    ],
+    "notes": "WAI-ARIA Accordion pattern: each title is a heading (headingLevel, default 3) wrapping a native <button>. Collapsed content uses the hidden attribute so it is removed from the accessibility tree. The chevron is decorative (aria-hidden)."
+  },
+  "composition": {
+    "composedOf": [
+      "Heading",
+      "Text",
+      "Icon"
+    ],
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
+    ],
+    "layoutBehavior": {
+      "widthBehavior": "fill",
+      "displayType": "block",
+      "canNest": false
+    }
+  }
+}

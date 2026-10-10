@@ -1,0 +1,58 @@
+.accordion {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The chevron is positioned against the whole section so it stays vertically
+   centred when the panel is open, as in the design. */
+.section {
+  position: relative;
+  border-bottom: 1px solid var(--ds-color-border-default);
+}
+
+.open {
+  background: var(--ds-color-background-container-elevated);
+}
+
+.trigger {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--ds-space-inset-md) var(--ds-space-800) var(--ds-space-inset-md) var(--ds-space-inset-md);
+  border: none;
+  background: transparent;
+  color: var(--ds-color-text-default);
+  text-align: left;
+  cursor: pointer;
+}
+
+.open .trigger {
+  padding-bottom: 0;
+}
+
+.title,
+.subtitle {
+  display: block;
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--ds-space-inset-md);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-space-400);
+  height: var(--ds-space-400);
+  border-radius: var(--ds-border-radius-full);
+  color: var(--ds-color-icon-default);
+}
+
+.trigger:hover .chevron {
+  background: var(--ds-color-background-overlay-subtle);
+}
+
+.panel {
+  padding: 0 var(--ds-space-800) var(--ds-space-inset-md) var(--ds-space-inset-md);
+}

@@ -4,7 +4,7 @@ title: "ADR-029 — Tiered context architecture and a risk-triggered reviewer"
 # ADR-029 — Tiered context architecture and a risk-triggered reviewer
 
 **Date:** 2026-10-09
-**Amended:** 2026-10-09
+**Amended:** 2026-10-10
 **Status:** `accepted`
 
 ## Context
@@ -156,3 +156,43 @@ The headline keeps the locked trap (developer decision). Under a narrower trap (
 - A Stage 0 calibration fix: dark `icon.feedback.warning` aliased a light-scale amber step. It now uses `amber.dark.9`.
 
 **Still unmeasured:** portability (no non-Claude CLI has run), and the Accordion task. Confidence stays limited: N = 3, and the component tasks were already at ceiling for Arm 1.
+
+## Amendment (2026-10-10) — Step 6.5 readout: the Accordion stretch task
+
+**Setup, locked before any run** (handoff Step 6.5, developer decisions): rebuild `Accordion` from a behaviour-only brief, Arms 1 and 2, `claude-opus-5-5`, effort medium, N = 3, 6 runs, $10.15. Thirteen redactions remove its prop names, Figma mapping, contrast pairs and the ROADMAP line naming the July pilot's bug. ADR-009's accordion-trigger example is kept, since both arms see it. The headline adds four brief-checklist items (open state announced, keyboard-operable header, heading outline, export) and one forbidden pattern: a conditionally rendered panel under `aria-controls`, the dead reference the July reviewer caught. The trigger was made operational before the runs. The reviewer *earns its cost on the headline* if Arm 2 has more clean runs than Arm 1, or if the dead-reference trap fires in Arm 1 and never in Arm 2.
+
+| Arm | Clean | $/run | $/clean | a11y test cases | Reviewer findings (high+medium) |
+|---|---:|---:|---:|---:|---:|
+| 1 · Context only | 2/3 | $1.19 | $1.79 | 5–7 | — |
+| 2 · Full harness | 3/3 | $2.19 | $2.19 | 11–13 | 9–11 (3–4) |
+
+**Against the trigger: it fires, narrowly.** Arm 2 has 3/3 clean runs and Arm 1 has 2/3. The one non-clean Arm 1 run (run 2) has 4 `raw-text-prop-render` hits, all in its own stories file: `{module.description}` passed as children to `Accordion.Item`, which wraps string children in `<Text>` at runtime. The locked 2026-10-09 rule keeps that trap in the headline everywhere, stories included, and the developer kept it.
+
+**Sensitivity.** If story-file hits of that trap moved to system compliance, the way `raw-visible-text` did, the result is a 3/3 tie and the trigger reads "fails to earn it on the headline". Across all 48 ablation runs, this is the only story-file hit of that trap. So the headline margin rests on story scaffolding, not on anything a consumer would see.
+
+**The bug the forbidden pattern targets never appeared.** All six runs keep the panel mounted (`hidden={!open}`), and all six wrote a behavioural a11y test covering `aria-expanded`, Enter/Space and arrow keys. Arm 1 wrote the test in 3/3 runs without being told to by a loop. The ADR-008 convention in `packages/components/AGENTS.md` was enough.
+
+**What the reviewer bought.** Ten high or medium findings across three runs.
+- **One was headline-visible:** an arrow-key handler on a static `<div>`, which fails `jsx-a11y` lint. The reviewer had it fixed before the gate.
+- **Nine were above the headline:**
+  - test gaps: Shift+Tab, focus inside open panels, roving-scope edge cases
+  - title and subtitle joining into the accessible name with no space
+  - a raw title `<span>`
+  - a broken controlled story
+  - a chevron overlay intercepting the panel area
+
+  Arm 2's tests are about twice the size of Arm 1's. On this component the reviewer earns its cost on depth, and only marginally on the headline.
+
+**What it didn't catch.** Arm 2 run 2 moved open state to the container as `value`/`defaultValue`/`onValueChange` (a `string[]`), away from the system's `open`/`onOpenChange`. The loop passed it. The other five runs reproduced the reference names (`title`, `subtitle`, `open`, `defaultOpen`, `onOpenChange`, `headingLevel`). Three runs built a data-array API and three built `Accordion.Item` parts. The automated vocabulary check reads only `*Props` types, so it can't see the data-array runs' item type. The names were read by hand.
+
+**Prediction:**
+- **Held:**
+  - both arms ≥ 2/3 clean
+  - the reviewer had ≥ 1 above-headline finding per run
+  - Arm 1 wrote the test in ≥ 2/3 runs, with thinner keyboard coverage
+- **Didn't hold:**
+  - an exact headline tie: it ties only under the sensitivity reading
+  - Arm 2 at 1.5–2× the cost per clean component: it's 1.22× per clean, and 1.84× per run
+
+**Decision unchanged.** The risk-triggered reviewer (Step 4) keeps spending the subagent on interactive components. This run is the first measured case where it's no worse than context alone on the headline, and it buys deeper tests. The trigger's other half, the reviewer on *display* components, can't be tested by an interactive task and stays open. Not counted: one Arm 1 attempt cut off by a 429 before any result was recorded; the run restarted in a fresh workspace.
+
