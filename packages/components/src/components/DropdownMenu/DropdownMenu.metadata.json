@@ -75,6 +75,10 @@
       "description": "Neutral background on the hovered or focused item."
     },
     {
+      "state": "item-active",
+      "description": "Momentary press feedback on an item (CSS :active): overlay.active background, one step past hover."
+    },
+    {
       "state": "item-selected",
       "description": "Brand text colour and semibold weight on the currently selected item (listbox role only)."
     }
@@ -84,7 +88,8 @@
       "color.background.container.canvas",
       "color.background.overlay.hover",
       "color.text.default",
-      "color.text.brand"
+      "color.text.brand",
+      "color.background.overlay.active"
     ],
     "spacing": [
       "space.inset.xs"

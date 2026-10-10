@@ -27,6 +27,19 @@
   border-color: var(--ds-color-border-input-hover);
 }
 
+/* Overlay as an image layer so it darkens either fill (input or brand) one step. */
+.checkbox:active:not(:disabled) {
+  border-color: var(--ds-color-border-input-hover);
+  background-image: linear-gradient(
+    var(--ds-color-background-overlay-active),
+    var(--ds-color-background-overlay-active)
+  );
+}
+
+.checkbox:checked:active:not(:disabled) {
+  border-color: var(--ds-color-background-brand);
+}
+
 .checkbox:checked {
   background: var(--ds-color-background-brand);
   border-color: var(--ds-color-background-brand);

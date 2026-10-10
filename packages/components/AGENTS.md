@@ -31,7 +31,7 @@ A "state" is one of three kinds; each has a different home. Never collapse them 
 - **Exception — interaction state that is app data** (`pressed`, `disabled`, `open`, a container's `value`): a controlled prop with `on*Change`, plus `default*` when uncontrolled use makes sense (see `CardVertical.Favorite`; `Chip` is controlled only).
 - **One enum, not several booleans** for mutually exclusive states (`status: 'notStarted' | 'inProgress' | 'completed'`, never `isStarted` + `isCompleted`).
 - **Naming:** see "Prop vocabulary" below. `State` is reserved for the interaction axis in Figma.
-- **`active` ≠ `pressed`:** `active` is the momentary press (`:active:not(:disabled)`, `*.active` tokens, Figma `State=Active`) on every interactive component; `pressed` is only the persistent `aria-pressed` toggle prop. Orthogonal: a toggle has both (ADR-025 amendment).
+- **`active` ≠ `pressed`:** `active` is the momentary press (`:active:not(:disabled)`, `*.active` tokens, Figma `State=Active`) on every interactive component except `TextField`/`Select` (no press meaning on a text input or native select); `pressed` is only the persistent `aria-pressed` toggle prop. Orthogonal: a toggle has both (ADR-025 amendment).
 - Every lifecycle and content state appears in metadata `states` and has a story.
 
 ## Prop vocabulary (ADR-026)

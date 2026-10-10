@@ -73,6 +73,10 @@
       "description": "Shifts to the darker brand interactive hover color; underline remains."
     },
     {
+      "state": "active",
+      "description": "Momentary press feedback (CSS :active): text goes to text.default, one step past the end of the brand ramp, as Button and Chip darken text on active."
+    },
+    {
       "state": "focus-visible",
       "description": "Browser default focus ring; no custom override."
     },
@@ -84,7 +88,8 @@
   "tokens": {
     "color": [
       "color.text.interactive.default",
-      "color.text.interactive.hover"
+      "color.text.interactive.hover",
+      "color.text.default"
     ],
     "spacing": [],
     "typography": [

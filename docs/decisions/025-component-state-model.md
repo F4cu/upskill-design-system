@@ -35,3 +35,20 @@ First application: `CardVertical` derives "completed" from `progress >= 100` and
 - The axes are orthogonal: every interactive component gets `active`, including toggles. `Chip` shows `active` whether `pressed` is true or false (as Material does for filter chips).
 
 First application: `Button` (all four variants) and `Chip`. A 10% overlay drops brand and subtle text just below AA in the light theme, so `active` also darkens text one step (`text.default`, `text.interactive.hover`) instead of taking a contrast waiver. `danger` has no red step past `red.12` (its hover), so `danger.active` aliases `red.dark.4`; theme files already cross into dark sub-scales (`container.inverted`, `text.accent.inverted`). Rejected alternative: naming the momentary state `pressed` to match Material/Atlassian tokens. That would give `pressed` two meanings in one system and clash with Chip's prop.
+
+## Amendment (2026-10-10) — `active` applied to every interactive component
+
+The first amendment applied `active` to Button and Chip. Tier 2 of the contract migration extends it to the rest of the interactive set, each one step past its hover:
+
+| Component | Part | `active` |
+|---|---|---|
+| Accordion | trigger | `overlay.active` layered as a `background-image` over the open item's elevated fill. Adds the missing `:hover` (`overlay.hover`, same layering) that Figma already showed. |
+| AppHeader | nav link, user button | label `text.brand` → `text.interactive.hover` |
+| Breadcrumb | link | label `text.brand` → `text.interactive.hover` |
+| ButtonArrow | button | background `overlay.subtlest` → `overlay.active` |
+| CardVertical | favorite, menu (on-media) | new `background.on-media.active` (`black.alpha.6`, one step past hover) |
+| Checkbox | box | `overlay.active` layered over either fill (input or brand), so both checked states darken one step without a new brand token. Orthogonal to `checked`, as Chip's `active` is to `pressed`. |
+| DropdownMenu | item | `overlay.hover` → `overlay.active` |
+| TextLink | link | `text.interactive.hover` → `text.default`. The brand text ramp ends at hover, so it takes the same text-darkening rule as Button neutral and Chip. |
+
+**Exempt:** `TextField` and `Select`. On a text input or a native select, a press carries no feedback meaning (focus is the feedback). Display components (Card, CardHorizontal, Image, VideoFrame, Avatar, ProgressBar, Divider, layout and text primitives) have no pressable surface.
