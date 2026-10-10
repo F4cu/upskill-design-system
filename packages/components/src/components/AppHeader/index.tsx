@@ -10,7 +10,7 @@ import styles from './AppHeader.module.css'
 export type NavItem = {
   label: string
   href: string
-  active?: boolean
+  current?: boolean
 }
 
 export type AppHeaderProps = {
@@ -85,8 +85,8 @@ export function AppHeader({
                   <li key={item.href}>
                     <a
                       href={item.href}
-                      className={[styles.navLink, item.active && styles.navLinkActive].filter(Boolean).join(' ')}
-                      aria-current={item.active ? 'page' : undefined}
+                      className={[styles.navLink, item.current && styles.navLinkCurrent].filter(Boolean).join(' ')}
+                      aria-current={item.current ? 'page' : undefined}
                     >
                       <span className={styles.navLabel}>{item.label}</span>
                     </a>

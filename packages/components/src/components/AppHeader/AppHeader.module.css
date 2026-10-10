@@ -81,7 +81,7 @@
   color: var(--ds-color-text-brand);
 }
 
-.navLinkActive .navLabel {
+.navLinkCurrent .navLabel {
   color: var(--ds-color-text-brand);
 }
 

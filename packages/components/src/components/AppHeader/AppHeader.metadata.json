@@ -84,7 +84,7 @@
     "role": "banner",
     "ariaAttributes": [
       "aria-label=\"Main navigation\" on the <nav> element",
-      "aria-current=\"page\" on the active nav link",
+      "aria-current=\"page\" on the current nav link",
       "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)",
       "aria-controls → the menu's id on the user button while the menu is open; the menu (DropdownMenu listRole=menu) is named by aria-labelledby → the user button"
     ],

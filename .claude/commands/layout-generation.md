@@ -128,7 +128,7 @@ When the Figma design context shows an AppHeader, map every visible sub-element 
 |---|---|---|
 | Logo mark (light) | `logoSrc="/logo.svg"` | Always include |
 | Logo mark (dark/mono) | `logoSrcDark="/logo-dark.svg"` | Include when a second logo variant is visible |
-| Nav link labels | `navItems={[{ label, href, active }]}` | Set `active: true` on the highlighted link |
+| Nav link labels | `navItems={[{ label, href, current }]}` | Set `current: true` on the link for the current page (renders `aria-current="page"`) |
 | **Avatar / profile photo** | **`userAvatarSrc="…"`** | **Always emit when an avatar circle is visible, even if it is a placeholder.** Use a placeholder URL (e.g. `https://placehold.co/24x24/D15D50/ffffff?text=S`) when the Figma image is a generic photo. Missing this prop silently omits the avatar. |
 | User name text | `userName="…"` | Emit alongside `userAvatarSrc` — never one without the other when both are visible in Figma |
 | Chevron-down next to user name | `userMenuItems={[…]}` | A chevron in Figma means a dropdown menu exists. Emit sensible defaults: `My Profile`, `Settings`, `Log out`. |

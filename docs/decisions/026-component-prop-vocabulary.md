@@ -45,6 +45,7 @@ One concept gets one name across the fixed set. A new component reuses these nam
 | Shown / hidden | `open` / `defaultOpen` / `onOpenChange` | Disclosure, popovers and menus. Never `expanded`, `visible` or `onClose` alone. |
 | Toggle | `pressed` / `defaultPressed` / `onPressedChange` | For `aria-pressed`, including filter chips: each chip toggles independently, and the page owns the set. `default*` is omitted when the caller must always own the state. |
 | Selection in a set | `value` on the container | `selected` is never an item prop. When a group owns the choice (tabs, listbox options), the container holds `value` / `onValueChange` and items derive `aria-selected` from it. |
+| Current item in navigation | `current` on the item | Boolean, renders `aria-current` (`page` for a nav link). An item prop, unlike `selected`: nothing in the component chooses it and there is no change event; the page sets it from its route (AppHeader `NavItem`). Breadcrumb derives it from position and takes no prop. |
 | Any other controlled state | `<x>` / `default<X>` / `on<X>Change` | The callback name comes from the state prop's name: `searchValue` → `onSearchValueChange`. |
 | Discrete event | `on<Verb>`, or `on<Part><Verb>` for an event from a nested part | `onSelect(value)` for picking an item; `onUserMenuSelect`. Never `handle*`. |
 | Boolean | Bare adjective or participle, default `false` | `disabled`, `required`, `certified`, `wrap`, `fullWidth`. Never `is*`, `has*`, `show*`. Exception: `hideLabel`. The label still renders for assistive technology, so the default-`false` form is "hide". |
@@ -114,6 +115,8 @@ The developer approves or edits the table; only then are the four files generate
   | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07, Figma included: `state=Selected` split into `Pressed` (default `false`) and `State` (interaction) |
   | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value (vocabulary row above) | Closed 2026-10-07 |
   | Badge | `label` (the badge's text) | `children` (single free-form content, vocabulary row above) | Migrated 2026-10-10, Figma included (amendment below). Found 2026-10-08 by the harness-ablation pilot, where every arm named it `children` |
+  | AppHeader | `NavItem.active` (the current page) | `NavItem.current` ("Current item in navigation" row above). `active` now means the momentary press (ADR-025 amendment 2026-10-10) | Migrated 2026-10-10 (amendment below) |
+  | Accordion | metadata `states` `collapsed` / `expanded` | `closed` / `open`, the values of the `open` prop | Migrated 2026-10-10 (amendment below) |
 
 - **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). No component forwards one today. That is a behaviour gap, not a naming one, tracked in issue #114.
 
@@ -183,3 +186,17 @@ Two of the three known gaps are closed. `TextField` `hideLabel` remains.
 - **Verification gap:** the before-snapshot was cut off by figma-cli's 20,000-character output limit, so 75 of the 136 `Button icon` instances have no before-state to compare against. The 61 that do were unchanged, and all 136 have valid `Size` values after the rename.
 - **`Button icon` Disabled and default, fixed the same day.** The set gains `State=Disabled` for every size, shape and variant (18 variants), colored per the CSS: Accent fill `background/button/disabled` with an `icon/inverted/disabled` glyph; Neutral border `border/disabled` with a `text/disabled` glyph; Transparent a `text/disabled` glyph. Each Disabled variant is cloned from its Default and re-wired to the `Icon` swap. The set is re-gridded (rows Size × Shape, columns Variant × State), so the default is now `Size=md, Shape=Square, Variant=Neutral, State=Default`; code's `shape` has no default. All 136 instances were compared before and after, with no difference.
 - **`Button` Neutral Disabled matches the CSS.** Its three variants (one per size) used `border/default` and the raw primitive `neutral/neutral-8` on both glyphs. They now use `border/disabled` and `text/disabled`, as `.neutral:disabled` does; the label was already `text/disabled`. All 54 instances were compared before and after, with no difference.
+
+## Amendment (2026-10-10) — Component contract migration, Tier 1
+
+The first tier of the contract migration (vocabulary drift left after the earlier rows) ships the breaking renames and records the remaining props that are outside the vocabulary.
+
+- **AppHeader `NavItem.active` → `current`.** `active` marked the link for the current page and rendered `aria-current="page"`. Since the ADR-025 amendment of 2026-10-10, `active` is the momentary press on every interactive component, and the nav link gets that state in Tier 2, so the two meanings would have met on one element. `current` names the ARIA attribute it drives and is now a vocabulary row. The CSS class follows (`.navLinkCurrent`). Call sites moved: AppHeader and Layout stories, the showcase's Homepage and CourseOverview, and the `/layout-generation` grammar table.
+- **Accordion metadata `states`: `collapsed` / `expanded` → `closed` / `open`.** The vocabulary bans `expanded` for shown/hidden, and the component's prop is already `open`, so the state names now match the prop and the Figma `Open` property. `aria-expanded` keeps its name: it is the ARIA attribute, not a prop.
+- **Recorded new terms** (outside the vocabulary, each with its reason):
+
+  | Component | Prop | Why it is not a vocabulary name |
+  |---|---|---|
+  | DropdownMenu | `listRole: 'menu' \| 'listbox'` | Picks the ARIA pattern (`menu` + `menuitem` for actions, `listbox` + `option` with `aria-selected` for a choice from `value`). It changes what assistive technology announces, not the look, so it is not a `variant`. It is not named `role` because that is the native HTML attribute; the props type omits `role` so the component sets it on the root itself. |
+  | AppHeader | `logoSrcDark` | The Image row's part prefix (`logoSrc`) plus a theme suffix. The header renders both images and CSS shows one per `data-theme`, because a logo is an asset, not a token, and can't follow the theme through a variable. Optional: without it the light logo shows in both themes. |
+

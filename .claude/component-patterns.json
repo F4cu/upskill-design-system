@@ -26,7 +26,7 @@
       "pattern": "navigation"
     }
   ],
-  "generatedFrom": "0c83a9c709b728d91a8a3a4860ea6f15cf819f2c",
+  "generatedFrom": "437ecaa5d70928f2eab4c57590b80369da6155b8",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -297,7 +297,7 @@
               "element": "nav"
             },
             {
-              "aria-current": "{item.active ? 'page' : undefined}",
+              "aria-current": "{item.current ? 'page' : undefined}",
               "element": "a"
             },
             {
@@ -336,7 +336,7 @@
           },
           "systemSpecificNotes": [
             "aria-label=\"Main navigation\" on the <nav> element",
-            "aria-current=\"page\" on the active nav link",
+            "aria-current=\"page\" on the current nav link",
             "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)",
             "aria-controls → the menu's id on the user button while the menu is open; the menu (DropdownMenu listRole=menu) is named by aria-labelledby → the user button"
           ]

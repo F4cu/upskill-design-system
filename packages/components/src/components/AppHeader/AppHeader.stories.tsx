@@ -7,7 +7,7 @@ const AVATAR = 'https://placehold.co/24x24/D15D50/ffffff?text=U'
 
 const NAV_ITEMS = [
   { label: 'All Courses', href: '/courses' },
-  { label: 'My Courses', href: '/my-courses', active: true },
+  { label: 'My Courses', href: '/my-courses', current: true },
 ]
 
 const meta = {

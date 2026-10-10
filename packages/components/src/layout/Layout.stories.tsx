@@ -15,7 +15,7 @@ import styles from './Layout.stories.module.css'
 
 const NAV_ITEMS = [
   { label: 'All Courses', href: '/courses' },
-  { label: 'My Courses', href: '/my-courses', active: true },
+  { label: 'My Courses', href: '/my-courses', current: true },
   { label: 'Browse', href: '/browse' },
 ]
 
