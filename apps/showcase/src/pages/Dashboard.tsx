@@ -65,8 +65,8 @@ export default function Dashboard() {
                       </a>
                     </td>
                     <td><Text as="span" color="subtle">{row.type}</Text></td>
-                    <td><Badge label={row.maturity} /></td>
-                    <td><Badge label={row.implementation} /></td>
+                    <td><Badge>{row.maturity}</Badge></td>
+                    <td><Badge>{row.implementation}</Badge></td>
                   </tr>
                 ))}
               </tbody>
@@ -134,7 +134,7 @@ export default function Dashboard() {
                         <Text as="span" color="brand">#{issue.number} {issue.title}</Text>
                       </a>
                       {issue.labels.map((label) => (
-                        <Badge key={label} label={label} />
+                        <Badge key={label}>{label}</Badge>
                       ))}
                     </Inline>
                   </li>

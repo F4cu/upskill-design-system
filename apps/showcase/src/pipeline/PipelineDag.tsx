@@ -173,16 +173,13 @@ export function PipelineDag() {
                       {status && (
                         <span className={styles.statusRow}>
                           <span className={[styles.statusDot, styles[status.tone]].join(' ')} aria-hidden="true" />
-                          <Badge
-                            label={
-                              status.tone === 'success'
-                                ? 'Passing'
-                                : status.tone === 'failure'
-                                  ? 'Failing'
-                                  : 'Snapshot'
-                            }
-                            variant={status.tone === 'snapshot' ? 'outline' : 'filled'}
-                          />
+                          <Badge variant={status.tone === 'snapshot' ? 'outline' : 'filled'}>
+                            {status.tone === 'success'
+                              ? 'Passing'
+                              : status.tone === 'failure'
+                                ? 'Failing'
+                                : 'Snapshot'}
+                          </Badge>
                         </span>
                       )}
                       {moments && moments.length > 0 && (

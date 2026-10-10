@@ -34,6 +34,7 @@ sources:
 # clock reset 2026-10-09: ADR-007 amendment (ADR-029) records a risk-triggered reviewer, not yet implemented in the commands; no glossary term changed, still accurate
 # 2026-10-09: Review path entry names the risk-tier choice /add-component now makes (ADR-029)
 # clock reset 2026-10-09: /component-scaffold and /add-component Stage 1 fill tokens.* via metadata:derive-tokens (ADR-029 Step 5); no new term, Scaffold and gate entries still accurate
+# rewritten 2026-10-10: Props and variants and Open part say how Figma names them (ADR-026 amendment 2026-10-10: Style → Variant, default native slot → Children)
 # clock reset 2026-10-10: /figma-cli pitfalls gain the truncated-snapshot note; no glossary term changed, still accurate
 ---
 # Glossary
@@ -75,13 +76,13 @@ A component that carries visual meaning or user interaction: `Button`, `Text`, `
 A component built from two or more atoms combined into a small, reusable unit. `Card` is a molecule — it composes `Text`, `Heading`, and layout primitives into a single thing with its own purpose. Molecules are still general enough to be reused across the product. Contrast with atom.
 
 **Open part**
-A subcomponent that accepts several children from a fixed list and lays them out with a layout component whose spacing is set by the part, not by the consumer. `CardVertical.Body` is an open part: it renders a `Stack` with small gaps and accepts `Title`, `Meta`, `Text`, `Badge` and a few others. You can't pass it a `gap`; for different spacing you nest your own `Stack` or `Inline` inside. In Figma, an open part is a native slot on the separate `CardVertical.Root` component, with the same fixed gap; the preset component set keeps it as a fixed layer so its text properties stay on the top layer. See also Subcomponent (part), Slot.
+A subcomponent that accepts several children from a fixed list and lays them out with a layout component whose spacing is set by the part, not by the consumer. `CardVertical.Body` is an open part: it renders a `Stack` with small gaps and accepts `Title`, `Meta`, `Text`, `Badge` and a few others. You can't pass it a `gap`; for different spacing you nest your own `Stack` or `Inline` inside. In Figma, an open part is a native slot on the separate `CardVertical.Root` component, with the same fixed gap; the preset component set keeps it as a fixed layer so its text properties stay on the top layer. A native slot is named after its code prop: `Children` when it is the part's one default slot (`CardVertical.Meta`), otherwise the part's name (`Body` on `CardVertical.Root`). See also Subcomponent (part), Slot.
 
 **Orthogonal**
 Two things are orthogonal when they are fully independent — using or changing one has no effect on the other. In this repo, `ScrollArea` (native browser scroll), `useCarousel` (JS-animated carousel), and `useSlider` (fade-in step-through) are orthogonal: they solve different problems and share no state or implementation. The opposite of coupled.
 
 **Props and variants**
-Props are the inputs you pass to a component to control its appearance or behavior — similar to settings or options. For example, `<Button size="lg" disabled>Save</Button>` passes a `size` prop and a `disabled` prop. A **variant** is a specific type of prop that switches between named visual styles: `<Button variant="accent">` vs `<Button variant="neutral">`. In this repo's metadata, variants are modelled as named axes — each axis (like `variant` or `size`) lists its options, its default, and the purpose of each option. This is how the scaffold and layout tools know what combinations a component supports.
+Props are the inputs you pass to a component to control its appearance or behavior — similar to settings or options. For example, `<Button size="lg" disabled>Save</Button>` passes a `size` prop and a `disabled` prop. A **variant** is a specific type of prop that switches between named visual styles: `<Button variant="accent">` vs `<Button variant="neutral">`. Figma uses the same name, cased `Variant`. In this repo's metadata, variants are modelled as named axes — each axis (like `variant` or `size`) lists its options, its default, and the purpose of each option. This is how the scaffold and layout tools know what combinations a component supports.
 
 **Review checklist**
 The four items a component clears while in the `in review` stage: automated gate, visual review, code review, learnings back-fill. Derivation rules, per-path behavior, and the `n/a — reason` convention live in [Component lifecycle](02-component-lifecycle.md#two-axes-because-one-field-kept-lying) — the single prose owner of the checklist mechanics. See also Review path, Visual review.

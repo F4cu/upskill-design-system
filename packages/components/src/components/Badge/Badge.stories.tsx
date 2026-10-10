@@ -6,7 +6,7 @@ const meta: Meta<typeof Badge> = {
   title: 'Components/Badge',
   component: Badge,
   argTypes: {
-    label: { control: 'text' },
+    children: { control: 'text' },
     variant: { control: 'radio', options: ['outline', 'filled'] },
   },
 }
@@ -16,14 +16,14 @@ type Story = StoryObj<typeof Badge>
 
 export const Default: Story = {
   args: {
-    label: 'Design',
+    children: 'Design',
     variant: 'outline',
   },
 }
 
 export const Filled: Story = {
   args: {
-    label: 'Beginner',
+    children: 'Beginner',
     variant: 'filled',
   },
 }
@@ -31,10 +31,10 @@ export const Filled: Story = {
 export const CategoryRow: Story = {
   render: () => (
     <Inline gap="sm">
-      <Badge label="Design" />
-      <Badge label="Development" />
-      <Badge label="Beginner" variant="filled" />
-      <Badge label="4h 30m" variant="filled" />
+      <Badge>Design</Badge>
+      <Badge>Development</Badge>
+      <Badge variant="filled">Beginner</Badge>
+      <Badge variant="filled">4h 30m</Badge>
     </Inline>
   ),
 }

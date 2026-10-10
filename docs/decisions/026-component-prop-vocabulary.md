@@ -59,14 +59,13 @@ One concept gets one name across the fixed set. A new component reuses these nam
 
 ### Figma names
 
-Code and Figma share names, values and defaults. Casing is the only routine difference: `trailingIcon` in code is `Trailing icon` in Figma. Any other difference is a **recorded mapping**: it goes in the table below and is called out in the component's API proposal. It is never an unrecorded divergence. Known mappings:
+Code and Figma share names, values and defaults. Casing is the only routine difference: `trailingIcon` in code is `Trailing icon` in Figma, and `variant` is `Variant`. A slot property takes its code prop's name: the one default slot is `Children`; other slots take their part's name (`Body`, `Meta`). Any other difference is a **recorded mapping**: it goes in the table below and is called out in the component's API proposal. It is never an unrecorded divergence. Known mappings:
 
 | Code | Figma | Why |
 |---|---|---|
-| `variant` | `Style` | "Variant" is Figma's own word for a component-set member; a property named `Variant` is ambiguous in the Figma UI. |
 | Optional prop omitted | `Has <x>` boolean, default `false` | An instance-swap or text layer has no "empty" option (ADR-023). |
 | Pseudo-classes | `State` variant | Preview only; `State` is reserved for interaction (ADR-025). |
-| `children` as a label string | `Text` text property | Figma has no `children`; the text property is the label layer's content (Button, Chip). |
+| `children` as a label string | `Text` text property | A text property, not a slot: the label layer's content (Button, Chip). `Children` names only a slot property. |
 | Native `value` / `placeholder` (TextField) | `Has value` variant + `Value` text property | Figma can't show the placeholder and a value at once. `Has value=false` previews the placeholder style; `Value` holds whichever text is shown. |
 | `progress` (CardVertical) | `Status` variant (`Not started` / `In progress` / `Completed`) | Preview of the lifecycle the code derives from `progress` (ADR-025). Figma can't derive, so the axis is explicit there and has no code prop. |
 
@@ -114,7 +113,7 @@ The developer approves or edits the table; only then are the four files generate
   | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07; Figma `Size` renamed in the alignment pass (amendment below) |
   | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07, Figma included: `state=Selected` split into `Pressed` (default `false`) and `State` (interaction) |
   | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value (vocabulary row above) | Closed 2026-10-07 |
-  | Badge | `label` (the badge's text) | `children` (single free-form content, vocabulary row above) | Open: found 2026-10-08 by the harness-ablation pilot, where every arm named it `children` |
+  | Badge | `label` (the badge's text) | `children` (single free-form content, vocabulary row above) | Migrated 2026-10-10, Figma included (amendment below). Found 2026-10-08 by the harness-ablation pilot, where every arm named it `children` |
 
 - **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). No component forwards one today. That is a behaviour gap, not a naming one, tracked in issue #114.
 
@@ -148,6 +147,32 @@ The file was brought in line with the vocabulary by renaming properties in place
 ## Amendment (2026-10-08) — Badge `label` is drift
 
 The harness-ablation pilot rebuilt Badge three times and every run named its text `children`, which is what the Content row prescribes for single free-form content. Badge's shipped `label` predates the vocabulary. It joins the migration table as open drift; the rename is a separate breaking PR like the others.
+
+## Amendment (2026-10-10) — `Variant` in Figma, `Children` for a default slot
+
+**`variant` ↔ `Style` is no longer a recorded mapping.** Its rationale was that a property named `Variant` is ambiguous in the Figma UI. Figma's own Simple Design System ([figma/sds](https://github.com/figma/sds), `Button.figma.ts` reads `getEnum("Variant", …)`) names it `Variant`, and `Style` collides with Figma's color and text styles. Every other mapping in the table exists because Figma can't express something; this one was a preference. `appearance` (Atlassian, Fluent) was considered and rejected: `variant` is the majority name (MUI, Radix, Chakra, shadcn, Primer, Polaris, React Spectrum, SDS), and agents default to it, so the code name stays and Figma follows it with a casing-only difference.
+
+**Slot properties are named after their code prop.** A part or component whose one free-form region maps to `children` in code names that slot `Children` in Figma (Nathan Curtis, ["Implementing Slots in a Figma Library"](https://nathanacurtis.substack.com/p/implementing-slots-in-a-figma-library): name the default slot `children` or `items`). A component with several regions names each slot after its part (`Body`). A label string is a `Text` text property, not a slot.
+
+Renamed in place in the Figma file; all 326 placed instances kept their values (read back before and after):
+
+| Node | Set | Before | After | Instances |
+|---|---|---|---|---|
+| `57:1265` | Button | `Style` | `Variant` | 54 |
+| `54:1192` | Button icon | `Style` | `Variant` | 136 |
+| `130:7289` | CardHorizontal | `Style` | `Variant` | 91 |
+| `143:4417` | brand-logo (Figma-only) | `Style` | `Variant` | 37 |
+| `2871:7505` | CardVertical.Meta | slot `Meta` | slot `Children` | 8 |
+
+`CardVertical.Root`'s `Body` slot keeps its name: Root has several regions, and `Body` is the part's name. No Figma property is named `Style` any more.
+
+## Amendment (2026-10-10) — Badge `label` → `children` migrated
+
+Badge now takes its text as `children: ReactNode`, like Chip. All call sites moved: Badge and CardVertical stories, and the showcase's CourseOverview, Dashboard, PipelineDag and PipelineDetailPanel. The Figma `Badge` set (`28:1134`, previously recorded as having no Figma node) is aligned to the same API, in place, with all 13 instances keeping their variant and text:
+
+- `type=Default|highlight` → `Variant=Outline|Filled`. The values match code's `outline|filled` (Default had the `border/default` stroke only; highlight had the `background/overlay/subtlest` fill).
+- A new `Text` text property drives the label layer: the recorded `children` ↔ `Text` mapping, as on Button and Chip.
+- The Filled variant's visible `border/default` stroke is now a 1px transparent stroke, matching the CSS `border: 1px solid transparent`. Code is the source of truth (ADR-002).
 
 ## Amendment (2026-10-10) — Button `trailingIcon` and `shape` in Figma
 

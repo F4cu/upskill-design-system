@@ -183,8 +183,8 @@ export default function CourseOverview() {
                   </Inline>
 
                   <Inline gap="sm">
-                    <Badge label="Design" variant="outline" />
-                    <Badge label="Design Thinking" variant="filled" />
+                    <Badge variant="outline">Design</Badge>
+                    <Badge variant="filled">Design Thinking</Badge>
                   </Inline>
                 </Stack>
               </Stack>

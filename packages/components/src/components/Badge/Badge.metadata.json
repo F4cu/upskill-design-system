@@ -5,7 +5,7 @@
     "type": "display",
     "status": "beta",
     "description": "Static category label pill. Outline: border only, transparent background. Filled: neutral-subtlest background. Purely presentational — no selection state and no interaction semantics. Distinct from Chip, which is an interactive selection toggle.",
-    "figmaNodeId": "none — scaffolded from the ROADMAP Phase 5d spec; no dedicated Figma node."
+    "figmaNodeId": "28:1134"
   },
   "usage": {
     "keywords": [
