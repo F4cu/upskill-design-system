@@ -269,7 +269,7 @@
       "type": "ReactNode",
       "default": null,
       "concept": "Content",
-      "figma": { "surface": "code-only", "note": "Root's fixed layers plus its Body and Meta native slots." }
+      "figma": { "surface": "code-only", "note": "Root's fixed layers plus its Body native slot." }
     },
     "Media.src": {
       "kind": "content",
@@ -367,7 +367,7 @@
       "type": "ReactNode",
       "default": null,
       "concept": "Content",
-      "figma": { "surface": "both", "set": "CardVertical.Root", "property": "Meta", "note": "Native slot." }
+      "figma": { "surface": "both", "set": "CardVertical.Meta", "property": "Children", "note": "Native slot; the part's one default slot (ADR-026 amendment 2026-10-10)." }
     },
     "Duration.children": {
       "kind": "content",
