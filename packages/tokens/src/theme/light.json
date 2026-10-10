@@ -13,6 +13,10 @@
         "hover": {
           "$type": "color",
           "$value": "{color.black.alpha.1}"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{color.black.alpha.2}"
         }
       },
       "transparent": {
@@ -100,18 +104,30 @@
           "hover": {
             "$type": "color",
             "$value": "{color.brand.11}"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{color.brand.12}"
           }
         },
         "neutral": {
           "hover": {
             "$type": "color",
             "$value": "{color.black.alpha.1}"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{color.black.alpha.2}"
           }
         },
         "transparent": {
           "hover": {
             "$type": "color",
             "$value": "{color.background.button.neutral.hover}"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{color.background.button.neutral.active}"
           }
         },
         "danger": {
@@ -122,6 +138,10 @@
           "hover": {
             "$type": "color",
             "$value": "{color.red.12}"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{color.red.dark.4}"
           }
         }
       },

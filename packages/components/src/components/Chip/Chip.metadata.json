@@ -85,8 +85,12 @@
       "description": "Adds neutral-subtlest background; border and text unchanged."
     },
     {
+      "state": "active",
+      "description": "Momentary press feedback (CSS :active) in both pressed and unpressed chips: overlay.active background, text one step darker (text.default unpressed, text.interactive.hover pressed) to hold AA on the stronger overlay. Orthogonal to the pressed prop."
+    },
+    {
       "state": "pressed",
-      "description": "Brand border and brand text; set via the pressed prop."
+      "description": "Persistent toggle-on (aria-pressed=true): brand border and brand text; set via the pressed prop. Not the momentary press — that is the active state."
     },
     {
       "state": "disabled",
@@ -101,7 +105,10 @@
       "color.text.subtle",
       "color.text.selected",
       "color.text.disabled",
-      "color.background.overlay.subtlest"
+      "color.background.overlay.subtlest",
+      "color.background.overlay.active",
+      "color.text.default",
+      "color.text.interactive.hover"
     ],
     "spacing": [
       "space.inset.md"

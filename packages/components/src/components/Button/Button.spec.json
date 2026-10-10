@@ -124,6 +124,12 @@
     { "name": "default", "kind": "interaction", "trigger": "rest" },
     { "name": "hover", "kind": "interaction", "trigger": ":hover:not(:disabled)" },
     {
+      "name": "active",
+      "kind": "interaction",
+      "trigger": ":active:not(:disabled)",
+      "notes": "Momentary press, declared after hover so it wins while held. Distinct from aria-pressed, which is a persistent toggle (ADR-025 amendment)."
+    },
+    {
       "name": "focus-visible",
       "kind": "interaction",
       "trigger": ":focus-visible",
@@ -165,6 +171,7 @@
 
       { "when": { "variant": "accent" }, "set": { "background": "color.background.button.accent.default", "color": "color.text.inverted.default" } },
       { "when": { "variant": "accent", "state": "hover" }, "set": { "background": "color.background.button.accent.hover" } },
+      { "when": { "variant": "accent", "state": "active" }, "set": { "background": "color.background.button.accent.active" } },
       { "when": { "variant": "accent", "state": "disabled" }, "set": { "background": "color.background.button.disabled", "color": "color.text.inverted.disabled" } },
 
       {
@@ -176,6 +183,7 @@
         }
       },
       { "when": { "variant": "neutral", "state": "hover" }, "set": { "background": "color.background.button.neutral.hover" } },
+      { "when": { "variant": "neutral", "state": "active" }, "set": { "background": "color.background.button.neutral.active", "color": "color.text.default" } },
       { "when": { "variant": "neutral", "state": "disabled" }, "set": { "color": "color.text.disabled", "border-color": "color.border.disabled" } },
 
       {
@@ -186,10 +194,12 @@
         }
       },
       { "when": { "variant": "transparent", "state": "hover" }, "set": { "background": "color.background.button.transparent.hover" } },
+      { "when": { "variant": "transparent", "state": "active" }, "set": { "background": "color.background.button.transparent.active", "color": "color.text.interactive.hover" } },
       { "when": { "variant": "transparent", "state": "disabled" }, "set": { "color": "color.text.disabled" } },
 
       { "when": { "variant": "danger" }, "set": { "background": "color.background.button.danger.default", "color": "color.text.inverted.default" } },
       { "when": { "variant": "danger", "state": "hover" }, "set": { "background": "color.background.button.danger.hover" } },
+      { "when": { "variant": "danger", "state": "active" }, "set": { "background": "color.background.button.danger.active" } },
       { "when": { "variant": "danger", "state": "disabled" }, "set": { "background": "color.background.button.disabled", "color": "color.text.inverted.disabled" } }
     ]
   },

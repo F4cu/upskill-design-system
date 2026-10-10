@@ -87,18 +87,22 @@ const PAIRS = [
   // Button — accent variant
   [T("inverted-default"), BG("button-accent-default")],
   [T("inverted-default"), BG("button-accent-hover")],
+  [T("inverted-default"), BG("button-accent-active")],
   // Button — neutral variant. Its border (border.default) is the same
   // low-contrast divider token used everywhere as a decorative separator
   // (Accordion, Card, Divider) — not checked here either; the variant is
   // still identifiable by its text color and hover fill.
   ...AMBIENT.map((bg) => [T("subtle"), bg]),
   [T("subtle"), BG("button-neutral-hover")],
+  [T("default"), BG("button-neutral-active")],
   // Button — transparent (ghost) variant: interactive text at rest reuses
   // the ambient pairs above; on hover it sits on its own hover fill.
   [T("interactive-default"), BG("button-transparent-hover")],
+  [T("interactive-hover"), BG("button-transparent-active")],
   // Button — danger variant
   [T("inverted-default"), BG("button-danger-default")],
   [T("inverted-default"), BG("button-danger-hover")],
+  [T("inverted-default"), BG("button-danger-active")],
   // CardVertical.Favorite / .Menu — transparent icon buttons over a photo.
   // icon.on-media.* sits on arbitrary image pixels, so no pair can check it;
   // the halo carries the contrast and the light/dark-thumbnail stories are
@@ -114,6 +118,9 @@ const PAIRS = [
   ]),
   [T("subtle"), BG("overlay-subtlest")],
   [T("selected"), BG("overlay-subtlest")],
+  // :active darkens the text one step so it holds AA on the stronger overlay.
+  [T("default"), BG("overlay-active")],
+  [T("interactive-hover"), BG("overlay-active")],
 
   // DropdownMenu — panel is container.canvas; hover/focus overlays overlay.hover
   [T("default"), BG("container-canvas")],

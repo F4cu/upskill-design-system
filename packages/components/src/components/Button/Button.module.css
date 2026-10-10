@@ -63,6 +63,10 @@
   --_bg: var(--ds-color-background-button-accent-hover);
 }
 
+.accent:active:not(:disabled) {
+  --_bg: var(--ds-color-background-button-accent-active);
+}
+
 .accent:disabled {
   --_bg: var(--ds-color-background-button-disabled);
   --_text: var(--ds-color-text-inverted-disabled);
@@ -78,6 +82,11 @@
 
 .neutral:hover:not(:disabled) {
   --_bg: var(--ds-color-background-button-neutral-hover);
+}
+
+.neutral:active:not(:disabled) {
+  --_bg: var(--ds-color-background-button-neutral-active);
+  --_text: var(--ds-color-text-default);
 }
 
 .neutral:disabled {
@@ -96,6 +105,11 @@
   --_bg: var(--ds-color-background-button-transparent-hover);
 }
 
+.transparent:active:not(:disabled) {
+  --_bg: var(--ds-color-background-button-transparent-active);
+  --_text: var(--ds-color-text-interactive-hover);
+}
+
 .transparent:disabled {
   --_text: var(--ds-color-text-disabled);
 }
@@ -109,6 +123,10 @@
 
 .danger:hover:not(:disabled) {
   --_bg: var(--ds-color-background-button-danger-hover);
+}
+
+.danger:active:not(:disabled) {
+  --_bg: var(--ds-color-background-button-danger-active);
 }
 
 .danger:disabled {

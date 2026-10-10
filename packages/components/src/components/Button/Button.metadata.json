@@ -129,6 +129,10 @@
       "description": "Darker fill (accent, danger) or subtle fill (neutral, transparent) on pointer hover."
     },
     {
+      "state": "active",
+      "description": "Momentary press feedback while the pointer or Space key is held (CSS :active): one step darker fill than hover; neutral and transparent also darken their text one step to hold AA on the stronger fill. Not a toggle — a persistent on/off is aria-pressed, which Button does not have (see Chip)."
+    },
+    {
       "state": "disabled",
       "description": "Muted background and text; cursor not-allowed; interaction blocked natively."
     }
@@ -147,18 +151,24 @@
     "color": [
       "color.background.button.accent.default",
       "color.background.button.accent.hover",
+      "color.background.button.accent.active",
       "color.background.button.disabled",
       "color.background.button.neutral.hover",
+      "color.background.button.neutral.active",
       "color.background.button.transparent.hover",
+      "color.background.button.transparent.active",
       "color.text.inverted.default",
       "color.text.inverted.disabled",
       "color.text.subtle",
       "color.text.disabled",
       "color.text.interactive.default",
+      "color.text.interactive.hover",
+      "color.text.default",
       "color.border.default",
       "color.border.disabled",
       "color.background.button.danger.default",
-      "color.background.button.danger.hover"
+      "color.background.button.danger.hover",
+      "color.background.button.danger.active"
     ],
     "typography": [
       "font.family.body",

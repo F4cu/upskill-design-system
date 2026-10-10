@@ -34,3 +34,12 @@
 .pressed:hover:not(:disabled) {
   background: var(--ds-color-background-overlay-subtlest);
 }
+
+.chip:active:not(:disabled) {
+  background: var(--ds-color-background-overlay-active);
+  color: var(--ds-color-text-default);
+}
+
+.pressed:active:not(:disabled) {
+  color: var(--ds-color-text-interactive-hover);
+}
