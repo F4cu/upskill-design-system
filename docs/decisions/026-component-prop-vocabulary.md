@@ -113,7 +113,7 @@ The developer approves or edits the table; only then are the four files generate
   | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07; Figma `Size` renamed in the alignment pass (amendment below) |
   | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07, Figma included: `state=Selected` split into `Pressed` (default `false`) and `State` (interaction) |
   | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value (vocabulary row above) | Closed 2026-10-07 |
-  | Badge | `label` (the badge's text) | `children` (single free-form content, vocabulary row above) | Open: found 2026-10-08 by the harness-ablation pilot, where every arm named it `children` |
+  | Badge | `label` (the badge's text) | `children` (single free-form content, vocabulary row above) | Migrated 2026-10-10, Figma included (amendment below). Found 2026-10-08 by the harness-ablation pilot, where every arm named it `children` |
 
 - **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). No component forwards one today. That is a behaviour gap, not a naming one, tracked in issue #114.
 
@@ -165,3 +165,11 @@ Renamed in place in the Figma file; all 326 placed instances kept their values (
 | `2871:7505` | CardVertical.Meta | slot `Meta` | slot `Children` | 8 |
 
 `CardVertical.Root`'s `Body` slot keeps its name: Root has several regions, and `Body` is the part's name. No Figma property is named `Style` any more.
+
+## Amendment (2026-10-10) — Badge `label` → `children` migrated
+
+Badge now takes its text as `children: ReactNode`, like Chip. All call sites moved: Badge and CardVertical stories, and the showcase's CourseOverview, Dashboard, PipelineDag and PipelineDetailPanel. The Figma `Badge` set (`28:1134`, previously recorded as having no Figma node) is aligned to the same API, in place, with all 13 instances keeping their variant and text:
+
+- `type=Default|highlight` → `Variant=Outline|Filled`. The values match code's `outline|filled` (Default had the `border/default` stroke only; highlight had the `background/overlay/subtlest` fill).
+- A new `Text` text property drives the label layer: the recorded `children` ↔ `Text` mapping, as on Button and Chip.
+- The Filled variant's visible `border/default` stroke is now a 1px transparent stroke, matching the CSS `border: 1px solid transparent`. Code is the source of truth (ADR-002).
