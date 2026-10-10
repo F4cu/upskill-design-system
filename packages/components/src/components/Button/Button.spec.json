@@ -199,8 +199,7 @@
       { "name": "Button icon", "nodeId": "54:1192", "covers": "Icon-only buttons (shape set)" }
     ],
     "divergences": [
-      { "what": "The Button icon set has no Danger style.", "decision": "Accepted 2026-10-02: no icon-only danger button is used anywhere." },
-      { "what": "The Button icon set has no Disabled state, and its default variant is Size=lg, Variant=Accent where code defaults to md and neutral.", "decision": "Open; the default is set by canvas position (ADR-026 amendment 2026-10-10)." }
+      { "what": "The Button icon set has no Danger style.", "decision": "Accepted 2026-10-02: no icon-only danger button is used anywhere." }
     ]
   }
 }
