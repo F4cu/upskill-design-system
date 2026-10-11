@@ -1,0 +1,182 @@
+{
+  "component": "Breadcrumb",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "nav",
+      "role": "navigation",
+      "required": true
+    },
+    {
+      "name": "List",
+      "element": "ol",
+      "role": "list",
+      "required": true
+    },
+    {
+      "name": "Item",
+      "element": "li",
+      "role": "listitem",
+      "required": true
+    },
+    {
+      "name": "Separator",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "role": "presentation",
+      "required": true
+    },
+    {
+      "name": "Label",
+      "element": "span",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "LabelCurrent",
+      "element": "span",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "LabelSubtle",
+      "element": "span",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Link",
+      "element": "a",
+      "role": "link",
+      "required": true
+    }
+  ],
+  "props": {
+    "items": {
+      "kind": "content",
+      "type": "BreadcrumbItem[]",
+      "default": null,
+      "concept": "Collection",
+      "figma": {
+        "surface": "both",
+        "property": "Items"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static trail — interactive states are limited to individual link hover and active."
+    },
+    {
+      "name": "link-hover",
+      "kind": "interaction",
+      "trigger": "Link:hover"
+    },
+    {
+      "name": "link-active",
+      "kind": "interaction",
+      "trigger": "Link:active",
+      "notes": "Momentary press feedback on a link (CSS :active): label steps from text.brand (hover) to text.interactive.hover."
+    }
+  ],
+  "accessibility": {
+    "role": "navigation",
+    "ariaAttributes": [
+      "aria-label=\"Breadcrumb\" on the <nav> element",
+      "aria-current=\"page\" on the last item"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Move focus between linked breadcrumb items"
+      }
+    ]
+  },
+  "styles": {
+    "List": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.xs",
+          "margin": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          },
+          "padding": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          }
+        }
+      }
+    ],
+    "Item": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.xs"
+        }
+      }
+    ],
+    "Separator": [
+      {
+        "when": {},
+        "set": {
+          "color": "color.text.subtle"
+        }
+      }
+    ],
+    "Label": [
+      {
+        "when": {},
+        "set": {
+          "font-size": "font.size.body-default",
+          "font-weight": {
+            "literal": "600",
+            "reason": "600 equals font.weight.semibold; raw number in the CSS Module, to migrate to the token."
+          },
+          "line-height": "font.line-height.relaxed"
+        }
+      },
+      {
+        "when": {
+          "state": "link-hover"
+        },
+        "set": {
+          "color": "color.text.brand"
+        }
+      },
+      {
+        "when": {
+          "state": "link-active"
+        },
+        "set": {
+          "color": "color.text.interactive.hover"
+        }
+      }
+    ],
+    "LabelSubtle": [
+      {
+        "when": {},
+        "set": {
+          "color": "color.text.subtle"
+        }
+      }
+    ],
+    "LabelCurrent": [
+      {
+        "when": {},
+        "set": {
+          "color": "color.text.default"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

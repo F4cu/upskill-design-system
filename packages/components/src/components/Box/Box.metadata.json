@@ -131,39 +131,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static container — no interactive states."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.background.container.canvas",
-      "color.background.container.inverted",
-      "color.background.container.elevated",
-      "color.border.default",
-      "color.border.inverted"
-    ],
-    "borderRadius": [
-      "border-radius.xs"
-    ],
-    "spacing": [
-      "space.inset.xxs",
-      "space.inset.xs",
-      "space.inset.sm",
-      "space.inset.md",
-      "space.inset.lg",
-      "space.inset.xl",
-      "space.inset.xxl",
-      "space.inset.xxxl"
-    ]
-  },
-  "accessibility": {
-    "role": "generic",
-    "ariaAttributes": [],
-    "keyboardInteractions": []
-  },
   "composition": {
     "composedOf": [],
     "accepts": [

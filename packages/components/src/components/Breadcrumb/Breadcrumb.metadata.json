@@ -51,46 +51,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static trail — interactive states are limited to individual link hover and active."
-    },
-    {
-      "state": "link-active",
-      "description": "Momentary press feedback on a link (CSS :active): label steps from text.brand (hover) to text.interactive.hover."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.text.default",
-      "color.text.subtle",
-      "color.text.brand",
-      "color.text.interactive.hover"
-    ],
-    "spacing": [
-      "space.inline.xs"
-    ],
-    "typography": [
-      "font.size.body-default",
-      "font.line-height.relaxed"
-    ],
-    "borderRadius": [],
-    "other": []
-  },
-  "accessibility": {
-    "role": "navigation",
-    "ariaAttributes": [
-      "aria-label=\"Breadcrumb\" on the <nav> element",
-      "aria-current=\"page\" on the last item"
-    ],
-    "keyboardInteractions": [
-      {
-        "key": "Tab",
-        "action": "Move focus between linked breadcrumb items"
-      }
-    ]
-  },
   "composition": {
     "composedOf": [
       "Icon"

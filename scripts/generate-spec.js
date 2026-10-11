@@ -86,6 +86,8 @@ const literalsInOrder = (symbol) => {
   return (type.isUnion() ? type.types : [type]).filter((x) => x.isStringLiteral()).map((x) => x.value);
 };
 
+// Props shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for them.
+const LAYOUT_PROPS = new Set(["padding", "paddingX", "paddingY", "overflow", "background", "borderTop", "minWidth", "maxWidth", "minHeight", "maxHeight", "grow", "gap", "align", "justify", "fullWidth", "wrap"]);
 const NATIVE_PROPS = new Set(["className", "style", "id", "ref", "htmlFor", "tabIndex", "title", "role"]);
 
 function guessKind(prop, ownNames) {
@@ -112,13 +114,14 @@ for (const [prefix, { part, own, declared, defaults, all }] of propTypes) {
     const def = {};
     def.kind = kind;
     def.type = type;
-    if (kind === "variantAxis" || kind === "lifecycle") if (literals.length) def.options = literals;
+    if (literals.length && (kind === "variantAxis" || kind === "lifecycle" || literals.length <= 12)) def.options = literals;
+    if (kind === "variantAxis" && !def.options && metadata.variants[prop]?.options?.length) def.options = metadata.variants[prop].options;
     def.default = defaults.has(prop) ? defaults.get(prop) : kind === "variantAxis" && metadata.variants[prop] ? metadata.variants[prop].default : type === "boolean" && kind !== "controlledState" ? false : null;
     if (literals.length && (kind === "variantAxis" || !part)) optionsByProp.set(prop, literals);
     if (type === "boolean") booleanProps.add(prop);
     const codeOnly = kind === "native" || kind === "event" || kind === "element" || /^default[A-Z]/.test(prop) || NATIVE_PROPS.has(prop) || (kind === "controlledState" && /^on/.test(prop)) || !!part;
     const concept =
-      (prop.startsWith("aria-") ? "Accessible name" : NATIVE_PROPS.has(prop) ? "native" : null) ??
+      (prop.startsWith("aria-") ? "Accessible name" : NATIVE_PROPS.has(prop) ? "native" : LAYOUT_PROPS.has(prop) && !part ? "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it" : null) ??
       CONCEPTS[prop] ??
       (kind === "event" ? "Discrete event" : kind === "controlledState" ? "Controlled state" : type === "boolean" ? "Boolean" : null);
     def.concept = concept ?? "TODO: name the ADR-026 vocabulary row, or 'new term: <reason>'";
@@ -181,6 +184,10 @@ for (const [prop, options] of optionsByProp) {
   }
 }
 for (const p of booleanProps) if (!classCondition.has(p)) classCondition.set(p, { prop: p, value: "true" });
+for (const p of booleanProps) {
+  const inverse = `no${cap(p)}`;
+  if (!classCondition.has(inverse)) classCondition.set(inverse, { prop: p, value: "false" });
+}
 
 const isModifier = (cls) => classCondition.has(cls);
 const partName = (cls) => (cls === rootClass ? "Root" : /^[A-Za-z][A-Za-z0-9]*$/.test(cls) ? cap(cls) : null);
@@ -386,7 +393,12 @@ const metadataParts = metadata.composition?.parts ?? [];
 const isKnownTag = (tag) => /^[a-z][a-z0-9]*$/.test(tag) || COMPONENTS.has(tag) || tag.startsWith("TODO");
 const addPart = (partNameValue, rawElement, builtOn) => {
   if (seen.has(partNameValue)) return;
-  const element = isKnownTag(rawElement) ? rawElement : `TODO: ${rawElement} is a variable; name the element(s) it can be`;
+  const asDefault = props.as?.default;
+  const element = isKnownTag(rawElement)
+    ? rawElement
+    : typeof asDefault === "string"
+      ? `${asDefault} by default, or the element chosen by the as prop`
+      : `TODO: ${rawElement} is a variable; name the element(s) it can be`;
   seen.add(partNameValue);
   anatomy.push({
     name: partNameValue,

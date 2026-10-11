@@ -129,7 +129,7 @@ for (const { name, file } of specs) {
     }
     if (def.options) {
       const literals = stringLiterals(owner.all.get(prop));
-      if (!sameSet(def.options, literals)) errors.push(`${at}.options [${def.options}] ≠ TypeScript [${literals}]`);
+      if (literals.length && !sameSet(def.options, literals)) errors.push(`${at}.options [${def.options}] ≠ TypeScript [${literals}]`);
     }
     if (owner.defaults.has(prop) && owner.defaults.get(prop) !== def.default) {
       errors.push(`${at}.default ${JSON.stringify(def.default)} ≠ code default ${JSON.stringify(owner.defaults.get(prop))}`);
