@@ -98,14 +98,8 @@
       {
         "when": {},
         "set": {
-          "width": {
-            "literal": "3rem",
-            "reason": "3rem equals size.600; raw rem in the CSS Module, to migrate to the token."
-          },
-          "height": {
-            "literal": "3rem",
-            "reason": "3rem equals size.600; raw rem in the CSS Module, to migrate to the token."
-          }
+          "width": "size.600",
+          "height": "size.600"
         }
       }
     ]

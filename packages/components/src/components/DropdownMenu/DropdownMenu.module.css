@@ -31,5 +31,5 @@
 
 .itemSelected {
   color: var(--ds-color-text-brand);
-  font-weight: 600;
+  font-weight: var(--ds-font-weight-semibold);
 }

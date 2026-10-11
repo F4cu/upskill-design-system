@@ -220,3 +220,22 @@ All 27 components now have a `<Name>.spec.json`. `spec:validate` fails for a com
 **Findings the specs make visible.** Six raw values in CSS Modules have an exact token and should be migrated: `font-weight: 600` is `font.weight.semibold` (AppHeader, Breadcrumb, DropdownMenu), `4px` is `size.050` (ProgressBar), `3rem` is `size.600` (VideoFrame, twice). Each is recorded as a literal with that reason, not changed here. The other 116 literals of 122 carry a reason that holds. Also visible: the AppHeader hamburger has no click handler, Checkbox draws a 1.5px border where every other module uses 1px, and the token set has no shadow, z-index, opacity, border-width or aspect-ratio scale.
 
 **Still open from the acceptance list:** the ADR-026 known-gaps line about Button `shape` (step 5).
+
+## Amendment (2026-10-11) — Migration step 5: what happened to the pilot's findings
+
+The acceptance list ended with correcting ADR-026 and deciding the findings the pilots reported. Each was checked against the repo today.
+
+| Finding (pilot, 2026-10-07) | State | Evidence |
+|---|---|---|
+| ADR-026 lists Button `shape` as a code prop with no Figma property | Already closed | The ADR-026 amendment of 2026-10-10 ("`shape` was never a gap") maps it to the `Button icon` set (`54:1192`); the known-gaps line now lists only TextField `hideLabel`. No edit needed. |
+| `metadata.tokens` leaves out tokens the CSS reads | Closed by construction | The token list is derived from the spec's `styles` for all 27 components (ADR-001 amendment, step 4). |
+| The icon-only rule is not enforced by the types | Closed | `ButtonProps` is a union whose `shape` branch requires `icon` and `aria-label` and forbids `children` and `trailingIcon`; `Button.a11y.test.tsx` has `@ts-expect-error` cases for both; the spec constraint says `enforcedBy: ["type", "test"]`. |
+| Button has no focus style or token | Closed | ADR-028: one token-bound `:focus-visible` ring in `reset.css`. The Button spec's `focus-visible` state points to it. |
+| CardVertical `Root` sets raw `min-width` 220px and 160px | Closed | `size.card.min.lg` and `size.card.min.sm`. |
+| CardVertical `metadata.tokens` lists tokens the CSS never reads | Closed | As above. |
+| The `1px` border width is a literal in 15 CSS Modules | Open: needs a decision | 13 modules, 17 declarations, plus Checkbox at 1.5px and 2px. The specs record each as a literal with a reason. |
+| No opacity or z-index token scale | Decided: no scale | z-index is `100` on three popovers (AppHeader, CardVertical, Select) and `1` once; opacity is `0`/`1` for a fade and `0.8` once. Too few distinct values to justify a scale. They stay literals with a reason. Revisit if a fourth distinct value appears. |
+
+**The six raw values with an exact token are migrated.** `font-weight: 600` became `var(--ds-font-weight-semibold)` (AppHeader, Breadcrumb, DropdownMenu), `height: 4px` became `var(--ds-size-050)` (ProgressBar), and `3rem` became `var(--ds-size-600)` (VideoFrame, width and height). Their spec literals are now token paths. `size.050` is `0.25rem`, so the progress track now follows the root font size where `4px` did not; at the default size it is identical. A same-machine before/after screenshot of the five components' default stories, light and dark (10 shots), differed in 0 pixels. The committed ADR-019 baselines were not used, because they come from a different OS.
+
+**Decision for the owner: a border-width token.** Recommended: add one, because 17 declarations repeat the same value and the spec now records them all as unexplained literals. It is a token-scale change (a new primitive and device alias, a Figma variable, an Airtable row), so it goes through `/tokens-author` as its own PR, not through this migration. Checkbox's 1.5px and 2px should be decided in the same change: either align the box to the 1px default or add a second step.

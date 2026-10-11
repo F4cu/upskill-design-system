@@ -490,10 +490,7 @@
         "when": {},
         "set": {
           "font-size": "font.size.body-default",
-          "font-weight": {
-            "literal": "600",
-            "reason": "600 equals font.weight.semibold; raw number in the CSS Module, to migrate to the token."
-          },
+          "font-weight": "font.weight.semibold",
           "line-height": "font.line-height.relaxed",
           "color": "color.text.subtle"
         }

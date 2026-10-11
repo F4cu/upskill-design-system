@@ -74,10 +74,7 @@
             "literal": "100%",
             "reason": "Fills its container."
           },
-          "height": {
-            "literal": "4px",
-            "reason": "4px equals size.050; raw px in the CSS Module, to migrate to the token."
-          },
+          "height": "size.050",
           "background": "color.background.overlay.subtle",
           "border-radius": "border-radius.full"
         }
