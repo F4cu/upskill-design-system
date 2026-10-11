@@ -60,6 +60,7 @@ sources:
 # clock reset 2026-10-10: ADR-026 amendment records the Button Neutral Disabled color fix; this page describes no Figma variant colors, still accurate
 # clock reset 2026-10-10: ADR-025 amendment splits active (momentary :active) from pressed (aria toggle); this page lists no individual ADRs or component states, still accurate
 # clock reset 2026-10-10: ADR-026 gains the Tier 1 amendment (NavItem.current, Accordion open/closed, recorded new terms) and /layout-generation's navItems use current; this page links the ADR without per-prop detail, still accurate
+# clock reset 2026-10-11: ADR-025 amendment regroups states by who sets them; ADR-026 amendment moves Disabled out of Figma State; this page lists no individual ADRs or Figma property names, still accurate
 ---
 # Start here
 
