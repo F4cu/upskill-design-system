@@ -159,3 +159,35 @@ The first "On acceptance" step is done for the two components that have a spec, 
 - **Pattern output is unchanged.** `npm run patterns:generate` produces the same `component-patterns.json` before and after, because the accessibility strings it quotes now come from the spec through the same reader.
 
 **Still open from the acceptance list:** `/component-scaffold` step 3 writing the spec (step 2), the `props`/`styles` generator (step 3), the backfill and making the spec required (step 4), and the ADR-026 Button `shape` line (step 5). The harness-ablation tooling (`scripts/harness-ablation`, `scripts/pattern-accuracy-harness`) still passes metadata files as context and strips specs for the target; it needs no change for this step, but a re-run after the backfill should confirm the smaller metadata does not hurt scaffolding.
+
+## Amendment (2026-10-11) — Migration step 3: `spec:generate` drafts a spec from the code
+
+The acceptance list called for a script that generates `props` and `styles` so only anatomy roles and constraints are authored. It is `npm run spec:generate -- <Name>` (`scripts/generate-spec.js`). The props reader that `spec:validate` already used moved to `scripts/spec-props.js` so both scripts read the TypeScript the same way.
+
+**What it is for.** The backfill of the 25 components that already exist. It describes code that is there. It does not replace `/component-scaffold` writing the spec before the code for a new component; run afterwards on a component that has a spec it only refreshes derived prop fields.
+
+**What it derives, and what it leaves as `TODO`.**
+
+| Derived from the code | Left as `TODO` for a person or agent |
+|---|---|
+| Props the component and its parts declare: type, options (in declaration order), literal defaults, a kind guess | The ADR-026 vocabulary `concept` of a prop it has no rule for; the Figma property and set; `native` props the contract depends on but the component does not declare |
+| Parts, from metadata `composition.parts` and the classes the JSX uses, with element and `builtOn` | Each part's `role` and `action`; parts with no class of their own (a label `span`); `parent` |
+| States, from pseudo-classes and metadata `states` (kind by name) | The ADR-025 kind and trigger of any state it cannot place |
+| `styles`: token paths, option classes, `[data-x]` attributes, pseudo-class states, `--_x` custom properties resolved to the property that reads them (a second reader becomes `sameAs`), `border` shorthands split | Why a raw value is raw; every selector it cannot place (`:has()`, `svg` descendants, ancestor state, `aria-*` attributes, `::` elements) |
+| `accessibility`, copied from metadata | Constraints; Figma sets and divergences |
+
+`spec:validate` now fails on any string or key that starts with `TODO`, so a draft cannot pass until it is finished. Writing the real spec file also removes `states`, `tokens` and `accessibility` from the component's metadata, because `metadata:validate` forbids them once a spec exists. An existing spec is only merged: its authored fields, parts, states and style rules are kept, and `options`/`default` are refreshed from the code. Drift in parts or states is reported.
+
+**Measured against the two pilot specs** (run with `--fresh` into a scratch file, compared field by field):
+
+| | Button | CardVertical |
+|---|---|---|
+| Own props found | 7 of 7 (the 3 missing are inherited `disabled`, `type`, `onClick`) | 25 of 25 |
+| Props with kind, options and default equal | 7 of 7 | 23 of 25 (`progress` and `Progress.value` are lifecycle props, guessed as content) |
+| Style `(property, value)` pairs found | 37 of 37 | 20 of 20 |
+| Style declarations on the same part and condition | 41 of 43 | 11 of 26 |
+| Selectors left as `TODO` | 0 | 5 of 17 |
+
+For a single-element component like Button the draft is nearly the finished spec. For a compound component the values are right but placement is not: a class shared by two parts (`.onMedia`), ancestor state (`.card:hover .thumbnail`) and `aria-pressed` styling have to be placed by hand. The pilots' judgment calls (`builtOnProps`, `Menu (design-only)` Figma notes, constraints) are not derivable and are not attempted.
+
+**Not tried.** Running it on a component with no spec in the repo. A scratch test on Badge (generate, fill 7 `TODO`s, `spec:validate` with `--components-dir`) passed. Step 4 is the real test.

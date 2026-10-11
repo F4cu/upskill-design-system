@@ -20,11 +20,18 @@ completed:
 |---|---|---|---|
 | 1 | ADR-001 amendment; `accessibility` joins the spec; `states`/`tokens`/`accessibility` leave metadata for components that have a spec (Button, CardVertical), readers go through `readComponentMetadata` in `scripts/lib.js`. **Transitional:** the other 25 keep the sections in metadata until step 4. Done on `claude/component-migration-spec-y7yebe`; see the ADR-001 and ADR-027 amendments of 2026-10-11. | `claude/component-migration-spec-y7yebe` | done 2026-10-11, not yet merged |
 | 2 | `/component-scaffold` writes `<Name>.spec.json` right after the approved API proposal, before any code; metadata omits the three builder sections; `spec:validate` joins the scaffold, add-component and review-component gates; `/review-component` reads the spec. Done on `claude/component-migration-spec-y7yebe`; not exercised on a real new component yet. | `claude/component-migration-spec-y7yebe` | done 2026-10-11, not yet merged |
-| 3 | Generator script for `props` and `styles` from the props types and CSS Modules; the agent writes only anatomy roles and constraints. | `feat/spec-generator` | todo |
+| 3 | `npm run spec:generate -- <Name>` drafts `props`, anatomy, states, `styles` and `accessibility` from the code; TODOs for what code cannot say; `spec:validate` fails on any TODO; shared TypeScript reader in `scripts/spec-props.js`. Measured against the pilots in the ADR-027 amendment of 2026-10-11. | `claude/component-migration-spec-y7yebe` | done 2026-10-11, not yet merged |
 | 4 | Backfill the other 25 components with the generator; then make the spec required (drop the "optional" carve-out in `scripts/validate-spec.js`). | `chore/spec-backfill` | todo |
 | 5 | Correct the ADR-026 known-gaps line about Button `shape` (icon-only is a separate Figma set, `Button icon`, `54:1192`). Decide the pilot findings below. | `docs/adr-026-button-shape` | todo |
 
 Step 1 could not remove the sections from all 27 metadata files, because that needs 27 specs (step 4). So it was made transitional: a spec owns the sections when it exists, metadata otherwise, and `validate-metadata.js` enforces whichever applies. Step 4 must also drop the required-until-spec rule and take the three sections out of `component.schema.json`. Steps 1 and 3 were independent. Step 4 needs step 3. Step 2 is small once step 1 lands, because it only changes where the proposal is written.
+
+## Open items from step 3
+
+- **Step 4 plan:** run `spec:generate` per component, fill the TODOs, move on. Start with single-element components (Badge, Divider, Avatar, ProgressBar, Chip, TextLink); the compound ones (Accordion, AppHeader, CardHorizontal, Select, TextField, Checkbox, DropdownMenu, Breadcrumb) will need hand placement of the selectors it flags.
+- Writing the real spec file strips `states`/`tokens`/`accessibility` from metadata for you. The draft's state `kind` is a name-based guess; check every `notes` that starts with TODO.
+- Not derivable, so budget human time for it: part roles, Figma properties and sets, constraints, why a literal is raw, `native` props the contract depends on.
+- `postcss` is now a declared root devDependency (it was only transitive via Vite); the lockfile root entry was edited by hand to match.
 
 ## Open items from steps 1-2
 

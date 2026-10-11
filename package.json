@@ -15,6 +15,7 @@
     "globals": "^17.6.0",
     "pixelmatch": "^7.2.0",
     "pngjs": "^7.0.0",
+    "postcss": "^8.5.28",
     "storybook": "^10",
     "typescript-eslint": "^8.61.1"
   },
@@ -56,6 +57,7 @@
     "lint": "eslint packages/components/src",
     "metadata:validate": "node scripts/validate-metadata.js",
     "spec:validate": "node scripts/validate-spec.js",
+    "spec:generate": "node scripts/generate-spec.js",
     "layout:validate": "node scripts/validate-layout.js",
     "stories:lint-inline-style": "node scripts/validate-layout.js packages/components/src --style-only",
     "screenshot:check": "node scripts/screenshot.js check",
