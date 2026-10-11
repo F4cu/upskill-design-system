@@ -1,0 +1,245 @@
+{
+  "component": "Text",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "Any element, chosen by `as` (default p)",
+      "role": "generic",
+      "required": true
+    }
+  ],
+  "props": {
+    "as": {
+      "kind": "element",
+      "type": "ElementType",
+      "default": "p",
+      "concept": "Element",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "size": {
+      "kind": "variantAxis",
+      "type": "TextSize",
+      "options": [
+        "label",
+        "metadata",
+        "body-default",
+        "body-small",
+        "inherit"
+      ],
+      "default": "body-default",
+      "concept": "Size",
+      "figma": {
+        "surface": "both",
+        "property": "Size"
+      }
+    },
+    "color": {
+      "kind": "variantAxis",
+      "type": "TextColor",
+      "options": [
+        "default",
+        "subtle",
+        "brand",
+        "disabled",
+        "inverted",
+        "inverted-subtle",
+        "accent-inverted"
+      ],
+      "default": "default",
+      "concept": "new term: semantic text colour token, not a visual weight; ADR-026 has no row for it (Heading uses the same name)",
+      "figma": {
+        "surface": "both",
+        "property": "Color"
+      }
+    },
+    "className": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "htmlFor": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "style": {
+      "kind": "native",
+      "type": "CSSProperties",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static text — no interactive states."
+    }
+  ],
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": [],
+    "notes": "Use the as prop to select a semantically meaningful element when needed (e.g. as=span for inline text, as=p for block paragraphs — p is the default)."
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {
+          "as": "text"
+        },
+        "set": {
+          "color": "color.text.default",
+          "margin": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          }
+        }
+      },
+      {
+        "when": {
+          "color": "subtle"
+        },
+        "set": {
+          "color": "color.text.subtle"
+        }
+      },
+      {
+        "when": {
+          "color": "brand"
+        },
+        "set": {
+          "color": "color.text.brand"
+        }
+      },
+      {
+        "when": {
+          "color": "disabled"
+        },
+        "set": {
+          "color": "color.text.disabled"
+        }
+      },
+      {
+        "when": {
+          "color": "inverted"
+        },
+        "set": {
+          "color": "color.text.inverted.default"
+        }
+      },
+      {
+        "when": {
+          "color": "inverted-subtle"
+        },
+        "set": {
+          "color": "color.text.inverted.subtle"
+        }
+      },
+      {
+        "when": {
+          "color": "accent-inverted"
+        },
+        "set": {
+          "color": "color.text.accent.inverted"
+        }
+      },
+      {
+        "when": {
+          "size": "body-default"
+        },
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-default",
+          "font-weight": "font.weight.regular",
+          "line-height": "font.line-height.relaxed"
+        }
+      },
+      {
+        "when": {
+          "size": "body-small"
+        },
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-small",
+          "font-weight": "font.weight.regular",
+          "line-height": "font.line-height.default"
+        }
+      },
+      {
+        "when": {
+          "size": "metadata"
+        },
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.metadata",
+          "font-weight": "font.weight.regular",
+          "line-height": "font.line-height.none"
+        }
+      },
+      {
+        "when": {
+          "size": "label"
+        },
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.label",
+          "font-weight": "font.weight.bold",
+          "line-height": "font.line-height.none"
+        }
+      },
+      {
+        "when": {
+          "size": "inherit"
+        },
+        "set": {
+          "font-family": {
+            "literal": "inherit",
+            "reason": "Inherits the parent element's text style."
+          },
+          "font-size": {
+            "literal": "inherit",
+            "reason": "Inherits the parent element's text style."
+          },
+          "font-weight": {
+            "literal": "inherit",
+            "reason": "Inherits the parent element's text style."
+          },
+          "line-height": {
+            "literal": "inherit",
+            "reason": "Inherits the parent element's text style."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

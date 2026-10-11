@@ -82,39 +82,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static heading \u2014 no interactive states."
-    }
-  ],
-  "tokens": {
-    "typography": [
-      "font.family.headline-default",
-      "font.family.headline-serif",
-      "font.size.title-small",
-      "font.size.subheader",
-      "font.size.headline",
-      "font.size.headline-serif",
-      "font.size.display",
-      "font.weight.semibold",
-      "font.weight.medium",
-      "font.line-height.default",
-      "font.line-height.tight"
-    ],
-    "color": [
-      "color.text.default",
-      "color.text.subtle",
-      "color.text.brand",
-      "color.text.inverted.default"
-    ]
-  },
-  "accessibility": {
-    "role": "heading",
-    "ariaAttributes": [],
-    "keyboardInteractions": [],
-    "notes": "Always set as to the correct heading level for document outline. Size and as are deliberately decoupled so visual scale never forces a skip in heading levels."
-  },
   "composition": {
     "composedOf": [],
     "accepts": [],

@@ -1,0 +1,174 @@
+{
+  "component": "Chip",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "button",
+      "role": "button",
+      "required": true
+    }
+  ],
+  "props": {
+    "pressed": {
+      "kind": "controlledState",
+      "type": "boolean",
+      "default": false,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "both",
+        "property": "Pressed"
+      }
+    },
+    "onPressedChange": {
+      "kind": "controlledState",
+      "type": "(pressed: boolean) => void",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Transparent background, subtle text, default border."
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": ":hover",
+      "notes": "Adds neutral-subtlest background; border and text unchanged."
+    },
+    {
+      "name": "disabled",
+      "kind": "appData",
+      "trigger": ":disabled",
+      "notes": "Muted text and border; pointer-events blocked natively."
+    },
+    {
+      "name": "active",
+      "kind": "interaction",
+      "trigger": ":active",
+      "notes": "Momentary press feedback (CSS :active) in both pressed and unpressed chips: overlay.active background, text one step darker (text.default unpressed, text.interactive.hover pressed) to hold AA on the stronger overlay. Orthogonal to the pressed prop."
+    },
+    {
+      "name": "pressed",
+      "kind": "appData",
+      "trigger": "pressed prop true (aria-pressed=\"true\")",
+      "notes": "Persistent toggle-on (aria-pressed=true): brand border and brand text; set via the pressed prop. Not the momentary press — that is the active state."
+    }
+  ],
+  "accessibility": {
+    "role": "button",
+    "ariaAttributes": [
+      "aria-pressed — reflects the pressed prop so screen readers announce the toggle state"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Enter / Space",
+        "action": "Fires onClick, then onPressedChange(!pressed) (caller controls state)"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus to the next focusable element"
+      }
+    ],
+    "notes": "Uses a native <button> element with aria-pressed. Controlled only: the caller owns pressed (filter state always drives page content) and groups chips in a container with role=group and an accessible name (see the filter-bar patterns)."
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "border-radius": "border-radius.full",
+          "padding-inline": "space.inset.md",
+          "height": "size.500",
+          "border-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-color": "color.border.default",
+          "background": {
+            "literal": "transparent",
+            "reason": "No fill or border at this state."
+          },
+          "color": "color.text.subtle",
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-default",
+          "font-weight": "font.weight.medium"
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "background": "color.background.overlay.subtlest"
+        }
+      },
+      {
+        "when": {
+          "state": "disabled"
+        },
+        "set": {
+          "color": "color.text.disabled",
+          "border-color": "color.border.disabled"
+        }
+      },
+      {
+        "when": {
+          "pressed": "true"
+        },
+        "set": {
+          "border-color": "color.border.selected",
+          "color": "color.text.selected"
+        }
+      },
+      {
+        "when": {
+          "pressed": "true",
+          "state": "hover"
+        },
+        "set": {
+          "background": "color.background.overlay.subtlest"
+        }
+      },
+      {
+        "when": {
+          "state": "active"
+        },
+        "set": {
+          "background": "color.background.overlay.active",
+          "color": "color.text.default"
+        }
+      },
+      {
+        "when": {
+          "pressed": "true",
+          "state": "active"
+        },
+        "set": {
+          "color": "color.text.interactive.hover"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

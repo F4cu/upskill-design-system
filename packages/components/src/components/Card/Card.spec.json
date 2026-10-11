@@ -1,0 +1,148 @@
+{
+  "component": "Card",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "role": "region when aria-label or aria-labelledby is passed; no role otherwise",
+      "required": true
+    }
+  ],
+  "props": {
+    "variant": {
+      "kind": "variantAxis",
+      "type": "CardVariant",
+      "options": [
+        "default",
+        "elevated",
+        "transparent"
+      ],
+      "default": "default",
+      "concept": "Visual weight/style",
+      "figma": {
+        "surface": "both",
+        "property": "Variant"
+      }
+    },
+    "padding": {
+      "kind": "content",
+      "type": "CardPadding",
+      "default": "md",
+      "concept": "new term: inner spacing of a surface; ADR-026 has no row for it (Box uses the same name)",
+      "figma": {
+        "surface": "both",
+        "property": "Padding"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static container — no interactive states. Elevation is set at render time via the variant prop."
+    }
+  ],
+  "accessibility": {
+    "role": "region when aria-label or aria-labelledby is passed; no role otherwise",
+    "ariaAttributes": [
+      "aria-label or aria-labelledby (sets role=\"region\" as a side effect — omit both if the Card doesn't need to be a distinguishable landmark, since an unlabeled region role adds landmark noise)"
+    ],
+    "keyboardInteractions": []
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "border-radius": "border-radius.md",
+          "border-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-color": "color.border.subtle"
+        }
+      },
+      {
+        "when": {
+          "padding": "none"
+        },
+        "set": {
+          "padding": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          }
+        }
+      },
+      {
+        "when": {
+          "padding": "sm"
+        },
+        "set": {
+          "padding": "space.inset.sm"
+        }
+      },
+      {
+        "when": {
+          "padding": "md"
+        },
+        "set": {
+          "padding": "space.inset.md"
+        }
+      },
+      {
+        "when": {
+          "padding": "lg"
+        },
+        "set": {
+          "padding": "space.inset.lg"
+        }
+      },
+      {
+        "when": {
+          "variant": "default"
+        },
+        "set": {
+          "background": "color.background.container.canvas"
+        }
+      },
+      {
+        "when": {
+          "variant": "elevated"
+        },
+        "set": {
+          "background": "color.background.container.elevated",
+          "box-shadow": {
+            "template": "0 2px 8px {color.background.overlay.subtle}"
+          }
+        }
+      },
+      {
+        "when": {
+          "variant": "transparent"
+        },
+        "set": {
+          "background": {
+            "literal": "transparent",
+            "reason": "No fill or border at this state."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

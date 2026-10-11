@@ -61,6 +61,7 @@ const todo = [];
 const note = (msg) => todo.push(msg);
 
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
+const kebab = (pascal) => pascal.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 const camel = (kebab) => kebab.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
 const sentence = (camelName) => cap(camelName.replace(/([A-Z])/g, " $1").toLowerCase().trim());
 
@@ -85,8 +86,10 @@ const literalsInOrder = (symbol) => {
   return (type.isUnion() ? type.types : [type]).filter((x) => x.isStringLiteral()).map((x) => x.value);
 };
 
+const NATIVE_PROPS = new Set(["className", "style", "id", "ref", "htmlFor", "tabIndex", "title", "role"]);
+
 function guessKind(prop, ownNames) {
-  if (prop.startsWith("aria-")) return "native";
+  if (prop.startsWith("aria-") || NATIVE_PROPS.has(prop)) return "native";
   if (/^on[A-Z]/.test(prop)) return prop.endsWith("Change") && ownNames.has(prop.slice(2, -6).replace(/^./, (c) => c.toLowerCase())) ? "controlledState" : "event";
   if (/^default[A-Z]/.test(prop)) return "controlledState";
   if (prop === "as") return "element";
@@ -110,18 +113,18 @@ for (const [prefix, { part, own, declared, defaults, all }] of propTypes) {
     def.kind = kind;
     def.type = type;
     if (kind === "variantAxis" || kind === "lifecycle") if (literals.length) def.options = literals;
-    def.default = defaults.has(prop) ? defaults.get(prop) : type === "boolean" && kind !== "controlledState" ? false : null;
+    def.default = defaults.has(prop) ? defaults.get(prop) : kind === "variantAxis" && metadata.variants[prop] ? metadata.variants[prop].default : type === "boolean" && kind !== "controlledState" ? false : null;
     if (literals.length && (kind === "variantAxis" || !part)) optionsByProp.set(prop, literals);
     if (type === "boolean") booleanProps.add(prop);
-    const codeOnly = kind === "native" || kind === "event" || kind === "element" || /^default[A-Z]/.test(prop) || ["className", "id", "ref"].includes(prop) || (kind === "controlledState" && /^on/.test(prop)) || !!part;
+    const codeOnly = kind === "native" || kind === "event" || kind === "element" || /^default[A-Z]/.test(prop) || NATIVE_PROPS.has(prop) || (kind === "controlledState" && /^on/.test(prop)) || !!part;
     const concept =
-      (prop.startsWith("aria-") ? "Accessible name" : null) ??
+      (prop.startsWith("aria-") ? "Accessible name" : NATIVE_PROPS.has(prop) ? "native" : null) ??
       CONCEPTS[prop] ??
       (kind === "event" ? "Discrete event" : kind === "controlledState" ? "Controlled state" : type === "boolean" ? "Boolean" : null);
     def.concept = concept ?? "TODO: name the ADR-026 vocabulary row, or 'new term: <reason>'";
     def.figma = codeOnly
       ? { surface: "code-only" }
-      : { surface: "both", property: sentence(prop), note: `TODO: confirm the Figma property "${sentence(prop)}" against the component set` };
+      : { surface: "both", property: sentence(prop) };
     props[key] = def;
   }
 }
@@ -218,12 +221,28 @@ function interpret(sel) {
   const target = compounds[compounds.length - 1];
   const ancestors = compounds.slice(0, -1);
   if (sel.includes(":global") || compounds.some((c) => c.pseudos.some((p) => p.element || p.name === "has" || p.name === "global"))) return { todo: sel };
-  if (ancestors.some((c) => c.pseudos.length || c.attrs.length || c.classes.some(isModifier))) return { todo: sel };
-  if (target.tags.length && !target.classes.length) return { todo: sel };
   if (target.tags.length) return { todo: sel };
 
   const when = {};
   const addWhen = (prop, value) => { if (when[prop] !== undefined && when[prop] !== value) return false; when[prop] = value; return true; };
+  // An ancestor's modifier class is a prop value of the whole component. An
+  // ancestor's pseudo-class is a state of that other part, named after it.
+  for (const a of ancestors) {
+    if (a.tags.length || a.attrs.length) return { todo: sel };
+    for (const c of a.classes.filter(isModifier)) {
+      const cond = classCondition.get(c);
+      if (!cond || !addWhen(cond.prop, cond.value)) return { todo: sel };
+    }
+    const owner = a.classes.find((c) => !isModifier(c));
+    for (const pseudo of a.pseudos) {
+      if (pseudo.name === "not") continue;
+      const state = STATE_PSEUDOS[pseudo.name];
+      if (!state || !owner || !partName(owner) || target.pseudos.some((q) => q.name !== "not")) return { todo: sel };
+      const name = `${kebab(partName(owner))}-${state}`;
+      if (!addWhen("state", name)) return { todo: sel };
+      states.set(name, `${partName(owner)}:${pseudo.name}`);
+    }
+  }
   const partClasses = target.classes.filter((c) => !isModifier(c));
   for (const c of target.classes.filter(isModifier)) {
     const cond = classCondition.get(c);
@@ -250,6 +269,19 @@ function interpret(sel) {
 
 const STRUCTURAL = /^(display|position|flex|flex-[a-z-]+|align-[a-z-]+|justify-[a-z-]+|place-[a-z-]+|order|cursor|overflow(-[xy])?|white-space|box-sizing|pointer-events|user-select|text-align|text-decoration|text-overflow|transition|animation|appearance|list-style|visibility|content|vertical-align|object-fit|resize|float|clear|isolation|inset|will-change|grid-[a-z-]+|-webkit-[a-z-]+)$/;
 
+const LITERAL_REASONS = [
+  [/^(width|height|min-width|min-height)$/, /^100%$/, "Fills its container."],
+  [/^(margin|padding|padding-inline|padding-block|gap)$/, /^0$/, "Resets the browser default."],
+  [/^min-width$/, /^0$/, "Lets a flex child shrink below its content width."],
+  [/^(background|border|outline)$/, /^none$/, "Resets the native control's default."],
+  [/^(background|border-color|color)$/, /^transparent$/, "No fill or border at this state."],
+  [/^border(-(top|right|bottom|left))?-width$/, /^1px$/, "No border-width token scale exists; every module uses a literal width."],
+  [/^transform$/, /^rotate\(180deg\)$/, "Flips the glyph to show the open state."],
+  [/^(z-index|opacity)$/, /./, "No scale exists for this property."],
+  [/^(font-family|font-size|font-weight|line-height|color)$/, /^inherit$/, "Inherits the parent element's text style."],
+  [/^aspect-ratio$/, /./, "Media aspect ratio; no ratio token exists."],
+];
+
 function styleValue(prop, value) {
   const v = value.replace(/\s+/g, " ").trim();
   const tokens = [...v.matchAll(/var\((--ds-[a-z0-9-]+)\)/g)];
@@ -260,7 +292,8 @@ function styleValue(prop, value) {
     return { template: v.replace(/var\((--ds-[a-z0-9-]+)\)/g, (_, cssVar) => `{${pathByCssVar.get(cssVar)}}`) };
   }
   if (STRUCTURAL.test(prop)) return undefined;
-  return { literal: v, reason: "TODO: why this value is not a token (or add the token)" };
+  const known = LITERAL_REASONS.find(([p, val]) => p.test(prop) && val.test(v));
+  return { literal: v, reason: known ? known[2] : "TODO: why this value is not a token (or add the token)" };
 }
 
 const css = fs.existsSync(cssFile) ? postcss.parse(fs.readFileSync(cssFile, "utf8")) : postcss.parse("");
@@ -343,17 +376,23 @@ if (unresolved.length && !existing) note(`${unresolved.length} selector(s) could
 
 // ── anatomy ──────────────────────────────────────────────────────────────
 
+const ROLE_BY_TAG = { button: "button", nav: "navigation", ul: "list", ol: "list", li: "listitem", img: "img", p: "paragraph", section: "region", svg: "presentation" };
+const roleGuess = (element, partNameValue) =>
+  (partNameValue === "Root" && metadata.accessibility?.role) ||
+  (ROLE_BY_TAG[element] ?? (/^h[1-6]$/.test(element) ? "heading" : "TODO: the role this part exposes to assistive technology, or 'presentation'"));
 const anatomy = [];
 const seen = new Set();
 const metadataParts = metadata.composition?.parts ?? [];
-const addPart = (partNameValue, element, builtOn) => {
+const isKnownTag = (tag) => /^[a-z][a-z0-9]*$/.test(tag) || COMPONENTS.has(tag) || tag.startsWith("TODO");
+const addPart = (partNameValue, rawElement, builtOn) => {
   if (seen.has(partNameValue)) return;
+  const element = isKnownTag(rawElement) ? rawElement : `TODO: ${rawElement} is a variable; name the element(s) it can be`;
   seen.add(partNameValue);
   anatomy.push({
     name: partNameValue,
     element,
     ...(builtOn ? { builtOn } : {}),
-    role: "TODO: the role this part exposes to assistive technology, or 'presentation'",
+    role: roleGuess(element, partNameValue),
     required: true,
   });
 };

@@ -59,28 +59,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static — no interactive states on the icon itself."
-    }
-  ],
-  "tokens": {
-    "other": [
-      "size.icon.sm",
-      "size.icon.md"
-    ]
-  },
-  "accessibility": {
-    "role": "none (aria-hidden) by default; img when label is provided",
-    "ariaAttributes": [
-      "aria-hidden (default true)",
-      "aria-label (when label prop provided)",
-      "role=img (when label prop provided)"
-    ],
-    "keyboardInteractions": [],
-    "notes": "Icons are decorative by default (aria-hidden=true). When an Icon is the only content conveying meaning, pass the label prop to add aria-label and role=img."
-  },
   "composition": {
     "composedOf": [],
     "accepts": [],

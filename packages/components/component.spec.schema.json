@@ -59,7 +59,6 @@
     "props": {
       "description": "The approved API proposal (ADR-026), kept. Keys are prop names; a part's props are keyed '<Part>.<prop>'. Every prop the component and its parts declare must appear; native attributes appear only when the contract depends on them.",
       "type": "object",
-      "minProperties": 1,
       "additionalProperties": {
         "type": "object",
         "required": ["kind", "type", "concept", "figma"],

@@ -64,65 +64,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Brand interactive color with permanent underline and semibold weight."
-    },
-    {
-      "state": "hover",
-      "description": "Shifts to the darker brand interactive hover color; underline remains."
-    },
-    {
-      "state": "active",
-      "description": "Momentary press feedback (CSS :active): text goes to text.default, one step past the end of the brand ramp, as Button and Chip darken text on active."
-    },
-    {
-      "state": "focus-visible",
-      "description": "Browser default focus ring; no custom override."
-    },
-    {
-      "state": "visited",
-      "description": "No visited style override — inherits browser default."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.text.interactive.default",
-      "color.text.interactive.hover",
-      "color.text.default"
-    ],
-    "spacing": [],
-    "typography": [
-      "font.family.body",
-      "font.size.body-default",
-      "font.size.body-small",
-      "font.size.metadata",
-      "font.size.label",
-      "font.weight.semibold",
-      "font.line-height.relaxed",
-      "font.line-height.none"
-    ],
-    "borderRadius": [],
-    "other": []
-  },
-  "accessibility": {
-    "role": "link",
-    "notes": "Renders a native <a> element. href is always required — omitting it removes the link from the tab order. Do not nest interactive children (buttons, inputs, other links) inside TextLink.",
-    "ariaAttributes": [
-      "aria-label — use when the link text alone is ambiguous (e.g. 'Read more' repeated multiple times on a page)"
-    ],
-    "keyboardInteractions": [
-      {
-        "key": "Enter",
-        "action": "Follows the href"
-      },
-      {
-        "key": "Tab",
-        "action": "Moves focus to the next focusable element"
-      }
-    ]
-  },
   "composition": {
     "composedOf": [],
     "accepts": [],
