@@ -5,7 +5,7 @@
     "type": "display",
     "status": "beta",
     "description": "Rounded thumbnail container with a fixed 16:9 aspect ratio and a centred semi-transparent play-button overlay. Purely presentational — no playback logic. Props: src (thumbnail URL) and alt.",
-    "figmaNodeId": "note: uses text styles only; no Figma component set. Code Connect requires Figma Enterprise."
+    "figmaNodeId": "none"
   },
   "usage": {
     "keywords": [

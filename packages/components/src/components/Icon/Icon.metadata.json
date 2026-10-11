@@ -5,7 +5,7 @@
     "type": "display",
     "status": "beta",
     "description": "Renders one of 22 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
-    "figmaNodeId": "96:11108"
+    "figmaNodeId": "none"
   },
   "usage": {
     "keywords": [

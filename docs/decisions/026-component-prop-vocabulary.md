@@ -69,6 +69,8 @@ Code and Figma share names, values and defaults. Casing is the only routine diff
 | `children` as a label string | `Text` text property | A text property, not a slot: the label layer's content (Button, Chip). `Children` names only a slot property. |
 | Native `value` / `placeholder` (TextField) | `Has value` variant + `Value` text property | Figma can't show the placeholder and a value at once. `Has value=false` previews the placeholder style; `Value` holds whichever text is shown. |
 | `progress` (CardVertical) | `Status` variant (`Not started` / `In progress` / `Completed`) | Preview of the lifecycle the code derives from `progress` (ADR-025). Figma can't derive, so the axis is explicit there and has no code prop. |
+| `value` (ProgressBar, `number` 0–100) | `Value` variant (`0`/`10`/`20`/`50`/`80`/`100`) | A variant can't hold a continuous number, so Figma previews a few steps. Same name; the values are a sample. |
+| `aria-selected` on a menu or listbox item (Derived from the container's `value`) | `Selected` boolean on the item, built at `State=Default` only | Preview only. Figma can't derive the selection from a container, and the item takes no `selected` prop in code (vocabulary: selection in a set). |
 
 Code-only props (event handlers, `default*`, `className`, `id`) have no Figma property. Figma-only properties (`State`, `Has <x>`, design-only interaction states such as Menu `Expanded`) are listed as such.
 
@@ -86,6 +88,7 @@ Figma-only properties with no code counterpart, recorded 2026-10-07:
 | Accordion list | The whole set, `Show more` = `false` / `true` | A stack of `Accordion` instances plus a Show more link, for page mock-ups. Code composes Accordions directly and has no list component. |
 | Input Group + button | The whole component | Search input plus icon button, for page mock-ups. Code composes `TextField` and `Button` (AppHeader search). |
 | Image | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
+| AppHeader | `Device` = `Desktop` / `Tablet` / `Mobile` | One preview per device breakpoint. Code reflows with device tokens and media queries in its CSS Module, and has no prop. |
 
 Known gaps (code props with no Figma property): TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand).
 
@@ -212,3 +215,43 @@ Sets to migrate via `/figma-cli`. Each splits `State=Disabled` into `Disabled=tr
 - Any other set whose `State` has a `Disabled` value; `Chip` and `ButtonArrow` accept `disabled` in code, so check their sets first.
 
 Until a set is migrated, its `State=Disabled` stands as a pending exception.
+
+## Amendment (2026-10-11) — Component contract migration, Tier 3 (Figma alignment)
+
+Tier 3 aligns the Figma file with the contract (ADR-025 state groups, this ADR's names), interactively through `/figma-cli`. Every rename is made in place on the existing variants. Nothing is cloned or moved, so every placed instance keeps its main component. Each set's instances (main component id and size) were snapshotted before the change and compared after, and none changed.
+
+**`Disabled` leaves `State` in every set.** `State=Disabled` becomes `Disabled=true, State=Default`, and every other variant becomes `Disabled=false`. `Disabled` is the first property, and each set's default variant is unchanged. That closes the pending list in the amendment above, and no `State` in the file has a `Disabled` value any more.
+
+| Node | Set | Disabled variants | Instances |
+|---|---|---:|---:|
+| `57:1265` | Button | 12 of 48 | 54 |
+| `54:1192` | Button icon | 18 of 72 | 136 |
+| `92:8772` | Checkbox | 2 of 5 | 12 |
+| `61:1228` | ButtonArrow | 2 of 6 | 34 |
+| `92:8005` | `_TextField/Input` | 4 of 28 | 45 |
+| `92:8030` | `_Select/Trigger` | 1 of 7 | 8 |
+
+The outer `TextField` (`2879:8549`) and `Select` (`2879:8375`) sets carry only `Has error`. Their `Has value` × `State` axes live on the nested parts above (the parent-and-part rule). `Chip` has no disabled preview.
+
+**`State=Active` previews** (values from the ADR-025 Tier 2 table): ButtonArrow ×2 (`overlay/active` fill), DropdownMenu/Item, Accordion `Open=false` (`overlay/active` alone, because the closed trigger is transparent in code), and Checkbox for both `Checked` values (`overlay/active` layered over the container fill). The Accordion `Open=false, State=Hover` variant filled with `container/elevated`; it now uses `overlay/hover`, as the CSS does. Two of its text layers used a missing font family and now use the open variant's text style.
+
+**Linked and renamed sets.** Each of these sets now matches the code vocabulary. Four components that had no Figma node now point to one (`figmaNodeId`).
+
+| Node | Before | After | Instances |
+|---|---|---|---:|
+| `95:16289` | Avatar `Size=Small/Medium/Large` (default Small) | `Size=sm/md/lg`, default `md` like code | 37 |
+| `54:1259` | Progress bar, `completion` | `ProgressBar`, `Value` (recorded mapping) | 219 |
+| `82:2242` | Header main, `headerLayout` | `AppHeader`, `Device` (Figma-only) | 16 |
+| `86:3211` | Breadcrumb (single component) | unchanged, now linked | 16 |
+| `130:8323` | breadcrumb link, `State=Active/hover/Current` (`Active` was the resting look) | `_Breadcrumb/Link`, `Current` × `State=Default/Hover/Active`. The current label now uses `text/default` like `.labelCurrent`, which darkens the 17 current-page instances. | 51 |
+| `130:8676` | Nav item, `Property 1=Default/Variant2` | `_AppHeader/NavItem`, `Current` × `State=Default/Hover/Active`. `Variant2` had no instances and became `Current=true` with `text/brand`, like `.navLinkCurrent`. | 22 |
+| `86:3505` | Show more link, `state=collapsed/expanded/state3/state4` × `Property` | `Open` × `State=Default/Hover` (part of the Figma-only Accordion list) | 8 |
+| `155:6236` | DropdownMenu/Item, `State` | `Selected` × `State`; `Selected=true` uses `text/brand` at weight 600, like `.itemSelected` | 24 |
+| `130:7289` | CardHorizontal `Variant=default/inverted` | `Variant=Default/Inverted`, the same casing as Badge's `Outline/Filled` | 91 |
+
+**`figmaNodeId` is a node id or `none`.** The field held free text (`N/A — …`, `note: …`, `""`). `scripts/sense-component.js` treated that text as a node id, and `scripts/airtable-sync.js` only strips values starting with `none`. `component.schema.json` now enforces `^([0-9]+:[0-9]+|none)$`. `none` covers layout primitives, text-style components (`Text`, `Heading`, `VideoFrame`) and components with no set (`Card`, `Divider`, `TextLink`). Icon's old id pointed to a section of 32 single-glyph components, not a set, so Icon is `none` too.
+
+**Variable push:** `color/background/on-media/active` (Theme, both modes → `color/black/alpha-6`), the Tier 2 token. It was the only variable missing.
+
+Left for Tier 4: CardVertical.Root still exposes its progress part as `completion`, and Checkbox has no `Checked=true, State=Hover` cell.
+
