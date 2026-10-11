@@ -62,6 +62,7 @@ sources:
 # clock reset 2026-10-10: ADR-026 gains the Tier 1 amendment (NavItem.current, Accordion open/closed, recorded new terms) and /layout-generation's navItems use current; this page links the ADR without per-prop detail, still accurate
 # clock reset 2026-10-10: ADR-025 gains the active applied-to amendment (contract Tier 2); this page links the ADR without per-component detail, still accurate
 # clock reset 2026-10-11: ADR-025 amendment regroups states by who sets them; ADR-026 amendment moves Disabled out of Figma State; this page lists no individual ADRs or Figma property names, still accurate
+# clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 ---
 # Start here
 

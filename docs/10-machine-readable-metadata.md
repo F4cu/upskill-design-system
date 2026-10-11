@@ -16,6 +16,7 @@ sources:
 # rewritten 2026-10-07: drift example replaced (the change-callback rule was retired); paragraph on the ADR-026 naming checks in generate-pattern-schema.js
 # clock reset 2026-10-07: ADR-013 amendment corrects the harness totals after a scorer fix (scaffold 17→22, overall 30→26); decision and split unchanged, and this page cites neither total, still accurate
 # clock reset 2026-10-08: generate-pattern-schema.js exports parseFile/namingDrift for the ablation scorer and runs main() only as an entry point; output and checks unchanged, still accurate
+# clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 # 2026-10-09: isInteractive moved to scripts/lib.js and now also drives component:risk (ADR-029)
 ---
 # Machine-readable metadata

@@ -30,6 +30,7 @@ sources:
 # 2026-10-09: Stage 1 bullet notes tokens.* is derived by metadata:derive-tokens (ADR-029 Step 5)
 # clock reset 2026-10-10: /figma-cli pitfalls gain the truncated-snapshot note; this page describes no Plugin API pitfalls, still accurate
 # clock reset 2026-10-10: /layout-generation grammar table: navItems active → current (ADR-026 Tier 1); moment 4 description unchanged, still accurate
+# clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 ---
 # Agentic moments
 
