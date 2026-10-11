@@ -10,6 +10,7 @@ sources:
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 # clock reset 2026-10-07: validate-metadata.js reads the component set from the package exports, shared with validate-layout.js (#98); the set is still fixed and canonical in CLAUDE.md, page still accurate
 # clock reset 2026-10-09: ADR-007 amendment (ADR-029) makes the reviewer risk-triggered, not yet implemented; the schema and validator constraints this page describes are unchanged, still accurate
+# clock reset 2026-10-11: component.schema.json adds a figmaNodeId pattern (node id or "none", ADR-026 Tier 3 amendment); the constraints this page describes are unchanged, still accurate
 # 2026-10-09: reviewer sentence notes it is now risk-triggered (interactive only, ADR-029)
 # 2026-10-09: tokens.* derived by script; validator errors name the fix (ADR-029 Step 5)
 ---
