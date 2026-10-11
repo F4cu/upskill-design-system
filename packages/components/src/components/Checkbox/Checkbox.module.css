@@ -36,8 +36,22 @@
   );
 }
 
+/* Checked hover keeps the brand border (the unchecked hover rule outranks :checked)
+   and darkens the fill with an overlay, one step short of :active. */
+.checkbox:checked:hover:not(:disabled) {
+  border-color: var(--ds-color-background-brand);
+  background-image: linear-gradient(
+    var(--ds-color-background-overlay-hover),
+    var(--ds-color-background-overlay-hover)
+  );
+}
+
 .checkbox:checked:active:not(:disabled) {
   border-color: var(--ds-color-background-brand);
+  background-image: linear-gradient(
+    var(--ds-color-background-overlay-active),
+    var(--ds-color-background-overlay-active)
+  );
 }
 
 .checkbox:checked {

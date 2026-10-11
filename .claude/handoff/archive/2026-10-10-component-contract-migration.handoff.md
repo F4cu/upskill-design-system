@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-10-10
-completed:
+completed: 2026-10-11
 ---
 
 # Component API contract migration: remaining components
@@ -22,10 +22,10 @@ completed:
 |---|---|---|---|
 | 0 | Audit: this matrix + Figma property read-back | — | done 2026-10-10 |
 | 1 | Breaking renames (AppHeader `NavItem.active` → `current`; Accordion metadata states `collapsed/expanded` → `closed/open`; record `listRole` and `logoSrcDark` as new terms) | `refactor/contract-vocabulary-tier1` | merged, PR #137 (2026-10-10) |
-| 2 | `:active` state on interactive components + ADR-025 "applied to" amendment | `feat/active-state-tier2` | PR #138 (2026-10-10) |
+| 2 | `:active` state on interactive components + ADR-025 "applied to" amendment | `feat/active-state-tier2` | merged, PR #138 (2026-10-11) |
 | — | ADR-025 state groups; `Disabled` leaves Figma `State` (ADR-026 amendment) | `adr-025-state-kinds` | merged, PR #139 (2026-10-11) |
-| 3 | Figma alignment of linked sets + `Active` variants + `State=Disabled` → `Disabled` boolean split + `figmaNodeId` normalization | `chore/figma-contract-alignment` | done in Figma 2026-10-11; PR #140 |
-| 4 | Close-out: CardVertical.Root `completion` → `Value`, Checkbox checked-hover cell, sense, pattern schema (+ 3 `composedOf` mismatches), Airtable push, docs clocks, drift memory | last PR | todo |
+| 3 | Figma alignment of linked sets + `Active` variants + `State=Disabled` → `Disabled` boolean split + `figmaNodeId` normalization | `chore/figma-contract-alignment` | merged, PR #140 (2026-10-11) |
+| 4 | Close-out: CardVertical.Root `completion` → `Value`, Checkbox checked-hover cell, sense, pattern schema (+ 3 `composedOf` mismatches), Airtable push, docs clocks, drift memory | `chore/contract-migration-tier4` | done 2026-10-11 |
 
 ## Tier 3 result (2026-10-11)
 
@@ -40,6 +40,13 @@ The full record is in the ADR-026 amendment "Component contract migration, Tier 
 **Decided 2026-10-11 (developer):** the preview boolean is `Selected`; the CardHorizontal values are `Default/Inverted`; the breadcrumb current label is darkened to `text/default` to match code.
 
 **Carried to Tier 4:** CardVertical.Root `completion` → `Value` (matches ProgressBar); Checkbox has no `Checked=true, State=Hover`; the ADR-025 mapping `current` row is already done (moved out of Tier 4).
+
+## Tier 4 result (2026-10-11)
+
+- CardVertical.Root needed no change: its `Progress` parts are ProgressBar instances, so they already read `Value`. No `completion` remains in the file.
+- Checkbox checked hover was an accident of specificity in code (the unchecked hover border won over `:checked`). Fixed in code (brand border + `overlay.hover` layer) and mirrored as `Checked=true, State=Hover` (`2934:8022`). ADR-025 amendment "Checkbox checked hover".
+- AppHeader, Badge and Breadcrumb `composedOf` now match their JSX; `component-patterns.json` drift 0.
+- Airtable: semantic tokens (75) and components (27) pushed. Drift memory updated; no variable changes.
 
 ## Decisions made during planning
 

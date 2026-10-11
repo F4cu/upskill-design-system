@@ -113,3 +113,7 @@ Tier 3 of the contract migration brought the Figma file in line with the groups 
 - **`current` is Both.** `_AppHeader/NavItem` and `_Breadcrumb/Link` have a `Current` boolean, crossed with `State` (`Default`/`Hover`/`Active`). Breadcrumb's link had `Active` as its resting value and `Current` as a `State` value, the collision this ADR warns about.
 - **`aria-selected` gets a preview.** A Derived state is never a prop, but a designer still needs to see the selected item. `DropdownMenu/Item` has a preview-only `Selected` boolean (built at `State=Default` only), recorded in ADR-026. It is named after the ARIA attribute, because `Current` would collide with `aria-current`.
 
+
+## Amendment (2026-10-11) — Checkbox checked hover
+
+Tier 4 found that a checked Checkbox had no deliberate hover. `.checkbox:hover:not(:disabled)` outranks `.checkbox:checked`, so on hover the brand box took the neutral `border.input.hover` border. The Tier 2 `:active` rule already restored the brand border for checked boxes; hover had no such rule. A checked box on hover now keeps the brand border and layers `overlay.hover` over the brand fill, one step short of `active` (`overlay.active`, same layering). Figma's Checkbox set gains the matching `Checked=true, State=Hover` cell. Rejected: no hover change on a checked box (no interactivity signal, unlike every other interactive part), and keeping the neutral border (an accident of specificity, not a design).

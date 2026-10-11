@@ -255,3 +255,12 @@ The outer `TextField` (`2879:8549`) and `Select` (`2879:8375`) sets carry only `
 
 Left for Tier 4: CardVertical.Root still exposes its progress part as `completion`, and Checkbox has no `Checked=true, State=Hover` cell.
 
+
+## Amendment (2026-10-11) — Component contract migration, Tier 4 (close-out)
+
+The two items Tier 3 left open are closed:
+
+- **CardVertical.Root progress** already reads `Value`. Its `Progress` parts are instances of the ProgressBar set, so the Tier 3 rename (`completion` → `Value`) carried through. A search of every set, component and instance in the file finds no `completion` left.
+- **Checkbox `Checked=true, State=Hover`** (`2934:8022`) added to `92:8772`: brand fill with an `overlay/hover` layer and the brand border, matching the code fix recorded in ADR-025 (amendment "Checkbox checked hover"). The set now has 8 variants; its default variant is unchanged.
+
+The metadata `composedOf` lists of AppHeader, Badge and Breadcrumb now match their JSX, so `component-patterns.json` reports no drift.
