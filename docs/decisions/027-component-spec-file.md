@@ -191,3 +191,32 @@ The acceptance list called for a script that generates `props` and `styles` so o
 For a single-element component like Button the draft is nearly the finished spec. For a compound component the values are right but placement is not: a class shared by two parts (`.onMedia`), ancestor state (`.card:hover .thumbnail`) and `aria-pressed` styling have to be placed by hand. The pilots' judgment calls (`builtOnProps`, `Menu (design-only)` Figma notes, constraints) are not derivable and are not attempted.
 
 **Not tried.** Running it on a component with no spec in the repo. A scratch test on Badge (generate, fill 7 `TODO`s, `spec:validate` with `--components-dir`) passed. Step 4 is the real test.
+
+## Amendment (2026-10-11) — Migration step 4: every component has a spec, and the spec is required
+
+All 27 components now have a `<Name>.spec.json`. `spec:validate` fails for a component without one, and `metadata:validate` rejects the sections that moved (ADR-001 amendment of this date). The `--components-dir` mode, used by the harness runs, still checks only the specs it finds.
+
+**How the 25 were backfilled.** `spec:generate` drafted each one, then a person completed it. Of the 25:
+
+- **18 needed only `TODO` fills** (part roles, vocabulary concepts, reasons for raw values): Avatar, Badge, Box, Card, Chip, Divider, Heading, Icon, Image, Inline, ProgressBar, ScrollArea, Stack, Text, TextLink, VideoFrame, and, after the corrections below, ButtonArrow and Breadcrumb.
+- **7 needed their structure rewritten by hand**: Accordion, AppHeader, Checkbox, CardHorizontal, DropdownMenu, Select, TextField. The generator's guess was wrong in the same ways each time: metadata's `accessibility.role` describes the inner control (the Accordion trigger, the Checkbox input), not the element the generator called `Root`; classes applied conditionally (`isOpen && styles.panelOuterOpen`) are state, not parts; and combination states in metadata (`checked-hover`, `disabled-unchecked`) are three independent conditions that the rule `when` expresses directly.
+- **Box's padding** had to be written out: `data-px` is computed from `paddingX ?? padding`, so each size is three rules (`padding`, `paddingX`, `paddingY`), in that order.
+
+**Bugs the backfill found in the generator, now fixed.** The worst was silent: `.panelOuterOpen .panel` was merged into the always-on `Panel` rule, overwriting `opacity: 0` with `1`. Specs for Breadcrumb and ButtonArrow had also invented parts (`LabelCurrent`, `IconLeft`) from ternary classes and passed validation; an audit run found them and both were regenerated. `spec:validate` cannot catch either kind of error, because both leave props and token sets intact. The generator now treats `&&` and ternary classes as conditions, attaches a modifier-only selector to the element that carries it, and leaves a `TODO` for state it cannot name.
+
+**Validator changes.**
+
+- A spec may have no props (Divider).
+- The TypeScript options comparison applies only when the prop's type is a literal union. Image's `aspectRatio` is `string` in TypeScript and an enumerated axis in metadata.
+- A token that only `index.tsx` reads through a template counts as read (Avatar).
+- A prop typed with a shared union of more than 12 literals (`IconName`) is `content`, not a `variantAxis` (TextField `icon`, as Button's already was).
+
+**What the backfilled specs do not contain.**
+
+- **Constraints.** Only Button and CardVertical have any (2 in all). Code cannot say which prop combinations are forbidden, and the other components' rules still sit in `usage.antiPatterns`. This is a gap, not a finding that none exist.
+- **Figma read-back.** Figma property names follow the ADR-026 casing rule. They were not read back from the Figma sets, except where the contract-migration handoff recorded them (`Has author`, `Has error`, `Disabled`, `Checked`, `Has progress`).
+- **Figma sets and divergences.** The `figma` section is empty for the 25.
+
+**Findings the specs make visible.** Six raw values in CSS Modules have an exact token and should be migrated: `font-weight: 600` is `font.weight.semibold` (AppHeader, Breadcrumb, DropdownMenu), `4px` is `size.050` (ProgressBar), `3rem` is `size.600` (VideoFrame, twice). Each is recorded as a literal with that reason, not changed here. The other 116 literals of 122 carry a reason that holds. Also visible: the AppHeader hamburger has no click handler, Checkbox draws a 1.5px border where every other module uses 1px, and the token set has no shadow, z-index, opacity, border-width or aspect-ratio scale.
+
+**Still open from the acceptance list:** the ADR-026 known-gaps line about Button `shape` (step 5).

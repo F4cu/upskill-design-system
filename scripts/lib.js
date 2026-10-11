@@ -62,11 +62,10 @@ export function readSpec(name, componentsDir = COMPONENTS_ROOT) {
   return fs.existsSync(file) ? readJson(file) : null;
 }
 
-// A component's metadata with the builder sections (tokens, accessibility)
-// taken from its spec when it has one (ADR-027 migration). A spec owns those
-// sections outright; a component without one still carries them in metadata
-// until the backfill, so every reader sees the same shape either way. Returns
-// null when the component has no metadata file.
+// A component's metadata with the sections its spec owns (tokens, derived from
+// the spec's styles, and accessibility) merged back in, so a reader that wants
+// "everything about this component" gets one object (ADR-001 amendment
+// 2026-10-11, ADR-027). Returns null when the component has no metadata file.
 export function readComponentMetadata(name, componentsDir = COMPONENTS_ROOT) {
   const file = path.join(componentsDir, name, `${name}.metadata.json`);
   if (!fs.existsSync(file)) return null;

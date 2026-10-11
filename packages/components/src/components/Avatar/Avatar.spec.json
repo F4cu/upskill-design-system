@@ -5,7 +5,8 @@
       "name": "Root",
       "element": "img",
       "role": "img",
-      "required": true
+      "required": true,
+      "notes": "index.tsx sets --_avatar-size to the size token inline; the CSS Module falls back to size.avatar.lg when a consumer style removes it."
     }
   ],
   "props": {
@@ -66,16 +67,37 @@
       {
         "when": {},
         "set": {
-          "width": {
-            "template": "var(--_avatar-size, {size.avatar.lg})"
-          },
-          "height": {
-            "template": "var(--_avatar-size, {size.avatar.lg})"
-          },
           "border-radius": {
             "literal": "50%",
             "reason": "A circle at any size. border-radius.full is a pill, which only matches a circle on a square box."
           }
+        }
+      },
+      {
+        "when": {
+          "size": "sm"
+        },
+        "set": {
+          "width": "size.avatar.sm",
+          "height": "size.avatar.sm"
+        }
+      },
+      {
+        "when": {
+          "size": "md"
+        },
+        "set": {
+          "width": "size.avatar.md",
+          "height": "size.avatar.md"
+        }
+      },
+      {
+        "when": {
+          "size": "lg"
+        },
+        "set": {
+          "width": "size.avatar.lg",
+          "height": "size.avatar.lg"
         }
       }
     ]

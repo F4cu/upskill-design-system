@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 // Validates every component metadata file against component.schema.json.
 // Also checks each metadata file's component.name matches its folder name,
-// resolves tokens.* and composition.parts cross-references, checks tokens.*
-// against what the component's own CSS Module and TSX read, validates the
-// canonical example file, and checks every <Name>.spec.json parses. A component
-// with a spec must not repeat states/tokens/accessibility in metadata (the spec
-// owns them, ADR-027); one without must still carry them. Exits
+// resolves composition.parts cross-references, validates the
+// canonical example file, and checks every <Name>.spec.json parses. States,
+// accessibility and the token list live in the spec (ADR-001 amendment
+// 2026-10-11), so metadata that still carries them fails the schema. Exits
 // non-zero on any failure so it can gate CI. This is the contract the
 // component-scaffold and layout-generation agentic moments consume — keep it
 // green.
@@ -14,7 +13,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
-import { publicComponents, tokenSourceTree, tokenPathsByCssVar, componentTokenReads, tokenCategory } from "./lib.js";
+import { publicComponents } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -22,24 +21,11 @@ const COMPONENTS_DIR = path.resolve(ROOT, "packages/components/src/components");
 const SCHEMA_PATH = path.resolve(ROOT, "packages/components/component.schema.json");
 const EXAMPLE_PATH = path.resolve(ROOT, "packages/components/component.metadata.example.json");
 
+const SPEC_SECTIONS = ["states", "tokens", "accessibility"];
+
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schema);
-
-const tokenTree = tokenSourceTree();
-const tokenPathByCssVar = tokenPathsByCssVar(tokenTree);
-
-function tokenExists(dotPath) {
-  let node = tokenTree;
-  for (const segment of dotPath.split(".")) {
-    if (node && typeof node === "object" && segment in node) node = node[segment];
-    else return false;
-  }
-  return node != null && typeof node === "object" && "$value" in node;
-}
-
-// Error messages carry the fix so a scaffold retry takes one turn (ADR-029 Step 5).
-const DERIVE_HINT = (dir) => `run \`npm run metadata:derive-tokens -- ${dir}\` to rewrite tokens.* from the component's own reads`;
 
 function schemaError(e) {
   const at = e.instancePath || "/";
@@ -47,12 +33,14 @@ function schemaError(e) {
   if (e.keyword === "minProperties" && at === "/variants") {
     return `${at} must have at least one axis — model a binary state as an axis, e.g. { "checked": { "options": [false, true], "default": false, "purpose": "…" } } (Chip)`;
   }
-  if (e.keyword === "additionalProperties") return `${at} has unknown property "${e.params.additionalProperty}"`;
+  if (e.keyword === "additionalProperties") {
+    const moved = SPEC_SECTIONS.includes(e.params.additionalProperty) && at === "/";
+    return `${at} has unknown property "${e.params.additionalProperty}"${moved ? " — states, tokens and accessibility live in <Name>.spec.json (ADR-001 amendment 2026-10-11)" : ""}`;
+  }
   return `${at} ${e.message}`;
 }
 
 const COMPONENT_NAMES = publicComponents();
-const BUILDER_SECTIONS = ["states", "tokens", "accessibility"];
 
 // composition.parts cross-references (ADR-023). Part names must not collide
 // with component folders so an `accepts` entry resolves to exactly one thing.
@@ -86,34 +74,6 @@ function checkParts(parts) {
       if (!partNames.has(ref)) {
         errors.push(`${at}.containedBy: "${ref}" is not a sibling part`);
       }
-    }
-  }
-  return errors;
-}
-
-// tokens.* lists exactly the tokens the component itself reads: var(--ds-*) in
-// its CSS Module or TSX, including a TSX template prefix such as
-// `var(--ds-size-avatar-${size})`. Tokens a child component applies (a Text
-// color, a Stack gap) belong to that child's metadata (ADR-001 amendment).
-function checkTokenReads(dir, data) {
-  const { cssVars, tsxVars, tsxPrefixes } = componentTokenReads(path.join(COMPONENTS_DIR, dir));
-  const listed = new Set();
-  const errors = [];
-  for (const [category, refs] of Object.entries(data.tokens ?? {})) {
-    for (const ref of refs) {
-      const cssVar = `--ds-${ref.replaceAll(".", "-")}`;
-      listed.add(cssVar);
-      if (!cssVars.has(cssVar) && !tsxVars.has(cssVar) && !tsxPrefixes.some((p) => cssVar.startsWith(p))) {
-        errors.push(
-          `tokens.${category}: "${ref}" is not read by ${dir}.module.css or index.tsx — a token a child component applies (Text color, Icon size, Stack gap) belongs to that child's metadata; ${DERIVE_HINT(dir)}`,
-        );
-      }
-    }
-  }
-  for (const cssVar of cssVars) {
-    if (!listed.has(cssVar)) {
-      const dotPath = tokenPathByCssVar.get(cssVar);
-      errors.push(`tokens: ${dir}.module.css reads ${cssVar}, which tokens.* does not list${dotPath ? ` — add "${dotPath}" to tokens.${tokenCategory(dotPath)}` : ""}`);
     }
   }
   return errors;
@@ -153,27 +113,6 @@ for (const { file, expectedName, stray } of targets) {
   if (expectedName && data.component?.name !== expectedName) {
     errors.push(`component.name "${data.component?.name}" does not match folder "${expectedName}"`);
   }
-
-  // The example file uses illustrative token paths that need not resolve; only
-  // real components must reference tokens that exist in the source tree.
-  const hasSpec = expectedName ? fs.existsSync(path.join(COMPONENTS_DIR, expectedName, `${expectedName}.spec.json`)) : false;
-  for (const section of BUILDER_SECTIONS) {
-    if (hasSpec && section in data) errors.push(`${section}: owned by ${expectedName}.spec.json — remove it from metadata`);
-    if (!hasSpec && !(section in data)) errors.push(`${section}: required until ${expectedName ?? "the component"} has a spec.json`);
-  }
-
-  if (expectedName && data.tokens) {
-    for (const [category, refs] of Object.entries(data.tokens)) {
-      for (const ref of Array.isArray(refs) ? refs : [refs]) {
-        if (typeof ref === "string" && !tokenExists(ref)) {
-          const real = tokenPathByCssVar.get(`--ds-${ref.replaceAll(".", "-")}`);
-          errors.push(`tokens.${category} references unknown token "${ref}"${real ? ` — did you mean "${real}"? (DTCG dot-path, not the CSS variable spelling)` : ""}`);
-        }
-      }
-    }
-  }
-
-  if (expectedName && !hasSpec) errors.push(...checkTokenReads(expectedName, data));
 
   if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
 

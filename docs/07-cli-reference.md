@@ -37,7 +37,6 @@ The tables below are the full reference — most entries are composite children,
 | `npm run typecheck` / `npm run lint` | Before pushing component changes. |
 | `npm run a11y:coverage` / `npm run a11y:test` / `npm run a11y:stories` | Before pushing a new or changed interactive component. |
 | `npm run metadata:validate` | After editing a `*.metadata.json`. |
-| `npm run metadata:derive-tokens -- <Name>` | Rewrite a component's `tokens.*` from the `--ds-*` custom properties its own CSS Module and TSX read: the same scan `metadata:validate` checks against. Existing entries keep their category and order, unread entries are dropped, and new reads land under the category their top-level segment implies. A TSX template read (`var(--ds-size-avatar-${size})`) can't be enumerated, so it's reported for hand-listing. | `/component-scaffold` runs it after writing the CSS Module and TSX; you type it when `metadata:validate` reports a token-list mismatch. |
 | `npm run spec:validate` | After editing a `*.spec.json`, or a component that has one. |
 | `npm run layout:validate -- <path>` | After hand-editing a layout file. |
 | `npm run screenshot:check` / `npm run screenshot:approve` | After a visual change, to catch or accept pixel diffs. |

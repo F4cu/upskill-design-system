@@ -7,12 +7,12 @@
 //     match the TypeScript union and the metadata axis; destructuring defaults
 //     match.
 //   - styles: the token paths in the spec equal the --ds-* custom properties
-//     the CSS Module reads, and each one is defined in the built token CSS.
+//     the CSS Module reads (plus any index.tsx reads, e.g. a size template), and each one is defined in the built token CSS.
 //   - states, constraints, anatomy: internal cross-references resolve; every
 //     composition.parts entry appears in the spec.
 // A string or key starting with TODO (left by spec:generate) fails the check.
-// Specs stay optional until the ADR-027 backfill: only components with a spec file
-// are checked. Requires built tokens (npm run tokens:build).
+// Every component in the repo must have a spec (ADR-027); --components-dir checks only
+// the specs it finds. Requires built tokens (npm run tokens:build).
 //
 // --components-dir <dir> checks the specs in <dir> instead (a harness run
 // folder holding only the generated target). Repo components stay known names,
@@ -22,7 +22,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
-import { publicComponents, styleValueTokenPaths } from "./lib.js";
+import { publicComponents, styleValueTokenPaths, componentTokenReads } from "./lib.js";
 import { createPropsReader } from "./spec-props.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -40,6 +40,10 @@ const SPEC_DIR = EXTERNAL_DIR ?? COMPONENTS_DIR;
 
 const folders = (dir) => fs.readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
 const COMPONENT_NAMES = new Set([...publicComponents(), ...(EXTERNAL_DIR ? folders(EXTERNAL_DIR) : [])]);
+
+const missing = EXTERNAL_DIR
+  ? []
+  : folders(COMPONENTS_DIR).filter((name) => fs.existsSync(path.join(COMPONENTS_DIR, name, "index.tsx")) && !fs.existsSync(path.join(COMPONENTS_DIR, name, `${name}.spec.json`)));
 
 const specs = folders(SPEC_DIR)
   .map((name) => ({ name, file: path.join(SPEC_DIR, name, `${name}.spec.json`) }))
@@ -63,6 +67,10 @@ const tokenToVar = (dotPath) => `--ds-${dotPath.replaceAll(".", "-")}`;
 const sameSet = (a, b) => a.length === b.length && [...a].sort().every((v, i) => v === [...b].sort()[i]);
 
 let failures = 0;
+for (const name of missing) {
+  console.error(`✗ packages/components/src/components/${name}/${name}.spec.json — missing; run npm run spec:generate -- ${name}`);
+  failures++;
+}
 const backlog = [];
 
 for (const { name, file } of specs) {
@@ -177,9 +185,12 @@ for (const { name, file } of specs) {
   const cssVars = new Set(
     fs.existsSync(cssFile) ? [...fs.readFileSync(cssFile, "utf8").matchAll(/var\((--ds-[a-z0-9-]+)/g)].map((m) => m[1]) : [],
   );
+  // index.tsx may also read tokens, e.g. var(--ds-size-avatar-${size}) set as an inline custom property.
+  const { tsxVars, tsxPrefixes } = componentTokenReads(path.join(SPEC_DIR, name));
+  const readInTsx = (v) => tsxVars.has(v) || tsxPrefixes.some((p) => v.startsWith(p));
   for (const v of cssVars) if (!specTokens.has(v)) errors.push(`styles: CSS Module reads ${v} but the spec does not list it`);
   for (const v of specTokens) {
-    if (!cssVars.has(v)) errors.push(`styles: spec lists ${v} but the CSS Module never reads it`);
+    if (!cssVars.has(v) && !readInTsx(v)) errors.push(`styles: spec lists ${v} but neither the CSS Module nor index.tsx reads it`);
     if (!definedVars.has(v)) errors.push(`styles: ${v} is not defined in the built token CSS`);
   }
 

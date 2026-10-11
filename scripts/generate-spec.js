@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Drafts <Name>.spec.json (ADR-027) from what the component already is: its
-// props types, its JSX and its CSS Module. This is the backfill tool for a
-// component that has no spec yet. A new component's spec is written before its
-// code by /component-scaffold; running this afterwards only re-syncs the
+// props types, its JSX and its CSS Module. It was the backfill tool for the 25
+// components that predated the spec; it remains for a component whose spec was
+// lost or is being rebuilt. A new component's spec is written before its code
+// by /component-scaffold; running this on it afterwards only re-syncs the
 // derived fields.
 //
 // Derived from code: prop names, types, options, defaults, a kind guess
