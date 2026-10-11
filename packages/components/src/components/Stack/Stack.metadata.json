@@ -5,7 +5,7 @@
     "type": "container",
     "status": "beta",
     "description": "Vertical flex container. Stacks children top-to-bottom with consistent spacing from the space.stack token scale. The primary building block for content hierarchy within a page section.",
-    "figmaNodeId": ""
+    "figmaNodeId": "none"
   },
   "usage": {
     "keywords": [

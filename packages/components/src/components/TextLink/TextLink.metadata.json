@@ -4,7 +4,8 @@
     "category": "atom",
     "type": "interactive",
     "status": "beta",
-    "description": "Inline hyperlink with permanent underline and brand interactive color. Semibold weight distinguishes it from surrounding body text. Color shifts to a darker brand tone on hover. Always renders as an <a> element — use only for navigation (URL changes), never for in-page actions."
+    "description": "Inline hyperlink with permanent underline and brand interactive color. Semibold weight distinguishes it from surrounding body text. Color shifts to a darker brand tone on hover. Always renders as an <a> element — use only for navigation (URL changes), never for in-page actions.",
+    "figmaNodeId": "none"
   },
   "usage": {
     "keywords": [

@@ -23,9 +23,23 @@ completed:
 | 0 | Audit: this matrix + Figma property read-back | — | done 2026-10-10 |
 | 1 | Breaking renames (AppHeader `NavItem.active` → `current`; Accordion metadata states `collapsed/expanded` → `closed/open`; record `listRole` and `logoSrcDark` as new terms) | `refactor/contract-vocabulary-tier1` | merged, PR #137 (2026-10-10) |
 | 2 | `:active` state on interactive components + ADR-025 "applied to" amendment | `feat/active-state-tier2` | PR #138 (2026-10-10) |
-| — | ADR-025 state groups; `Disabled` leaves Figma `State` (ADR-026 amendment) | `adr-025-state-kinds` | PR #139 (2026-10-11), merge after #138 |
-| 3 | Figma alignment of linked sets + `Active` variants + `State=Disabled` → `Disabled` boolean split + `figmaNodeId` normalization | `chore/figma-contract-alignment` | todo |
-| 4 | Close-out: ADR-026 table, ADR-025 mapping table (`current` row, once Tier 3 adds `Current` booleans), ADR-026 pending `State=Disabled` list, sense, pattern schema (+ 3 `composedOf` mismatches), Airtable push, docs clocks, drift memory | last PR | todo |
+| — | ADR-025 state groups; `Disabled` leaves Figma `State` (ADR-026 amendment) | `adr-025-state-kinds` | merged, PR #139 (2026-10-11) |
+| 3 | Figma alignment of linked sets + `Active` variants + `State=Disabled` → `Disabled` boolean split + `figmaNodeId` normalization | `chore/figma-contract-alignment` | done in Figma 2026-10-11; PR #140 |
+| 4 | Close-out: CardVertical.Root `completion` → `Value`, Checkbox checked-hover cell, sense, pattern schema (+ 3 `composedOf` mismatches), Airtable push, docs clocks, drift memory | last PR | todo |
+
+## Tier 3 result (2026-10-11)
+
+The full record is in the ADR-026 amendment "Component contract migration, Tier 3" and the ADR-025 amendment "Mapping reference after the Figma alignment". Every set's instances were snapshotted (shared plugin data `upskill/tier3-snap*` on each set) and verified after: same main component and size, 0 differences across 526 checks.
+
+- Variable `color/background/on-media/active` pushed (`VariableID:2934:438`). Theme 115 → 116.
+- `Disabled` split on all six sets that had `State=Disabled`, including the nested `_TextField/Input` (`92:8005`) and `_Select/Trigger` (`92:8030`), where the TextField and Select axes actually live.
+- `State=Active` on ButtonArrow, DropdownMenu/Item, Accordion and Checkbox. Accordion closed Hover changed to `overlay/hover`; its missing-font layers fixed.
+- Linked and renamed: Avatar, ProgressBar, AppHeader, Breadcrumb, `_Breadcrumb/Link`, `_AppHeader/NavItem`, Show more link, DropdownMenu/Item `Selected`, CardHorizontal `Variant` casing.
+- `figmaNodeId` is a node id or `none`, enforced by the schema pattern.
+
+**Decided 2026-10-11 (developer):** the preview boolean is `Selected`; the CardHorizontal values are `Default/Inverted`; the breadcrumb current label is darkened to `text/default` to match code.
+
+**Carried to Tier 4:** CardVertical.Root `completion` → `Value` (matches ProgressBar); Checkbox has no `Checked=true, State=Hover`; the ADR-025 mapping `current` row is already done (moved out of Tier 4).
 
 ## Decisions made during planning
 
@@ -89,6 +103,7 @@ Not found: Divider, TextLink. Record them as "no set".
 
 ## Pitfalls
 
+- `clone()` on a variant puts the copy on the **current page**, not in the set, and a failed eval doesn't roll back. Move the copy in with `set.appendChild` and make the script idempotent. `appendChild` fails if the clone has a missing font.
 - figma-cli truncates output at 20,000 characters. Read instance state in chunks.
 - `clone()` drops `componentPropertyReferences`; re-wire cloned variants.
 - Figma picks a set's default variant by canvas position (top-left). The `Disabled` split re-grids a set, so check the default afterwards (`Button icon` precedent, ADR-026).

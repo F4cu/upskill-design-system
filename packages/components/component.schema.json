@@ -31,7 +31,11 @@
           "enum": ["beta", "ready", "deprecated"]
         },
         "description": { "type": "string" },
-        "figmaNodeId": { "type": "string" }
+        "figmaNodeId": {
+          "type": "string",
+          "pattern": "^([0-9]+:[0-9]+|none)$",
+          "description": "The Figma component set node id, or \"none\" when the component has no set (layout, text styles, single components)."
+        }
       },
       "additionalProperties": false
     },

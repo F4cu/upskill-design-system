@@ -88,7 +88,7 @@ The original three kinds mixed two questions: who sets a state, and whether it i
 |---|---|---|---|---|
 | Hover, focus ring, momentary press | Interactive | none | `State=Hover` / `Focus` / `Active` | Figma-only (preview) |
 | `disabled` | Configured · flag | `boolean` | `Disabled` | Both |
-| `current` (NavItem) | Configured · flag | `boolean` | none today | Code-only |
+| `current` (NavItem) | Configured · flag | `boolean` | `Current` | Both. Breadcrumb derives it from position; its `_Breadcrumb/Link` part previews it with the same boolean |
 | `loading` | Configured · flag | `boolean` | `Loading` | Both |
 | `pressed` (Chip), `checked` (Checkbox), `open` (Accordion) | Configured · controlled | `boolean` | `Pressed`, `Checked`, `Open` | Both |
 | `value` (Select) | Configured · controlled | `string` | `Has value` + `Value` text | Recorded |
@@ -96,11 +96,20 @@ The original three kinds mixed two questions: who sets a state, and whether it i
 | `status` (when not derivable) | Configured · data-derived | string union | `Status` | Both |
 | `error` (TextField) | Configured · content | `string` | `Has error` | Recorded |
 | `src` omitted (Image) | Configured · content | `string` (optional) | placeholder example | Both |
+| `aria-selected` (DropdownMenu item) | Derived | none | `Selected` | Recorded (preview only) |
 | `aria-pressed`, `aria-invalid`, `aria-busy` | Derived | none | none | Code-only |
 
 Consequences:
 
-- Figma sets that preview disabled as `State=Disabled` move it to a `Disabled` boolean (ADR-026 amendment 2026-10-11 lists them). Until a set is migrated, its old mapping stands.
+- Figma sets that previewed disabled as `State=Disabled` now use a `Disabled` boolean. All of them were migrated on 2026-10-11 (ADR-026, Tier 3 amendment); no `State` in the file has a `Disabled` value.
 - No component implements `loading` yet. The first one (Button, then `CardVertical`) adds `color.background.skeleton` through `/tokens-author` and amends this ADR if the behaviour changes.
 - Open: a locked control (on, can't be changed, still announced) needs `aria-disabled` rather than native `disabled`, which drops focus and form submission; HTML `readonly` doesn't apply to checkboxes. Decided when a component first needs it.
 - Rejected: grouping by "is it a prop" (hover is a prop in Figma); `disabled` as a `State` value (hides checked + disabled and pressed + disabled, and doesn't match code); `loading` as a `status` value (can't combine with lifecycle); a `Skeleton` component (outside the fixed set, can't mirror each layout); native `disabled` on a loading button (drops focus mid-request).
+
+## Amendment (2026-10-11) — Mapping reference after the Figma alignment
+
+Tier 3 of the contract migration brought the Figma file in line with the groups above (ADR-026 amendment of the same date has the per-set detail). The mapping reference changes in two rows:
+
+- **`current` is Both.** `_AppHeader/NavItem` and `_Breadcrumb/Link` have a `Current` boolean, crossed with `State` (`Default`/`Hover`/`Active`). Breadcrumb's link had `Active` as its resting value and `Current` as a `State` value, the collision this ADR warns about.
+- **`aria-selected` gets a preview.** A Derived state is never a prop, but a designer still needs to see the selected item. `DropdownMenu/Item` has a preview-only `Selected` boolean (built at `State=Default` only), recorded in ADR-026. It is named after the ARIA attribute, because `Current` would collide with `aria-current`.
+

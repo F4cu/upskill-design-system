@@ -39,6 +39,7 @@ sources:
 # rewritten 2026-10-10: State entry adds active (momentary :active) and contrasts it with pressed (aria-pressed toggle), per the packages/components/AGENTS.md State model line (ADR-025 amendment 2026-10-10)
 # clock reset 2026-10-10: vocabulary gains a current (aria-current) row and /layout-generation's navItems use current (ADR-026 Tier 1); no glossary term changed, still accurate
 # clock reset 2026-10-10: packages/components/AGENTS.md active line names the TextField/Select exemption (ADR-025 Tier 2); the State entry already covers active, still accurate
+# clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 ---
 # Glossary
 
