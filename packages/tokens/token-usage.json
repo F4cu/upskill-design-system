@@ -33,6 +33,7 @@
     ],
     "--ds-color-background-overlay-hover": [
       "packages/components/src/components/Accordion/Accordion.module.css",
+      "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css"
     ],
     "--ds-color-background-overlay-active": [
