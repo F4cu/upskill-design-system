@@ -81,6 +81,10 @@
   color: var(--ds-color-text-brand);
 }
 
+.navLink:active .navLabel {
+  color: var(--ds-color-text-interactive-hover);
+}
+
 .navLinkCurrent .navLabel {
   color: var(--ds-color-text-brand);
 }
@@ -102,6 +106,10 @@
 
 .userButton:hover .navLabel {
   color: var(--ds-color-text-brand);
+}
+
+.userButton:active .navLabel {
+  color: var(--ds-color-text-interactive-hover);
 }
 
 .chevron {

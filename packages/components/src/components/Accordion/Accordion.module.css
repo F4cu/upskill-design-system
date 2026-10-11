@@ -32,6 +32,21 @@
   transition: background-color 0.2s ease 0.05s;
 }
 
+/* Overlay as an image layer so the open item's elevated surface stays underneath. */
+.trigger:hover {
+  background-image: linear-gradient(
+    var(--ds-color-background-overlay-hover),
+    var(--ds-color-background-overlay-hover)
+  );
+}
+
+.trigger:active {
+  background-image: linear-gradient(
+    var(--ds-color-background-overlay-active),
+    var(--ds-color-background-overlay-active)
+  );
+}
+
 .titleGroup {
   flex: 1;
   min-width: 0;

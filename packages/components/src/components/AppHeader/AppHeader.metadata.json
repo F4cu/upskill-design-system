@@ -54,7 +54,11 @@
   "states": [
     {
       "state": "default",
-      "description": "Static bar — interactive states are limited to nav link hover and user button hover."
+      "description": "Static bar — interactive states are limited to nav link and user button hover and active."
+    },
+    {
+      "state": "link-active",
+      "description": "Momentary press feedback on a nav link or the user button (CSS :active): label steps from text.brand (hover) to text.interactive.hover."
     }
   ],
   "tokens": {
@@ -63,7 +67,8 @@
       "color.background.container.canvas",
       "color.border.brand",
       "color.text.subtle",
-      "color.text.default"
+      "color.text.default",
+      "color.text.interactive.hover"
     ],
     "spacing": [
       "space.inline.xs",

@@ -98,6 +98,14 @@
     {
       "state": "open",
       "description": "Panel visible with elevated background; trigger shows chevron-up."
+    },
+    {
+      "state": "hover",
+      "description": "Trigger gets an overlay.hover layer over its fill (transparent closed, elevated open); applies in both open and closed items."
+    },
+    {
+      "state": "active",
+      "description": "Momentary press feedback on the trigger (CSS :active): overlay.active layer, orthogonal to open/closed."
     }
   ],
   "tokens": {
@@ -105,7 +113,9 @@
       "color.background.container.elevated",
       "color.border.default",
       "color.text.default",
-      "color.icon.default"
+      "color.icon.default",
+      "color.background.overlay.hover",
+      "color.background.overlay.active"
     ],
     "spacing": [
       "space.inset.md",

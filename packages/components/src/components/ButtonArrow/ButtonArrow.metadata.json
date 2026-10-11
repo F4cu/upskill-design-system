@@ -67,6 +67,10 @@
       "description": "Border darkens to border-strong; background unchanged."
     },
     {
+      "state": "active",
+      "description": "Momentary press feedback (CSS :active): background steps from overlay.subtlest to overlay.active; border keeps its hover value."
+    },
+    {
       "state": "disabled",
       "description": "No background, default border, muted icon color; pointer-events none."
     }
@@ -77,7 +81,8 @@
       "color.border.default",
       "color.border.strong",
       "color.text.default",
-      "color.text.disabled"
+      "color.text.disabled",
+      "color.background.overlay.active"
     ],
     "spacing": [],
     "typography": [],
