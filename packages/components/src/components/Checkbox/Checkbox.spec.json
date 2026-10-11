@@ -1,0 +1,284 @@
+{
+  "component": "Checkbox",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "label",
+      "role": "generic",
+      "required": true,
+      "notes": "Wraps the input and the label text, so the whole row is the click target."
+    },
+    {
+      "name": "Checkbox",
+      "element": "input",
+      "parent": "Root",
+      "role": "checkbox",
+      "required": true,
+      "action": "Toggles checked.",
+      "notes": "Native input type=checkbox with appearance:none; the box and the checkmark are drawn in CSS."
+    },
+    {
+      "name": "Checkmark",
+      "element": "::after of Checkbox",
+      "parent": "Checkbox",
+      "role": "presentation",
+      "required": false,
+      "when": "checked is true",
+      "notes": "A rotated two-sided border drawn by the ::after pseudo-element."
+    },
+    {
+      "name": "Label",
+      "element": "Text",
+      "parent": "Root",
+      "role": "generic",
+      "required": true,
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span"
+      }
+    }
+  ],
+  "props": {
+    "label": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Accessible name",
+      "figma": {
+        "surface": "both",
+        "property": "Label"
+      }
+    },
+    "checked": {
+      "kind": "native",
+      "type": "boolean",
+      "default": null,
+      "concept": "Native-input wrappers keep native names (ADR-026)",
+      "figma": {
+        "surface": "both",
+        "property": "Checked"
+      }
+    },
+    "disabled": {
+      "kind": "native",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": {
+        "surface": "both",
+        "property": "Disabled",
+        "note": "Built only at State=Default (ADR-025 amendment 2026-10-11)."
+      }
+    },
+    "onChange": {
+      "kind": "native",
+      "type": "ChangeEventHandler<HTMLInputElement>",
+      "default": null,
+      "concept": "Native-input wrappers keep native names (ADR-026)",
+      "figma": {
+        "surface": "code-only"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest"
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": ":hover:not(:disabled)",
+      "notes": "Unchecked: the border takes color.border.input.hover. Checked: the brand border stays and an overlay.hover layer darkens the fill one step."
+    },
+    {
+      "name": "active",
+      "kind": "interaction",
+      "trigger": ":active:not(:disabled)",
+      "notes": "Momentary press feedback in checked and unchecked boxes: an overlay.active layer darkens the fill one step; unchecked also takes the hover border. Orthogonal to checked."
+    },
+    {
+      "name": "disabled",
+      "kind": "appData",
+      "trigger": "disabled prop (native attribute)",
+      "notes": "Muted border, not-allowed cursor; muted label. Checked and disabled also mutes the fill, and the checkmark stays visible."
+    }
+  ],
+  "accessibility": {
+    "role": "checkbox",
+    "ariaAttributes": [
+      "aria-checked (managed natively by the browser)",
+      "aria-disabled (managed natively via disabled prop)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Moves focus to the checkbox"
+      },
+      {
+        "key": "Space",
+        "action": "Toggles the checked state"
+      }
+    ]
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.sm"
+        }
+      }
+    ],
+    "Checkbox": [
+      {
+        "when": {},
+        "set": {
+          "width": "size.icon.sm",
+          "height": "size.icon.sm",
+          "border-width": {
+            "literal": "1.5px",
+            "reason": "No border-width token scale exists; this box uses 1.5px where other modules use 1px."
+          },
+          "border-color": "color.border.input.default",
+          "border-radius": "border-radius.xs",
+          "background": "color.background.input"
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "border-color": "color.border.input.hover"
+        }
+      },
+      {
+        "when": {
+          "state": "active"
+        },
+        "set": {
+          "border-color": "color.border.input.hover",
+          "background-image": {
+            "template": "linear-gradient({color.background.overlay.active}, {color.background.overlay.active})"
+          }
+        }
+      },
+      {
+        "when": {
+          "checked": "true"
+        },
+        "set": {
+          "background": "color.background.brand",
+          "border-color": "color.background.brand"
+        }
+      },
+      {
+        "when": {
+          "checked": "true",
+          "state": "hover"
+        },
+        "set": {
+          "border-color": "color.background.brand",
+          "background-image": {
+            "template": "linear-gradient({color.background.overlay.hover}, {color.background.overlay.hover})"
+          }
+        }
+      },
+      {
+        "when": {
+          "checked": "true",
+          "state": "active"
+        },
+        "set": {
+          "border-color": "color.background.brand",
+          "background-image": {
+            "template": "linear-gradient({color.background.overlay.active}, {color.background.overlay.active})"
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "disabled"
+        },
+        "set": {
+          "border-color": "color.border.disabled"
+        }
+      },
+      {
+        "when": {
+          "checked": "true",
+          "state": "disabled"
+        },
+        "set": {
+          "background": "color.background.disabled",
+          "border-color": "color.border.disabled"
+        }
+      }
+    ],
+    "Checkmark": [
+      {
+        "when": {
+          "checked": "true"
+        },
+        "set": {
+          "left": {
+            "literal": "50%",
+            "reason": "Centres the mark in the box."
+          },
+          "top": {
+            "literal": "50%",
+            "reason": "Centres the mark in the box."
+          },
+          "width": {
+            "literal": "5px",
+            "reason": "Mark geometry, sized to the 1rem box; no token scale this small for a glyph."
+          },
+          "height": {
+            "literal": "9px",
+            "reason": "Mark geometry, sized to the 1rem box; no token scale this small for a glyph."
+          },
+          "border-right-width": {
+            "literal": "2px",
+            "reason": "Stroke of the mark; no border-width token scale exists."
+          },
+          "border-right-color": "color.text.inverted.default",
+          "border-bottom-width": {
+            "literal": "2px",
+            "reason": "Stroke of the mark; no border-width token scale exists."
+          },
+          "border-bottom-color": "color.text.inverted.default",
+          "transform": {
+            "literal": "translate(-50%, -65%) rotate(45deg)",
+            "reason": "Turns the two borders into a tick and centres it optically."
+          }
+        }
+      }
+    ],
+    "Label": [
+      {
+        "when": {},
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-default",
+          "line-height": "font.line-height.relaxed",
+          "color": "color.text.default"
+        }
+      },
+      {
+        "when": {
+          "state": "disabled"
+        },
+        "set": {
+          "color": "color.text.disabled"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

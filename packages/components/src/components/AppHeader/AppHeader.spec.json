@@ -1,0 +1,614 @@
+{
+  "component": "AppHeader",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "header",
+      "role": "banner",
+      "required": true
+    },
+    {
+      "name": "Inner",
+      "element": "div",
+      "parent": "Root",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "LogoWrapper",
+      "element": "div",
+      "parent": "Inner",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "LogoLight",
+      "element": "img",
+      "parent": "LogoWrapper",
+      "notes": "alt is logoAlt. Hidden in the dark theme when logoSrcDark is set.",
+      "role": "img",
+      "required": true
+    },
+    {
+      "name": "LogoDark",
+      "element": "img",
+      "parent": "LogoWrapper",
+      "when": "logoSrcDark is set",
+      "notes": "alt is empty and aria-hidden; shown only in the dark theme.",
+      "role": "presentation",
+      "required": false
+    },
+    {
+      "name": "Search",
+      "element": "div",
+      "parent": "Inner",
+      "notes": "Hidden below 768px (mobile).",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "SearchField",
+      "element": "TextField",
+      "parent": "Search",
+      "builtOn": "TextField",
+      "builtOnProps": {
+        "label": "Search",
+        "hideLabel": true,
+        "placeholder": "Search",
+        "shape": "round",
+        "icon": "search"
+      },
+      "role": "textbox",
+      "required": true
+    },
+    {
+      "name": "NavRight",
+      "element": "div",
+      "parent": "Inner",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Nav",
+      "element": "nav",
+      "parent": "NavRight",
+      "when": "navItems is not empty",
+      "notes": "aria-label \"Main navigation\".",
+      "role": "navigation",
+      "required": false
+    },
+    {
+      "name": "NavList",
+      "element": "ul",
+      "parent": "Nav",
+      "notes": "Hidden below 768px (mobile).",
+      "role": "list",
+      "required": true
+    },
+    {
+      "name": "NavItem",
+      "element": "li",
+      "parent": "NavList",
+      "role": "listitem",
+      "required": true
+    },
+    {
+      "name": "NavLink",
+      "element": "a",
+      "parent": "NavItem",
+      "action": "Navigates to the item href.",
+      "notes": "aria-current=\"page\" when the item is current.",
+      "role": "link",
+      "required": true
+    },
+    {
+      "name": "NavLabel",
+      "element": "span",
+      "parent": "NavLink",
+      "notes": "The same label style is used for the user name inside UserButton.",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "UserWrapper",
+      "element": "div",
+      "parent": "NavRight",
+      "when": "userAvatarSrc or userName is set",
+      "notes": "Hidden below 768px (mobile).",
+      "role": "generic",
+      "required": false
+    },
+    {
+      "name": "UserButton",
+      "element": "button",
+      "parent": "UserWrapper",
+      "action": "Toggles the user menu when userMenuItems is not empty; always calls onUserClick.",
+      "role": "button",
+      "required": true
+    },
+    {
+      "name": "UserAvatar",
+      "element": "Avatar",
+      "parent": "UserButton",
+      "when": "userAvatarSrc is set",
+      "builtOn": "Avatar",
+      "builtOnProps": {
+        "size": "sm"
+      },
+      "notes": "alt is \"User\", or empty when userName is shown next to it.",
+      "role": "img",
+      "required": false
+    },
+    {
+      "name": "Chevron",
+      "element": "Icon",
+      "parent": "UserButton",
+      "builtOn": "Icon",
+      "builtOnProps": {
+        "name": "chevron-down",
+        "size": "sm"
+      },
+      "role": "presentation",
+      "required": true
+    },
+    {
+      "name": "UserMenu",
+      "element": "DropdownMenu",
+      "parent": "UserWrapper",
+      "when": "userMenuItems is not empty",
+      "builtOn": "DropdownMenu",
+      "notes": "Named by the user button through aria-labelledby.",
+      "role": "menu",
+      "required": false
+    },
+    {
+      "name": "Hamburger",
+      "element": "button",
+      "parent": "Inner",
+      "when": "navItems is not empty",
+      "notes": "Shown only below 768px. No click handler is wired yet: the button does not open anything.",
+      "action": "None yet.",
+      "role": "button",
+      "required": false
+    }
+  ],
+  "props": {
+    "logoSrc": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "Logo"
+      }
+    },
+    "logoSrcDark": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "new term: the dark-theme image of logoSrc; ADR-026 has no row for a theme-specific source",
+      "figma": {
+        "surface": "both",
+        "property": "Logo src dark"
+      }
+    },
+    "logoAlt": {
+      "kind": "content",
+      "type": "string",
+      "default": "Logo",
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "Logo alt"
+      }
+    },
+    "navItems": {
+      "kind": "content",
+      "type": "NavItem[]",
+      "default": null,
+      "concept": "Collection",
+      "figma": {
+        "surface": "both",
+        "property": "Nav items"
+      }
+    },
+    "searchValue": {
+      "kind": "controlledState",
+      "type": "string",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "both",
+        "property": "Search value"
+      }
+    },
+    "onSearchValueChange": {
+      "kind": "controlledState",
+      "type": "(value: string) => void",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "userAvatarSrc": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "User avatar src"
+      }
+    },
+    "userName": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "User name"
+      }
+    },
+    "userMenuItems": {
+      "kind": "content",
+      "type": "DropdownMenuItem[]",
+      "default": null,
+      "concept": "Collection",
+      "figma": {
+        "surface": "both",
+        "property": "User menu items"
+      }
+    },
+    "onUserMenuSelect": {
+      "kind": "event",
+      "type": "(value: string) => void",
+      "default": null,
+      "concept": "Discrete event",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "onUserClick": {
+      "kind": "event",
+      "type": "() => void",
+      "default": null,
+      "concept": "Discrete event",
+      "figma": {
+        "surface": "code-only"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static bar; interactive states are limited to the nav links and the user button."
+    },
+    {
+      "name": "nav-link-hover",
+      "kind": "interaction",
+      "trigger": "NavLink:hover"
+    },
+    {
+      "name": "nav-link-active",
+      "kind": "interaction",
+      "trigger": "NavLink:active",
+      "notes": "Momentary press feedback: the label steps from text.brand (hover) to text.interactive.hover."
+    },
+    {
+      "name": "user-button-hover",
+      "kind": "interaction",
+      "trigger": "UserButton:hover"
+    },
+    {
+      "name": "user-button-active",
+      "kind": "interaction",
+      "trigger": "UserButton:active",
+      "notes": "Same label step as nav-link-active."
+    },
+    {
+      "name": "nav-link-current",
+      "kind": "appData",
+      "trigger": "NavItem current is true (aria-current=\"page\")",
+      "notes": "Label in text.brand."
+    },
+    {
+      "name": "user-menu-open",
+      "kind": "appData",
+      "trigger": "Internal state; aria-expanded=true on UserButton",
+      "notes": "The menu is shown and the chevron is turned over."
+    }
+  ],
+  "accessibility": {
+    "role": "banner",
+    "ariaAttributes": [
+      "aria-label=\"Main navigation\" on the <nav> element",
+      "aria-current=\"page\" on the current nav link",
+      "aria-haspopup=\"menu\" and aria-expanded on the user button (only when userMenuItems is non-empty)",
+      "aria-controls → the menu's id on the user button while the menu is open; the menu (DropdownMenu listRole=menu) is named by aria-labelledby → the user button"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Cycle focus through nav links and the user button"
+      },
+      {
+        "key": "Enter / Space",
+        "action": "Activates the user button, opening the DropdownMenu (listRole=menu) and moving focus to its first menuitem"
+      },
+      {
+        "key": "ArrowUp / ArrowDown (menu)",
+        "action": "Moves focus between menu items"
+      },
+      {
+        "key": "Enter / Space (menu item)",
+        "action": "Selects the item, closes the menu and returns focus to the user button"
+      },
+      {
+        "key": "Escape",
+        "action": "Closes the user DropdownMenu and returns focus to the user button"
+      },
+      {
+        "key": "Tab / Shift+Tab (menu open)",
+        "action": "Closes the menu and lets focus move on; an outside click also closes it without pulling focus back"
+      }
+    ]
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "background": "color.background.container.canvas",
+          "border-bottom-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-bottom-color": "color.border.brand"
+        }
+      }
+    ],
+    "Inner": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "max-width": {
+            "literal": "75rem",
+            "reason": "75rem (1200px) matches no size token."
+          },
+          "min-height": {
+            "literal": "5.625rem",
+            "reason": "5.625rem (90px) matches no size token."
+          },
+          "padding-inline": "grid.margin"
+        }
+      }
+    ],
+    "LogoWrapper": [
+      {
+        "when": {},
+        "set": {
+          "height": {
+            "literal": "2.8125rem",
+            "reason": "2.8125rem (45px) matches no size token."
+          },
+          "width": {
+            "literal": "7.5rem",
+            "reason": "7.5rem (120px) matches no size token."
+          }
+        }
+      }
+    ],
+    "LogoLight": [
+      {
+        "when": {},
+        "set": {
+          "height": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          }
+        }
+      }
+    ],
+    "LogoDark": [
+      {
+        "when": {},
+        "set": {
+          "height": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          }
+        }
+      }
+    ],
+    "Search": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "17.5rem",
+            "reason": "17.5rem (280px) matches no size token."
+          }
+        }
+      }
+    ],
+    "NavRight": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.md"
+        }
+      }
+    ],
+    "NavList": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.md",
+          "margin": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          },
+          "padding": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          }
+        }
+      }
+    ],
+    "NavLink": [
+      {
+        "when": {},
+        "set": {
+          "padding-block": "space.inset.xs"
+        }
+      }
+    ],
+    "NavLabel": [
+      {
+        "when": {},
+        "set": {
+          "font-size": "font.size.body-default",
+          "font-weight": {
+            "literal": "600",
+            "reason": "600 equals font.weight.semibold; raw number in the CSS Module, to migrate to the token."
+          },
+          "line-height": "font.line-height.relaxed",
+          "color": "color.text.subtle"
+        }
+      },
+      {
+        "when": {
+          "state": "nav-link-hover"
+        },
+        "set": {
+          "color": "color.text.brand"
+        }
+      },
+      {
+        "when": {
+          "state": "nav-link-active"
+        },
+        "set": {
+          "color": "color.text.interactive.hover"
+        }
+      },
+      {
+        "when": {
+          "state": "user-button-hover"
+        },
+        "set": {
+          "color": "color.text.brand"
+        }
+      },
+      {
+        "when": {
+          "state": "user-button-active"
+        },
+        "set": {
+          "color": "color.text.interactive.hover"
+        }
+      },
+      {
+        "when": {
+          "state": "nav-link-current"
+        },
+        "set": {
+          "color": "color.text.brand"
+        }
+      }
+    ],
+    "UserButton": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.xs",
+          "background": {
+            "literal": "none",
+            "reason": "Resets the native control's default."
+          },
+          "border": {
+            "literal": "none",
+            "reason": "Resets the native control's default."
+          },
+          "padding": {
+            "template": "{space.inset.xs} 0"
+          }
+        }
+      }
+    ],
+    "Chevron": [
+      {
+        "when": {
+          "state": "user-menu-open"
+        },
+        "set": {
+          "transform": {
+            "literal": "rotate(180deg)",
+            "reason": "Flips the glyph to show the open state."
+          }
+        }
+      }
+    ],
+    "UserMenu": [
+      {
+        "when": {},
+        "set": {
+          "top": {
+            "template": "calc(100% + {space.stack.xs})"
+          },
+          "right": {
+            "literal": "0",
+            "reason": "Aligns the menu to the right edge of the wrapper."
+          },
+          "z-index": {
+            "literal": "100",
+            "reason": "No scale exists for this property."
+          }
+        }
+      }
+    ],
+    "Hamburger": [
+      {
+        "when": {},
+        "set": {
+          "background": {
+            "literal": "none",
+            "reason": "Resets the native control's default."
+          },
+          "border": {
+            "literal": "none",
+            "reason": "Resets the native control's default."
+          },
+          "padding": "space.inset.xs",
+          "color": "color.text.default"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

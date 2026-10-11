@@ -1,0 +1,427 @@
+{
+  "component": "Accordion",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "notes": "The accordion container. It has no ARIA role; the items carry the semantics.",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Item",
+      "element": "div",
+      "parent": "Root",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Heading",
+      "element": "h2-h6, chosen by headingLevel (default h3)",
+      "parent": "Item",
+      "role": "heading",
+      "required": true
+    },
+    {
+      "name": "Trigger",
+      "element": "button",
+      "parent": "Heading",
+      "action": "Toggles the item open or closed (calls onOpenChange when open is controlled).",
+      "role": "button",
+      "required": true
+    },
+    {
+      "name": "TitleGroup",
+      "element": "div",
+      "parent": "Trigger",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Title",
+      "element": "Text",
+      "parent": "TitleGroup",
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span"
+      },
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Subtitle",
+      "element": "Text",
+      "parent": "TitleGroup",
+      "when": "subtitle is set",
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span",
+        "size": "metadata",
+        "color": "subtle"
+      },
+      "role": "generic",
+      "required": false
+    },
+    {
+      "name": "Chevron",
+      "element": "Icon",
+      "parent": "Trigger",
+      "builtOn": "Icon",
+      "builtOnProps": {
+        "size": "md"
+      },
+      "notes": "chevron-down when closed, chevron-up when open. aria-hidden, so it does not add to the button name.",
+      "role": "presentation",
+      "required": true
+    },
+    {
+      "name": "PanelOuter",
+      "element": "div",
+      "parent": "Item",
+      "notes": "Grid wrapper whose row animates between 0fr and 1fr, so the height transition needs no measured height.",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "PanelInner",
+      "element": "div",
+      "parent": "PanelOuter",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Panel",
+      "element": "div",
+      "parent": "PanelInner",
+      "notes": "role=region, named by the trigger through aria-labelledby; inert and aria-hidden while closed.",
+      "role": "region",
+      "required": true
+    }
+  ],
+  "props": {
+    "Item.title": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Title"
+      }
+    },
+    "Item.subtitle": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Subtitle"
+      }
+    },
+    "Item.defaultOpen": {
+      "kind": "controlledState",
+      "type": "boolean",
+      "default": false,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "Item.open": {
+      "kind": "controlledState",
+      "type": "boolean",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "Item.onOpenChange": {
+      "kind": "controlledState",
+      "type": "(open: boolean) => void",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "Item.headingLevel": {
+      "kind": "content",
+      "type": "2 | 3 | 4 | 5 | 6",
+      "default": 3,
+      "concept": "Inner heading",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "Item.children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "Item.className": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    },
+    "className": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest"
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": ":hover",
+      "notes": "Trigger gets an overlay.hover layer over its fill (transparent closed, elevated open); applies in both open and closed items."
+    },
+    {
+      "name": "active",
+      "kind": "interaction",
+      "trigger": ":active",
+      "notes": "Momentary press feedback on the trigger (CSS :active): overlay.active layer, orthogonal to open/closed."
+    },
+    {
+      "name": "closed",
+      "kind": "appData",
+      "trigger": "open false (default)",
+      "notes": "Panel hidden; trigger shows chevron-down."
+    },
+    {
+      "name": "open",
+      "kind": "appData",
+      "trigger": "open true, or the item toggled while uncontrolled (aria-expanded=true)",
+      "notes": "Panel visible with elevated background; trigger shows chevron-up."
+    }
+  ],
+  "accessibility": {
+    "role": "button",
+    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly.",
+    "ariaAttributes": [
+      "aria-expanded (true|false on the trigger button)",
+      "aria-controls (trigger → panel id) — the panel element must always be present in the DOM; use hidden={!isOpen} rather than conditional rendering so this id always resolves",
+      "aria-labelledby (panel → trigger id)",
+      "role='region' (on the panel)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Enter",
+        "action": "Toggles the focused accordion item open or closed"
+      },
+      {
+        "key": "Space",
+        "action": "Toggles the focused accordion item open or closed"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus sequentially through any focusable content within an open panel, then to the next accordion trigger. Focusable descendants inside a collapsed panel are skipped — the panel's inert DOM property is set while closed, so Tab cannot land on them even though they remain in the DOM for aria-controls."
+      }
+    ]
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "min-width": {
+            "literal": "0",
+            "reason": "Lets a flex child shrink below its content width."
+          },
+          "border-top-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-top-color": "color.border.default"
+        }
+      }
+    ],
+    "Item": [
+      {
+        "when": {},
+        "set": {
+          "border-bottom-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-bottom-color": "color.border.default"
+        }
+      }
+    ],
+    "Heading": [
+      {
+        "when": {},
+        "set": {
+          "margin": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          }
+        }
+      }
+    ],
+    "Trigger": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "gap": "space.inline.sm",
+          "padding": "space.inset.md",
+          "background": {
+            "literal": "transparent",
+            "reason": "No fill or border at this state."
+          },
+          "border": {
+            "literal": "none",
+            "reason": "Resets the native control's default."
+          },
+          "color": {
+            "literal": "inherit",
+            "reason": "Inherits the parent element's text style."
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "open"
+        },
+        "set": {
+          "background": "color.background.container.elevated"
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "background-image": {
+            "template": "linear-gradient( {color.background.overlay.hover}, {color.background.overlay.hover} )"
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "active"
+        },
+        "set": {
+          "background-image": {
+            "template": "linear-gradient( {color.background.overlay.active}, {color.background.overlay.active} )"
+          }
+        }
+      }
+    ],
+    "TitleGroup": [
+      {
+        "when": {},
+        "set": {
+          "min-width": {
+            "literal": "0",
+            "reason": "Lets a flex child shrink below its content width."
+          },
+          "gap": "space.stack.xs"
+        }
+      }
+    ],
+    "Title": [
+      {
+        "when": {},
+        "set": {
+          "font-family": "font.family.headline-default",
+          "font-size": "font.size.title-small",
+          "font-weight": "font.weight.bold",
+          "line-height": "font.line-height.default",
+          "color": "color.text.default",
+          "word-break": {
+            "literal": "break-word",
+            "reason": "Long titles wrap inside the trigger instead of overflowing it."
+          }
+        }
+      }
+    ],
+    "Chevron": [
+      {
+        "when": {},
+        "set": {
+          "color": "color.icon.default"
+        }
+      }
+    ],
+    "PanelInner": [
+      {
+        "when": {},
+        "set": {
+          "min-height": {
+            "literal": "0",
+            "reason": "Lets the grid row collapse to zero; a grid item with min-height:auto would hold it open."
+          }
+        }
+      }
+    ],
+    "Panel": [
+      {
+        "when": {},
+        "set": {
+          "background": "color.background.container.elevated",
+          "padding": {
+            "template": "0 calc({space.inset.md} + {size.icon.md} + {space.inline.sm}) {space.inset.md} {space.inset.md}"
+          },
+          "opacity": {
+            "literal": "0",
+            "reason": "No scale exists for this property."
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "open"
+        },
+        "set": {
+          "opacity": {
+            "literal": "1",
+            "reason": "No scale exists for this property."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

@@ -88,7 +88,7 @@ const literalsInOrder = (symbol) => {
 
 // Props shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for them.
 const LAYOUT_PROPS = new Set(["padding", "paddingX", "paddingY", "overflow", "background", "borderTop", "minWidth", "maxWidth", "minHeight", "maxHeight", "grow", "gap", "align", "justify", "fullWidth", "wrap"]);
-const NATIVE_PROPS = new Set(["className", "style", "id", "ref", "htmlFor", "tabIndex", "title", "role"]);
+const NATIVE_PROPS = new Set(["className", "style", "id", "ref", "htmlFor", "tabIndex", "role"]);
 
 function guessKind(prop, ownNames) {
   if (prop.startsWith("aria-") || NATIVE_PROPS.has(prop)) return "native";
@@ -110,7 +110,7 @@ for (const [prefix, { part, own, declared, defaults, all }] of propTypes) {
     const { typeText } = declared.get(prop);
     const type = typeText.replace(/\s+/g, " ").replace(/\bReact\./g, "").trim();
     const literals = literalsInOrder(all.get(prop));
-    const kind = guessKind(prop, own);
+    const kind = literals.length > 12 ? "content" : guessKind(prop, own);
     const def = {};
     def.kind = kind;
     def.type = type;

@@ -1,0 +1,225 @@
+{
+  "component": "DropdownMenu",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "role": "menu, or listbox when listRole is listbox",
+      "required": true,
+      "notes": "Rendered only while open is true."
+    },
+    {
+      "name": "Item",
+      "element": "div",
+      "parent": "Root",
+      "role": "menuitem, or option when listRole is listbox",
+      "required": true,
+      "action": "Selects the item (calls onSelect with its value)."
+    }
+  ],
+  "props": {
+    "items": {
+      "kind": "content",
+      "type": "DropdownMenuItem[]",
+      "default": null,
+      "concept": "Collection",
+      "figma": {
+        "surface": "both",
+        "property": "Items"
+      }
+    },
+    "open": {
+      "kind": "controlledState",
+      "type": "boolean",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "both",
+        "property": "Open"
+      }
+    },
+    "onOpenChange": {
+      "kind": "controlledState",
+      "type": "(open: boolean) => void",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "value": {
+      "kind": "controlledState",
+      "type": "string",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only",
+        "note": "The selection is reported through onSelect; the container owns value (ADR-026)."
+      }
+    },
+    "onSelect": {
+      "kind": "event",
+      "type": "(value: string) => void",
+      "default": null,
+      "concept": "Discrete event",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "listRole": {
+      "kind": "variantAxis",
+      "type": "'menu' | 'listbox'",
+      "options": [
+        "menu",
+        "listbox"
+      ],
+      "default": "menu",
+      "concept": "new term: which ARIA role family the panel renders (menu or listbox); the same markup serves both",
+      "figma": {
+        "surface": "both",
+        "property": "List role"
+      }
+    },
+    "id": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Panel visible; items in resting state."
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": "Item:hover",
+      "notes": "overlay.hover background on the hovered item."
+    },
+    {
+      "name": "focus",
+      "kind": "interaction",
+      "trigger": "Item:focus",
+      "notes": "Same overlay.hover background: items show focus with a highlight, not the global ring."
+    },
+    {
+      "name": "active",
+      "kind": "interaction",
+      "trigger": "Item:active",
+      "notes": "Momentary press feedback (CSS :active): overlay.active background, one step past hover."
+    },
+    {
+      "name": "selected",
+      "kind": "appData",
+      "trigger": "value equals the item's value",
+      "notes": "Brand text colour and semibold weight on the currently selected item (shown for the listbox role)."
+    }
+  ],
+  "accessibility": {
+    "role": "menu or listbox (controlled via listRole prop)",
+    "ariaAttributes": [
+      "role (panel: menu | listbox)",
+      "role (items: menuitem | option)",
+      "aria-selected (option items when listRole=listbox)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Escape",
+        "action": "Closes the dropdown and returns focus to the trigger"
+      },
+      {
+        "key": "Enter / Space",
+        "action": "Selects the focused item"
+      },
+      {
+        "key": "ArrowUp / ArrowDown",
+        "action": "Moves focus between items (single roving focus target — all items are tabIndex=-1; the owning component is responsible for programmatically focusing an item when the panel opens, matching the WAI-ARIA APG menu/listbox pattern)"
+      }
+    ]
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "background": "color.background.container.canvas",
+          "border-radius": "border-radius.sm",
+          "box-shadow": {
+            "literal": "0 3px 6px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1)",
+            "reason": "Two-layer drop shadow; the token set has no shadow or elevation tokens."
+          },
+          "padding": "space.inset.xs",
+          "min-width": {
+            "literal": "11.875rem",
+            "reason": "11.875rem (190px) matches no size token; the nearest are size.2000 (160px) and size.2750 (220px)."
+          }
+        }
+      }
+    ],
+    "Item": [
+      {
+        "when": {},
+        "set": {
+          "padding": "space.inset.xs",
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-default",
+          "line-height": "font.line-height.none",
+          "color": "color.text.default",
+          "border-radius": "border-radius.xs",
+          "outline": {
+            "literal": "none",
+            "reason": "Menu items show focus with a background highlight instead of the global focus ring (the documented exception in the component conventions)."
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "background": "color.background.overlay.hover"
+        }
+      },
+      {
+        "when": {
+          "state": "focus"
+        },
+        "set": {
+          "background": "color.background.overlay.hover"
+        }
+      },
+      {
+        "when": {
+          "state": "active"
+        },
+        "set": {
+          "background": "color.background.overlay.active"
+        }
+      },
+      {
+        "when": {
+          "state": "selected"
+        },
+        "set": {
+          "color": "color.text.brand",
+          "font-weight": {
+            "literal": "600",
+            "reason": "600 equals font.weight.semibold; raw number in the CSS Module, to migrate to the token."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

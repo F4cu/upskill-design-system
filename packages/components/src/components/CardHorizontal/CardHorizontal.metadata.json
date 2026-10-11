@@ -103,43 +103,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static display card — no interactive states."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.text.subtle",
-      "color.text.inverted.subtle",
-      "color.icon.subtle",
-      "color.icon.inverted.default"
-    ],
-    "spacing": [
-      "space.inline.xs",
-      "space.inline.md"
-    ],
-    "typography": [
-      "font.line-height.tight"
-    ],
-    "borderRadius": [
-      "border-radius.full"
-    ],
-    "other": [
-      "size.thumbnail.sm",
-      "size.separator"
-    ]
-  },
-  "accessibility": {
-    "role": "article",
-    "ariaAttributes": [
-      "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
-      "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
-      "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
-    ],
-    "keyboardInteractions": []
-  },
   "composition": {
     "composedOf": [
       "Heading",
