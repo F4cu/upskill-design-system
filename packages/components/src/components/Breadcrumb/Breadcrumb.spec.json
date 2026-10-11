@@ -33,18 +33,6 @@
       "required": true
     },
     {
-      "name": "LabelCurrent",
-      "element": "span",
-      "role": "generic",
-      "required": true
-    },
-    {
-      "name": "LabelSubtle",
-      "element": "span",
-      "role": "generic",
-      "required": true
-    },
-    {
       "name": "Link",
       "element": "a",
       "role": "link",
@@ -70,6 +58,12 @@
       "kind": "interaction",
       "trigger": "rest",
       "notes": "Static trail — interactive states are limited to individual link hover and active."
+    },
+    {
+      "name": "current",
+      "kind": "appData",
+      "trigger": "last item in items (rendered as text, not a link)",
+      "notes": "The current page: label text.default instead of text.subtle. Derived from position, not a prop (ADR-025)."
     },
     {
       "name": "link-hover",
@@ -138,7 +132,16 @@
             "literal": "600",
             "reason": "600 equals font.weight.semibold; raw number in the CSS Module, to migrate to the token."
           },
-          "line-height": "font.line-height.relaxed"
+          "line-height": "font.line-height.relaxed",
+          "color": "color.text.subtle"
+        }
+      },
+      {
+        "when": {
+          "state": "current"
+        },
+        "set": {
+          "color": "color.text.default"
         }
       },
       {
@@ -155,22 +158,6 @@
         },
         "set": {
           "color": "color.text.interactive.hover"
-        }
-      }
-    ],
-    "LabelSubtle": [
-      {
-        "when": {},
-        "set": {
-          "color": "color.text.subtle"
-        }
-      }
-    ],
-    "LabelCurrent": [
-      {
-        "when": {},
-        "set": {
-          "color": "color.text.default"
         }
       }
     ]

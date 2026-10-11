@@ -8,14 +8,7 @@
       "required": true
     },
     {
-      "name": "IconLeft",
-      "element": "Icon",
-      "builtOn": "Icon",
-      "role": "presentation",
-      "required": true
-    },
-    {
-      "name": "IconRight",
+      "name": "Icon",
       "element": "Icon",
       "builtOn": "Icon",
       "role": "presentation",
@@ -129,24 +122,26 @@
         }
       }
     ],
-    "IconLeft": [
+    "Icon": [
       {
-        "when": {},
+        "when": {
+          "direction": "left"
+        },
         "set": {
           "transform": {
             "literal": "translateX(-1px)",
-            "reason": "Optical nudge toward the label; a 1px offset has no token (the smallest size is 2px)."
+            "reason": "Optical nudge; a 1px offset has no token (the smallest size is 2px)."
           }
         }
-      }
-    ],
-    "IconRight": [
+      },
       {
-        "when": {},
+        "when": {
+          "direction": "right"
+        },
         "set": {
           "transform": {
             "literal": "translateX(1px)",
-            "reason": "Optical nudge toward the label; a 1px offset has no token (the smallest size is 2px)."
+            "reason": "Optical nudge; a 1px offset has no token (the smallest size is 2px)."
           }
         }
       }

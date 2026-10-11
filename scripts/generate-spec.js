@@ -123,6 +123,7 @@ for (const [prefix, { part, own, declared, defaults, all }] of propTypes) {
     const concept =
       (prop.startsWith("aria-") ? "Accessible name" : NATIVE_PROPS.has(prop) ? "native" : LAYOUT_PROPS.has(prop) && !part ? "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it" : null) ??
       CONCEPTS[prop] ??
+      (/(Src|Alt)$/.test(prop) ? "Image" : /Items$/.test(prop) || prop === "options" ? "Collection" : null) ??
       (kind === "event" ? "Discrete event" : kind === "controlledState" ? "Controlled state" : type === "boolean" ? "Boolean" : null);
     def.concept = concept ?? "TODO: name the ADR-026 vocabulary row, or 'new term: <reason>'";
     def.figma = codeOnly
@@ -152,6 +153,11 @@ if (existing) {
 const source = ts.createSourceFile(tsxFile, fs.readFileSync(tsxFile, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const classElement = new Map(); // class -> tag of its first JSX element
 const dynamicProps = new Set(); // props used as styles[prop]
+const ternaryClass = new Map(); // class -> { prop, value } from `prop === "v" ? styles.a : styles.b`
+const classNode = new Map(); // class -> JSX node carrying it
+const nodeClasses = new Map(); // JSX node -> classes it carries
+let rootNode = null;
+const conditionalClasses = new Set(); // classes applied only under && or ?: (state that is not a prop)
 const libraryUses = []; // library components rendered, in order
 let rootClass = null;
 (function visit(node) {
@@ -163,9 +169,15 @@ let rootClass = null;
       const text = classAttr.getText(source);
       const refs = [...text.matchAll(/styles\.([A-Za-z0-9_]+)/g)].map((m) => m[1]);
       for (const m of text.matchAll(/styles\[(\w+)\]/g)) dynamicProps.add(m[1]);
+      for (const m of text.matchAll(/(?:&&|\?|:)\s*styles\.(\w+)/g)) conditionalClasses.add(m[1]);
+      for (const m of text.matchAll(/(\w+)\s*===\s*['"]([\w-]+)['"]\s*\?\s*styles\.(\w+)\s*:\s*styles\.(\w+)/g)) {
+        ternaryClass.set(m[3], { prop: m[1], value: m[2], other: m[4] });
+      }
+      nodeClasses.set(node, refs);
       for (const c of refs) {
         if (!classElement.has(c)) classElement.set(c, tag);
-        rootClass ??= c;
+        if (!classNode.has(c)) classNode.set(c, node);
+        if (rootClass === null) { rootClass = c; rootNode = node; }
       }
     }
   }
@@ -189,6 +201,13 @@ for (const p of booleanProps) {
   if (!classCondition.has(inverse)) classCondition.set(inverse, { prop: p, value: "false" });
 }
 
+for (const [cls, { prop, value, other }] of ternaryClass) {
+  const options = optionsByProp.get(prop);
+  if (!options || !options.includes(value)) continue;
+  classCondition.set(cls, { prop, value });
+  const rest = options.filter((o) => o !== value);
+  if (rest.length === 1) classCondition.set(other, { prop, value: rest[0] });
+}
 const isModifier = (cls) => classCondition.has(cls);
 const partName = (cls) => (cls === rootClass ? "Root" : /^[A-Za-z][A-Za-z0-9]*$/.test(cls) ? cap(cls) : null);
 
@@ -229,6 +248,9 @@ function interpret(sel) {
   const ancestors = compounds.slice(0, -1);
   if (sel.includes(":global") || compounds.some((c) => c.pseudos.some((p) => p.element || p.name === "has" || p.name === "global"))) return { todo: sel };
   if (target.tags.length) return { todo: sel };
+  // A class applied only conditionally and not tied to a prop means state the
+  // spec cannot name from the CSS alone (e.g. isOpen && styles.panelOuterOpen).
+  if (compounds.some((c) => c.classes.some((k) => conditionalClasses.has(k) && !isModifier(k)))) return { todo: sel };
 
   const when = {};
   const addWhen = (prop, value) => { if (when[prop] !== undefined && when[prop] !== value) return false; when[prop] = value; return true; };
@@ -266,7 +288,20 @@ function interpret(sel) {
     if (!prop || !props[prop] || a.value == null || !addWhen(prop, a.value)) return { todo: sel };
   }
   if (partClasses.length > 1) return { todo: sel };
-  const cls = partClasses[0] ?? rootClass;
+  let cls = partClasses[0] ?? rootClass;
+  if (!partClasses.length) {
+    // A modifier-only selector styles whichever element carries the modifier.
+    const carrier = target.classes.map((c) => classNode.get(c)).find(Boolean);
+    if (carrier && carrier !== rootNode) {
+      const own = (nodeClasses.get(carrier) ?? []).find((c) => !isModifier(c));
+      if (own) cls = own;
+      else {
+        const tag = classElement.get(target.classes[0]);
+        if (COMPONENTS.has(tag)) return { part: tag, cls: tag, when };
+        return { todo: sel };
+      }
+    }
+  }
   const part = partName(cls);
   if (!part) return { todo: sel };
   return { part, cls, when };
@@ -287,6 +322,7 @@ const LITERAL_REASONS = [
   [/^(z-index|opacity)$/, /./, "No scale exists for this property."],
   [/^(font-family|font-size|font-weight|line-height|color)$/, /^inherit$/, "Inherits the parent element's text style."],
   [/^aspect-ratio$/, /./, "Media aspect ratio; no ratio token exists."],
+  [/^transform$/, /^translate[XY]\(-?1px\)$/, "Optical nudge; a 1px offset has no token (the smallest size is 2px)."],
 ];
 
 function styleValue(prop, value) {
@@ -383,7 +419,7 @@ if (unresolved.length && !existing) note(`${unresolved.length} selector(s) could
 
 // ── anatomy ──────────────────────────────────────────────────────────────
 
-const ROLE_BY_TAG = { button: "button", nav: "navigation", ul: "list", ol: "list", li: "listitem", img: "img", p: "paragraph", section: "region", svg: "presentation" };
+const ROLE_BY_TAG = { button: "button", nav: "navigation", ul: "list", ol: "list", li: "listitem", img: "img", p: "paragraph", section: "region", svg: "presentation", Icon: "presentation", div: "generic", span: "generic", a: "link", hr: "separator", header: "banner", footer: "contentinfo", main: "main", aside: "complementary" };
 const roleGuess = (element, partNameValue) =>
   (partNameValue === "Root" && metadata.accessibility?.role) ||
   (ROLE_BY_TAG[element] ?? (/^h[1-6]$/.test(element) ? "heading" : "TODO: the role this part exposes to assistive technology, or 'presentation'"));
