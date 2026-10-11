@@ -56,5 +56,5 @@ Every page maps Figma structure to HTML landmarks (ADR-011). Validate with `npm 
 
 - **Decisions:** `docs/decisions/NNN-*.md`. Read the ADR that governs a thing before changing it.
 - **Current state:** `.claude/STATUS_QUO.md`, `.claude/component-pipeline.json`, and `packages/tokens/{airtable-governance,token-usage,figma-variables}.json`. Read the committed files, never the live APIs. Regenerate with `npm run sense`.
-- **Gates:** `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test`; `npm run lint`. CI (`components-check.yml`) runs them on every PR.
+- **Gates:** `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test`; `npm run lint`. CI (`components-check.yml`) runs them on every PR.
 - **Human docs:** `docs/` (Starlight site) and Storybook.

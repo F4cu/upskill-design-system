@@ -1,5 +1,5 @@
 ---
-description: Scaffold a new component from the fixed set — generate its index.tsx, CSS module, stories, and metadata.json from the schema, an existing component as template, and Figma design context. Use when starting a component that does not yet exist in packages/components/src/.
+description: Scaffold a new component from the fixed set — generate its spec.json, index.tsx, CSS module, stories, and metadata.json from the schemas, an existing component as template, and Figma design context. Use when starting a component that does not yet exist in packages/components/src/.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_design_context, mcp__claude_ai_Figma__get_metadata, mcp__claude_ai_Figma__get_screenshot, mcp__claude_ai_Figma__get_variable_defs
 ---
 
@@ -13,8 +13,10 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 
 ## Inputs (read all before starting)
 
-- Metadata schema — `packages/components/component.schema.json`
+- Metadata schema — `packages/components/component.schema.json` (selection and composition guidance only)
+- Spec schema — `packages/components/component.spec.schema.json` (ADR-027): the build contract you write before any code
 - Existing component as structural template — pick the closest one in `packages/components/src/` (e.g. for Button use an interactive component; for Card use a container component)
+- Spec template — read `<Template>.spec.json` of the closest component that has one: `Button` for a single-element component, `CardVertical` for a compound one with parts (ADR-023). Until the ADR-027 backfill only these two exist; the template shows the shape and level of detail, not content to copy
 - Prop vocabulary — `packages/components/AGENTS.md` → "Prop vocabulary" (ADR-026)
 - Figma design context — use Figma MCP (`get_design_context` on the component's Figma node) to read variants, states, token usage, and layout
 
@@ -40,27 +42,32 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
      | `onValueChange` | Controlled state | event | `(value: string) => void` | — | — | code-only |
 
      *Concept* is a row of `packages/components/AGENTS.md` → "Prop vocabulary", or **new term** with a one-line reason. *Kind* ∈ variant axis · lifecycle · content · controlled state · event · native. *Surface* ∈ both · code-only · Figma-only (`State`, `Has <x>`).
+   - **Constraints:** prop combinations the component requires or forbids (icon-only needs an accessible name), each with what will enforce it (type, test, lint) or none yet.
+   - **States:** every state grouped by who sets it (ADR-025: interaction, appData, lifecycle, content) with its trigger.
+   - **Accessibility:** role, ARIA attributes, keyboard interactions.
    - **Divergences:** every Figma property or value that differs from code by more than casing, and every departure from the vocabulary. Each one is a recorded mapping (ADR-026) or gets fixed; none passes silently.
 
-   Inside `/add-component` this checkpoint is part of Stage 1. The approved names are final for steps 4–5. Under `/add-component --eval` it is auto-approved: write the proposal to `api-proposal.md` and continue (see that command's "Eval mode").
-4. Fill the metadata schema fields from the approved API proposal and what you observe in Figma. Anti-patterns must reference only components in the fixed set. Variant and prop names match the approved table; Figma differs only by casing or a recorded mapping.
-5. Produce the component folder at `packages/components/src/ComponentName/`:
-   - `index.tsx` — typed props matching the metadata's variant axes (one prop per `variants.<axis>`, typed to that axis's `options`) and `states`; no hard-coded design values; import CSS module for class names
-   - `ComponentName.module.css` — one rule per variant + state combination; only `var(--ds-*)` custom properties, never raw values
+   Inside `/add-component` this checkpoint is part of Stage 1. The approved names are final for steps 4–6. Under `/add-component --eval` it is auto-approved: write the proposal to `api-proposal.md` and continue (see that command's "Eval mode").
+4. **Write `<Name>.spec.json` now, from the approved proposal, before any code** (ADR-027). Create the component folder `packages/components/src/components/<Name>/` and write the spec against `component.spec.schema.json`: `anatomy` and `props` from the proposal tables (prop `kind` per the schema enum; Figma surface, property and set per prop), `constraints`, `states`, `accessibility`, `figma` (sets and recorded divergences), and `styles` from the Figma token mapping of step 1: part → rules of `when` (prop values and `state`) → CSS property → token path. A raw value needs `{ literal, reason }`. The spec states what the component must be; it is not a description of code you have not written. Do not list tokens separately: the spec's `styles` are the component's token list.
+5. Fill the metadata schema fields from the approved API proposal and what you observe in Figma: `component`, `usage`, `variants`, `composition` only. Leave out `states`, `tokens` and `accessibility`: the spec owns them and `metadata:validate` fails if metadata repeats them. Anti-patterns must reference only components in the fixed set. Variant and prop names match the approved table; Figma differs only by casing or a recorded mapping.
+6. Produce the rest of the component folder:
+   - `index.tsx` — typed props matching the spec's `props` (a variant axis is typed to the same `options` as `variants.<axis>` in metadata) and `states`; no hard-coded design values; import CSS module for class names
+   - `ComponentName.module.css` — one rule per variant + state combination in the spec's `styles`; only `var(--ds-*)` custom properties, never raw values
    - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls. **Storybook title rule:** layout primitives (`category: layout` in metadata) use `title: 'Layout/ComponentName'`; everything else uses `title: 'Components/ComponentName'`.
-   - `ComponentName.metadata.json` — completed metadata file conforming to the schema. Don't hand-write `tokens`: once the CSS Module and `index.tsx` exist, run `npm run metadata:derive-tokens -- <Name>`. It lists exactly what the component's own files read, which is what `metadata:validate` checks; tokens a child `Text`/`Icon`/`Stack` applies stay out. Hand-list only the template reads it reports.
-6. Record the Figma node ID in the metadata file's `figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
+   - `ComponentName.metadata.json` — written in step 5.
+   - Then reconcile: run `npm run tokens:build && npm run spec:validate`. It checks the spec against the code (props, defaults, variant options, the `--ds-*` properties the CSS reads, cross-references). Fix the code when the spec is right. When building showed the spec is wrong, amend the spec first, say so in your summary, and re-run. Never edit the spec only to make a failure go away.
+7. Record the Figma node ID in the metadata file's `figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
 
 ## Output
 
-The four files above, ready to write to disk. No placeholder values — every field must be filled from Figma context or left with an explicit `TODO:` comment explaining what's missing and why.
+The five files above (spec first), ready to write to disk. No placeholder values — every field must be filled from Figma context or left with an explicit `TODO:` comment explaining what's missing and why.
 
 ## Success signal
 
 For a standalone run (outside `/add-component`), the standard deterministic gate passes:
 
 ```bash
-npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test
+npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test
 ```
 
 `npm run storybook` renders the component with no manual restructuring, in both light and dark themes.

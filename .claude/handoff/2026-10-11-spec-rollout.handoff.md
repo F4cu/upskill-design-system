@@ -19,12 +19,18 @@ completed:
 | # | What | Branch | State |
 |---|---|---|---|
 | 1 | ADR-001 amendment; `accessibility` joins the spec; `states`/`tokens`/`accessibility` leave metadata for components that have a spec (Button, CardVertical), readers go through `readComponentMetadata` in `scripts/lib.js`. **Transitional:** the other 25 keep the sections in metadata until step 4. Done on `claude/component-migration-spec-y7yebe`; see the ADR-001 and ADR-027 amendments of 2026-10-11. | `claude/component-migration-spec-y7yebe` | done 2026-10-11, not yet merged |
-| 2 | `/component-scaffold` step 3 writes `<Name>.spec.json` from the approved API proposal before any code; `/add-component` and `/review-component` read it. | `feat/scaffold-writes-spec` | todo |
+| 2 | `/component-scaffold` writes `<Name>.spec.json` right after the approved API proposal, before any code; metadata omits the three builder sections; `spec:validate` joins the scaffold, add-component and review-component gates; `/review-component` reads the spec. Done on `claude/component-migration-spec-y7yebe`; not exercised on a real new component yet. | `claude/component-migration-spec-y7yebe` | done 2026-10-11, not yet merged |
 | 3 | Generator script for `props` and `styles` from the props types and CSS Modules; the agent writes only anatomy roles and constraints. | `feat/spec-generator` | todo |
 | 4 | Backfill the other 25 components with the generator; then make the spec required (drop the "optional" carve-out in `scripts/validate-spec.js`). | `chore/spec-backfill` | todo |
 | 5 | Correct the ADR-026 known-gaps line about Button `shape` (icon-only is a separate Figma set, `Button icon`, `54:1192`). Decide the pilot findings below. | `docs/adr-026-button-shape` | todo |
 
 Step 1 could not remove the sections from all 27 metadata files, because that needs 27 specs (step 4). So it was made transitional: a spec owns the sections when it exists, metadata otherwise, and `validate-metadata.js` enforces whichever applies. Step 4 must also drop the required-until-spec rule and take the three sections out of `component.schema.json`. Steps 1 and 3 were independent. Step 4 needs step 3. Step 2 is small once step 1 lands, because it only changes where the proposal is written.
+
+## Open items from steps 1-2
+
+- **`npm run docs:check` is red** (9 pages: 00, 02, 03, 05, 06, 08, 09, 10, 11), because the step 1 commit changed their sources. Run `/docs-sync` for a rewrite PR; do not reset the clocks with empty edits. Page 10 (machine-readable metadata) and 02 (lifecycle) describe `states`/`tokens`/`accessibility` in metadata and need real rewrites.
+- **First real use of the spec-first scaffold is the test.** The first `/add-component` run after merge will show whether writing `styles` before the CSS exists is workable or whether the generator (step 3) has to pre-fill them. Note what you had to amend in the spec after building.
+- **Ablation tooling:** `scripts/harness-ablation` Arm 2 now writes a spec for the target; its `prepare.js`/`score.js` redact and score metadata only, so check before the next ablation run.
 
 ## Open pilot findings (reported by ADR-027, none fixed)
 
