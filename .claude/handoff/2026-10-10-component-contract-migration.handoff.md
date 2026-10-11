@@ -6,9 +6,11 @@ completed:
 
 # Component API contract migration: remaining components
 
-**Contract:** ADR-026 (prop vocabulary and Figma names, amended 2026-10-10: `Variant`, `Children` slot) + ADR-025 (state model, amended 2026-10-10: `active` = momentary press, `pressed` = toggle).
+**Contract:** ADR-026 (prop vocabulary and Figma names, amended 2026-10-10: `Variant`, `Children` slot) + ADR-025 (state model, amended 2026-10-10: `active` = momentary press, `pressed` = toggle; amended 2026-10-11 in PR #139: three groups named by who sets the state (Interactive / Configured / Derived), and `disabled` leaves Figma `State` for its own `Disabled` boolean).
 
-**Already migrated:** Button, Badge, Chip, CardVertical, Checkbox, TextField, Select.
+**Already migrated:** Button, Badge, Chip, CardVertical, Checkbox, TextField, Select. Button (and `Button icon`), Checkbox, TextField and Select come back in Tier 3 for the `Disabled` split only (ADR-026 amendment 2026-10-11).
+
+**Merge order:** #138 before #139, so ADR-025's amendments stay in date order. #139 then merges main and keeps both sides in ADR-025, `packages/components/AGENTS.md` (#139's state block + #138's TextField/Select exemption on the `active` line; re-run `npm run claudemd:check`), and the clock comments in `docs/00-start-here.md` and `docs/09-context-engineering.md`.
 
 **Scope:** vocabulary, state and Figma only. The ADR-027 spec rollout (a spec for every component, a generator) is a separate later track.
 
@@ -21,8 +23,9 @@ completed:
 | 0 | Audit: this matrix + Figma property read-back | — | done 2026-10-10 |
 | 1 | Breaking renames (AppHeader `NavItem.active` → `current`; Accordion metadata states `collapsed/expanded` → `closed/open`; record `listRole` and `logoSrcDark` as new terms) | `refactor/contract-vocabulary-tier1` | merged, PR #137 (2026-10-10) |
 | 2 | `:active` state on interactive components + ADR-025 "applied to" amendment | `feat/active-state-tier2` | PR #138 (2026-10-10) |
-| 3 | Figma alignment of linked sets + `Active` variants + `figmaNodeId` normalization | `chore/figma-contract-alignment` | todo |
-| 4 | Close-out: ADR-026 table, sense, pattern schema (+ 3 `composedOf` mismatches), Airtable push, docs clocks, drift memory | last PR | todo |
+| — | ADR-025 state groups; `Disabled` leaves Figma `State` (ADR-026 amendment) | `adr-025-state-kinds` | PR #139 (2026-10-11), merge after #138 |
+| 3 | Figma alignment of linked sets + `Active` variants + `State=Disabled` → `Disabled` boolean split + `figmaNodeId` normalization | `chore/figma-contract-alignment` | todo |
+| 4 | Close-out: ADR-026 table, ADR-025 mapping table (`current` row, once Tier 3 adds `Current` booleans), ADR-026 pending `State=Disabled` list, sense, pattern schema (+ 3 `composedOf` mismatches), Airtable push, docs clocks, drift memory | last PR | todo |
 
 ## Decisions made during planning
 
@@ -30,6 +33,8 @@ completed:
 - **TextField and Select get no `:active`.** On a text input or native select it carries no feedback meaning. Recorded in the ADR-025 amendment.
 - **Tier 2 choices (2026-10-10):** Checkbox gets `:active` (an `overlay.active` image layer over either fill, orthogonal to `checked`). Accordion also gets the missing `:hover` (`overlay.hover` layer). TextLink's active state is `text.default` (the brand text ramp ends at hover). New token `color.background.on-media.active` (`black.alpha.6`) for CardVertical's on-media actions. Its Figma variable push belongs to Tier 3.
 - **Tier 3 `State=Active` previews needed for:** Accordion item, ButtonArrow, DropdownMenu/Item, `_Breadcrumb/Link`, `_AppHeader/NavItem`, and Checkbox if a set gets linked. Values are in the ADR-025 Tier 2 table.
+- **Tier 3 `Disabled` split (ADR-025/026 amendments 2026-10-11):** each set with a `State=Disabled` value gets a `Disabled` boolean (default `false`, ordered first), built only at `State=Default`; disabled × hover/active/focus cells are not built. Every instance's look is compared before and after. Sets: `Button` (`57:1265`), `Button icon`, `Checkbox` (`92:8772`, both `Checked` values), `TextField`, `Select` (alongside `Has value`/`Has error`), `ButtonArrow` (`61:1228`, Tier 0 read-back shows `State=Disabled`). Check `Chip`'s set first. As each set is migrated, drop it from the ADR-026 pending list (Tier 4).
+- **`Current` booleans:** adding `Current` to `_Breadcrumb/Link` and `_AppHeader/NavItem` matches ADR-025 (`current` is a Configured flag). Once they exist, ADR-025's mapping row for `current` changes from "code-only" to "both" (Tier 4).
 
 ## Code matrix (from the props types, 2026-10-10)
 
@@ -60,10 +65,10 @@ Linked sets:
 | Set | Node | Properties (values, default) | Inst. | Gaps vs contract → Tier 3 action |
 |---|---|---|---|---|
 | Accordion | `29:1153` | `Open` true/false (false) · `State` Default/Hover | 80 | Add `State=Active` (after Tier 2). |
-| ButtonArrow | `61:1228` | `State` Default/Disabled/Hover · `Direction` Right/Left (Left) | 34 | Add `State=Active`. Direction values are casing-only, OK. |
+| ButtonArrow | `61:1228` | `State` Default/Disabled/Hover · `Direction` Right/Left (Left) | 34 | Split `State=Disabled` into a `Disabled` boolean (first, only at `State=Default`), then add `State=Active`. Direction values are casing-only, OK. |
 | CardHorizontal | `130:7289` | `Title`, `Duration`, `Author` text · `Certified` bool · `Has author` bool · `Variant` default/inverted · `Has progress` variant | 91 | `Variant` values lowercase while Badge uses `Outline/Filled`: pick one casing. `duration` is optional in code but has no `Has duration`. |
 | DropdownMenu | `155:6261` | single component, no properties | 6 | OK as a preview container. |
-| DropdownMenu/Item | `155:6236` | `State` Default/Hover | 28 | Add `State=Active`. **Decision:** how to preview the item matching `value` (vocabulary bans `selected` as an item prop; a Figma-only `Current` or `Checked` boolean?). |
+| DropdownMenu/Item | `155:6236` | `State` Default/Hover | 28 | Add `State=Active`. **Decision (narrowed by ADR-025 2026-10-11):** in code the selected look is Derived (`aria-selected` from the container's `value`), so it is never an item prop. Figma needs a preview-only boolean, recorded as a mapping in ADR-026. Only its name is open (`Selected` mirrors the ARIA attribute; `Current` would collide with `aria-current`). |
 | Icon | `96:11108` | a SECTION, not a set (frames + vectors) | — | `figmaNodeId` points at a section. Check whether icons are components; probably record it as "no set". |
 | Image | `92:16895` | `Size` Small/Large/Medium (Small) | 217 | Already recorded as Figma-only. No change. |
 
@@ -86,4 +91,4 @@ Not found: Divider, TextLink. Record them as "no set".
 
 - figma-cli truncates output at 20,000 characters. Read instance state in chunks.
 - `clone()` drops `componentPropertyReferences`; re-wire cloned variants.
-- Figma picks a set's default variant by canvas position (top-left).
+- Figma picks a set's default variant by canvas position (top-left). The `Disabled` split re-grids a set, so check the default afterwards (`Button icon` precedent, ADR-026).
