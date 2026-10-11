@@ -20,6 +20,7 @@ sources:
 # clock reset 2026-10-07: lib.js gains publicComponents(), and validate-metadata.js checks part accepts against the package exports (#98); parts still never enter the set, page still accurate
 # clock reset 2026-10-09: /add-component picks full vs standard by risk tier (component:risk); the reviewPath values and checklist mechanics this page owns are unchanged, still accurate
 # clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
+# clock reset 2026-10-10: validate-metadata.js also checks every <Name>.spec.json parses; the gate command this page describes is unchanged, still accurate
 ---
 # Component lifecycle
 
