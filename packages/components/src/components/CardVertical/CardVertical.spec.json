@@ -401,6 +401,11 @@
       "trigger": ":hover:not(:disabled) on Favorite or MenuTrigger"
     },
     {
+      "name": "action-active",
+      "kind": "interaction",
+      "trigger": ":active:not(:disabled) on Favorite or MenuTrigger"
+    },
+    {
       "name": "with-progress",
       "kind": "lifecycle",
       "trigger": "progress set, below 100",
@@ -455,6 +460,7 @@
     "Favorite": [
       { "when": {}, "set": { "color": "color.icon.on-media.default" } },
       { "when": { "state": "action-hover" }, "set": { "background": "color.background.on-media.hover" } },
+      { "when": { "state": "action-active" }, "set": { "background": "color.background.on-media.active" } },
       { "when": { "state": "favorite-pressed" }, "set": { "color": "color.icon.brand" } }
     ],
     "FavoriteGlyph": [
@@ -466,7 +472,8 @@
     ],
     "MenuTrigger": [
       { "when": {}, "set": { "color": "color.icon.on-media.default" } },
-      { "when": { "state": "action-hover" }, "set": { "background": "color.background.on-media.hover" } }
+      { "when": { "state": "action-hover" }, "set": { "background": "color.background.on-media.hover" } },
+      { "when": { "state": "action-active" }, "set": { "background": "color.background.on-media.active" } }
     ],
     "MenuTriggerGlyph": [
       {
