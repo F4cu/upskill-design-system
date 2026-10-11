@@ -5,7 +5,7 @@ title: "ADR-026 — Component prop vocabulary and API proposal step"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-10
+**Amended:** 2026-10-11
 
 ## Context
 
@@ -65,7 +65,7 @@ Code and Figma share names, values and defaults. Casing is the only routine diff
 | Code | Figma | Why |
 |---|---|---|
 | Optional prop omitted | `Has <x>` boolean, default `false` | An instance-swap or text layer has no "empty" option (ADR-023). |
-| Pseudo-classes | `State` variant | Preview only; `State` is reserved for interaction (ADR-025). |
+| Pseudo-classes (`:hover`, `:focus-visible`, `:active`) | `State` variant | Preview only; `State` holds interaction only (ADR-025). `:disabled` is the `Disabled` boolean, a casing-only match with `disabled`. |
 | `children` as a label string | `Text` text property | A text property, not a slot: the label layer's content (Button, Chip). `Children` names only a slot property. |
 | Native `value` / `placeholder` (TextField) | `Has value` variant + `Value` text property | Figma can't show the placeholder and a value at once. `Has value=false` previews the placeholder style; `Value` holds whichever text is shown. |
 | `progress` (CardVertical) | `Status` variant (`Not started` / `In progress` / `Completed`) | Preview of the lifecycle the code derives from `progress` (ADR-025). Figma can't derive, so the axis is explicit there and has no code prop. |
@@ -200,3 +200,15 @@ The first tier of the contract migration (vocabulary drift left after the earlie
   | DropdownMenu | `listRole: 'menu' \| 'listbox'` | Picks the ARIA pattern (`menu` + `menuitem` for actions, `listbox` + `option` with `aria-selected` for a choice from `value`). It changes what assistive technology announces, not the look, so it is not a `variant`. It is not named `role` because that is the native HTML attribute; the props type omits `role` so the component sets it on the root itself. |
   | AppHeader | `logoSrcDark` | The Image row's part prefix (`logoSrc`) plus a theme suffix. The header renders both images and CSS shows one per `data-theme`, because a logo is an asset, not a token, and can't follow the theme through a variable. Optional: without it the light logo shows in both themes. |
 
+## Amendment (2026-10-11) — `Disabled` leaves `State`
+
+ADR-025 (amendment 2026-10-11) makes `disabled` a configured flag. In Figma it becomes a `Disabled` boolean (default `false`, ordered first), a casing-only match with code, so it is no longer covered by the pseudo-classes mapping. `State` keeps only `Default`/`Hover`/`Focus`/`Active`. The dated entries above that add `State=Disabled` record what was true then.
+
+Sets to migrate via `/figma-cli`. Each splits `State=Disabled` into `Disabled=true, State=Default`, builds disabled only at `State=Default`, and keeps every instance's look (compared before and after):
+
+- `Button` (`57:1265`) and `Button icon`
+- `Checkbox` (`92:8772`), for both `Checked` values
+- `TextField` and `Select`, alongside `Has value` and `Has error`
+- Any other set whose `State` has a `Disabled` value; `Chip` and `ButtonArrow` accept `disabled` in code, so check their sets first.
+
+Until a set is migrated, its `State=Disabled` stands as a pending exception.

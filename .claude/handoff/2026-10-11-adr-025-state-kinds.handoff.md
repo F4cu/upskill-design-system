@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-10-11
-completed:
+completed: 2026-10-11
 ---
 
 # ADR-025 state model refinement — apply from laptop

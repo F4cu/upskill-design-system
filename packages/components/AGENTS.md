@@ -20,19 +20,20 @@ Tier 1 conventions for `packages/components/` (ADR-029). Agents that read nested
 
 ## State model (ADR-025)
 
-A "state" is one of three kinds; each has a different home. Never collapse them into one `state` prop.
+A "state" belongs to one of three groups, named by who sets it; each has a different home. Never collapse them into one `state` prop.
 
-| Kind | Examples | Code | Figma |
-|---|---|---|---|
-| Interaction | hover, focus, active | CSS pseudo-classes only — never a prop | `State` variant property (preview only) |
-| Lifecycle / data | in progress, completed | Derived from a data prop (`progress={100}` → completed); a `status` enum only when not derivable | Property named for its axis (`Status`), never `State` |
-| Content | empty image, no meta, long title | Fallback when a prop is omitted (no `src` → placeholder) — never a `showX`/`empty` flag | One example per fallback |
+| Group | Set by | Examples | Code | Figma |
+|---|---|---|---|---|
+| Interactive | User, at runtime | hover, focus, active | CSS pseudo-classes only, never a prop | `State` variant (preview only); nothing else goes in `State` |
+| Configured | App, via props | controlled (`pressed`, `checked`, `open`, `value`); flag (`disabled`, `current`, `loading`); data-derived (`progress` → completed, else a `status` enum); content (omitted prop → fallback, no `showX`/`empty`) | Controlled: `<x>` / `default<X>` / `on<X>Change`. Flag: bare boolean, default `false` | One property per prop, named like it (`Disabled` first, `Pressed`, `Status`), never a `State` value |
+| Derived | Component | `aria-*`, `data-*` | Computed from props, never a prop. `aria-pressed` ← `pressed`, `aria-invalid` ← `error`, `aria-busy` ← `loading` | None (code-only) |
 
-- **Exception — interaction state that is app data** (`pressed`, `disabled`, `open`, a container's `value`): a controlled prop with `on*Change`, plus `default*` when uncontrolled use makes sense (see `CardVertical.Favorite`; `Chip` is controlled only).
+- **`disabled` is a flag, not interaction**: Figma `Disabled` boolean, built only at `State=Default`. **`loading` is a flag, orthogonal to `status`**: sets `aria-busy`; a skeleton is internal to the component, no `Skeleton` component. Full rules and the state mapping table: ADR-025 amendment 2026-10-11.
+- **Controlled state detail** (`pressed`, `open`, a container's `value`): a controlled prop with `on*Change`, plus `default*` when uncontrolled use makes sense (see `CardVertical.Favorite`; `Chip` is controlled only).
 - **One enum, not several booleans** for mutually exclusive states (`status: 'notStarted' | 'inProgress' | 'completed'`, never `isStarted` + `isCompleted`).
 - **Naming:** see "Prop vocabulary" below. `State` is reserved for the interaction axis in Figma.
 - **`active` ≠ `pressed`:** `active` is the momentary press (`:active:not(:disabled)`, `*.active` tokens, Figma `State=Active`) on every interactive component; `pressed` is only the persistent `aria-pressed` toggle prop. Orthogonal: a toggle has both (ADR-025 amendment).
-- Every lifecycle and content state appears in metadata `states` and has a story.
+- Every lifecycle, async and content state appears in metadata `states` and has a story.
 
 ## Prop vocabulary (ADR-026)
 
