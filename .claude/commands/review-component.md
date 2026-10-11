@@ -38,7 +38,7 @@ Spawn **one** `adversarial-reviewer` subagent (defined in `.claude/agents/advers
 - The instruction to run and report findings from:
   1. `/code-review` on the diff (correctness + reuse/simplification)
   2. `npm run lint -- packages/components/src/components/<Name>` (ESLint + jsx-a11y Tier-1 static rules)
-  3. An a11y read of the component against its metadata `accessibility` block (role, aria, keyboard)
+  3. An a11y read of the component against its `accessibility` block (role, aria, keyboard): in `<Name>.spec.json` when the component has a spec, else in metadata
   4. **For interactive components only** (`npm run component:risk -- <Name>` prints `interactive`: `component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab / native browser behaviour) — judge whether `<Name>.a11y.test.tsx` covers the contract: does it assert every `keyboardInteraction` declared in the metadata, the state attribute(s) that toggle (e.g. `aria-expanded`, `aria-pressed`, `aria-selected`), focus movement, and the WAI-ARIA APG pattern's semantics? The gate proves the test passes; the reviewer judges whether it tests the *right things*. Thin or contract-incomplete tests are a `changes-required` a11y finding. Skip entirely for display/landmark components (e.g. `Badge`, `Divider`).
 
 The subagent returns its findings as JSON in its final message; the main session writes that JSON verbatim to `.claude/handoff/runs/<Name>.review.json`:

@@ -222,5 +222,13 @@
     "created": "2026-07-07",
     "updated": "2026-10-11",
     "path": ".claude/handoff/archive/token-contrast-fixes.handoff.md"
+  },
+  {
+    "name": "CardVertical.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-10-11",
+    "updated": "2026-10-11",
+    "path": ".claude/handoff/runs/CardVertical.snapshot.json"
   }
 ]

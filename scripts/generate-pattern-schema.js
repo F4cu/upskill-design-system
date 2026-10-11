@@ -30,6 +30,7 @@ import path from "path";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 import ts from "typescript";
+import { readComponentMetadata } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -225,7 +226,7 @@ function scanComponent(name) {
   const dir = path.join(COMPONENTS_DIR, name);
   const sf = parseFile(path.join(dir, "index.tsx"));
   const src = sf.getFullText();
-  const metadata = JSON.parse(fs.readFileSync(path.join(dir, `${name}.metadata.json`), "utf8"));
+  const metadata = readComponentMetadata(name);
 
   const { props, nativeSpreads } = collectProps(sf);
   const imported = collectImportedComponents(sf);

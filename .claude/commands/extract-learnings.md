@@ -36,7 +36,7 @@ Running only step 1 fixes the code. Running both steps fixes the system.
 
 ## What "routing to the right target" means
 
-Not every finding is the same kind of lesson. A finding about a wrong ARIA attribute belongs in `accessibility.ariaAttributes` — not in `usage.antiPatterns`. Putting it in the wrong place means the right consumer (scaffolding, layout generation, or a future reviewer) won't see it. The routing table:
+Not every finding is the same kind of lesson. The `accessibility.*` targets below live in `<Name>.spec.json` when the component has a spec (ADR-027 migration), else in metadata. A finding about a wrong ARIA attribute belongs in `accessibility.ariaAttributes` — not in `usage.antiPatterns`. Putting it in the wrong place means the right consumer (scaffolding, layout generation, or a future reviewer) won't see it. The routing table:
 
 | Finding type | Target |
 |---|---|

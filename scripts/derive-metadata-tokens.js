@@ -9,6 +9,8 @@
 // (`var(--ds-size-avatar-${size})`) can't be enumerated, so listed entries that
 // match the prefix are kept and the prefix is reported.
 //
+// Components with a spec.json (ADR-027) are skipped: the spec owns the token list.
+//
 // Usage: npm run metadata:derive-tokens -- <Name>
 
 import fs from "fs";
@@ -27,6 +29,11 @@ const dir = path.join(ROOT, "packages/components/src/components", name);
 const metaFile = path.join(dir, `${name}.metadata.json`);
 if (!fs.existsSync(metaFile)) {
   console.error(`No metadata at ${path.relative(ROOT, metaFile)} — scaffold the component first.`);
+  process.exit(2);
+}
+
+if (fs.existsSync(path.join(dir, `${name}.spec.json`))) {
+  console.error(`${name} has a spec.json: its tokens are the ones its spec styles reference (npm run spec:validate checks them against the CSS Module), not a metadata list.`);
   process.exit(2);
 }
 

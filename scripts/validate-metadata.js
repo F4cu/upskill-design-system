@@ -3,7 +3,9 @@
 // Also checks each metadata file's component.name matches its folder name,
 // resolves tokens.* and composition.parts cross-references, checks tokens.*
 // against what the component's own CSS Module and TSX read, validates the
-// canonical example file, and checks every <Name>.spec.json parses. Exits
+// canonical example file, and checks every <Name>.spec.json parses. A component
+// with a spec must not repeat states/tokens/accessibility in metadata (the spec
+// owns them, ADR-027); one without must still carry them. Exits
 // non-zero on any failure so it can gate CI. This is the contract the
 // component-scaffold and layout-generation agentic moments consume — keep it
 // green.
@@ -50,6 +52,7 @@ function schemaError(e) {
 }
 
 const COMPONENT_NAMES = publicComponents();
+const BUILDER_SECTIONS = ["states", "tokens", "accessibility"];
 
 // composition.parts cross-references (ADR-023). Part names must not collide
 // with component folders so an `accepts` entry resolves to exactly one thing.
@@ -153,6 +156,12 @@ for (const { file, expectedName, stray } of targets) {
 
   // The example file uses illustrative token paths that need not resolve; only
   // real components must reference tokens that exist in the source tree.
+  const hasSpec = expectedName ? fs.existsSync(path.join(COMPONENTS_DIR, expectedName, `${expectedName}.spec.json`)) : false;
+  for (const section of BUILDER_SECTIONS) {
+    if (hasSpec && section in data) errors.push(`${section}: owned by ${expectedName}.spec.json — remove it from metadata`);
+    if (!hasSpec && !(section in data)) errors.push(`${section}: required until ${expectedName ?? "the component"} has a spec.json`);
+  }
+
   if (expectedName && data.tokens) {
     for (const [category, refs] of Object.entries(data.tokens)) {
       for (const ref of Array.isArray(refs) ? refs : [refs]) {
@@ -164,7 +173,7 @@ for (const { file, expectedName, stray } of targets) {
     }
   }
 
-  if (expectedName) errors.push(...checkTokenReads(expectedName, data));
+  if (expectedName && !hasSpec) errors.push(...checkTokenReads(expectedName, data));
 
   if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
 

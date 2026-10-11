@@ -142,6 +142,24 @@
       "notes": "Native disabled, not aria-disabled: removes the button from the tab order and blocks activation."
     }
   ],
+  "accessibility": {
+    "role": "button",
+    "ariaAttributes": [
+      "aria-label (set on icon-only buttons via shape to provide an accessible name; flows through ...rest)",
+      "disabled (native HTML attribute via disabled prop, not aria-disabled)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Enter / Space",
+        "action": "Activates the button"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus to the next focusable element"
+      }
+    ],
+    "notes": "Uses a native <button> element. The disabled prop sets the HTML disabled attribute, which natively prevents click events and removes the element from the tab order."
+  },
   "styles": {
     "Root": [
       {

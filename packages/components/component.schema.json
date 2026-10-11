@@ -2,14 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "upskill-design-system/component.schema.json",
   "title": "Component Metadata",
+  "description": "Selection and composition guidance for a component. `states`, `tokens` and `accessibility` are required here until the component has a <Name>.spec.json; once it does, the spec owns them and they must be absent (ADR-027, enforced by scripts/validate-metadata.js).",
   "type": "object",
   "required": [
     "component",
     "usage",
     "variants",
-    "states",
-    "tokens",
-    "accessibility",
     "composition"
   ],
   "properties": {

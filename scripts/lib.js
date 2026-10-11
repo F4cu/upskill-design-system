@@ -27,6 +27,55 @@ export function rel(absPath) {
   return path.relative(ROOT, absPath);
 }
 
+const COMPONENTS_ROOT = path.join(ROOT, "packages/components/src/components");
+const TOKEN_CATEGORIES = ["color", "spacing", "typography", "borderRadius", "other"];
+
+// Token dot-paths a spec style value references: a bare path, or the
+// {token.path} references inside a template. A literal or sameAs has none.
+export function styleValueTokenPaths(value) {
+  if (typeof value === "string") return [value];
+  if (value.template) return [...value.template.matchAll(/\{([a-z0-9.-]+)\}/g)].map((m) => m[1]);
+  return [];
+}
+
+// Every token a spec's styles reference, grouped by tokens.* category in schema
+// order, first use first. Empty categories are omitted.
+export function specTokens(spec) {
+  const seen = new Set();
+  const out = {};
+  for (const rules of Object.values(spec.styles)) {
+    for (const rule of rules) {
+      for (const value of Object.values(rule.set)) {
+        for (const dotPath of styleValueTokenPaths(value)) {
+          if (seen.has(dotPath)) continue;
+          seen.add(dotPath);
+          (out[tokenCategory(dotPath)] ??= []).push(dotPath);
+        }
+      }
+    }
+  }
+  return Object.fromEntries(TOKEN_CATEGORIES.filter((c) => out[c]).map((c) => [c, out[c]]));
+}
+
+export function readSpec(name, componentsDir = COMPONENTS_ROOT) {
+  const file = path.join(componentsDir, name, `${name}.spec.json`);
+  return fs.existsSync(file) ? readJson(file) : null;
+}
+
+// A component's metadata with the builder sections (tokens, accessibility)
+// taken from its spec when it has one (ADR-027 migration). A spec owns those
+// sections outright; a component without one still carries them in metadata
+// until the backfill, so every reader sees the same shape either way. Returns
+// null when the component has no metadata file.
+export function readComponentMetadata(name, componentsDir = COMPONENTS_ROOT) {
+  const file = path.join(componentsDir, name, `${name}.metadata.json`);
+  if (!fs.existsSync(file)) return null;
+  const meta = readJson(file);
+  const spec = readSpec(name, componentsDir);
+  if (!spec) return meta;
+  return { ...meta, tokens: specTokens(spec), accessibility: spec.accessibility };
+}
+
 // Interactivity derivation (ADR-008), shared by the Tier-2 a11y gate
 // (a11y-coverage.js) and /add-component's risk-triggered reviewer (ADR-029,
 // via component-risk.js) so both agree on what counts as interactive.

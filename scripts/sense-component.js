@@ -15,7 +15,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { readJson, rel, usagesFor, daysBetween } from "./lib.js";
+import { readJson, readComponentMetadata, rel, usagesFor, daysBetween } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -54,10 +54,6 @@ function deprecatedTokens(governance) {
   return out;
 }
 
-function loadMetadata(name) {
-  const p = path.join(COMPONENTS_DIR, name, `${name}.metadata.json`);
-  return fs.existsSync(p) ? readJson(p) : null;
-}
 
 function declaredTokenContext(metadata, governance, usage) {
   if (!metadata) return [];
@@ -118,7 +114,7 @@ function main() {
   const now = new Date();
   const governance = readJson(GOVERNANCE_PATH);
   const usage = readJson(USAGE_PATH);
-  const metadata = loadMetadata(name);
+  const metadata = readComponentMetadata(name);
 
   const snapshot = {
     component: name,

@@ -5,7 +5,7 @@ title: "ADR-027 — Component spec file, split from metadata by reader"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-08
+**Amended:** 2026-10-11
 
 ## Context
 
@@ -147,3 +147,15 @@ Arm C is better on both tasks, so the bar is met. The developer's prediction ("b
 - **The extra context is a real cost.** Until the migration removes the duplicated sections, a builder moment that reads both files carries +31% to +55% more prompt for these two components.
 - **The harness-ablation eval's Arm 1 context includes the specs.** `prepare.js` keeps and strips them like metadata, including redacting the target's own spec.
 
+
+## Amendment (2026-10-11) — Migration step 1: `accessibility` joins the spec, builder sections leave metadata for spec components
+
+The first "On acceptance" step is done for the two components that have a spec, and made transitional for the rest. The metadata side is recorded in the ADR-001 amendment of the same date.
+
+- **`accessibility` is a new required spec section.** It has the shape metadata had (`role`, `notes`, `ariaAttributes`, `keyboardInteractions`). The spec already had `states` (with ADR-025 kinds, richer than the metadata `{ state, description }` pairs) and `styles`, so the move needed no other new section.
+- **No `tokens` section in the spec.** A list next to `styles` would repeat it. The token list is derived from `styles` by `specTokens` in `scripts/lib.js` (same five categories), and `spec:validate` already checks `styles` against the CSS Module and the built tokens.
+- **Button and CardVertical lose `states`, `tokens` and `accessibility` from metadata.** `spec:validate` no longer checks metadata states against the spec; there are none.
+- **The move cannot be all-or-nothing yet.** Moving the sections out of all 27 metadata files needs 27 specs, which is the backfill (step 4) and needs the generator (step 3) first. Until then the validator requires the three sections in metadata when a component has no spec, and forbids them when it has one.
+- **Pattern output is unchanged.** `npm run patterns:generate` produces the same `component-patterns.json` before and after, because the accessibility strings it quotes now come from the spec through the same reader.
+
+**Still open from the acceptance list:** `/component-scaffold` step 3 writing the spec (step 2), the `props`/`styles` generator (step 3), the backfill and making the spec required (step 4), and the ADR-026 Button `shape` line (step 5). The harness-ablation tooling (`scripts/harness-ablation`, `scripts/pattern-accuracy-harness`) still passes metadata files as context and strips specs for the target; it needs no change for this step, but a re-run after the backfill should confirm the smaller metadata does not hurt scaffolding.

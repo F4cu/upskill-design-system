@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "upskill-design-system/component.spec.schema.json",
   "title": "Component Spec",
-  "description": "The build contract for one component (ADR-027): what it must be, read by the builder moments (/component-scaffold, /review-component). Selection and composition guidance stays in <Name>.metadata.json, which /layout-generation reads. scripts/validate-spec.js checks every spec against the schema, its metadata, its props type and its CSS Module.",
+  "description": "The build contract for one component (ADR-027): what it must be, read by the builder moments (/component-scaffold, /review-component). Selection and composition guidance stays in <Name>.metadata.json, which /layout-generation reads. The spec owns states and accessibility; its token list is derived from styles. scripts/validate-spec.js checks every spec against the schema, its metadata, its props type and its CSS Module.",
   "type": "object",
-  "required": ["component", "anatomy", "props", "states", "styles"],
+  "required": ["component", "anatomy", "props", "states", "accessibility", "styles"],
   "properties": {
     "component": {
       "description": "Component name; must match the folder and metadata component.name.",
@@ -157,6 +157,35 @@
         },
         "additionalProperties": false
       }
+    },
+
+    "accessibility": {
+      "description": "The component's assistive-technology contract: role, ARIA attributes, keyboard. Moved here from metadata with the ADR-027 migration; a11y-coverage.js derives interactivity from it.",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string" },
+        "notes": {
+          "description": "Accessibility guidance specific to this component that the role/aria/keyboard fields don't capture.",
+          "type": "string"
+        },
+        "ariaAttributes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "keyboardInteractions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "action"],
+            "properties": {
+              "key": { "type": "string" },
+              "action": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
     },
 
     "styles": {

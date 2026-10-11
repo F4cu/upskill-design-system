@@ -9,8 +9,8 @@
 //   - styles: the token paths in the spec equal the --ds-* custom properties
 //     the CSS Module reads, and each one is defined in the built token CSS.
 //   - states, constraints, anatomy: internal cross-references resolve; every
-//     metadata state and composition.parts entry appears in the spec.
-// Specs stay optional until the ADR-027 migration: only components with a spec file
+//     composition.parts entry appears in the spec.
+// Specs stay optional until the ADR-027 backfill: only components with a spec file
 // are checked. Requires built tokens (npm run tokens:build).
 //
 // --components-dir <dir> checks the specs in <dir> instead (a harness run
@@ -22,7 +22,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
 import ts from "typescript";
-import { publicComponents } from "./lib.js";
+import { publicComponents, styleValueTokenPaths } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -81,12 +81,6 @@ const program = ts.createProgram(
 const checker = program.getTypeChecker();
 
 const tokenToVar = (dotPath) => `--ds-${dotPath.replaceAll(".", "-")}`;
-
-function tokenPaths(value) {
-  if (typeof value === "string") return [value];
-  if (value.template) return [...value.template.matchAll(/\{([a-z0-9.-]+)\}/g)].map((m) => m[1]);
-  return [];
-}
 
 // Every exported props type in the component's file, keyed by spec prefix: ""
 // for the preset's <Name>Props, "<Part>." for <Name><Part>Props (ADR-023 exports
@@ -232,9 +226,6 @@ for (const { name, file } of specs) {
 
   // States
   const stateNames = new Set(spec.states.map((s) => s.name));
-  for (const s of metadata.states ?? []) {
-    if (!stateNames.has(s.state)) errors.push(`states: metadata state "${s.state}" missing from the spec`);
-  }
 
   // Styles against the CSS Module
   const specTokens = new Set();
@@ -250,7 +241,7 @@ for (const { name, file } of specs) {
           errors.push(`styles["${part}"]: when.${key}="${value}" is not an option`);
         }
       }
-      for (const value of Object.values(rule.set)) for (const t of tokenPaths(value)) specTokens.add(tokenToVar(t));
+      for (const value of Object.values(rule.set)) for (const t of styleValueTokenPaths(value)) specTokens.add(tokenToVar(t));
     }
   }
   const cssFile = path.join(SPEC_DIR, name, `${name}.module.css`);
