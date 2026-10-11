@@ -24,7 +24,7 @@ completed:
 | 1 | Breaking renames (AppHeader `NavItem.active` → `current`; Accordion metadata states `collapsed/expanded` → `closed/open`; record `listRole` and `logoSrcDark` as new terms) | `refactor/contract-vocabulary-tier1` | merged, PR #137 (2026-10-10) |
 | 2 | `:active` state on interactive components + ADR-025 "applied to" amendment | `feat/active-state-tier2` | PR #138 (2026-10-10) |
 | — | ADR-025 state groups; `Disabled` leaves Figma `State` (ADR-026 amendment) | `adr-025-state-kinds` | merged, PR #139 (2026-10-11) |
-| 3 | Figma alignment of linked sets + `Active` variants + `State=Disabled` → `Disabled` boolean split + `figmaNodeId` normalization | `chore/figma-contract-alignment` | done in Figma 2026-10-11; PR open (see below) |
+| 3 | Figma alignment of linked sets + `Active` variants + `State=Disabled` → `Disabled` boolean split + `figmaNodeId` normalization | `chore/figma-contract-alignment` | done in Figma 2026-10-11; PR #140 |
 | 4 | Close-out: CardVertical.Root `completion` → `Value`, Checkbox checked-hover cell, sense, pattern schema (+ 3 `composedOf` mismatches), Airtable push, docs clocks, drift memory | last PR | todo |
 
 ## Tier 3 result (2026-10-11)
