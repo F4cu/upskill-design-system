@@ -1,32 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
-  "drift": [
-    {
-      "components": [
-        "AppHeader"
-      ],
-      "detail": "AppHeader JSX uses [Avatar, DropdownMenu, Icon, TextField] but metadata composition.composedOf declares [Avatar, Icon, Text, TextField].",
-      "issue": "composition-metadata-mismatch",
-      "pattern": "disclosure"
-    },
-    {
-      "components": [
-        "Badge"
-      ],
-      "detail": "Badge JSX uses [Text] but metadata composition.composedOf declares [].",
-      "issue": "composition-metadata-mismatch",
-      "pattern": "static-display"
-    },
-    {
-      "components": [
-        "Breadcrumb"
-      ],
-      "detail": "Breadcrumb JSX uses [Icon] but metadata composition.composedOf declares [Icon, Text].",
-      "issue": "composition-metadata-mismatch",
-      "pattern": "navigation"
-    }
-  ],
-  "generatedFrom": "5af3858ddc7bc159439fefcc71807087534f193d",
+  "drift": [],
+  "generatedFrom": "97023b2beb6cd134e0d03c44542e7a202608433d",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",

@@ -88,7 +88,9 @@
     "notes": "Renders a plain <span> with visible text — no ARIA role needed; the label is read inline as text content. Not focusable and not interactive. If the badge conveys meaning beyond the adjacent content (e.g. a status not otherwise stated), make the label text explicit rather than relying on colour alone."
   },
   "composition": {
-    "composedOf": [],
+    "composedOf": [
+      "Text"
+    ],
     "accepts": [],
     "containedBy": [
       "Box",

@@ -38,7 +38,7 @@
       },
       {
         "scenario": "Omitting the label prop",
-        "reason": "The label is required for accessibility — the checkbox is not self-describing without visible text.",
+        "reason": "The label is required for accessibility \u2014 the checkbox is not self-describing without visible text.",
         "alternative": "Always pass a label. If the design places the label elsewhere, pass it as aria-label via ...rest."
       },
       {
@@ -77,6 +77,10 @@
       "description": "Brand-fill background with white checkmark."
     },
     {
+      "state": "checked-hover",
+      "description": "Brand border kept on hover; an overlay.hover layer darkens the brand fill one step (one short of active)."
+    },
+    {
       "state": "disabled-unchecked",
       "description": "Muted border; cursor not-allowed."
     },
@@ -96,6 +100,7 @@
       "color.border.input.default",
       "color.border.input.hover",
       "color.border.disabled",
+      "color.background.overlay.hover",
       "color.background.overlay.active"
     ],
     "spacing": [

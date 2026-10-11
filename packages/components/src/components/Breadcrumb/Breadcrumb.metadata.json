@@ -93,8 +93,7 @@
   },
   "composition": {
     "composedOf": [
-      "Icon",
-      "Text"
+      "Icon"
     ],
     "accepts": [],
     "containedBy": [
