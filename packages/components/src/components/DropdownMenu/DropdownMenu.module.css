@@ -25,6 +25,10 @@
   background: var(--ds-color-background-overlay-hover);
 }
 
+.item:active {
+  background: var(--ds-color-background-overlay-active);
+}
+
 .itemSelected {
   color: var(--ds-color-text-brand);
   font-weight: 600;

@@ -54,14 +54,19 @@
   "states": [
     {
       "state": "default",
-      "description": "Static trail — no interactive states beyond individual link hover."
+      "description": "Static trail — interactive states are limited to individual link hover and active."
+    },
+    {
+      "state": "link-active",
+      "description": "Momentary press feedback on a link (CSS :active): label steps from text.brand (hover) to text.interactive.hover."
     }
   ],
   "tokens": {
     "color": [
       "color.text.default",
       "color.text.subtle",
-      "color.text.brand"
+      "color.text.brand",
+      "color.text.interactive.hover"
     ],
     "spacing": [
       "space.inline.xs"
