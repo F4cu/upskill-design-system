@@ -100,12 +100,12 @@ To generate the skeleton files for a new component — the `index.tsx`, CSS modu
 A place inside a component that takes exactly one child chosen from a short list. `CardVertical.Action` is a slot: it holds either one `Favorite` button or one `Menu`, never both. In Figma, this kind of slot is an instance-swap property, so the same name and the same choices exist on both sides. It is not a Figma native slot: those mirror open parts. See also Subcomponent (part), Open part.
 
 **State (component)**
-The different conditions a component can be in that change its appearance or behavior. Common states: `default`, `hover` (cursor is over it), `focused` (selected via keyboard), `disabled` (not interactive), `loading`, `error`. States are defined in each component's `metadata.json` and are distinct from React state (the internal data a component holds) — though the two are related: a component uses React state to track which visual state it is currently in. The system separates three kinds ([ADR-025](decisions/025-component-state-model.md)):
-- **Interaction** state (hover, focus, active) is handled by CSS and is never a prop. **Active** is the brief feedback a control such as `Button` or `Chip` shows while a pointer or the Space key is held down (CSS `:active`).
-- **Lifecycle** state (in progress, completed) is derived from data, such as a course's progress percentage.
-- **Content** state (no image, empty) is what a component shows when an optional prop is left out.
+The different conditions a component can be in that change its appearance or behavior. Common states: `default`, `hover` (cursor is over it), `focused` (selected via keyboard), `disabled` (not interactive), `loading`, `error`. States are defined in each component's `metadata.json` and are distinct from React state (the internal data a component holds) — though the two are related: a component uses React state to track which visual state it is currently in. The system groups states by who sets them ([ADR-025](decisions/025-component-state-model.md)):
+- **Interactive** states (hover, focus, active) come from the user at runtime. CSS handles them and they are never a prop. **Active** is the brief feedback a control such as `Button` or `Chip` shows while a pointer or the Space key is held down (CSS `:active`).
+- **Configured** states are set by the app through props: toggles such as `pressed` or `checked`, flags such as `disabled` or `loading`, a lifecycle derived from data (a course's progress percentage), and the fallback shown when an optional prop is left out (no image).
+- **Derived** states are what the component computes for assistive technology, such as `aria-pressed` or `aria-busy`. They are never props.
 
-In Figma, the property name `State` is reserved for interaction state.
+In Figma, the property name `State` holds only interactive states. Every configured state is its own property, so `disabled` is a `Disabled` boolean rather than a `State` value, and combinations such as checked and disabled can be shown.
 
 Don't confuse active with **pressed**. Pressed is an on/off toggle that stays set after the click, such as a filter `Chip` the user has switched on. It is a prop that the code using the Chip controls, and screen readers announce through `aria-pressed`. A toggle has both: a Chip shows active while you press it, whether it is pressed or not. See also Props and variants.
 

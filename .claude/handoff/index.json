@@ -160,6 +160,14 @@
     "path": ".claude/handoff/archive/2026-10-08-governance-decision-eval.handoff.md"
   },
   {
+    "name": "2026-10-11-adr-025-state-kinds",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-10-11",
+    "updated": "2026-10-11",
+    "path": ".claude/handoff/archive/2026-10-11-adr-025-state-kinds.handoff.md"
+  },
+  {
     "name": "docsify-docs-site",
     "kind": "handoff",
     "status": "done",

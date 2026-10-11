@@ -39,6 +39,7 @@ sources:
 # clock reset 2026-10-10: packages/components/AGENTS.md State model gains one active-vs-pressed line (ADR-025 amendment); layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-10: packages/components/AGENTS.md vocabulary gains one current clause (ADR-026 Tier 1); layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-10: packages/components/AGENTS.md active line names the TextField/Select exemption (ADR-025 Tier 2); layering/budget mechanics unchanged, still accurate
+# clock reset 2026-10-11: packages/components/AGENTS.md State model regrouped by who sets a state (ADR-025 amendment); layering/budget mechanics unchanged, still accurate
 ---
 # Context engineering
 
