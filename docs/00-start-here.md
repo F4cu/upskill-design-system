@@ -69,6 +69,7 @@ sources:
 # rewritten 2026-10-12: reading order lists 11 and 12, which it had omitted
 # rewritten 2026-10-12: reading-order blurbs for 09 (rung 2 is nested package AGENTS.md since ADR-029, not rules) and 10 (the contract is metadata plus its spec, ADR-027 rollout)
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value) and /component-scaffold spec-template wording (every component has a spec since the ADR-027 backfill); this page lists no individual ADRs, mappings or template rules, still accurate
+# clock reset 2026-10-12: ADR-029 amendment records Figma fidelity study B as a separate pre-registered eval; this page lists no ADRs or evals, still accurate
 ---
 # Start here
 
