@@ -1,11 +1,11 @@
 [
   {
-    "name": "2026-10-11-spec-rollout",
+    "name": "2026-10-12-spec-rollout-followups",
     "kind": "handoff",
     "status": "active",
-    "created": "2026-10-11",
+    "created": "2026-10-12",
     "updated": "2026-10-12",
-    "path": ".claude/handoff/2026-10-11-spec-rollout.handoff.md"
+    "path": ".claude/handoff/2026-10-12-spec-rollout-followups.handoff.md"
   },
   {
     "name": "2026-07-03-multi-brand-refactor",
@@ -174,6 +174,14 @@
     "created": "2026-10-11",
     "updated": "2026-10-11",
     "path": ".claude/handoff/archive/2026-10-11-adr-025-state-kinds.handoff.md"
+  },
+  {
+    "name": "2026-10-11-spec-rollout",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-10-11",
+    "updated": "2026-10-12",
+    "path": ".claude/handoff/archive/2026-10-11-spec-rollout.handoff.md"
   },
   {
     "name": "docsify-docs-site",
