@@ -102,11 +102,11 @@ Fill in before the first read of each measurement. Don't edit after a result exi
 - **Bar:** every gap in the Tier 0 matrix that predates the before version shows up as a failed check in A's "before" run. That includes Breadcrumb link `State=Active` as the resting state, `Property 1 = Default / Variant2`, `state3`/`state4`, `Disabled` inside `State` on the six Tier 3 sets, and missing `State=Active` on Accordion / DropdownMenu/Item / ButtonArrow. Plus the drift-log items from 2026-10-06: `Button icon` Accent default one step too light, Transparent hover with no tint, 9 Large variants bound to `space/250`. One missed item means fix the checker and re-run before reporting anything.
 - **Answer-key check (before B):** the B components' spec and metadata `figma` fields must match the hand-aligned sets.
   - **Button: cleared 2026-10-12** (#145). `disabled` maps to the `Disabled` property, confirmed by read-back on both sets.
-  - **CardVertical: one blocker, read back 2026-10-12.**
+  - **CardVertical: cleared 2026-10-12, read back the same day.**
     - The preset (`52:4270`, 12 variants) matches the spec: `Has action` + `Action`, `Title`, `Duration`, `Certified`, `Size` lg/sm (lg), `Status` (Not started), `State` Default/Hover.
     - Root (`2871:7567`) matches on `Body` (slot), `Has action` + `Action`, `Size`.
     - Parts match: `Title`, `Duration` (text), `Meta` (`Children` slot), `Certified`, `Completed`, `Favorite` (`Pressed`), `Menu` (`Expanded`, a recorded divergence).
-    - **Mismatch:** the spec maps `Progress.value` → a `completion` property on `CardVertical.Root`. Figma has a `Has progress` boolean on Root, showing an exposed nested `ProgressBar` instance whose own property is `Value` (0/10/20/50/80/100). `completion` is ProgressBar's pre-Tier 3 name. Fix the spec before B.
+    - **Fixed:** the spec mapped `Progress.value` → `completion` (ProgressBar's pre-Tier 3 name, copied from a stale ADR-023 example). Figma has `Has progress` on Root driving an exposed nested `ProgressBar` whose property is `Value`. The spec now records `Has progress + Value`; ADR-023 and ADR-026 amended 2026-10-12 (optional parts get a `Has <x>` boolean).
   - Checkbox was read back too (`92:8772`, all props match) before it was swapped out of B for CardVertical.
 - **Layer-name scoring rule (decided by the component choice):** the anatomy layer-name check applies only to components with `composition.parts` (the ADR-023 naming contract binds parts), so CardVertical is scored and Button is not. Naming note for the ceiling: `Favorite` and `Menu` are set names without the `CardVertical.` prefix the other parts carry. Score part names by layer name (the Root's `Action` layer is correct), not by set name.
 

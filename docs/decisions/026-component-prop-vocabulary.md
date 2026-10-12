@@ -5,7 +5,7 @@ title: "ADR-026 — Component prop vocabulary and API proposal step"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-11
+**Amended:** 2026-10-12
 
 ## Context
 
@@ -64,7 +64,7 @@ Code and Figma share names, values and defaults. Casing is the only routine diff
 
 | Code | Figma | Why |
 |---|---|---|
-| Optional prop omitted | `Has <x>` boolean, default `false` | An instance-swap or text layer has no "empty" option (ADR-023). |
+| Optional prop or optional part omitted | `Has <x>` boolean, default `false` | An instance-swap or text layer has no "empty" option (ADR-023). An optional part left out of a composition (`<CardVertical.Progress>` on `Root`) is the same case (amendment 2026-10-12). |
 | Pseudo-classes (`:hover`, `:focus-visible`, `:active`) | `State` variant | Preview only; `State` holds interaction only (ADR-025). `:disabled` is the `Disabled` boolean, a casing-only match with `disabled`. |
 | `children` as a label string | `Text` text property | A text property, not a slot: the label layer's content (Button, Chip). `Children` names only a slot property. |
 | Native `value` / `placeholder` (TextField) | `Has value` variant + `Value` text property | Figma can't show the placeholder and a value at once. `Has value=false` previews the placeholder style; `Value` holds whichever text is shown. |
@@ -264,3 +264,7 @@ The two items Tier 3 left open are closed:
 - **Checkbox `Checked=true, State=Hover`** (`2934:8022`) added to `92:8772`: brand fill with an `overlay/hover` layer and the brand border, matching the code fix recorded in ADR-025 (amendment "Checkbox checked hover"). The set now has 8 variants; its default variant is unchanged.
 
 The metadata `composedOf` lists of AppHeader, Badge and Breadcrumb now match their JSX, so `component-patterns.json` reports no drift.
+
+## Amendment (2026-10-12) — `Has <x>` covers optional parts
+
+The `Has <x>` recorded mapping was worded for an optional prop. On a `Parent.Root`, what a consumer leaves out is an optional part, not a prop: `CardVertical.Root` previews `<CardVertical.Progress>` with `Has progress`. That is the same mapping, so the row now reads "optional prop or optional part omitted". It isn't a Figma-only property with no code counterpart: the counterpart is rendering the part or not. Surfaced by the answer-key read-back for the Figma fidelity measurement (`.claude/handoff/2026-10-12-figma-fidelity-measurements.handoff.md`); see ADR-023 amendment 2026-10-12 for the fixed-part rule.

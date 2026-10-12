@@ -339,7 +339,7 @@
       "type": "number (0–100)",
       "default": null,
       "concept": "new term: ProgressBar's value, passed through",
-      "figma": { "surface": "both", "set": "CardVertical.Root", "property": "completion", "note": "ADR-023 amendment 2026-10-06: fixed part properties are exposed on the parent." }
+      "figma": { "surface": "both", "set": "CardVertical.Root", "property": "Has progress + Value", "note": "Has <x> mapping for the optional Progress part (ADR-026); the value is previewed on the exposed nested ProgressBar's Value, a sampled variant (0/10/20/50/80/100). ADR-023 amendment 2026-10-12." }
     },
     "Body.children": {
       "kind": "content",

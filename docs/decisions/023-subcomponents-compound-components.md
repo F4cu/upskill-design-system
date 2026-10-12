@@ -4,7 +4,7 @@ title: "ADR-023 — Subcomponents: preset + parts under a dot namespace"
 # ADR-023 — Subcomponents: preset + parts under a dot namespace
 
 **Date:** 2026-10-01
-**Amended:** 2026-10-06
+**Amended:** 2026-10-12
 **Status:** `accepted`
 
 ## Context
@@ -140,3 +140,11 @@ How each part kind maps to Figma:
 
 **Consequences.** `Root` has no interaction (`State`) variant until a composition needs a hover preview. A component that adopts parts later gets the same pair, a preset set plus `Parent.Root`, built in that order.
 
+## Amendment (2026-10-12) — Optional fixed parts get a `Has <x>` boolean; `completion` is now `Value`
+
+The 2026-10-06 part-kind table gives `Progress` → `completion` as its example of a fixed part's properties exposed on the parent. Two things in it are out of date:
+
+- **`completion` is `Value`.** Tier 3 (ADR-026, 2026-10-11) renamed ProgressBar's `completion` to `Value`, a sampled variant (`0`/`10`/`20`/`50`/`80`/`100`). `CardVertical.Root` exposes the nested `ProgressBar` instance, so the property a designer sees is `Value` on that instance.
+- **An optional fixed part also needs a visibility boolean.** In code, `<CardVertical.Progress>` is optional inside `Root`. Figma can't omit a layer per instance, so `Root` carries `Has progress` (default `false`) driving the nested instance's visibility. This is ADR-026's `Has <x>` recorded mapping, widened the same day to cover optional parts.
+
+The rule for `fixed` is now: a nested layer or instance with its own properties, exposed on the parent (`Progress` → `Value`, `Favorite` → `Pressed`); if the part is optional in code, the parent also gets a `Has <x>` visibility boolean (`Has progress`). The CardVertical spec's `Progress.value` entry had copied the stale `completion` example and now records `Has progress + Value`. The read-back that found it (2026-10-12, `2871:7567`) confirmed the file already matched this rule; only the documents were behind.
