@@ -227,6 +227,44 @@ Fill in before the first read of each measurement. Don't edit after a result exi
 - **Prediction:** on the current file, ≥ 12 of 16 default states rated "matches", none rated "wrong". Non-matches trace to text rendering (Figma vs Chrome antialiasing) or the line-height representational divergence, not to tokens or structure. Configured states score slightly lower than defaults, because they were added later.
 - **Reporting bar:** report the full distribution (matches / minor / wrong) for defaults and states separately, with a traced cause for every non-match. Any "wrong" is reported by name and gets an issue, whatever the total.
 
+## Results — Measurement A (run 2026-10-12)
+
+**Reads.** Before: the 2026-10-06 copy (`3K64LlPpNpDcqecaKyxwSx`). After: the main file (`t4F3b1p03loOX9IpNXRaYR`). Same population, matched by set lineage: 16 components, 31 sets. In the before file, 25 sets have the same id and TextField and Select both trace to `Input Group` (`71:1189`). Six sets (`CardVertical.Root` and its five part components) didn't exist before and count as missing. Raw reads and scores: `.claude/handoff/runs/figma-fidelity/checker/{reads,scores}/a-{before,after}.json`.
+
+**Checker validity: met.** Every Tier 0 / drift-log gap that predates the before version fails in the before run:
+- the 9 Large Button variants on `space/250` (18 padding sides);
+- Button icon Accent default on the shared `color/background/brand`;
+- Transparent hover with no tint;
+- `Disabled` inside `State` (Button, ButtonArrow, Checkbox; TextField's `State` holds `Filled`/`Empty`);
+- Breadcrumb link `Current` inside `State`;
+- Nav item `Property 1` / `Variant2`;
+- Checkbox `State3`;
+- missing `Active` previews (Accordion, DropdownMenu/Item, ButtonArrow).
+
+Not applicable: `state3`/`state4` (the Figma-only Accordion list, outside the population), and Select / Button icon `State=Disabled`, which were added in the 2026-10-07 → 10-10 alignment work, after the before version.
+
+**Checker changes after the freeze**, all applied to both reads and re-verified on the fixtures:
+1. A before variant's token conditions come from its current counterpart by node id (Tier 3 renamed variants in place: `Style` → `Variant`, `Small/Default/Large` → `sm/md/lg`). Without this, token match couldn't tell which before variant was Accent or Large. Before variants with no current counterpart (15, in the TextField/Select sets) are left out of token match.
+2. A missing property now also fails its values/default/boolean checks, so a missing axis isn't rewarded with a smaller denominator.
+3. Added a check that each interaction state the spec lists (hover, active) has a `State` preview, because the Tier 0 "missing Active" gap had no check. In lineage mode a before value counts only if that variant is the state's preview now (ButtonArrow's old `State=Active` was its resting look).
+4. Values/default checks apply only to variant properties. **Found while inspecting the after results**, not by the validity bar: TextField's `icon` instance swap was getting a values check.
+
+| Score | Before | After | Δ | Prediction | Verdict (bar: improved if ≥ 20 points) |
+|---|---|---|---|---|---|
+| Binding coverage | 52.7% | 54.3% | +1.6 | ≈ 80 → ≥ 95 | **Miss.** Not improved. |
+| *Coverage excl. zero literals (secondary)* | *80.9%* | *81.6%* | *+0.7* | | |
+| Token match | 66.5% (352/529) | 80.9% (640/791) | +14.4 | ≈ 70 → ≥ 90 | **Miss.** Before as predicted; after below 90, and +14.4 is under the bar. |
+| *Token match excl. unbound dimension tokens (secondary)* | *77.2%* | *94.8%* | *+17.6* | | |
+| Structure | 32.7% (52/159) | 78.6% (132/168) | **+45.9** | ≤ 50 → ≥ 95 | **Improved.** Before as predicted; after below the predicted 95. |
+| Hygiene: placeholder names | 3 | 0 | −3 | ≥ 4 → 0 | After as predicted; before 3, not ≥ 4 (the 4th was out of population). |
+| Hygiene: all violations | 8 | 10 | +2 | | Empty matrix cells rose 2 → 7 with the new `Current`/`Selected`/`Has error` axes. |
+
+**Headline against the reporting bar:** structure moved +45.9 points, so the headline claim is supported **for structure only**. Token use did not clear the bar. Binding coverage barely moved: the October work renamed, split and re-bound states, but didn't bind the remaining raw values (zero paddings, literal radii, unbound heights). Token match rose 14.4 points. Most of the remaining misses are dimension tokens the spec names but Figma leaves unbound (116 of 151 misses after: Button heights, ButtonArrow/Avatar sizes, CardVertical min-widths). Under the frozen rule these count.
+
+**Remaining gaps (after), by name:**
+- **Structure below 90%:** Accordion 3/6, AppHeader 1/9, Avatar 3/5, Badge 3/4, Breadcrumb 1/2, Chip 7/8, DropdownMenu 3/9, Image 0/5, ProgressBar 1/2, Select 8/12, TextField 14/17. Almost all are **spec claims of a Figma property the file doesn't have**: AppHeader `Logo`/`Nav items`/`User name`, Image `Src`/`Alt`/`Aspect ratio`, Badge/Chip/Accordion `Children`, DropdownMenu `Items`/`Open`/`List role`, Select/TextField `Hide label`/`Placeholder`. This is the "spec guarantees code ↔ record, not Figma ↔ record" gap page 14 describes, now counted. Each is either a spec over-claim (should be `code-only` or a recorded gap) or a missing Figma property, to triage afterwards.
+- **Token match below 90%:** Accordion 66.7%, Avatar 0%, Badge 50%, Button icon 66.7%, ButtonArrow 52.6%, CardVertical 76.9%, CardVertical.Root 50%, Chip 75.6%, ProgressBar 33.3%, Select 62.5%, TextField 81.3%. Besides unbound dimensions: literal radii (Chip 50, ProgressBar 24, Badge 8), Chip's literal `#666666` label, Accordion title on `text/subtle` instead of `text/default`, Select trigger padding `inset/sm` instead of `inset/md`.
+
 ## Caveats to carry into the case study
 
 - **Circularity.** Scoring Figma against the spec it was aligned to comes out high by construction. The hygiene score and the visual rating don't depend on the system's own yardstick, which is why they're in the report. Lead with them when the structure score is near 100%.
@@ -241,8 +279,8 @@ Fill in before the first read of each measurement. Don't edit after a result exi
 
 ## Done when
 
-- [ ] Checker built (done 2026-10-12, fixture-verified), and the validity bar is met against the Tier 0 matrix on A's before read.
-- [ ] A pre-registered, run on both versions, and reported per set and in aggregate with failed-check lists.
+- [x] Checker built (2026-10-12, fixture-verified), and the validity bar is met against the Tier 0 matrix on A's before read.
+- [x] A pre-registered, run on both versions, and reported per set and in aggregate with failed-check lists (Results — Measurement A).
 - [ ] ADR-029 amendment for B appended; B pre-registered (prompt included), 4 runs done, and scored against the human ceiling.
 - [ ] C pre-registered, run blind, and reported with a traced cause for every non-match.
 - [ ] D recorded during #136, or explicitly skipped.
