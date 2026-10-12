@@ -42,6 +42,7 @@ sources:
 # clock reset 2026-10-11: packages/components/AGENTS.md State model regrouped by who sets a state (ADR-025 amendment); layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-12: AGENTS.md/CLAUDE.md/packages AGENTS.md add spec:validate and spec:generate lines, handoff-tidy reads via readComponentMetadata; budgets and the instruction ladder unchanged, still accurate
 # clock reset 2026-10-12: ADR-029 amendment freezes the evals at 044d28f; the measurements this page cites are historical results, still accurate
+# verified 2026-10-12 (/docs-sync 00 02 09 10 12): checked against the spec rollout and eval freeze diffs since 044d28f; the ladder, budgets and cited measurements are unchanged, still accurate
 ---
 # Context engineering
 

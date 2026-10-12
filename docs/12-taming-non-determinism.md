@@ -7,6 +7,8 @@ sources:
   - docs/decisions/007-verified-component-loop.md
   - docs/decisions/008-behavioral-a11y-tier.md
   - docs/decisions/011-layout-landmark-grammar.md
+  - scripts/validate-spec.js
+  - docs/decisions/027-component-spec-file.md
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 # clock reset 2026-10-07: validate-metadata.js reads the component set from the package exports, shared with validate-layout.js (#98); the set is still fixed and canonical in CLAUDE.md, page still accurate
 # clock reset 2026-10-09: ADR-007 amendment (ADR-029) makes the reviewer risk-triggered, not yet implemented; the schema and validator constraints this page describes are unchanged, still accurate
@@ -15,6 +17,7 @@ sources:
 # 2026-10-09: tokens.* derived by script; validator errors name the fix (ADR-029 Step 5)
 # clock reset 2026-10-10: validate-metadata.js also checks every <Name>.spec.json parses; this page describes the gate's role, not its check list, still accurate
 # rewritten 2026-10-12: token checking moved from metadata tokens.* to spec styles via spec:validate (ADR-001/027 amendments 2026-10-11)
+# sources 2026-10-12: declares scripts/validate-spec.js and ADR-027, since the token check this page describes moved to spec:validate
 ---
 # Taming non-determinism
 
