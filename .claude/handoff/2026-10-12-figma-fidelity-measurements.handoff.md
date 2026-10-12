@@ -175,7 +175,7 @@ Correct structure doesn't guarantee it looks the same, so do a visual check on t
 
 Fill in before the first read of each measurement. Don't edit after a result exists.
 
-*Drafted 2026-10-12. The developer confirms or edits each line before the first read; after that, the lines are frozen.*
+*Drafted 2026-10-12. **Confirmed by the developer 2026-10-12, unchanged: predictions, reporting bars, the checker's scoring rules ("Scoring rules as built") and B's task prompt. Frozen from this point.** Anything learned later is reported against these lines, never edited into them.*
 
 ### Checker validity
 
