@@ -12,6 +12,7 @@ sources:
   - packages/components/component.spec.schema.json
   - scripts/validate-spec.js
   - scripts/lib.js
+  - .claude/commands/component-scaffold.md
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 # 2026-10-09: tokens.* is derived by metadata:derive-tokens; validator errors carry the fix (ADR-029 Step 5)
 # clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
@@ -26,6 +27,7 @@ sources:
 # rewritten 2026-10-12: ADR-027 spec rollout (ADR-001 amendments 2026-10-11): states, tokens and accessibility leave metadata for <Name>.spec.json; token list derived from spec styles; metadata:derive-tokens deleted; validator checks, consumer map and diagram updated
 # clock reset 2026-10-12: ADR-027 amendment freezes the Arm C exit test; the ablation retry count this page cites is a historical result, still accurate
 # sources 2026-10-12: declares scripts/lib.js (readComponentMetadata, isInteractive), which the page describes
+# rewritten 2026-10-12: new subsection on how /component-scaffold writes a new component's spec (inputs, order, spec:generate is backfill only); declares component-scaffold.md as a source
 ---
 # Machine-readable metadata
 
@@ -125,6 +127,28 @@ The consumption map — which command reads which section for what:
 - `/extract-learnings` writes back into the spec's `accessibility.*` and metadata's `usage.antiPatterns` and `composition.*`.
 
 `component.category` and `component.type` are the one place the schema enforces a closed taxonomy (`atom|molecule|organism|layout` and `interactive|display|container|input`) — every other section is free-text within its shape. That's deliberate: those two fields are load-bearing for both `a11y-coverage.js`'s interactivity derivation and `generate-pattern-schema.js`'s bucketing fallback (`layout-primitive` when structural detection finds nothing else), so an unenforced vocabulary there would quietly break two downstream consumers at once.
+
+### How a new component's spec gets written
+
+`/component-scaffold` (Stage 1 of `/add-component`) writes the spec as a statement of intent, before any code exists. Each input has its own job:
+
+| Input | Job |
+|---|---|
+| `component.spec.schema.json` | The shape: which sections exist and which values they allow (the prop `kind` enum, the ADR-025 state kinds). |
+| Prop vocabulary (`packages/components/AGENTS.md`, [ADR-026](decisions/026-component-prop-vocabulary.md)) | The names. Each prop maps to a vocabulary concept, or is proposed as a new term with a reason. |
+| The closest existing spec | The level of detail: one with the same role and structure, a compound one such as `CardVertical` when the new component has parts. Its shape is copied, never its content. |
+| Figma design context | The content: variants, states, which token each visual property uses, layout. |
+
+The order:
+
+1. Read the Figma node and translate it into code terms. A line-height's trailing ratio label maps to a `--ds-font-line-height-*` token and a `--space/inline/md` variable to `gap="md"`. Figma's px fallback values are never used.
+2. Name the component noun first (`ButtonArrow`, not `ArrowButton`).
+3. Present an API proposal and stop for approval: anatomy, a props table (concept, kind, type, default, Figma property, surface), constraints with what enforces each, states grouped by kind, accessibility, and every Figma-to-code divergence.
+4. Write `<Name>.spec.json` from the approved proposal. `styles` comes from the Figma token mapping in step 1, and a raw value must carry `{ literal, reason }`.
+5. Write metadata (`component`, `usage`, `variants`, `composition` only), then the code.
+6. Run `spec:validate`. When the code disagrees with the spec, the code is fixed. When building shows the spec itself was wrong, the spec is amended and the change is reported. The spec is never edited only to make a failure go away.
+
+`npm run spec:generate` takes no part in this. It drafts a spec from code that already exists and is meant for backfilling existing components; a new component has no code to read.
 
 ## Diagram
 

@@ -16,7 +16,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 - Metadata schema — `packages/components/component.schema.json` (selection and composition guidance only)
 - Spec schema — `packages/components/component.spec.schema.json` (ADR-027): the build contract you write before any code
 - Existing component as structural template — pick the closest one in `packages/components/src/` (e.g. for Button use an interactive component; for Card use a container component)
-- Spec template — read `<Template>.spec.json` of the closest component that has one: `Button` for a single-element component, `CardVertical` for a compound one with parts (ADR-023). Until the ADR-027 backfill only these two exist; the template shows the shape and level of detail, not content to copy
+- Spec template — read the `<Template>.spec.json` of the closest component (every component has one since the ADR-027 backfill): one with the same role and structure, and for a compound component one with parts (ADR-023), e.g. `CardVertical`. The template shows the shape and level of detail, not content to copy
 - Prop vocabulary — `packages/components/AGENTS.md` → "Prop vocabulary" (ADR-026)
 - Figma design context — use Figma MCP (`get_design_context` on the component's Figma node) to read variants, states, token usage, and layout
 

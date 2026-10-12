@@ -32,6 +32,7 @@ sources:
 # clock reset 2026-10-10: /layout-generation grammar table: navItems active → current (ADR-026 Tier 1); moment 4 description unchanged, still accurate
 # clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 # rewritten 2026-10-12: ADR-027 spec rollout — scaffold writes the spec first, gate adds spec:validate, metadata:derive-tokens gone, extract-learnings routes accessibility.* to the spec
+# clock reset 2026-10-12: /component-scaffold spec-template input no longer limited to Button/CardVertical (all 27 have specs); the Stage 1 bullet is unchanged, still accurate
 ---
 # Agentic moments
 
