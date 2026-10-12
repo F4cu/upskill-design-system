@@ -41,6 +41,7 @@ sources:
 # clock reset 2026-10-10: packages/components/AGENTS.md active line names the TextField/Select exemption (ADR-025 Tier 2); layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-11: packages/components/AGENTS.md State model regrouped by who sets a state (ADR-025 amendment); layering/budget mechanics unchanged, still accurate
 # clock reset 2026-10-12: AGENTS.md/CLAUDE.md/packages AGENTS.md add spec:validate and spec:generate lines, handoff-tidy reads via readComponentMetadata; budgets and the instruction ladder unchanged, still accurate
+# clock reset 2026-10-12: ADR-029 amendment freezes the evals at 044d28f; the measurements this page cites are historical results, still accurate
 ---
 # Context engineering
 

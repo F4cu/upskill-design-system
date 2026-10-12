@@ -23,6 +23,7 @@ sources:
 # 2026-10-09: isInteractive moved to scripts/lib.js and now also drives component:risk (ADR-029)
 # rewritten 2026-10-10: validate-metadata.js gains a fifth check (every <Name>.spec.json parses); the checks list names it
 # rewritten 2026-10-12: ADR-027 spec rollout (ADR-001 amendments 2026-10-11): states, tokens and accessibility leave metadata for <Name>.spec.json; token list derived from spec styles; metadata:derive-tokens deleted; validator checks, consumer map and diagram updated
+# clock reset 2026-10-12: ADR-027 amendment freezes the Arm C exit test; the ablation retry count this page cites is a historical result, still accurate
 ---
 # Machine-readable metadata
 
