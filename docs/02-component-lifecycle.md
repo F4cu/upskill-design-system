@@ -21,6 +21,7 @@ sources:
 # clock reset 2026-10-09: /add-component picks full vs standard by risk tier (component:risk); the reviewPath values and checklist mechanics this page owns are unchanged, still accurate
 # clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 # clock reset 2026-10-10: validate-metadata.js also checks every <Name>.spec.json parses; the gate command this page describes is unchanged, still accurate
+# rewritten 2026-10-12: ADR-027 spec rollout — metadata requires four sections; states/tokens/accessibility live in the spec
 ---
 # Component lifecycle
 
@@ -76,7 +77,7 @@ The existing prop API stays as a **preset**, rebuilt from the parts, so nothing 
 
 ## How it works, concretely
 
-The metadata schema (`packages/components/component.schema.json`) requires seven top-level properties: `component`, `usage`, `variants`, `states`, `tokens`, `accessibility`, `composition` (originally named `relationships` — see the ADR-001 2026-07-23 amendment). What each section holds, why, and who consumes it is the subject of [10 — Machine-readable metadata](10-machine-readable-metadata.md); this page keeps only the lifecycle-relevant shape. `composition` may also carry an optional `parts` list for components with subcomponents (ADR-023); `scripts/validate-metadata.js` cross-checks each part's references against real components and sibling parts. A `variants` block modelled as named axes looks like:
+The metadata schema (`packages/components/component.schema.json`) requires four top-level properties: `component`, `usage`, `variants`, `composition` (originally named `relationships` — see the ADR-001 2026-07-23 amendment). `states`, `tokens` and `accessibility` moved to each component's `<Name>.spec.json`, its [component spec](08-glossary.md), on 2026-10-11 (ADR-001 amendments, [ADR-027](decisions/027-component-spec-file.md)). Metadata that still carries them fails the schema. The token list is now whatever the spec's `styles` reference. Scripts that need metadata and spec combined in one object read it through `readComponentMetadata` in `scripts/lib.js`. What each section holds, why, and who consumes it is the subject of [10 — Machine-readable metadata](10-machine-readable-metadata.md); this page keeps only the lifecycle-relevant shape. `composition` may also carry an optional `parts` list for components with subcomponents (ADR-023); `scripts/validate-metadata.js` cross-checks each part's references against real components and sibling parts. A `variants` block modelled as named axes looks like:
 
 ```json
 "variants": {

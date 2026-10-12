@@ -64,6 +64,7 @@ sources:
 # clock reset 2026-10-11: ADR-025 amendment regroups states by who sets them; ADR-026 amendment moves Disabled out of Figma State; this page lists no individual ADRs or Figma property names, still accurate
 # clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 # clock reset 2026-10-11: contract migration Tier 4 (ADR-025 Checkbox checked-hover amendment, ADR-026 close-out amendment); this page describes no component states or Figma cells, still accurate
+# clock reset 2026-10-12: ADR-001/027 amendments and command updates for the spec rollout; this page's map-level description of metadata and moments is unaffected, still accurate
 ---
 # Start here
 
