@@ -78,6 +78,79 @@ Can the system rebuild a correctly built Figma component from code, and how much
 - **Scoring:** the checker on each generated set, compared with Measurement A's "after" score for the hand-aligned sets (the human ceiling).
 - **What B can claim:** with N = 1 run per cell, a directional difference per score, reported as an observation, not an effect size. If the arms differ by less than the run-to-run noise you'd expect, say it's inconclusive. Don't add runs after seeing results unless the pre-registration says so.
 
+### B runner setup and task prompt
+
+**Isolation (runner, not part of the prompt).** A run inside the repo would leak the answer: reading any file under `packages/components/` loads `packages/components/AGENTS.md`, which spells out the Figma mapping rules (`Has <x>`, `Root` + native slots, `Disabled` first). The root `CLAUDE.md`/`AGENTS.md`, the project memory and the `/figma-cli` command (its rule 5 points at `metadata.json`) leak the same way. So each run is a fresh Claude Code session started in an isolated directory outside the repo, holding only that arm's files:
+
+```
+<scratchpad>/fidelity-b/<arm>-<component>/      # arm ∈ code-only | code-metadata
+  index.tsx
+  <Name>.module.css
+  tokens/primitives.css
+  tokens/brand.upskill.css                       # the default brand (DEFAULT_BRAND in packages/tokens/build.js)
+  tokens/theme.light.css
+  tokens/theme.dark.css
+  tokens/device.desktop.css
+  figma-variables.json
+  <Name>.spec.json                               # code-metadata arm only
+  <Name>.metadata.json                           # code-metadata arm only
+```
+
+- Copy the files from `main` at a recorded commit, no `.git`, no `CLAUDE.md`, no `.claude/`. Check `~/.claude/CLAUDE.md` holds nothing about this repo, and that the directory has no project memory.
+- The Figma file open in Desktop is that run's fresh scratch duplicate. Name it `fidelity-b-<arm>-<component>` and pass the name to the session as `FIGMA_FILE`.
+- Known residual leaks, equal in both arms: code comments cite ADR numbers (`ADR-024` in Button `index.tsx` and CardVertical's CSS) without their content; the scratch file still holds other components (CardHorizontal's `Has progress`, Chip's `Pressed` × `State`) a generator may look at. Both are the real-world condition and stay.
+- After each run, save the transcript to `.claude/handoff/runs/figma-fidelity/b-<arm>-<component>.jsonl` and check it for reads outside the run directory, Figma MCP calls, and any forbidden command below. A run that broke a rule is reported as void, not re-run silently.
+
+**Task prompt (verbatim; only `{COMPONENT}`, `{FILE_LIST}` and `{FIGMA_FILE}` change between runs):**
+
+```text
+You are building the Figma library component for {COMPONENT}, a coded React
+component in a design system. Code is the source of truth; the Figma component
+must mirror it.
+
+Everything you have is in this directory:
+{FILE_LIST}
+Read all of it before you start.
+
+Goal: a Figma component that a designer can place instead of the coded
+component, with nothing to detach or rebuild. It should expose the same
+options a developer can configure in code, show the same states, use the same
+design tokens in each state, and look the same. Build it the way you would for
+a production design-system library.
+
+Figma file: the file open in Figma Desktop named "{FIGMA_FILE}". It already
+contains the design-token variables (figma-variables.json lists them) and
+other library components you may reuse as nested instances. Bind visual
+properties to the existing variables wherever one fits. Do not create, rename
+or delete variables, and do not change anything that already exists in the
+file. Put everything you build on a new page named "{COMPONENT} (generated)".
+
+Tooling: drive Figma with figma-cli (installed, already connected; check with
+`figma-cli status`, set FIGMA_FILE="{FIGMA_FILE}" on each command).
+`figma-cli eval --file <script.js>` runs Figma Plugin API code in the file and
+prints the script's return value. Practical notes about the tool:
+- Output over 20,000 characters is cut off mid-JSON. Return compact results.
+- Use the async APIs (getNodeByIdAsync, getLocalVariablesAsync, ...) and call
+  `await figma.loadAllPagesAsync()` before searching other pages.
+- Load every font with `figma.loadFontAsync` before creating or editing text.
+- A node created with clone() lands on the current page; move it explicitly.
+- An unbounded loop freezes Figma Desktop. Bound every loop. A failed eval
+  does not roll back, so make scripts safe to run twice.
+Do not use these figma-cli commands: import, tokens, variables/var and
+collections/col writes, recreate-url, screenshot-url, analyze-url. Do not use
+any other Figma tool or MCP server.
+
+Work on your own: don't ask questions. When something is ambiguous, decide,
+and note the decision. If a step fails, fix it and continue.
+
+When you are done, reply with:
+1. Every component and component set you created: name and node id.
+2. For each set, its component properties (name, type, values, default).
+3. Your decisions and assumptions, one line each.
+```
+
+`{FILE_LIST}` is the directory listing above for that arm, one path per line. The prompt doesn't name the spec or metadata files or say what's in them. In the code-metadata arm they're simply in the list.
+
 ## C. Outcome check: does it look right?
 
 Correct structure doesn't guarantee it looks the same, so do a visual check on the current file.
@@ -122,7 +195,7 @@ Fill in before the first read of each measurement. Don't edit after a result exi
 
 ### B — with/without metadata
 
-- **Task prompt (verbatim):** _TODO_
+- **Task prompt (verbatim):** drafted 2026-10-12 in "B runner setup and task prompt" above, with the isolation setup. Confirm before the first run; frozen after.
 - **Hypothesis (developer's):** without the metadata, the generated components look right at first glance. Underneath, the structure and labelling don't match code, tokens are bound to the wrong states, and property names don't align.
 - **Prediction per score (code-only vs code + metadata, Button and CardVertical reported separately, then pooled):**
   - **Visual (C rating):** about the same on the preset defaults. Code-only no more than one scale step below code + metadata on any pair. *This is the "looks good on the surface" half.*
