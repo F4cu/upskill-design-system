@@ -22,6 +22,6 @@
 }
 
 .playIcon {
-  width: 3rem;
-  height: 3rem;
+  width: var(--ds-size-600);
+  height: var(--ds-size-600);
 }

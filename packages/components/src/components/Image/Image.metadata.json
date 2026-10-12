@@ -68,35 +68,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Renders the provided image with object-fit cover."
-    },
-    {
-      "state": "empty",
-      "description": "No src provided — renders neutral grey surface with centred image icon."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.icon.media",
-      "color.background.media.strong"
-    ],
-    "spacing": [],
-    "typography": [],
-    "borderRadius": [
-      "border-radius.sm"
-    ],
-    "other": []
-  },
-  "accessibility": {
-    "role": "img",
-    "ariaAttributes": [
-      "alt — required when src is provided; pass empty string if the surrounding context (e.g. card title) already describes the image."
-    ],
-    "keyboardInteractions": []
-  },
   "composition": {
     "composedOf": [
       "Icon"

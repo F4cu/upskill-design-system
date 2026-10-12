@@ -28,16 +28,18 @@ Run `npm run sense:component <Name>`. This writes `.claude/handoff/runs/<Name>.s
 If the Figma snapshot is reported absent or stale (`figma.snapshot.stale: true`) and the component has a Figma node, tell the developer and offer to refresh via `/figma-variable-audit` before continuing. Do not silently rely on stale drift state.
 
 ### Stage 1 · Scaffold (main session)
-Read **only** the snapshot from stage 0 plus the metadata schema (`packages/components/component.schema.json`) and the closest existing component as a structural template. Then follow `/component-scaffold`: first its API proposal checkpoint (props table checked against the "Prop vocabulary" in `packages/components/AGENTS.md`, approved by the developer before any file is written, ADR-026), then the four files at `packages/components/src/components/<Name>/`:
-- `index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.metadata.json`
+Read **only** the snapshot from stage 0 plus the metadata and spec schemas (`packages/components/component.schema.json`, `component.spec.schema.json`), the closest existing component as a structural template, and the closest existing `spec.json` (ADR-027). Then follow `/component-scaffold`: first its API proposal checkpoint (props table checked against the "Prop vocabulary" in `packages/components/AGENTS.md`, approved by the developer before any file is written, ADR-026), then the spec and the four files at `packages/components/src/components/<Name>/`, in that order:
+- `<Name>.spec.json` first, from the approved proposal and before any code (ADR-027); then `index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.metadata.json`
 
-Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, noun-first naming, story title rule). Pick active tokens — never one listed under `tokens.deprecatedAvoid` in the snapshot. Add the component to `packages/components/src/index.ts`. Fill `tokens` with `npm run metadata:derive-tokens -- <Name>`, never by hand.
+Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, noun-first naming, story title rule). Pick active tokens — never one listed under `tokens.deprecatedAvoid` in the snapshot. Add the component to `packages/components/src/index.ts`. Metadata carries no `states`, `tokens` or `accessibility`: the spec owns them, and its `styles` are the token list. Reconcile spec and code with `npm run tokens:build && npm run spec:validate` before leaving this stage.
 
 ### Stage 2 · Gate (script — fail-fast)
 Run, in order:
 ```
-npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
+npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
 ```
+
+`spec:validate` (ADR-027) fails when the spec and the code disagree: a prop, default or variant option missing on either side, a `--ds-*` property the CSS reads that the spec's `styles` omit (or the reverse). Fix the code when the spec is right; amend the spec first, and say so in the PR body, when building showed the spec was wrong.
 If any step fails, go back to Stage 1, fix the cause the error names, and re-run the gate. Do not proceed until all pass.
 
 `patterns:generate` refreshes `.claude/component-patterns.json` (the cross-component pattern aggregate, ADR-013). The regenerated file **must be committed alongside the component** — `components-check.yml` regenerates and diffs it on every PR, so a stale committed copy fails CI. If the new component introduces a `drift` entry (e.g. a prop name that differs from the pattern's canonical `state.props`), treat that as a Stage 1 fix: rename the prop to match the pattern rather than shipping new drift.
@@ -93,13 +95,13 @@ Arm 2 of the harness-ablation eval (`.claude/handoff/archive/2026-10-07-harness-
 | Stage | Eval behaviour |
 |---|---|
 | 0 · Sense | Run as normal. Skip the stale-Figma offer; note it in `.run.json` `notes` instead. |
-| 1 · Scaffold | No Figma MCP. The design input is the brief plus the `reference.png` it names — read the image instead of a Figma node. **API proposal checkpoint is auto-approved:** write the full proposal (anatomy, props table, divergences) to `api-proposal.md` at the repo root, then proceed with it exactly as written — no second pass. Omit `figmaNodeId` from the metadata. |
+| 1 · Scaffold | No Figma MCP. The design input is the brief plus the `reference.png` it names — read the image instead of a Figma node. **API proposal checkpoint is auto-approved:** write the full proposal (anatomy, props table, constraints, states, accessibility, divergences) to `api-proposal.md` at the repo root, write `<Name>.spec.json` from it, then proceed exactly as written — no second pass. Omit `figmaNodeId` from the metadata. |
 | 2 · Gate | Run as normal, fail-fast. **Cap: 5 gate runs.** If the 5th still fails, stop: write `.run.json` with the failures and `"outcome": "gate-failed"`, skip Stage 3. |
 | 2b · Visual checkpoint | Skipped. |
 | 2c · Record visual review | Skipped. Don't write `visualReview` to `component-review-state.json`; record `"visualReview": "skipped-eval"` in `.run.json`. |
 | 3+ · Review | Always the full path, whatever `component:risk` says, so Arm 2 stays re-runnable; `--no-review` is ignored. Run `/review-component <Name> --eval` (see that command's eval section): same single reviewer subagent, same fix pass and gate, but no branch, commit or PR. |
 
-**Outputs, all in the workspace:** the component files, `api-proposal.md`, `.claude/handoff/runs/<Name>.review.json` and `<Name>.run.json`. Don't run `npm run handoff:tidy`: eval runs never enter the committed `run-ledger.json`. End with a one-paragraph summary of the outcome; the harness reads cost and turns from `--output-format json`, not from the summary.
+**Outputs, all in the workspace:** the component files (including `<Name>.spec.json`), `api-proposal.md`, `.claude/handoff/runs/<Name>.review.json` and `<Name>.run.json`. Don't run `npm run handoff:tidy`: eval runs never enter the committed `run-ledger.json`. End with a one-paragraph summary of the outcome; the harness reads cost and turns from `--output-format json`, not from the summary.
 
 ## Success signal
 The component ships *through* the loop — meeting its roadmap success signal with no manual restructuring, the human reviewing only clean code. Stages 0–2c complete cleanly, then the Stage 3 review (adversarial for interactive, in-session for display) clears and the PR opens. A display component finishes with no subagent spawned; an interactive one spawns exactly one. Update this prompt with anything learned from each run.

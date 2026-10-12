@@ -1,0 +1,195 @@
+{
+  "component": "Heading",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "h1-h6, chosen by `as` (default h2)",
+      "role": "heading",
+      "required": true
+    }
+  ],
+  "props": {
+    "as": {
+      "kind": "element",
+      "type": "HeadingTag",
+      "default": "h2",
+      "concept": "Element",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "size": {
+      "kind": "variantAxis",
+      "type": "HeadingSize",
+      "options": [
+        "title-small",
+        "subheader",
+        "headline",
+        "headline-serif",
+        "display"
+      ],
+      "default": "headline",
+      "concept": "Size",
+      "figma": {
+        "surface": "both",
+        "property": "Size"
+      }
+    },
+    "color": {
+      "kind": "variantAxis",
+      "type": "HeadingColor",
+      "options": [
+        "default",
+        "subtle",
+        "brand",
+        "inverted"
+      ],
+      "default": "default",
+      "concept": "new term: semantic text colour token, not a visual weight; ADR-026 has no row for it (Text uses the same name)",
+      "figma": {
+        "surface": "both",
+        "property": "Color"
+      }
+    },
+    "className": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "style": {
+      "kind": "native",
+      "type": "CSSProperties",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static heading — no interactive states."
+    }
+  ],
+  "accessibility": {
+    "role": "heading",
+    "ariaAttributes": [],
+    "keyboardInteractions": [],
+    "notes": "Always set as to the correct heading level for document outline. Size and as are deliberately decoupled so visual scale never forces a skip in heading levels."
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "color": "color.text.default",
+          "margin": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          }
+        }
+      },
+      {
+        "when": {
+          "color": "subtle"
+        },
+        "set": {
+          "color": "color.text.subtle"
+        }
+      },
+      {
+        "when": {
+          "color": "brand"
+        },
+        "set": {
+          "color": "color.text.brand"
+        }
+      },
+      {
+        "when": {
+          "color": "inverted"
+        },
+        "set": {
+          "color": "color.text.inverted.default"
+        }
+      },
+      {
+        "when": {
+          "size": "title-small"
+        },
+        "set": {
+          "font-family": "font.family.headline-default",
+          "font-size": "font.size.title-small",
+          "font-weight": "font.weight.semibold",
+          "line-height": "font.line-height.default"
+        }
+      },
+      {
+        "when": {
+          "size": "subheader"
+        },
+        "set": {
+          "font-family": "font.family.headline-default",
+          "font-size": "font.size.subheader",
+          "font-weight": "font.weight.semibold",
+          "line-height": "font.line-height.default"
+        }
+      },
+      {
+        "when": {
+          "size": "headline"
+        },
+        "set": {
+          "font-family": "font.family.headline-default",
+          "font-size": "font.size.headline",
+          "font-weight": "font.weight.semibold",
+          "line-height": "font.line-height.default"
+        }
+      },
+      {
+        "when": {
+          "size": "headline-serif"
+        },
+        "set": {
+          "font-family": "font.family.headline-serif",
+          "font-size": "font.size.headline-serif",
+          "font-weight": "font.weight.medium",
+          "line-height": "font.line-height.tight"
+        }
+      },
+      {
+        "when": {
+          "size": "display"
+        },
+        "set": {
+          "font-family": "font.family.headline-serif",
+          "font-size": "font.size.display",
+          "font-weight": "font.weight.medium",
+          "line-height": "font.line-height.tight"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

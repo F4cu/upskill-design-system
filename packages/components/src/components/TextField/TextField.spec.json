@@ -1,0 +1,380 @@
+{
+  "component": "TextField",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Label",
+      "element": "Text",
+      "parent": "Root",
+      "role": "generic",
+      "required": true,
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "label"
+      },
+      "notes": "Associated with the input by htmlFor; visually hidden when hideLabel is set, never removed."
+    },
+    {
+      "name": "InputWrapper",
+      "element": "div",
+      "parent": "Root",
+      "role": "generic",
+      "required": true,
+      "notes": "Positioning context for the leading icon."
+    },
+    {
+      "name": "IconSlot",
+      "element": "span",
+      "parent": "InputWrapper",
+      "role": "presentation",
+      "required": false,
+      "when": "icon is set"
+    },
+    {
+      "name": "Icon",
+      "element": "Icon",
+      "parent": "IconSlot",
+      "role": "presentation",
+      "required": false,
+      "when": "icon is set",
+      "builtOn": "Icon",
+      "builtOnProps": {
+        "size": "sm"
+      }
+    },
+    {
+      "name": "Input",
+      "element": "input",
+      "parent": "InputWrapper",
+      "role": "textbox",
+      "required": true,
+      "action": "Accepts text."
+    },
+    {
+      "name": "Placeholder",
+      "element": "::placeholder of Input",
+      "parent": "Input",
+      "role": "presentation",
+      "required": false,
+      "when": "placeholder is set"
+    },
+    {
+      "name": "ErrorMessage",
+      "element": "Text",
+      "parent": "Root",
+      "role": "alert",
+      "required": false,
+      "when": "error is set",
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span"
+      }
+    }
+  ],
+  "props": {
+    "label": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Accessible name",
+      "figma": {
+        "surface": "both",
+        "property": "Label"
+      }
+    },
+    "hideLabel": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": {
+        "surface": "both",
+        "property": "Hide label"
+      }
+    },
+    "error": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Error",
+      "figma": {
+        "surface": "both",
+        "property": "Error"
+      }
+    },
+    "size": {
+      "kind": "variantAxis",
+      "type": "TextFieldSize",
+      "options": [
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "concept": "Size",
+      "figma": {
+        "surface": "both",
+        "property": "Size"
+      }
+    },
+    "shape": {
+      "kind": "variantAxis",
+      "type": "TextFieldShape",
+      "options": [
+        "square",
+        "round"
+      ],
+      "default": "square",
+      "concept": "Corners",
+      "figma": {
+        "surface": "both",
+        "property": "Shape"
+      }
+    },
+    "icon": {
+      "kind": "content",
+      "type": "IconName",
+      "default": null,
+      "concept": "Icon",
+      "figma": {
+        "surface": "both",
+        "property": "Icon"
+      }
+    },
+    "disabled": {
+      "kind": "native",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": {
+        "surface": "both",
+        "property": "Disabled",
+        "note": "Built only at State=Default (ADR-025 amendment 2026-10-11)."
+      }
+    },
+    "placeholder": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "both",
+        "property": "Placeholder"
+      }
+    },
+    "value": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "Native-input wrappers keep native names (ADR-026)",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "onChange": {
+      "kind": "native",
+      "type": "ChangeEventHandler<HTMLInputElement>",
+      "default": null,
+      "concept": "Native-input wrappers keep native names (ADR-026)",
+      "figma": {
+        "surface": "code-only"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Resting state. Neutral border."
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": ":hover:not(:disabled)",
+      "notes": "Stronger border to signal interactivity."
+    },
+    {
+      "name": "focus",
+      "kind": "interaction",
+      "trigger": ":focus",
+      "notes": "Brand-colour border on the input, on top of the global focus ring."
+    },
+    {
+      "name": "disabled",
+      "kind": "appData",
+      "trigger": "disabled prop (native attribute)",
+      "notes": "Muted text and border; cursor not-allowed; interaction blocked natively."
+    },
+    {
+      "name": "error",
+      "kind": "appData",
+      "trigger": "error prop set",
+      "notes": "Error-colour border (also on hover and focus) and a message below the input. Sets aria-invalid and aria-describedby."
+    }
+  ],
+  "accessibility": {
+    "role": "textbox",
+    "ariaAttributes": [
+      "aria-describedby (points to error message element when error prop is set)",
+      "aria-invalid (set to true when error prop is set)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Moves focus to the input"
+      },
+      {
+        "key": "Any character",
+        "action": "Enters text"
+      }
+    ]
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.stack.sm"
+        }
+      }
+    ],
+    "IconSlot": [
+      {
+        "when": {},
+        "set": {
+          "left": "space.inset.md",
+          "color": "color.text.subtle"
+        }
+      }
+    ],
+    "Input": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "height": "size.500",
+          "padding-inline": "space.inset.md",
+          "background": "color.background.input",
+          "color": "color.text.default",
+          "border-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-color": "color.border.input.default",
+          "border-radius": "border-radius.sm",
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-default"
+        }
+      },
+      {
+        "when": {
+          "size": "lg"
+        },
+        "set": {
+          "height": "size.600"
+        }
+      },
+      {
+        "when": {
+          "shape": "round"
+        },
+        "set": {
+          "border-radius": "border-radius.full"
+        }
+      },
+      {
+        "when": {
+          "icon": "*"
+        },
+        "set": {
+          "padding-inline-start": {
+            "template": "calc({space.inset.md} + {size.icon.sm} + {space.inset.xs})"
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "border-color": "color.border.input.hover"
+        }
+      },
+      {
+        "when": {
+          "state": "focus"
+        },
+        "set": {
+          "border-color": "color.border.selected"
+        }
+      },
+      {
+        "when": {
+          "error": "*"
+        },
+        "set": {
+          "border-color": "color.border.feedback.error"
+        }
+      },
+      {
+        "when": {
+          "error": "*",
+          "state": "hover"
+        },
+        "set": {
+          "border-color": "color.border.feedback.error"
+        }
+      },
+      {
+        "when": {
+          "error": "*",
+          "state": "focus"
+        },
+        "set": {
+          "border-color": "color.border.feedback.error"
+        }
+      },
+      {
+        "when": {
+          "state": "disabled"
+        },
+        "set": {
+          "border-color": "color.border.disabled",
+          "color": "color.text.disabled"
+        }
+      }
+    ],
+    "Placeholder": [
+      {
+        "when": {},
+        "set": {
+          "color": "color.text.disabled"
+        }
+      }
+    ],
+    "ErrorMessage": [
+      {
+        "when": {},
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-small",
+          "line-height": "font.line-height.relaxed",
+          "color": "color.text.feedback.error"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

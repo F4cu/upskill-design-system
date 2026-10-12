@@ -1,0 +1,78 @@
+{
+  "component": "ScrollArea",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "role": "generic",
+      "required": true
+    }
+  ],
+  "props": {
+    "orientation": {
+      "kind": "variantAxis",
+      "type": "ScrollAreaOrientation",
+      "options": [
+        "horizontal",
+        "vertical"
+      ],
+      "default": "horizontal",
+      "concept": "Layout axis",
+      "figma": {
+        "surface": "both",
+        "property": "Orientation"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static scroll container — no interactive states beyond native scroll behaviour."
+    }
+  ],
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": [
+      {
+        "key": "Arrow keys / Page Up / Page Down",
+        "action": "Scroll the container when it has focus (native browser behaviour)"
+      }
+    ],
+    "notes": "The native scrollbar is hidden visually but scroll behaviour is fully intact. Keyboard users can scroll via arrow keys once the container is focused. If the scroll region contains important content, consider adding tabindex=0 so keyboard users can reach and scroll it."
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "scrollbar-width": {
+            "literal": "none",
+            "reason": "Hides the scrollbar (Firefox); scrolling still works."
+          },
+          "-ms-overflow-style": {
+            "literal": "none",
+            "reason": "Hides the scrollbar (legacy Edge); scrolling still works."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

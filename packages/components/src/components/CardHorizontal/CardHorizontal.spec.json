@@ -1,0 +1,347 @@
+{
+  "component": "CardHorizontal",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "notes": "aria-labelledby points at the Title; role, children and aria-labelledby are not overridable.",
+      "role": "article",
+      "required": true
+    },
+    {
+      "name": "Thumbnail",
+      "element": "Image",
+      "parent": "Root",
+      "builtOn": "Image",
+      "builtOnProps": {
+        "aspectRatio": "1/1"
+      },
+      "role": "img",
+      "required": true
+    },
+    {
+      "name": "Content",
+      "element": "Stack",
+      "parent": "Root",
+      "builtOn": "Stack",
+      "builtOnProps": {
+        "gap": "sm"
+      },
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "TitleGroup",
+      "element": "Stack",
+      "parent": "Content",
+      "builtOn": "Stack",
+      "builtOnProps": {
+        "gap": "xs"
+      },
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Title",
+      "element": "Heading",
+      "parent": "TitleGroup",
+      "builtOn": "Heading",
+      "builtOnProps": {
+        "as": "h3",
+        "size": "title-small"
+      },
+      "notes": "color inverted when variant is inverted.",
+      "role": "heading",
+      "required": true
+    },
+    {
+      "name": "Progress",
+      "element": "ProgressBar",
+      "parent": "TitleGroup",
+      "when": "progress is set",
+      "builtOn": "ProgressBar",
+      "notes": "Named by the Title through aria-labelledby.",
+      "role": "progressbar",
+      "required": false
+    },
+    {
+      "name": "Meta",
+      "element": "Inline",
+      "parent": "Content",
+      "when": "author, duration or certified is set",
+      "builtOn": "Inline",
+      "builtOnProps": {
+        "gap": "sm",
+        "wrap": true,
+        "align": "center"
+      },
+      "role": "generic",
+      "required": false
+    },
+    {
+      "name": "Author",
+      "element": "Text",
+      "parent": "Meta",
+      "when": "author is set",
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span",
+        "size": "metadata"
+      },
+      "role": "generic",
+      "required": false
+    },
+    {
+      "name": "Separator",
+      "element": "span",
+      "parent": "Meta",
+      "when": "author and duration are both set",
+      "notes": "A dot drawn by CSS, aria-hidden.",
+      "role": "presentation",
+      "required": false
+    },
+    {
+      "name": "Duration",
+      "element": "Text",
+      "parent": "Meta",
+      "when": "duration is set",
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span",
+        "size": "metadata"
+      },
+      "role": "generic",
+      "required": false
+    },
+    {
+      "name": "Certified",
+      "element": "span",
+      "parent": "Meta",
+      "when": "certified is true",
+      "role": "generic",
+      "required": false
+    },
+    {
+      "name": "CertifiedIcon",
+      "element": "Icon",
+      "parent": "Certified",
+      "when": "certified is true",
+      "builtOn": "Icon",
+      "builtOnProps": {
+        "name": "badge-check",
+        "size": "sm"
+      },
+      "role": "presentation",
+      "required": false
+    },
+    {
+      "name": "CertifiedLabel",
+      "element": "Text",
+      "parent": "Certified",
+      "when": "certified is true",
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span",
+        "size": "metadata"
+      },
+      "notes": "Fixed text \"Certified\".",
+      "role": "generic",
+      "required": false
+    }
+  ],
+  "props": {
+    "thumbnailSrc": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "thumbnailAlt": {
+      "kind": "content",
+      "type": "string",
+      "default": "",
+      "concept": "Image",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "title": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Title"
+      }
+    },
+    "author": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Has author + Author"
+      }
+    },
+    "duration": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Duration",
+        "note": "Optional in code but Figma has no Has duration (known gap, migration Tier 0)."
+      }
+    },
+    "certified": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": {
+        "surface": "both",
+        "property": "Certified"
+      }
+    },
+    "progress": {
+      "kind": "lifecycle",
+      "type": "number (0–100)",
+      "default": null,
+      "concept": "Lifecycle",
+      "figma": {
+        "surface": "both",
+        "property": "Has progress",
+        "note": "Previewed as a Has progress variant."
+      }
+    },
+    "variant": {
+      "kind": "variantAxis",
+      "type": "CardHorizontalVariant",
+      "options": [
+        "default",
+        "inverted"
+      ],
+      "default": "default",
+      "concept": "Visual weight/style",
+      "figma": {
+        "surface": "both",
+        "property": "Variant"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static display card with no interactive states."
+    },
+    {
+      "name": "with-progress",
+      "kind": "lifecycle",
+      "trigger": "progress is set",
+      "figma": "Has progress"
+    }
+  ],
+  "accessibility": {
+    "role": "article",
+    "ariaAttributes": [
+      "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
+      "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
+      "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
+    ],
+    "keyboardInteractions": []
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.md"
+        }
+      }
+    ],
+    "Thumbnail": [
+      {
+        "when": {},
+        "set": {
+          "width": "size.thumbnail.sm",
+          "height": "size.thumbnail.sm"
+        }
+      }
+    ],
+    "Content": [
+      {
+        "when": {},
+        "set": {
+          "min-width": {
+            "literal": "0",
+            "reason": "Lets a flex child shrink below its content width."
+          }
+        }
+      }
+    ],
+    "Title": [
+      {
+        "when": {},
+        "set": {
+          "line-height": "font.line-height.tight"
+        }
+      }
+    ],
+    "Separator": [
+      {
+        "when": {},
+        "set": {
+          "width": "size.separator",
+          "height": "size.separator",
+          "border-radius": "border-radius.full",
+          "background": "color.text.subtle"
+        }
+      },
+      {
+        "when": {
+          "variant": "inverted"
+        },
+        "set": {
+          "background": "color.text.inverted.subtle"
+        }
+      }
+    ],
+    "Certified": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.inline.xs"
+        }
+      }
+    ],
+    "CertifiedIcon": [
+      {
+        "when": {},
+        "set": {
+          "color": "color.icon.subtle"
+        }
+      },
+      {
+        "when": {
+          "variant": "inverted"
+        },
+        "set": {
+          "color": "color.icon.inverted.default"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

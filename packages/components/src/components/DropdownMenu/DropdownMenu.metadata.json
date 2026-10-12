@@ -65,68 +65,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Panel visible; items in resting state."
-    },
-    {
-      "state": "item-hover",
-      "description": "Neutral background on the hovered or focused item."
-    },
-    {
-      "state": "item-active",
-      "description": "Momentary press feedback on an item (CSS :active): overlay.active background, one step past hover."
-    },
-    {
-      "state": "item-selected",
-      "description": "Brand text colour and semibold weight on the currently selected item (listbox role only)."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.background.container.canvas",
-      "color.background.overlay.hover",
-      "color.text.default",
-      "color.text.brand",
-      "color.background.overlay.active"
-    ],
-    "spacing": [
-      "space.inset.xs"
-    ],
-    "typography": [
-      "font.family.body",
-      "font.size.body-default",
-      "font.line-height.none"
-    ],
-    "borderRadius": [
-      "border-radius.sm",
-      "border-radius.xs"
-    ],
-    "other": []
-  },
-  "accessibility": {
-    "role": "menu or listbox (controlled via listRole prop)",
-    "ariaAttributes": [
-      "role (panel: menu | listbox)",
-      "role (items: menuitem | option)",
-      "aria-selected (option items when listRole=listbox)"
-    ],
-    "keyboardInteractions": [
-      {
-        "key": "Escape",
-        "action": "Closes the dropdown and returns focus to the trigger"
-      },
-      {
-        "key": "Enter / Space",
-        "action": "Selects the focused item"
-      },
-      {
-        "key": "ArrowUp / ArrowDown",
-        "action": "Moves focus between items (single roving focus target — all items are tabIndex=-1; the owning component is responsible for programmatically focusing an item when the panel opens, matching the WAI-ARIA APG menu/listbox pattern)"
-      }
-    ]
-  },
   "composition": {
     "composedOf": [],
     "accepts": [],

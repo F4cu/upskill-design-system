@@ -23,6 +23,7 @@ sources:
 # clock reset 2026-10-09: token-contrast-check.js comment repoints "Component scope" from CLAUDE.md to AGENTS.md (ADR-029); no behavior change, still accurate
 # clock reset 2026-10-09: a11y-coverage.js imports isInteractive from scripts/lib.js (shared with component:risk); the Tier 2 derivation and gate are unchanged, still accurate
 # clock reset 2026-10-10: token-contrast-check.js gains Button/Chip :active pairs; active text darkens a step instead of new waivers; curation and waiver conventions unchanged, still accurate
+# rewritten 2026-10-12: a11y-coverage.js reads accessibility.* from the spec (ADR-027 rollout); wording of where the fields live updated
 ---
 # Accessibility
 
@@ -46,7 +47,7 @@ Three harness options were weighed. Storybook test-runner + Playwright + axe (a 
 
 ### Gated by *derived* interactivity, not applied everywhere
 
-Requiring behavioral tests for every component would "write near-empty tests for ~18 display/landmark components." Instead, `scripts/a11y-coverage.js` derives interactivity from existing metadata (no schema change): a component is interactive if `component.type ∈ {interactive, input}`, **or** its `accessibility.role` is an interactive ARIA role, **or** it declares a keyboard interaction beyond plain Tab / native scroll. A naive "has any `keyboardInteraction`" rule was explicitly rejected — it over-includes `AppHeader`, `Breadcrumb`, and `ScrollArea` via native-scroll Tab behavior. The derivation resolves to the genuine widgets: `Button`, `ButtonArrow`, `Chip`, `Checkbox`, `Select`, `TextField`, `DropdownMenu` (plus `Accordion` once built). Non-interactive components (`Badge`, `Divider`) need no test.
+Requiring behavioral tests for every component would "write near-empty tests for ~18 display/landmark components." Instead, `scripts/a11y-coverage.js` derives interactivity from fields the component already declares (no schema change): a component is interactive if its metadata `component.type ∈ {interactive, input}`, **or** its [spec](08-glossary.md)'s `accessibility.role` is an interactive ARIA role, **or** it declares a keyboard interaction beyond plain Tab / native scroll. A naive "has any `keyboardInteraction`" rule was explicitly rejected — it over-includes `AppHeader`, `Breadcrumb`, and `ScrollArea` via native-scroll Tab behavior. The derivation resolves to the genuine widgets: `Button`, `ButtonArrow`, `Chip`, `Checkbox`, `Select`, `TextField`, `DropdownMenu` (plus `Accordion` once built). Non-interactive components (`Badge`, `Divider`) need no test.
 
 ### The jsdom trade-off, accepted and then partially closed
 
@@ -77,7 +78,7 @@ New Tier 2 tests are modelled on `packages/components/src/Button/Button.a11y.tes
 
 The screenshot-baseline gate ([ADR-019](decisions/019-screenshot-baseline-visual-regression.md)) sits below these tiers rather than inside them, and it follows the same "trust promoted on evidence" pattern as the shrinking ledgers above: it runs advisory in CI today, with a documented escalation path — CI-generated baselines, then blocking once diff ratios are quiet — rather than being trusted as a hard gate from day one. See [Self-improving loops](11-self-improving-loops.md).
 
-Tier 2 is also wired into the verified component loop: the [ADR-007](decisions/007-verified-component-loop.md) amendment adds `a11y:coverage && a11y:test` to the loop's deterministic gate, and the adversarial reviewer judges coverage *completeness* — every metadata `keyboardInteraction`, every toggling state attribute, focus behavior, and APG semantics — not just whether the existing tests pass. See [Agentic moments](06-agentic-moments.md).
+Tier 2 is also wired into the verified component loop: the [ADR-007](decisions/007-verified-component-loop.md) amendment adds `a11y:coverage && a11y:test` to the loop's deterministic gate, and the adversarial reviewer judges coverage *completeness* — every `keyboardInteraction` in the spec, every toggling state attribute, focus behavior, and APG semantics — not just whether the existing tests pass. See [Agentic moments](06-agentic-moments.md).
 
 ## Related
 

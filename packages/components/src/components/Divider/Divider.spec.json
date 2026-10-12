@@ -1,0 +1,56 @@
+{
+  "component": "Divider",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "hr",
+      "role": "separator",
+      "required": true
+    }
+  ],
+  "props": {},
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static separator — no interactive states."
+    }
+  ],
+  "accessibility": {
+    "role": "separator",
+    "ariaAttributes": [],
+    "keyboardInteractions": []
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "border": {
+            "literal": "none",
+            "reason": "Resets the native control's default."
+          },
+          "border-top-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-top-color": "color.border.default",
+          "margin": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          },
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

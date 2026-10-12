@@ -8,7 +8,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { isInteractive, normalizeReviewPath } from "./lib.js";
+import { isInteractive, normalizeReviewPath, readComponentMetadata } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -65,9 +65,9 @@ function mtimeIso(filePath) {
 // came from /review-component (`full`), and risk is derived from current metadata.
 
 function riskOf(component) {
-  const metaFile = path.join(COMPONENTS_DIR, component, `${component}.metadata.json`);
-  if (!fs.existsSync(metaFile)) return null;
-  return isInteractive(JSON.parse(fs.readFileSync(metaFile, "utf8"))) ? "interactive" : "display";
+  const meta = readComponentMetadata(component);
+  if (!meta) return null;
+  return isInteractive(meta) ? "interactive" : "display";
 }
 
 function updateRunLedger() {

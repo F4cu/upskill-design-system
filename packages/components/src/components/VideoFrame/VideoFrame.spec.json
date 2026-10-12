@@ -1,0 +1,111 @@
+{
+  "component": "VideoFrame",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "role": "img",
+      "required": true
+    },
+    {
+      "name": "Thumbnail",
+      "element": "img",
+      "role": "img",
+      "required": true
+    },
+    {
+      "name": "PlayOverlay",
+      "element": "div",
+      "role": "presentation",
+      "required": true
+    },
+    {
+      "name": "PlayIcon",
+      "element": "svg",
+      "role": "presentation",
+      "required": true
+    }
+  ],
+  "props": {
+    "src": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "Src"
+      }
+    },
+    "alt": {
+      "kind": "content",
+      "type": "string",
+      "default": "",
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "Alt"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Thumbnail image with centred play overlay. If src is not provided, renders a neutral placeholder background."
+    }
+  ],
+  "accessibility": {
+    "role": "img",
+    "ariaAttributes": [
+      "alt — pass a meaningful description of the video content; the play overlay is aria-hidden"
+    ],
+    "keyboardInteractions": [],
+    "notes": "VideoFrame itself is not interactive. The parent should handle click and keyboard events to initiate playback, using an appropriate role (e.g. button) on the wrapper."
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "border-radius": "border-radius.md",
+          "aspect-ratio": {
+            "literal": "16 / 9",
+            "reason": "Media aspect ratio; no ratio token exists."
+          },
+          "background": "color.background.media.default"
+        }
+      }
+    ],
+    "Thumbnail": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "height": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          }
+        }
+      }
+    ],
+    "PlayIcon": [
+      {
+        "when": {},
+        "set": {
+          "width": "size.600",
+          "height": "size.600"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

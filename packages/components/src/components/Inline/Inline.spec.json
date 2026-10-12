@@ -1,0 +1,213 @@
+{
+  "component": "Inline",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div by default, or the element chosen by the as prop",
+      "role": "generic",
+      "required": true
+    }
+  ],
+  "props": {
+    "as": {
+      "kind": "element",
+      "type": "ElementType",
+      "default": "div",
+      "concept": "Element",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "gap": {
+      "kind": "content",
+      "type": "InlineGap",
+      "options": [
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl"
+      ],
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Gap"
+      }
+    },
+    "align": {
+      "kind": "content",
+      "type": "InlineAlign",
+      "options": [
+        "center",
+        "start",
+        "end",
+        "stretch",
+        "baseline"
+      ],
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Align"
+      }
+    },
+    "justify": {
+      "kind": "content",
+      "type": "InlineJustify",
+      "options": [
+        "center",
+        "start",
+        "end",
+        "space-between",
+        "space-around",
+        "space-evenly"
+      ],
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Justify"
+      }
+    },
+    "wrap": {
+      "kind": "content",
+      "type": "boolean",
+      "default": true,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Wrap"
+      }
+    },
+    "fullWidth": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Full width"
+      }
+    },
+    "className": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "style": {
+      "kind": "native",
+      "type": "CSSProperties",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static layout container — no interactive states."
+    }
+  ],
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": []
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "gap": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          }
+        }
+      },
+      {
+        "when": {
+          "gap": "xs"
+        },
+        "set": {
+          "gap": "space.inline.xs"
+        }
+      },
+      {
+        "when": {
+          "gap": "sm"
+        },
+        "set": {
+          "gap": "space.inline.sm"
+        }
+      },
+      {
+        "when": {
+          "gap": "md"
+        },
+        "set": {
+          "gap": "space.inline.md"
+        }
+      },
+      {
+        "when": {
+          "gap": "lg"
+        },
+        "set": {
+          "gap": "space.inline.lg"
+        }
+      },
+      {
+        "when": {
+          "gap": "xl"
+        },
+        "set": {
+          "gap": "space.inline.xl"
+        }
+      },
+      {
+        "when": {
+          "gap": "xxl"
+        },
+        "set": {
+          "gap": "space.inline.xxl"
+        }
+      },
+      {
+        "when": {
+          "fullWidth": "true"
+        },
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

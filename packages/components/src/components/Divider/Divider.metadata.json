@@ -51,26 +51,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static separator — no interactive states."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.border.default"
-    ],
-    "spacing": [],
-    "typography": [],
-    "borderRadius": [],
-    "other": []
-  },
-  "accessibility": {
-    "role": "separator",
-    "ariaAttributes": [],
-    "keyboardInteractions": []
-  },
   "composition": {
     "composedOf": [],
     "accepts": [],

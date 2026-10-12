@@ -7,11 +7,12 @@
 //     match the TypeScript union and the metadata axis; destructuring defaults
 //     match.
 //   - styles: the token paths in the spec equal the --ds-* custom properties
-//     the CSS Module reads, and each one is defined in the built token CSS.
+//     the CSS Module reads (plus any index.tsx reads, e.g. a size template), and each one is defined in the built token CSS.
 //   - states, constraints, anatomy: internal cross-references resolve; every
-//     metadata state and composition.parts entry appears in the spec.
-// Specs stay optional until the ADR-027 migration: only components with a spec file
-// are checked. Requires built tokens (npm run tokens:build).
+//     composition.parts entry appears in the spec.
+// A string or key starting with TODO (left by spec:generate) fails the check.
+// Every component in the repo must have a spec (ADR-027); --components-dir checks only
+// the specs it finds. Requires built tokens (npm run tokens:build).
 //
 // --components-dir <dir> checks the specs in <dir> instead (a harness run
 // folder holding only the generated target). Repo components stay known names,
@@ -21,8 +22,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
-import ts from "typescript";
-import { publicComponents } from "./lib.js";
+import { publicComponents, styleValueTokenPaths, componentTokenReads } from "./lib.js";
+import { createPropsReader } from "./spec-props.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -40,6 +41,10 @@ const SPEC_DIR = EXTERNAL_DIR ?? COMPONENTS_DIR;
 const folders = (dir) => fs.readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
 const COMPONENT_NAMES = new Set([...publicComponents(), ...(EXTERNAL_DIR ? folders(EXTERNAL_DIR) : [])]);
 
+const missing = EXTERNAL_DIR
+  ? []
+  : folders(COMPONENTS_DIR).filter((name) => fs.existsSync(path.join(COMPONENTS_DIR, name, "index.tsx")) && !fs.existsSync(path.join(COMPONENTS_DIR, name, `${name}.spec.json`)));
+
 const specs = folders(SPEC_DIR)
   .map((name) => ({ name, file: path.join(SPEC_DIR, name, `${name}.spec.json`) }))
   .filter(({ file }) => fs.existsSync(file));
@@ -55,99 +60,17 @@ const definedVars = new Set(
     .flatMap((f) => [...fs.readFileSync(path.join(TOKENS_CSS_DIR, f), "utf8").matchAll(/(--ds-[a-z0-9-]+)\s*:/g)].map((m) => m[1])),
 );
 
-const tsconfig = ts.getParsedCommandLineOfConfigFile(path.join(PKG, "tsconfig.json"), {}, {
-  ...ts.sys,
-  onUnRecoverableConfigFileDiagnostic: () => {},
-});
-const options = {
-  ...tsconfig.options,
-  noEmit: true,
-  ...(EXTERNAL_DIR && { paths: { "@upskill/components": [path.join(PKG, "src/index.ts")] } }),
-};
-const host = ts.createCompilerHost(options);
-if (EXTERNAL_DIR) {
-  host.resolveModuleNameLiterals = (literals, containingFile, _redirect, opts) =>
-    literals.map((lit) => {
-      const resolved = ts.resolveModuleName(lit.text, containingFile, opts, host);
-      if (resolved.resolvedModule || !lit.text.startsWith("../") || !containingFile.startsWith(EXTERNAL_DIR)) return resolved;
-      return ts.resolveModuleName(lit.text, path.join(COMPONENTS_DIR, path.relative(EXTERNAL_DIR, containingFile)), opts, host);
-    });
-}
-const program = ts.createProgram(
-  specs.map(({ name }) => path.join(SPEC_DIR, name, "index.tsx")),
-  options,
-  host,
-);
-const checker = program.getTypeChecker();
+const { readPropsTypes, stringLiterals, splitProp } = createPropsReader({ names: specs.map(({ name }) => name), specDir: SPEC_DIR, externalDir: EXTERNAL_DIR });
 
 const tokenToVar = (dotPath) => `--ds-${dotPath.replaceAll(".", "-")}`;
-
-function tokenPaths(value) {
-  if (typeof value === "string") return [value];
-  if (value.template) return [...value.template.matchAll(/\{([a-z0-9.-]+)\}/g)].map((m) => m[1]);
-  return [];
-}
-
-// Every exported props type in the component's file, keyed by spec prefix: ""
-// for the preset's <Name>Props, "<Part>." for <Name><Part>Props (ADR-023 exports
-// part prop types; unexported helper types are ignored). `all` includes
-// inherited native attributes, `own` only props declared in the file, and
-// `defaults` the literal destructuring defaults of the function taking it.
-function readPropsTypes(name) {
-  const source = program.getSourceFile(path.join(SPEC_DIR, name, "index.tsx"));
-  if (!source) return new Map();
-  const pattern = new RegExp(`^${name}(\\w*)Props$`);
-  const types = new Map();
-  const exported = (s) => s.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)
-  for (const alias of source.statements.filter((s) => ts.isTypeAliasDeclaration(s) && exported(s) && pattern.test(s.name.text))) {
-    const part = alias.name.text.match(pattern)[1];
-    types.set(part ? `${part}.` : "", { part, ...readProps(source, alias) });
-  }
-  return types;
-}
-
-function readProps(source, alias) {
-  const all = new Map();
-  const own = new Set();
-  for (const symbol of checker.getPropertiesOfType(checker.getTypeAtLocation(alias.name))) {
-    all.set(symbol.name, symbol);
-    if (symbol.declarations?.some((d) => d.getSourceFile() === source)) own.add(symbol.name);
-  }
-
-  const defaults = new Map();
-  const fn = source.statements.find((s) => {
-    const type = ts.isFunctionDeclaration(s) && s.parameters[0]?.type;
-    return type && ts.isTypeReferenceNode(type) && type.typeName.getText(source) === alias.name.text;
-  });
-  const binding = fn?.parameters[0]?.name;
-  if (binding && ts.isObjectBindingPattern(binding)) {
-    for (const el of binding.elements) {
-      const init = el.initializer;
-      if (!init) continue;
-      const key = (el.propertyName ?? el.name).getText(source);
-      if (ts.isStringLiteral(init)) defaults.set(key, init.text);
-      else if (ts.isNumericLiteral(init)) defaults.set(key, Number(init.text));
-      else if (init.kind === ts.SyntaxKind.TrueKeyword) defaults.set(key, true);
-      else if (init.kind === ts.SyntaxKind.FalseKeyword) defaults.set(key, false);
-    }
-  }
-  return { all, own, defaults };
-}
-
-function splitProp(key) {
-  const dot = key.lastIndexOf(".");
-  return dot === -1 ? ["", key] : [key.slice(0, dot + 1), key.slice(dot + 1)];
-}
-
-function stringLiterals(symbol) {
-  const type = checker.getTypeOfSymbol(symbol);
-  const members = type.isUnion() ? type.types : [type];
-  return members.filter((t) => t.isStringLiteral()).map((t) => t.value).sort();
-}
 
 const sameSet = (a, b) => a.length === b.length && [...a].sort().every((v, i) => v === [...b].sort()[i]);
 
 let failures = 0;
+for (const name of missing) {
+  console.error(`✗ packages/components/src/components/${name}/${name}.spec.json — missing; run npm run spec:generate -- ${name}`);
+  failures++;
+}
 const backlog = [];
 
 for (const { name, file } of specs) {
@@ -164,6 +87,14 @@ for (const { name, file } of specs) {
     report(file, errors);
     continue;
   }
+
+  const todos = [];
+  JSON.stringify(spec, (key, value) => {
+    if (typeof value === "string" && value.startsWith("TODO")) todos.push(value);
+    if (key.startsWith("TODO")) todos.push(key);
+    return value;
+  });
+  if (todos.length) errors.push(`${todos.length} unfilled TODO(s) from spec:generate, first: "${todos[0].slice(0, 90)}"`);
 
   if (spec.component !== name) errors.push(`component "${spec.component}" does not match folder "${name}"`);
 
@@ -206,7 +137,7 @@ for (const { name, file } of specs) {
     }
     if (def.options) {
       const literals = stringLiterals(owner.all.get(prop));
-      if (!sameSet(def.options, literals)) errors.push(`${at}.options [${def.options}] ≠ TypeScript [${literals}]`);
+      if (literals.length && !sameSet(def.options, literals)) errors.push(`${at}.options [${def.options}] ≠ TypeScript [${literals}]`);
     }
     if (owner.defaults.has(prop) && owner.defaults.get(prop) !== def.default) {
       errors.push(`${at}.default ${JSON.stringify(def.default)} ≠ code default ${JSON.stringify(owner.defaults.get(prop))}`);
@@ -232,9 +163,6 @@ for (const { name, file } of specs) {
 
   // States
   const stateNames = new Set(spec.states.map((s) => s.name));
-  for (const s of metadata.states ?? []) {
-    if (!stateNames.has(s.state)) errors.push(`states: metadata state "${s.state}" missing from the spec`);
-  }
 
   // Styles against the CSS Module
   const specTokens = new Set();
@@ -250,16 +178,19 @@ for (const { name, file } of specs) {
           errors.push(`styles["${part}"]: when.${key}="${value}" is not an option`);
         }
       }
-      for (const value of Object.values(rule.set)) for (const t of tokenPaths(value)) specTokens.add(tokenToVar(t));
+      for (const value of Object.values(rule.set)) for (const t of styleValueTokenPaths(value)) specTokens.add(tokenToVar(t));
     }
   }
   const cssFile = path.join(SPEC_DIR, name, `${name}.module.css`);
   const cssVars = new Set(
     fs.existsSync(cssFile) ? [...fs.readFileSync(cssFile, "utf8").matchAll(/var\((--ds-[a-z0-9-]+)/g)].map((m) => m[1]) : [],
   );
+  // index.tsx may also read tokens, e.g. var(--ds-size-avatar-${size}) set as an inline custom property.
+  const { tsxVars, tsxPrefixes } = componentTokenReads(path.join(SPEC_DIR, name));
+  const readInTsx = (v) => tsxVars.has(v) || tsxPrefixes.some((p) => v.startsWith(p));
   for (const v of cssVars) if (!specTokens.has(v)) errors.push(`styles: CSS Module reads ${v} but the spec does not list it`);
   for (const v of specTokens) {
-    if (!cssVars.has(v)) errors.push(`styles: spec lists ${v} but the CSS Module never reads it`);
+    if (!cssVars.has(v) && !readInTsx(v)) errors.push(`styles: spec lists ${v} but neither the CSS Module nor index.tsx reads it`);
     if (!definedVars.has(v)) errors.push(`styles: ${v} is not defined in the built token CSS`);
   }
 

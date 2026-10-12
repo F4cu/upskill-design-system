@@ -57,59 +57,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Neutral-subtlest background, default border."
-    },
-    {
-      "state": "hover",
-      "description": "Border darkens to border-strong; background unchanged."
-    },
-    {
-      "state": "active",
-      "description": "Momentary press feedback (CSS :active): background steps from overlay.subtlest to overlay.active; border keeps its hover value."
-    },
-    {
-      "state": "disabled",
-      "description": "No background, default border, muted icon color; pointer-events none."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.background.overlay.subtlest",
-      "color.border.default",
-      "color.border.strong",
-      "color.text.default",
-      "color.text.disabled",
-      "color.background.overlay.active"
-    ],
-    "spacing": [],
-    "typography": [],
-    "borderRadius": [
-      "border-radius.full"
-    ],
-    "other": [
-      "size.400"
-    ]
-  },
-  "accessibility": {
-    "role": "button",
-    "ariaAttributes": [
-      "aria-label — automatically set to 'Previous' or 'Next' from the direction prop; override via rest props for more specific context"
-    ],
-    "keyboardInteractions": [
-      {
-        "key": "Enter / Space",
-        "action": "Triggers the navigation callback"
-      },
-      {
-        "key": "Tab",
-        "action": "Moves focus to the next focusable element"
-      }
-    ],
-    "notes": "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS."
-  },
   "composition": {
     "composedOf": [
       "Icon"

@@ -59,30 +59,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static image display — no interactive states."
-    }
-  ],
-  "tokens": {
-    "color": [],
-    "spacing": [],
-    "typography": [],
-    "borderRadius": [],
-    "other": [
-      "size.avatar.sm",
-      "size.avatar.md",
-      "size.avatar.lg"
-    ]
-  },
-  "accessibility": {
-    "role": "img",
-    "ariaAttributes": [
-      "alt (required — pass the person's full name, or empty string when adjacent text already identifies them)"
-    ],
-    "keyboardInteractions": []
-  },
   "composition": {
     "composedOf": [],
     "accepts": [],

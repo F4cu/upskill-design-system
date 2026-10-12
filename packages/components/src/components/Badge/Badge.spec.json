@@ -1,0 +1,102 @@
+{
+  "component": "Badge",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "Text",
+      "builtOn": "Text",
+      "role": "none",
+      "required": true
+    }
+  ],
+  "props": {
+    "variant": {
+      "kind": "variantAxis",
+      "type": "BadgeVariant",
+      "options": [
+        "outline",
+        "filled"
+      ],
+      "default": "outline",
+      "concept": "Visual weight/style",
+      "figma": {
+        "surface": "both",
+        "property": "Variant"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static label pill; the only state. No hover, focus, or disabled states — Badge is non-interactive."
+    }
+  ],
+  "accessibility": {
+    "role": "none",
+    "ariaAttributes": [],
+    "keyboardInteractions": [],
+    "notes": "Renders a plain <span> with visible text — no ARIA role needed; the label is read inline as text content. Not focusable and not interactive. If the badge conveys meaning beyond the adjacent content (e.g. a status not otherwise stated), make the label text explicit rather than relying on colour alone."
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "border-radius": "border-radius.sm",
+          "padding": {
+            "template": "{space.inset.xxs} {space.inset.xs}"
+          }
+        }
+      },
+      {
+        "when": {
+          "variant": "outline"
+        },
+        "set": {
+          "border-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-color": "color.border.default",
+          "background": {
+            "literal": "transparent",
+            "reason": "No fill or border at this state."
+          }
+        }
+      },
+      {
+        "when": {
+          "variant": "filled"
+        },
+        "set": {
+          "border-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-color": {
+            "literal": "transparent",
+            "reason": "No fill or border at this state."
+          },
+          "background": "color.background.overlay.subtlest"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

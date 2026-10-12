@@ -36,7 +36,7 @@ Running only step 1 fixes the code. Running both steps fixes the system.
 
 ## What "routing to the right target" means
 
-Not every finding is the same kind of lesson. A finding about a wrong ARIA attribute belongs in `accessibility.ariaAttributes` — not in `usage.antiPatterns`. Putting it in the wrong place means the right consumer (scaffolding, layout generation, or a future reviewer) won't see it. The routing table:
+Not every finding is the same kind of lesson. The `accessibility.*` targets below live in `<Name>.spec.json`, not in metadata (ADR-027). A finding about a wrong ARIA attribute belongs in `accessibility.ariaAttributes` — not in `usage.antiPatterns`. Putting it in the wrong place means the right consumer (scaffolding, layout generation, or a future reviewer) won't see it. The routing table:
 
 | Finding type | Target |
 |---|---|
@@ -127,7 +127,7 @@ After classifying all findings: scan for the same pattern in 2+ components. If f
 
 ### 6. Gate
 
-Run `npm run metadata:validate`. If it fails, fix the offending amendment and re-run. If `PAIRS` in `scripts/token-contrast-check.js` was touched, `npm run tokens:contrast-check` must also pass. Do not open the PR until the gates pass.
+Run `npm run metadata:validate && npm run tokens:build && npm run spec:validate` (the second pair when a spec was amended). If it fails, fix the offending amendment and re-run. If `PAIRS` in `scripts/token-contrast-check.js` was touched, `npm run tokens:contrast-check` must also pass. Do not open the PR until the gates pass.
 
 ### 7. Done marker
 
@@ -179,7 +179,7 @@ Confirm to apply — layout-generation.md is not edited in this PR.
 
 ## What this does NOT do
 
-- Does not change component source code — targets are metadata JSON, the `/tokens-author` Conventions section, and the `PAIRS` list in `scripts/token-contrast-check.js` only.
+- Does not change component source code — targets are metadata JSON, spec JSON (`accessibility`), the `/tokens-author` Conventions section, and the `PAIRS` list in `scripts/token-contrast-check.js` only.
 - Does not write to CLAUDE.md or edit `/layout-generation`'s pattern section without explicit developer confirmation — both are proposed in the PR description only.
 - Does not add contrast waivers — a failing new pair is a finding for the developer.
 - Does not add fields absent from the schema.

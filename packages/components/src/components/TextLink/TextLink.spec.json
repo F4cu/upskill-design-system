@@ -1,0 +1,170 @@
+{
+  "component": "TextLink",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "a",
+      "role": "link",
+      "required": true
+    }
+  ],
+  "props": {
+    "size": {
+      "kind": "variantAxis",
+      "type": "TextLinkSize",
+      "options": [
+        "body-default",
+        "body-small",
+        "metadata",
+        "label"
+      ],
+      "default": "body-default",
+      "concept": "Size",
+      "figma": {
+        "surface": "both",
+        "property": "Size"
+      }
+    },
+    "href": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Link",
+      "figma": {
+        "surface": "both",
+        "property": "Href"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Brand interactive color with permanent underline and semibold weight."
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": ":hover",
+      "notes": "Shifts to the darker brand interactive hover color; underline remains."
+    },
+    {
+      "name": "active",
+      "kind": "interaction",
+      "trigger": ":active",
+      "notes": "Momentary press feedback (CSS :active): text goes to text.default, one step past the end of the brand ramp, as Button and Chip darken text on active."
+    },
+    {
+      "name": "focus-visible",
+      "kind": "interaction",
+      "trigger": ":focus-visible",
+      "notes": "Browser default focus ring; no custom override."
+    },
+    {
+      "name": "visited",
+      "kind": "interaction",
+      "trigger": ":visited",
+      "notes": "No visited style override — inherits browser default."
+    }
+  ],
+  "accessibility": {
+    "role": "link",
+    "notes": "Renders a native <a> element. href is always required — omitting it removes the link from the tab order. Do not nest interactive children (buttons, inputs, other links) inside TextLink.",
+    "ariaAttributes": [
+      "aria-label — use when the link text alone is ambiguous (e.g. 'Read more' repeated multiple times on a page)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Enter",
+        "action": "Follows the href"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus to the next focusable element"
+      }
+    ]
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "color": "color.text.interactive.default",
+          "font-weight": "font.weight.semibold"
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "color": "color.text.interactive.hover"
+        }
+      },
+      {
+        "when": {
+          "state": "active"
+        },
+        "set": {
+          "color": "color.text.default"
+        }
+      },
+      {
+        "when": {
+          "size": "body-default"
+        },
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-default",
+          "line-height": "font.line-height.relaxed"
+        }
+      },
+      {
+        "when": {
+          "size": "body-small"
+        },
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-small",
+          "line-height": "font.line-height.relaxed"
+        }
+      },
+      {
+        "when": {
+          "size": "metadata"
+        },
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.metadata",
+          "line-height": "font.line-height.none"
+        }
+      },
+      {
+        "when": {
+          "size": "label"
+        },
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.label",
+          "line-height": "font.line-height.none"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

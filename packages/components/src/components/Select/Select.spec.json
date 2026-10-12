@@ -1,0 +1,445 @@
+{
+  "component": "Select",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Label",
+      "element": "Text",
+      "parent": "Root",
+      "role": "generic",
+      "required": true,
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "label"
+      },
+      "notes": "Associated with the trigger by htmlFor; visually hidden when hideLabel is set, never removed."
+    },
+    {
+      "name": "Wrapper",
+      "element": "div",
+      "parent": "Root",
+      "role": "generic",
+      "required": true,
+      "notes": "Positioning context for the dropdown panel."
+    },
+    {
+      "name": "Trigger",
+      "element": "button",
+      "parent": "Wrapper",
+      "role": "combobox",
+      "required": true,
+      "action": "Opens or closes the listbox; ArrowDown or ArrowUp opens it from the keyboard."
+    },
+    {
+      "name": "TriggerLabel",
+      "element": "Text",
+      "parent": "Trigger",
+      "role": "generic",
+      "required": true,
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span"
+      },
+      "notes": "The selected option label, or the placeholder."
+    },
+    {
+      "name": "Arrow",
+      "element": "span",
+      "parent": "Trigger",
+      "role": "presentation",
+      "required": true
+    },
+    {
+      "name": "Chevron",
+      "element": "Icon",
+      "parent": "Arrow",
+      "role": "presentation",
+      "required": true,
+      "builtOn": "Icon",
+      "builtOnProps": {
+        "name": "chevron-down",
+        "size": "sm"
+      }
+    },
+    {
+      "name": "Dropdown",
+      "element": "DropdownMenu",
+      "parent": "Wrapper",
+      "role": "listbox",
+      "required": true,
+      "builtOn": "DropdownMenu",
+      "builtOnProps": {
+        "listRole": "listbox"
+      },
+      "notes": "Rendered only while open."
+    },
+    {
+      "name": "NativeSelect",
+      "element": "select",
+      "parent": "Wrapper",
+      "role": "presentation",
+      "required": true,
+      "notes": "Visually hidden and aria-hidden; mirrors the value so the control submits with a form."
+    },
+    {
+      "name": "ErrorMessage",
+      "element": "Text",
+      "parent": "Root",
+      "role": "alert",
+      "required": false,
+      "when": "error is set",
+      "builtOn": "Text",
+      "builtOnProps": {
+        "as": "span"
+      }
+    }
+  ],
+  "props": {
+    "label": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Accessible name",
+      "figma": {
+        "surface": "both",
+        "property": "Label"
+      }
+    },
+    "hideLabel": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": {
+        "surface": "both",
+        "property": "Hide label"
+      }
+    },
+    "options": {
+      "kind": "content",
+      "type": "SelectOption[]",
+      "default": null,
+      "concept": "Collection",
+      "figma": {
+        "surface": "both",
+        "property": "Options"
+      }
+    },
+    "placeholder": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "new term: hint text shown while no option is selected; ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Placeholder"
+      }
+    },
+    "error": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Error",
+      "figma": {
+        "surface": "both",
+        "property": "Has error",
+        "note": "ADR-026 recorded mapping: optional prop omitted ↔ Has <x>."
+      }
+    },
+    "value": {
+      "kind": "controlledState",
+      "type": "string",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "both",
+        "property": "Value"
+      }
+    },
+    "defaultValue": {
+      "kind": "controlledState",
+      "type": "string",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "onValueChange": {
+      "kind": "controlledState",
+      "type": "(value: string) => void",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "disabled": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": {
+        "surface": "both",
+        "property": "Disabled"
+      }
+    },
+    "id": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "name": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "required": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": {
+        "surface": "code-only"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Resting state. Neutral border and chevron."
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": ":hover:not(:disabled)",
+      "notes": "Stronger border to signal interactivity."
+    },
+    {
+      "name": "focus-visible",
+      "kind": "interaction",
+      "trigger": ":focus-visible",
+      "notes": "Brand-colour border on the trigger, on top of the global focus ring."
+    },
+    {
+      "name": "open",
+      "kind": "appData",
+      "trigger": "Internal state; aria-expanded=true",
+      "notes": "The listbox is shown and the chevron is turned over."
+    },
+    {
+      "name": "disabled",
+      "kind": "appData",
+      "trigger": "disabled prop (native attribute)",
+      "notes": "Muted text, border and chevron; cursor not-allowed; interaction blocked natively."
+    },
+    {
+      "name": "error",
+      "kind": "appData",
+      "trigger": "error prop set",
+      "notes": "Error-colour border (also on hover) and a message below the control. Sets aria-invalid and aria-describedby."
+    },
+    {
+      "name": "placeholder",
+      "kind": "content",
+      "trigger": "no value selected",
+      "notes": "The trigger label uses color.text.subtle."
+    }
+  ],
+  "accessibility": {
+    "role": "combobox",
+    "notes": "Implements the WAI-ARIA combobox-with-listbox-popup pattern, so focus management is part of the contract: when the dropdown opens, focus must move into the listbox to the selected option (or the first option when none is selected); when it closes via Escape, selection, or click-outside, focus returns to the trigger button. Options are reachable with Arrow Up/Down inside the open listbox, not Tab — listbox options use tabIndex=-1. An implementation that leaves focus on the trigger after opening, or makes options Tab-navigable, is incorrect.",
+    "ariaAttributes": [
+      "aria-haspopup=\"listbox\" (declares the popup type — always present)",
+      "aria-expanded (true when dropdown is open, false when closed)",
+      "aria-controls (points to the listbox element id)",
+      "aria-describedby (points to error message element when error prop is set)",
+      "aria-invalid (set to true when error prop is set)",
+      "aria-required (mirrors the required prop; omitted when not set)"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Moves focus to the select"
+      },
+      {
+        "key": "Space / Enter",
+        "action": "Opens the option list"
+      },
+      {
+        "key": "Arrow Up / Down",
+        "action": "Navigates options"
+      },
+      {
+        "key": "Escape",
+        "action": "Closes the option list without changing value"
+      }
+    ]
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "gap": "space.stack.sm"
+        }
+      }
+    ],
+    "Trigger": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "height": "size.500",
+          "padding-inline": "space.inset.md",
+          "background": "color.background.input",
+          "color": "color.text.default",
+          "border-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-color": "color.border.input.default",
+          "border-radius": "border-radius.sm",
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-default"
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "border-color": "color.border.input.hover"
+        }
+      },
+      {
+        "when": {
+          "state": "focus-visible"
+        },
+        "set": {
+          "border-color": "color.border.selected"
+        }
+      },
+      {
+        "when": {
+          "error": "*"
+        },
+        "set": {
+          "border-color": "color.border.feedback.error"
+        }
+      },
+      {
+        "when": {
+          "error": "*",
+          "state": "hover"
+        },
+        "set": {
+          "border-color": "color.border.feedback.error"
+        }
+      },
+      {
+        "when": {
+          "state": "placeholder"
+        },
+        "set": {
+          "color": "color.text.subtle"
+        }
+      },
+      {
+        "when": {
+          "state": "disabled"
+        },
+        "set": {
+          "border-color": "color.border.disabled",
+          "color": "color.text.disabled"
+        }
+      }
+    ],
+    "Arrow": [
+      {
+        "when": {},
+        "set": {
+          "margin-inline-start": "space.inline.xs",
+          "color": "color.icon.default"
+        }
+      },
+      {
+        "when": {
+          "state": "disabled"
+        },
+        "set": {
+          "color": "color.icon.disabled"
+        }
+      }
+    ],
+    "Chevron": [
+      {
+        "when": {
+          "state": "open"
+        },
+        "set": {
+          "transform": {
+            "literal": "rotate(180deg)",
+            "reason": "Flips the glyph to show the open state."
+          }
+        }
+      }
+    ],
+    "Dropdown": [
+      {
+        "when": {},
+        "set": {
+          "top": {
+            "template": "calc(100% + {space.stack.xs})"
+          },
+          "left": {
+            "literal": "0",
+            "reason": "Spans the wrapper width."
+          },
+          "right": {
+            "literal": "0",
+            "reason": "Spans the wrapper width."
+          },
+          "z-index": {
+            "literal": "100",
+            "reason": "No z-index scale exists; stays above the page content."
+          }
+        }
+      }
+    ],
+    "ErrorMessage": [
+      {
+        "when": {},
+        "set": {
+          "font-family": "font.family.body",
+          "font-size": "font.size.body-small",
+          "line-height": "font.line-height.relaxed",
+          "color": "color.text.feedback.error"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

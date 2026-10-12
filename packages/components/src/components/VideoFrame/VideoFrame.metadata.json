@@ -51,31 +51,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Thumbnail image with centred play overlay. If src is not provided, renders a neutral placeholder background."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.background.media.default"
-    ],
-    "spacing": [],
-    "typography": [],
-    "borderRadius": [
-      "border-radius.md"
-    ],
-    "other": []
-  },
-  "accessibility": {
-    "role": "img",
-    "ariaAttributes": [
-      "alt — pass a meaningful description of the video content; the play overlay is aria-hidden"
-    ],
-    "keyboardInteractions": [],
-    "notes": "VideoFrame itself is not interactive. The parent should handle click and keyboard events to initiate playback, using an appropriate role (e.g. button) on the wrapper."
-  },
   "composition": {
     "composedOf": [],
     "accepts": [],

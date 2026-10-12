@@ -66,27 +66,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static layout container — no interactive states."
-    }
-  ],
-  "tokens": {
-    "spacing": [
-      "space.inline.xs",
-      "space.inline.sm",
-      "space.inline.md",
-      "space.inline.lg",
-      "space.inline.xl",
-      "space.inline.xxl"
-    ]
-  },
-  "accessibility": {
-    "role": "generic",
-    "ariaAttributes": [],
-    "keyboardInteractions": []
-  },
   "composition": {
     "composedOf": [],
     "accepts": [

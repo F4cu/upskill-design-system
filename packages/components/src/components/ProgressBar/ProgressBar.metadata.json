@@ -55,35 +55,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static fill — no interactive states."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.background.progress",
-      "color.background.overlay.subtle"
-    ],
-    "spacing": [],
-    "typography": [],
-    "borderRadius": [
-      "border-radius.full"
-    ],
-    "other": []
-  },
-  "accessibility": {
-    "role": "progressbar",
-    "ariaAttributes": [
-      "aria-valuenow (set to the clamped value)",
-      "aria-valuemin=0",
-      "aria-valuemax=100",
-      "aria-label (from the label prop, defaults to \"Progress\"); omitted when aria-labelledby is set",
-      "aria-labelledby (alternative to label: id of a visible element that names the bar, e.g. a card title; the two props are mutually exclusive at the type level)"
-    ],
-    "keyboardInteractions": []
-  },
   "composition": {
     "composedOf": [],
     "accepts": [],

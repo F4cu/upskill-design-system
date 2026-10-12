@@ -1,5 +1,5 @@
 ---
-description: Migrate usages of deprecated tokens to their successors — read airtable-governance.json + token usage report + component metadata and produce a migration PR replacing each usage with its successor token. Use after tokens are marked deprecated in Airtable.
+description: Migrate usages of deprecated tokens to their successors — read airtable-governance.json + token usage report + component specs (their `styles` are the token list) and produce a migration PR replacing each usage with its successor token. Use after tokens are marked deprecated in Airtable.
 model: sonnet
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---

@@ -84,37 +84,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static container — no interactive states. Elevation is set at render time via the variant prop."
-    }
-  ],
-  "tokens": {
-    "color": [
-      "color.background.container.canvas",
-      "color.background.container.elevated",
-      "color.background.overlay.subtle",
-      "color.border.subtle"
-    ],
-    "spacing": [
-      "space.inset.sm",
-      "space.inset.md",
-      "space.inset.lg"
-    ],
-    "typography": [],
-    "borderRadius": [
-      "border-radius.md"
-    ],
-    "other": []
-  },
-  "accessibility": {
-    "role": "region when aria-label or aria-labelledby is passed; no role otherwise",
-    "ariaAttributes": [
-      "aria-label or aria-labelledby (sets role=\"region\" as a side effect — omit both if the Card doesn't need to be a distinguishable landmark, since an unlabeled region role adds landmark noise)"
-    ],
-    "keyboardInteractions": []
-  },
   "composition": {
     "composedOf": [],
     "accepts": [

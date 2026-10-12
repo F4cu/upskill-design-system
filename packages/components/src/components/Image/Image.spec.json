@@ -1,0 +1,154 @@
+{
+  "component": "Image",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div",
+      "role": "img",
+      "required": true
+    },
+    {
+      "name": "Img",
+      "element": "img",
+      "role": "img",
+      "required": true
+    },
+    {
+      "name": "Empty",
+      "element": "span",
+      "role": "presentation",
+      "required": true
+    },
+    {
+      "name": "Icon",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "role": "presentation",
+      "required": true
+    }
+  ],
+  "props": {
+    "src": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "Src"
+      }
+    },
+    "alt": {
+      "kind": "content",
+      "type": "string",
+      "default": "",
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "Alt"
+      }
+    },
+    "aspectRatio": {
+      "kind": "variantAxis",
+      "type": "string",
+      "default": "1/1",
+      "concept": "new term: width-to-height ratio of the frame as a CSS aspect-ratio string; ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Aspect ratio"
+      },
+      "options": [
+        "1/1",
+        "16/9",
+        "4/5"
+      ]
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Renders the provided image with object-fit cover."
+    },
+    {
+      "name": "empty",
+      "kind": "content",
+      "trigger": "src omitted",
+      "notes": "No src provided — renders neutral grey surface with centred image icon."
+    }
+  ],
+  "accessibility": {
+    "role": "img",
+    "ariaAttributes": [
+      "alt — required when src is provided; pass empty string if the surrounding context (e.g. card title) already describes the image."
+    ],
+    "keyboardInteractions": []
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "aspect-ratio": {
+            "literal": "1 / 1",
+            "reason": "Media aspect ratio; no ratio token exists."
+          },
+          "background": "color.background.media.strong",
+          "border-radius": "border-radius.sm"
+        }
+      }
+    ],
+    "Img": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "height": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          }
+        }
+      }
+    ],
+    "Empty": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "height": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          },
+          "color": "color.icon.media"
+        }
+      }
+    ],
+    "Icon": [
+      {
+        "when": {},
+        "set": {
+          "width": {
+            "literal": "clamp(3rem, 30%, 5rem)",
+            "reason": "Fluid 3rem to 5rem relative to the frame; no token expresses a clamp."
+          },
+          "height": {
+            "literal": "clamp(3rem, 30%, 5rem)",
+            "reason": "Fluid 3rem to 5rem relative to the frame; no token expresses a clamp."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

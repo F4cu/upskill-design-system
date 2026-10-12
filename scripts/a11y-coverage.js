@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Tier-2 a11y completeness gate (ADR-008). Reads every component's metadata,
+// Tier-2 a11y completeness gate (ADR-008). Reads every component's metadata (and spec, where one exists),
 // derives which components are *interactive* (and so owe a behavioral
 // `<Name>.a11y.test.tsx`), and fails if any interactive component lacks one.
 // Non-interactive components (Badge, Divider, Text, landmarks) are never
@@ -14,7 +14,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { isInteractive } from "./lib.js";
+import { isInteractive, readComponentMetadata } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -27,9 +27,8 @@ const backlog = fs.existsSync(BACKLOG_PATH)
 
 const interactive = [];
 for (const dir of fs.readdirSync(COMPONENTS_DIR)) {
-  const metaFile = path.join(COMPONENTS_DIR, dir, `${dir}.metadata.json`);
-  if (!fs.existsSync(metaFile)) continue;
-  const meta = JSON.parse(fs.readFileSync(metaFile, "utf8"));
+  const meta = readComponentMetadata(dir);
+  if (!meta) continue;
   if (!isInteractive(meta)) continue;
 
   const hasTest = fs.existsSync(path.join(COMPONENTS_DIR, dir, `${dir}.a11y.test.tsx`));

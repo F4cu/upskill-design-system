@@ -126,9 +126,10 @@ Most recurring work is a skill or command — invoke it rather than reproducing 
 | Add a brand | Checklist in `packages/tokens/AGENTS.md` (ADR-012) |
 | Push tokens to Airtable, or pull governance state | `/airtable-sync` |
 | Scaffold a new component from the fixed set | `/component-scaffold` |
+| Draft a spec for an existing component (backfill, ADR-027) | `npm run spec:generate -- <Name>`, fill every `TODO`, then `npm run tokens:build && npm run spec:validate` |
 | Verified component loop (sense → scaffold → review → PR) | `/add-component` |
 | Review an existing component after changes | `/review-component <Name>` |
-| In-session review path, no subagent | `/code-review` on the diff + `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test` |
+| In-session review path, no subagent | `/code-review` on the diff + `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test` |
 | Back-fill metadata learnings after a review/bug-fix session | `/extract-learnings <Name>` or `/extract-learnings --all` |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
 | Quick terminal read on where things stand | `npm run status` (dashboard), `npm run status:board` (per-component table), `npm run status:component -- <Name>` (one component's checklist) |

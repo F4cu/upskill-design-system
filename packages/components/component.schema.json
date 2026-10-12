@@ -2,14 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "upskill-design-system/component.schema.json",
   "title": "Component Metadata",
+  "description": "Selection and composition guidance for a component. The builder sections (states, accessibility, and the token list derived from styles) live in <Name>.spec.json (ADR-001 amendment 2026-10-11, ADR-027).",
   "type": "object",
   "required": [
     "component",
     "usage",
     "variants",
-    "states",
-    "tokens",
-    "accessibility",
     "composition"
   ],
   "properties": {
@@ -115,58 +113,8 @@
       }
     },
 
-    "states": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["state", "description"],
-        "properties": {
-          "state": { "type": "string" },
-          "description": { "type": "string" }
-        },
-        "additionalProperties": false
-      }
-    },
 
-    "tokens": {
-      "type": "object",
-      "properties": {
-        "color": { "type": "array", "items": { "type": "string" } },
-        "spacing": { "type": "array", "items": { "type": "string" } },
-        "typography": { "type": "array", "items": { "type": "string" } },
-        "borderRadius": { "type": "array", "items": { "type": "string" } },
-        "other": { "type": "array", "items": { "type": "string" } }
-      },
-      "additionalProperties": false
-    },
 
-    "accessibility": {
-      "type": "object",
-      "properties": {
-        "role": { "type": "string" },
-        "notes": {
-          "description": "Accessibility guidance specific to this component that the role/aria/keyboard fields don't capture.",
-          "type": "string"
-        },
-        "ariaAttributes": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "keyboardInteractions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["key", "action"],
-            "properties": {
-              "key": { "type": "string" },
-              "action": { "type": "string" }
-            },
-            "additionalProperties": false
-          }
-        }
-      },
-      "additionalProperties": false
-    },
 
     "composition": {
       "description": "Component graph topology: what this component is built from, what it accepts, where it belongs, and how it behaves in a layout.",

@@ -38,8 +38,9 @@ Spawn **one** `adversarial-reviewer` subagent (defined in `.claude/agents/advers
 - The instruction to run and report findings from:
   1. `/code-review` on the diff (correctness + reuse/simplification)
   2. `npm run lint -- packages/components/src/components/<Name>` (ESLint + jsx-a11y Tier-1 static rules)
-  3. An a11y read of the component against its metadata `accessibility` block (role, aria, keyboard)
-  4. **For interactive components only** (`npm run component:risk -- <Name>` prints `interactive`: `component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab / native browser behaviour) — judge whether `<Name>.a11y.test.tsx` covers the contract: does it assert every `keyboardInteraction` declared in the metadata, the state attribute(s) that toggle (e.g. `aria-expanded`, `aria-pressed`, `aria-selected`), focus movement, and the WAI-ARIA APG pattern's semantics? The gate proves the test passes; the reviewer judges whether it tests the *right things*. Thin or contract-incomplete tests are a `changes-required` a11y finding. Skip entirely for display/landmark components (e.g. `Badge`, `Divider`).
+  3. Read `<Name>.spec.json` as the intent the code is held to. Run `npm run spec:validate` and report any mismatch; judge what it cannot check — each `anatomy` role and `action` against the markup, each `constraints` entry against its `enforcedBy`, each `states` trigger against the CSS and handlers. A spec that is wrong is a finding against the spec, not the code
+  4. An a11y read of the component against its spec's `accessibility` block (role, aria, keyboard)
+  5. **For interactive components only** (`npm run component:risk -- <Name>` prints `interactive`: `component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab / native browser behaviour) — judge whether `<Name>.a11y.test.tsx` covers the contract: does it assert every `keyboardInteraction` declared in the metadata, the state attribute(s) that toggle (e.g. `aria-expanded`, `aria-pressed`, `aria-selected`), focus movement, and the WAI-ARIA APG pattern's semantics? The gate proves the test passes; the reviewer judges whether it tests the *right things*. Thin or contract-incomplete tests are a `changes-required` a11y finding. Skip entirely for display/landmark components (e.g. `Badge`, `Divider`).
 
 The subagent returns its findings as JSON in its final message; the main session writes that JSON verbatim to `.claude/handoff/runs/<Name>.review.json`:
 ```json
@@ -59,7 +60,7 @@ The subagent's final message back to the main session is the findings JSON plus 
 
 Read `.claude/handoff/runs/<Name>.review.json`. Apply every `high`/`medium` finding and any lint error; for `low` findings, apply or record why not. Re-run the gate:
 ```
-npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
+npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
 ```
 If the gate fails after applying fixes, fix the failure and re-run before opening the PR.
 

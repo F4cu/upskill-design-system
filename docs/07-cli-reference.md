@@ -10,6 +10,7 @@ sources:
 # rewritten 2026-10-08: ablation:run, ablation:score, ablation:report rows; harness:run is no longer the only LLM-costing script
 # 2026-10-09: adds component:risk (risk-triggered reviewer, ADR-029)
 # 2026-10-09: adds metadata:derive-tokens (ADR-029 Step 5)
+# 2026-10-12: spec:validate row — every component has a spec, TODO check
 ---
 # CLI reference
 
@@ -37,7 +38,6 @@ The tables below are the full reference — most entries are composite children,
 | `npm run typecheck` / `npm run lint` | Before pushing component changes. |
 | `npm run a11y:coverage` / `npm run a11y:test` / `npm run a11y:stories` | Before pushing a new or changed interactive component. |
 | `npm run metadata:validate` | After editing a `*.metadata.json`. |
-| `npm run metadata:derive-tokens -- <Name>` | Rewrite a component's `tokens.*` from the `--ds-*` custom properties its own CSS Module and TSX read: the same scan `metadata:validate` checks against. Existing entries keep their category and order, unread entries are dropped, and new reads land under the category their top-level segment implies. A TSX template read (`var(--ds-size-avatar-${size})`) can't be enumerated, so it's reported for hand-listing. | `/component-scaffold` runs it after writing the CSS Module and TSX; you type it when `metadata:validate` reports a token-list mismatch. |
 | `npm run spec:validate` | After editing a `*.spec.json`, or a component that has one. |
 | `npm run layout:validate -- <path>` | After hand-editing a layout file. |
 | `npm run screenshot:check` / `npm run screenshot:approve` | After a visual change, to catch or accept pixel diffs. |
@@ -141,7 +141,7 @@ The ["frozen-memory" files](06-agentic-moments.md) agents and CI read instead of
 | Command | What it does | When it runs |
 |---|---|---|
 | `npm run metadata:validate` | Validate all `*.metadata.json` files against `component.schema.json`. | CI runs it on every component PR; you type it after editing any metadata file. |
-| `npm run spec:validate` | Validate each `*.spec.json` (ADR-027, accepted 2026-10-08; specs so far: Button and CardVertical) against `component.spec.schema.json`, then against the code: props match the props types (preset and each part), metadata axes and defaults; anatomy covers every metadata part; style tokens match the CSS Module's `--ds-*` reads and the built token CSS. Lists constraints with no enforcement as backlog. Needs built tokens. `--components-dir <dir>` checks the specs in another folder instead, such as a harness run folder that holds only the generated target; the harness's `spec:conformance` score uses it. | CI runs it on every component PR (`components-check.yml`); you type it after editing a spec or a component that has one. |
+| `npm run spec:validate` | Validate each `*.spec.json` (ADR-027; every component must have one) against `component.spec.schema.json`, then against the code: props match the props types (preset and each part), metadata axes and defaults; anatomy covers every metadata part; style tokens match the CSS Module's `--ds-*` reads and the built token CSS. Fails on any `TODO` left by `spec:generate`. Lists constraints with no enforcement as backlog. Needs built tokens. `--components-dir <dir>` checks the specs in another folder instead, such as a harness run folder that holds only the generated target; the harness's `spec:conformance` score uses it. | CI runs it on every component PR (`components-check.yml`); you type it after editing a spec or a component that has one. |
 | `npm run layout:validate` | Validate layout files against the [landmark grammar](04-layout-grammar.md) (ADR-011): one `<main>`, named `<section>`s, labelled `<nav>`s, fixed-set components only, Button emphasis by context (ADR-024). Accepts a file or directory: `npm run layout:validate -- <path>`. | You type it after creating or hand-editing a layout file; `/layout-generation` runs it as its gate, and CI runs it over `apps/showcase/src/pages` on every showcase PR (`showcase-check.yml`). |
 | `npm run lint` | ESLint over `packages/components/src` (includes Tier-1 `jsx-a11y` static checks). | CI runs it on every component PR (`components-check.yml`); you type it before pushing component changes. |
 | `npm run a11y:coverage` | Tier-2 completeness gate (ADR-008): fails if any interactive component lacks its behavioral `<Name>.a11y.test.tsx`. | CI runs it on every component PR; you type it before pushing a new interactive component. |
@@ -185,4 +185,4 @@ Housekeeping for `.claude/handoff/` (see [agentic moments](06-agentic-moments.md
 
 ## Component workflow
 
-The former `component:check` / `component:refresh` composites are gone. The deterministic gate for a new or changed component is the explicit chain — `npm run metadata:validate && npm run typecheck && npm run build && npm run a11y:coverage && npm run a11y:test` — which is what `/add-component` and CI (`components-check.yml`) run. The post-change snapshot refresh (`tokens:usage` → `sense`) now happens automatically on `main` via the post-merge sync (`sync.yml`); run those two scripts by hand only when an agent loop needs fresh snapshots before the merge lands.
+The former `component:check` / `component:refresh` composites are gone. The deterministic gate for a new or changed component is the explicit chain — `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test` — which is what `/add-component` and CI (`components-check.yml`) run. The post-change snapshot refresh (`tokens:usage` → `sense`) now happens automatically on `main` via the post-merge sync (`sync.yml`); run those two scripts by hand only when an agent loop needs fresh snapshots before the merge lands.

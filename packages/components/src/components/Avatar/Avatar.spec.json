@@ -1,0 +1,109 @@
+{
+  "component": "Avatar",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "img",
+      "role": "img",
+      "required": true,
+      "notes": "index.tsx sets --_avatar-size to the size token inline; the CSS Module falls back to size.avatar.lg when a consumer style removes it."
+    }
+  ],
+  "props": {
+    "src": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "Src"
+      }
+    },
+    "alt": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Image",
+      "figma": {
+        "surface": "both",
+        "property": "Alt"
+      }
+    },
+    "size": {
+      "kind": "variantAxis",
+      "type": "AvatarSize",
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "concept": "Size",
+      "figma": {
+        "surface": "both",
+        "property": "Size"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static image display — no interactive states."
+    }
+  ],
+  "accessibility": {
+    "role": "img",
+    "ariaAttributes": [
+      "alt (required — pass the person's full name, or empty string when adjacent text already identifies them)"
+    ],
+    "keyboardInteractions": []
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "border-radius": {
+            "literal": "50%",
+            "reason": "A circle at any size. border-radius.full is a pill, which only matches a circle on a square box."
+          }
+        }
+      },
+      {
+        "when": {
+          "size": "sm"
+        },
+        "set": {
+          "width": "size.avatar.sm",
+          "height": "size.avatar.sm"
+        }
+      },
+      {
+        "when": {
+          "size": "md"
+        },
+        "set": {
+          "width": "size.avatar.md",
+          "height": "size.avatar.md"
+        }
+      },
+      {
+        "when": {
+          "size": "lg"
+        },
+        "set": {
+          "width": "size.avatar.lg",
+          "height": "size.avatar.lg"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

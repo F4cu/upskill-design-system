@@ -1,0 +1,107 @@
+{
+  "component": "Icon",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "svg",
+      "role": "none (aria-hidden) by default; img when label is provided",
+      "required": true
+    }
+  ],
+  "props": {
+    "name": {
+      "kind": "content",
+      "type": "IconName",
+      "default": null,
+      "concept": "new term: picks one glyph from the fixed inline SVG set (Icon wraps no icon library), so there is no vocabulary row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Name"
+      }
+    },
+    "size": {
+      "kind": "variantAxis",
+      "type": "IconSize",
+      "options": [
+        "sm",
+        "md"
+      ],
+      "default": "md",
+      "concept": "Size",
+      "figma": {
+        "surface": "both",
+        "property": "Size"
+      }
+    },
+    "label": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Accessible name",
+      "figma": {
+        "surface": "both",
+        "property": "Label"
+      }
+    },
+    "className": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static — no interactive states on the icon itself."
+    }
+  ],
+  "accessibility": {
+    "role": "none (aria-hidden) by default; img when label is provided",
+    "ariaAttributes": [
+      "aria-hidden (default true)",
+      "aria-label (when label prop provided)",
+      "role=img (when label prop provided)"
+    ],
+    "keyboardInteractions": [],
+    "notes": "Icons are decorative by default (aria-hidden=true). When an Icon is the only content conveying meaning, pass the label prop to add aria-label and role=img."
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "height": {
+            "sameAs": "width"
+          }
+        }
+      },
+      {
+        "when": {
+          "size": "md"
+        },
+        "set": {
+          "width": "size.icon.md"
+        }
+      },
+      {
+        "when": {
+          "size": "sm"
+        },
+        "set": {
+          "width": "size.icon.sm"
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

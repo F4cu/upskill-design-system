@@ -1,0 +1,253 @@
+{
+  "component": "Stack",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "div by default, or the element chosen by the as prop",
+      "role": "generic",
+      "required": true
+    }
+  ],
+  "props": {
+    "as": {
+      "kind": "element",
+      "type": "ElementType",
+      "default": "div",
+      "concept": "Element",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "gap": {
+      "kind": "content",
+      "type": "StackGap",
+      "options": [
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl"
+      ],
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Gap"
+      }
+    },
+    "align": {
+      "kind": "content",
+      "type": "StackAlign",
+      "options": [
+        "center",
+        "start",
+        "end",
+        "stretch",
+        "baseline"
+      ],
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Align"
+      }
+    },
+    "justify": {
+      "kind": "content",
+      "type": "StackJustify",
+      "options": [
+        "center",
+        "start",
+        "end",
+        "space-between",
+        "space-around",
+        "space-evenly"
+      ],
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Justify"
+      }
+    },
+    "fullWidth": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Full width"
+      }
+    },
+    "minWidth": {
+      "kind": "content",
+      "type": "string | number",
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Min width"
+      }
+    },
+    "maxWidth": {
+      "kind": "content",
+      "type": "string | number",
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Max width"
+      }
+    },
+    "minHeight": {
+      "kind": "content",
+      "type": "string | number",
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Min height"
+      }
+    },
+    "maxHeight": {
+      "kind": "content",
+      "type": "string | number",
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Max height"
+      }
+    },
+    "grow": {
+      "kind": "content",
+      "type": "number",
+      "default": null,
+      "concept": "new term: layout prop shared by the layout primitives (ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "both",
+        "property": "Grow"
+      }
+    },
+    "className": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "style": {
+      "kind": "native",
+      "type": "CSSProperties",
+      "default": null,
+      "concept": "native",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": {
+        "surface": "both",
+        "property": "Children"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Static layout container — no interactive states."
+    }
+  ],
+  "accessibility": {
+    "role": "generic",
+    "ariaAttributes": [],
+    "keyboardInteractions": []
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "gap": {
+            "literal": "0",
+            "reason": "Resets the browser default."
+          }
+        }
+      },
+      {
+        "when": {
+          "gap": "xs"
+        },
+        "set": {
+          "gap": "space.stack.xs"
+        }
+      },
+      {
+        "when": {
+          "gap": "sm"
+        },
+        "set": {
+          "gap": "space.stack.sm"
+        }
+      },
+      {
+        "when": {
+          "gap": "md"
+        },
+        "set": {
+          "gap": "space.stack.md"
+        }
+      },
+      {
+        "when": {
+          "gap": "lg"
+        },
+        "set": {
+          "gap": "space.stack.lg"
+        }
+      },
+      {
+        "when": {
+          "gap": "xl"
+        },
+        "set": {
+          "gap": "space.stack.xl"
+        }
+      },
+      {
+        "when": {
+          "gap": "xxl"
+        },
+        "set": {
+          "gap": "space.stack.xxl"
+        }
+      },
+      {
+        "when": {
+          "fullWidth": "true"
+        },
+        "set": {
+          "width": {
+            "literal": "100%",
+            "reason": "Fills its container."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}

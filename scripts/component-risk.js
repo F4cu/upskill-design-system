@@ -8,7 +8,7 @@
 
 import fs from "fs";
 import path from "path";
-import { ROOT, readJson, isInteractive } from "./lib.js";
+import { ROOT, readComponentMetadata, isInteractive } from "./lib.js";
 
 const name = process.argv[2];
 if (!name) {
@@ -22,4 +22,4 @@ if (!fs.existsSync(metaFile)) {
   process.exit(2);
 }
 
-console.log(isInteractive(readJson(metaFile)) ? "interactive" : "display");
+console.log(isInteractive(readComponentMetadata(name)) ? "interactive" : "display");

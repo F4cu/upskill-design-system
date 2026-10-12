@@ -5,7 +5,7 @@ title: "ADR-027 — Component spec file, split from metadata by reader"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-08
+**Amended:** 2026-10-11
 
 ## Context
 
@@ -147,3 +147,95 @@ Arm C is better on both tasks, so the bar is met. The developer's prediction ("b
 - **The extra context is a real cost.** Until the migration removes the duplicated sections, a builder moment that reads both files carries +31% to +55% more prompt for these two components.
 - **The harness-ablation eval's Arm 1 context includes the specs.** `prepare.js` keeps and strips them like metadata, including redacting the target's own spec.
 
+
+## Amendment (2026-10-11) — Migration step 1: `accessibility` joins the spec, builder sections leave metadata for spec components
+
+The first "On acceptance" step is done for the two components that have a spec, and made transitional for the rest. The metadata side is recorded in the ADR-001 amendment of the same date.
+
+- **`accessibility` is a new required spec section.** It has the shape metadata had (`role`, `notes`, `ariaAttributes`, `keyboardInteractions`). The spec already had `states` (with ADR-025 kinds, richer than the metadata `{ state, description }` pairs) and `styles`, so the move needed no other new section.
+- **No `tokens` section in the spec.** A list next to `styles` would repeat it. The token list is derived from `styles` by `specTokens` in `scripts/lib.js` (same five categories), and `spec:validate` already checks `styles` against the CSS Module and the built tokens.
+- **Button and CardVertical lose `states`, `tokens` and `accessibility` from metadata.** `spec:validate` no longer checks metadata states against the spec; there are none.
+- **The move cannot be all-or-nothing yet.** Moving the sections out of all 27 metadata files needs 27 specs, which is the backfill (step 4) and needs the generator (step 3) first. Until then the validator requires the three sections in metadata when a component has no spec, and forbids them when it has one.
+- **Pattern output is unchanged.** `npm run patterns:generate` produces the same `component-patterns.json` before and after, because the accessibility strings it quotes now come from the spec through the same reader.
+
+**Still open from the acceptance list:** `/component-scaffold` step 3 writing the spec (step 2), the `props`/`styles` generator (step 3), the backfill and making the spec required (step 4), and the ADR-026 Button `shape` line (step 5). The harness-ablation tooling (`scripts/harness-ablation`, `scripts/pattern-accuracy-harness`) still passes metadata files as context and strips specs for the target; it needs no change for this step, but a re-run after the backfill should confirm the smaller metadata does not hurt scaffolding.
+
+## Amendment (2026-10-11) — Migration step 3: `spec:generate` drafts a spec from the code
+
+The acceptance list called for a script that generates `props` and `styles` so only anatomy roles and constraints are authored. It is `npm run spec:generate -- <Name>` (`scripts/generate-spec.js`). The props reader that `spec:validate` already used moved to `scripts/spec-props.js` so both scripts read the TypeScript the same way.
+
+**What it is for.** The backfill of the 25 components that already exist. It describes code that is there. It does not replace `/component-scaffold` writing the spec before the code for a new component; run afterwards on a component that has a spec it only refreshes derived prop fields.
+
+**What it derives, and what it leaves as `TODO`.**
+
+| Derived from the code | Left as `TODO` for a person or agent |
+|---|---|
+| Props the component and its parts declare: type, options (in declaration order), literal defaults, a kind guess | The ADR-026 vocabulary `concept` of a prop it has no rule for; the Figma property and set; `native` props the contract depends on but the component does not declare |
+| Parts, from metadata `composition.parts` and the classes the JSX uses, with element and `builtOn` | Each part's `role` and `action`; parts with no class of their own (a label `span`); `parent` |
+| States, from pseudo-classes and metadata `states` (kind by name) | The ADR-025 kind and trigger of any state it cannot place |
+| `styles`: token paths, option classes, `[data-x]` attributes, pseudo-class states, `--_x` custom properties resolved to the property that reads them (a second reader becomes `sameAs`), `border` shorthands split | Why a raw value is raw; every selector it cannot place (`:has()`, `svg` descendants, ancestor state, `aria-*` attributes, `::` elements) |
+| `accessibility`, copied from metadata | Constraints; Figma sets and divergences |
+
+`spec:validate` now fails on any string or key that starts with `TODO`, so a draft cannot pass until it is finished. Writing the real spec file also removes `states`, `tokens` and `accessibility` from the component's metadata, because `metadata:validate` forbids them once a spec exists. An existing spec is only merged: its authored fields, parts, states and style rules are kept, and `options`/`default` are refreshed from the code. Drift in parts or states is reported.
+
+**Measured against the two pilot specs** (run with `--fresh` into a scratch file, compared field by field):
+
+| | Button | CardVertical |
+|---|---|---|
+| Own props found | 7 of 7 (the 3 missing are inherited `disabled`, `type`, `onClick`) | 25 of 25 |
+| Props with kind, options and default equal | 7 of 7 | 23 of 25 (`progress` and `Progress.value` are lifecycle props, guessed as content) |
+| Style `(property, value)` pairs found | 37 of 37 | 20 of 20 |
+| Style declarations on the same part and condition | 41 of 43 | 11 of 26 |
+| Selectors left as `TODO` | 0 | 5 of 17 |
+
+For a single-element component like Button the draft is nearly the finished spec. For a compound component the values are right but placement is not: a class shared by two parts (`.onMedia`), ancestor state (`.card:hover .thumbnail`) and `aria-pressed` styling have to be placed by hand. The pilots' judgment calls (`builtOnProps`, `Menu (design-only)` Figma notes, constraints) are not derivable and are not attempted.
+
+**Not tried.** Running it on a component with no spec in the repo. A scratch test on Badge (generate, fill 7 `TODO`s, `spec:validate` with `--components-dir`) passed. Step 4 is the real test.
+
+## Amendment (2026-10-11) — Migration step 4: every component has a spec, and the spec is required
+
+All 27 components now have a `<Name>.spec.json`. `spec:validate` fails for a component without one, and `metadata:validate` rejects the sections that moved (ADR-001 amendment of this date). The `--components-dir` mode, used by the harness runs, still checks only the specs it finds.
+
+**How the 25 were backfilled.** `spec:generate` drafted each one, then a person completed it. Of the 25:
+
+- **18 needed only `TODO` fills** (part roles, vocabulary concepts, reasons for raw values): Avatar, Badge, Box, Card, Chip, Divider, Heading, Icon, Image, Inline, ProgressBar, ScrollArea, Stack, Text, TextLink, VideoFrame, and, after the corrections below, ButtonArrow and Breadcrumb.
+- **7 needed their structure rewritten by hand**: Accordion, AppHeader, Checkbox, CardHorizontal, DropdownMenu, Select, TextField. The generator's guess was wrong in the same ways each time: metadata's `accessibility.role` describes the inner control (the Accordion trigger, the Checkbox input), not the element the generator called `Root`; classes applied conditionally (`isOpen && styles.panelOuterOpen`) are state, not parts; and combination states in metadata (`checked-hover`, `disabled-unchecked`) are three independent conditions that the rule `when` expresses directly.
+- **Box's padding** had to be written out: `data-px` is computed from `paddingX ?? padding`, so each size is three rules (`padding`, `paddingX`, `paddingY`), in that order.
+
+**Bugs the backfill found in the generator, now fixed.** The worst was silent: `.panelOuterOpen .panel` was merged into the always-on `Panel` rule, overwriting `opacity: 0` with `1`. Specs for Breadcrumb and ButtonArrow had also invented parts (`LabelCurrent`, `IconLeft`) from ternary classes and passed validation; an audit run found them and both were regenerated. `spec:validate` cannot catch either kind of error, because both leave props and token sets intact. The generator now treats `&&` and ternary classes as conditions, attaches a modifier-only selector to the element that carries it, and leaves a `TODO` for state it cannot name.
+
+**Validator changes.**
+
+- A spec may have no props (Divider).
+- The TypeScript options comparison applies only when the prop's type is a literal union. Image's `aspectRatio` is `string` in TypeScript and an enumerated axis in metadata.
+- A token that only `index.tsx` reads through a template counts as read (Avatar).
+- A prop typed with a shared union of more than 12 literals (`IconName`) is `content`, not a `variantAxis` (TextField `icon`, as Button's already was).
+
+**What the backfilled specs do not contain.**
+
+- **Constraints.** Only Button and CardVertical have any (2 in all). Code cannot say which prop combinations are forbidden, and the other components' rules still sit in `usage.antiPatterns`. This is a gap, not a finding that none exist.
+- **Figma read-back.** Figma property names follow the ADR-026 casing rule. They were not read back from the Figma sets, except where the contract-migration handoff recorded them (`Has author`, `Has error`, `Disabled`, `Checked`, `Has progress`).
+- **Figma sets and divergences.** The `figma` section is empty for the 25.
+
+**Findings the specs make visible.** Six raw values in CSS Modules have an exact token and should be migrated: `font-weight: 600` is `font.weight.semibold` (AppHeader, Breadcrumb, DropdownMenu), `4px` is `size.050` (ProgressBar), `3rem` is `size.600` (VideoFrame, twice). Each is recorded as a literal with that reason, not changed here. The other 116 literals of 122 carry a reason that holds. Also visible: the AppHeader hamburger has no click handler, Checkbox draws a 1.5px border where every other module uses 1px, and the token set has no shadow, z-index, opacity, border-width or aspect-ratio scale.
+
+**Still open from the acceptance list:** the ADR-026 known-gaps line about Button `shape` (step 5).
+
+## Amendment (2026-10-11) — Migration step 5: what happened to the pilot's findings
+
+The acceptance list ended with correcting ADR-026 and deciding the findings the pilots reported. Each was checked against the repo today.
+
+| Finding (pilot, 2026-10-07) | State | Evidence |
+|---|---|---|
+| ADR-026 lists Button `shape` as a code prop with no Figma property | Already closed | The ADR-026 amendment of 2026-10-10 ("`shape` was never a gap") maps it to the `Button icon` set (`54:1192`); the known-gaps line now lists only TextField `hideLabel`. No edit needed. |
+| `metadata.tokens` leaves out tokens the CSS reads | Closed by construction | The token list is derived from the spec's `styles` for all 27 components (ADR-001 amendment, step 4). |
+| The icon-only rule is not enforced by the types | Closed | `ButtonProps` is a union whose `shape` branch requires `icon` and `aria-label` and forbids `children` and `trailingIcon`; `Button.a11y.test.tsx` has `@ts-expect-error` cases for both; the spec constraint says `enforcedBy: ["type", "test"]`. |
+| Button has no focus style or token | Closed | ADR-028: one token-bound `:focus-visible` ring in `reset.css`. The Button spec's `focus-visible` state points to it. |
+| CardVertical `Root` sets raw `min-width` 220px and 160px | Closed | `size.card.min.lg` and `size.card.min.sm`. |
+| CardVertical `metadata.tokens` lists tokens the CSS never reads | Closed | As above. |
+| The `1px` border width is a literal in 15 CSS Modules | Open: needs a decision | 13 modules, 17 declarations, plus Checkbox at 1.5px and 2px. The specs record each as a literal with a reason. |
+| No opacity or z-index token scale | Decided: no scale | z-index is `100` on three popovers (AppHeader, CardVertical, Select) and `1` once; opacity is `0`/`1` for a fade and `0.8` once. Too few distinct values to justify a scale. They stay literals with a reason. Revisit if a fourth distinct value appears. |
+
+**The six raw values with an exact token are migrated.** `font-weight: 600` became `var(--ds-font-weight-semibold)` (AppHeader, Breadcrumb, DropdownMenu), `height: 4px` became `var(--ds-size-050)` (ProgressBar), and `3rem` became `var(--ds-size-600)` (VideoFrame, width and height). Their spec literals are now token paths. `size.050` is `0.25rem`, so the progress track now follows the root font size where `4px` did not; at the default size it is identical. A same-machine before/after screenshot of the five components' default stories, light and dark (10 shots), differed in 0 pixels. The committed ADR-019 baselines were not used, because they come from a different OS.
+
+**Decision for the owner: a border-width token.** Recommended: add one, because 17 declarations repeat the same value and the spec now records them all as unexplained literals. It is a token-scale change (a new primitive and device alias, a Figma variable, an Airtable row), so it goes through `/tokens-author` as its own PR, not through this migration. Checkbox's 1.5px and 2px should be decided in the same change: either align the box to the 1px default or add a second step.

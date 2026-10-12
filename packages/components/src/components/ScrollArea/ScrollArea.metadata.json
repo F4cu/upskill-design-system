@@ -65,30 +65,6 @@
       }
     }
   },
-  "states": [
-    {
-      "state": "default",
-      "description": "Static scroll container — no interactive states beyond native scroll behaviour."
-    }
-  ],
-  "tokens": {
-    "color": [],
-    "spacing": [],
-    "typography": [],
-    "borderRadius": [],
-    "other": []
-  },
-  "accessibility": {
-    "role": "generic",
-    "ariaAttributes": [],
-    "keyboardInteractions": [
-      {
-        "key": "Arrow keys / Page Up / Page Down",
-        "action": "Scroll the container when it has focus (native browser behaviour)"
-      }
-    ],
-    "notes": "The native scrollbar is hidden visually but scroll behaviour is fully intact. Keyboard users can scroll via arrow keys once the container is focused. If the scroll region contains important content, consider adding tabindex=0 so keyboard users can reach and scroll it."
-  },
   "composition": {
     "composedOf": [],
     "accepts": [

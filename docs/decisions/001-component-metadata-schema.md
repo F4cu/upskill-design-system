@@ -4,7 +4,7 @@ title: "ADR-001 — Component Metadata Schema for Machine-Readable Design System
 # ADR-001 — Component Metadata Schema for Machine-Readable Design System
 
 **Date:** 2026-06-11
-**Amended:** 2026-10-07
+**Amended:** 2026-10-11
 **Status:** `accepted`
 
 ## Context
@@ -95,3 +95,33 @@ Commit `d89782a` (2026-06-24) reshaped the relationship section without a matchi
 
 **Alternative considered:** waiting for ADR-027 to move `tokens` into the spec, where `spec:validate` already enforces this for the two pilot components. That would leave 25 components unchecked until the pilot is decided. If ADR-027 is accepted, the check moves with the section.
 
+
+## Amendment (2026-10-11) — `states`, `tokens` and `accessibility` move to the spec file
+
+ADR-027 accepted the spec file after the harness arm (2026-10-08) and listed this move as its first follow-up. Metadata keeps what `/layout-generation` reads: `component`, `usage`, `variants`, `composition`. The sections only the builder moments read (`/component-scaffold`, `/review-component`, `a11y-coverage.js`) go where they are read.
+
+**Decision.**
+
+- A component **with** a `<Name>.spec.json` keeps `states` and `accessibility` in the spec, and has **no** `tokens` list: its tokens are the ones its spec `styles` reference, which `spec:validate` already checks against the CSS Module. `scripts/validate-metadata.js` fails if such a metadata file still carries any of the three sections.
+- A component **without** a spec keeps all three in metadata, still required and still checked as before, including the 2026-10-07 rule that `tokens` lists what the component itself reads. `component.schema.json` no longer lists them as required; the validator makes them required exactly when there is no spec.
+- Readers go through `readComponentMetadata` in `scripts/lib.js`, which returns the metadata with `tokens` (derived from the spec's styles, grouped by the same five categories) and `accessibility` taken from the spec. `a11y-coverage.js`, `component-risk.js`, `handoff-tidy.js`, `generate-pattern-schema.js`, `sense-component.js` and the Airtable component push use it, so none of them cares which file holds the data. Only Button and CardVertical have a spec, so the move is complete for those two now and finishes for the other 25 with the ADR-027 backfill.
+
+**The `anatomy` exclusion is reversed for the spec file only.** Metadata still has no `anatomy`; the spec's `anatomy` section is the place for it (ADR-027). The "Deliberately excluded" list above stands for metadata.
+
+**Consequences.**
+
+- The rule that `tokens` lists only what the component itself reads now holds by construction for spec components: the list is derived, never written. CardVertical's six unread tokens (`color.text.*`, `font.family.headline-serif` and others) are gone from its token list, and so from its Airtable row on the next push.
+- `npm run metadata:derive-tokens` refuses components that have a spec.
+- Measured on the two migrated components: metadata, which `/layout-generation` reads for all 27 components, shrinks by 27% (Button, 9.9 KB to 7.2 KB) and 21% (CardVertical, 21.1 KB to 16.6 KB). A builder moment reading both files sees only 10% and 5% less (19.4 KB to 17.4 KB, and 39.3 KB to 37.4 KB), because the spec absorbs `accessibility`. The +31% to +55% overhead ADR-027 measured came mostly from sections that stay in the spec; it falls away only as the spec's own size does.
+- The required-until-spec rule is temporary. When the backfill gives every component a spec, `states`, `tokens` and `accessibility` leave the metadata schema and the validator check goes with them.
+
+## Amendment (2026-10-11) — The transitional rule ends: metadata has no `states`, `tokens` or `accessibility`
+
+The earlier amendment of this date kept the three sections in metadata for components without a spec. Every component now has a spec (ADR-027 amendment of this date), so the exception is gone.
+
+- `component.schema.json` no longer defines `states`, `tokens` or `accessibility`. Metadata that carries them fails the schema, and `scripts/validate-metadata.js` says where they went. The required top-level properties are `component`, `usage`, `variants` and `composition`.
+- The token list is the set of tokens a spec's `styles` reference. `spec:validate` checks it against the CSS Module and now also against `index.tsx`, because a size read through a template (`var(--ds-size-avatar-${size})`) is a real read. `npm run metadata:derive-tokens` and its script are deleted.
+- `readComponentMetadata` in `scripts/lib.js` stays as the one reader that returns metadata with `tokens` and `accessibility` merged in from the spec. The a11y gate, the review-risk script, the pattern aggregate, the component snapshot and the Airtable push use it.
+- The metadata that `/layout-generation` reads for all 27 components went from 151 KB to 113 KB (−25%).
+- Of the 27 token lists, one changed when derived from the specs: Avatar had listed `size.avatar.sm` and `size.avatar.md`, which only `index.tsx` reads. Its spec now states them as `size` rules, so nothing is lost.
+- The 2026-10-07 rule that `tokens` lists only what the component itself reads holds by construction for all components now. There is nothing to hand-write and nothing to keep in step.

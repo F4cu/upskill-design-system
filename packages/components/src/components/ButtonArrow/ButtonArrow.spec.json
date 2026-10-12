@@ -1,0 +1,154 @@
+{
+  "component": "ButtonArrow",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "button",
+      "role": "button",
+      "required": true
+    },
+    {
+      "name": "Icon",
+      "element": "Icon",
+      "builtOn": "Icon",
+      "role": "presentation",
+      "required": true
+    }
+  ],
+  "props": {
+    "direction": {
+      "kind": "variantAxis",
+      "type": "ButtonArrowDirection",
+      "options": [
+        "left",
+        "right"
+      ],
+      "default": null,
+      "concept": "Glyph direction",
+      "figma": {
+        "surface": "both",
+        "property": "Direction"
+      }
+    }
+  },
+  "constraints": [],
+  "states": [
+    {
+      "name": "default",
+      "kind": "interaction",
+      "trigger": "rest",
+      "notes": "Neutral-subtlest background, default border."
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": ":hover",
+      "notes": "Border darkens to border-strong; background unchanged."
+    },
+    {
+      "name": "active",
+      "kind": "interaction",
+      "trigger": ":active",
+      "notes": "Momentary press feedback (CSS :active): background steps from overlay.subtlest to overlay.active; border keeps its hover value."
+    },
+    {
+      "name": "disabled",
+      "kind": "appData",
+      "trigger": ":disabled",
+      "notes": "No background, default border, muted icon color; pointer-events none."
+    }
+  ],
+  "accessibility": {
+    "role": "button",
+    "ariaAttributes": [
+      "aria-label — automatically set to 'Previous' or 'Next' from the direction prop; override via rest props for more specific context"
+    ],
+    "keyboardInteractions": [
+      {
+        "key": "Enter / Space",
+        "action": "Triggers the navigation callback"
+      },
+      {
+        "key": "Tab",
+        "action": "Moves focus to the next focusable element"
+      }
+    ],
+    "notes": "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS."
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "width": "size.400",
+          "height": "size.400",
+          "border-radius": "border-radius.full",
+          "border-width": {
+            "literal": "1px",
+            "reason": "No border-width token scale exists; every module uses a literal width."
+          },
+          "border-color": "color.border.default",
+          "background": "color.background.overlay.subtlest",
+          "color": "color.text.default"
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "border-color": "color.border.strong"
+        }
+      },
+      {
+        "when": {
+          "state": "active"
+        },
+        "set": {
+          "background": "color.background.overlay.active"
+        }
+      },
+      {
+        "when": {
+          "state": "disabled"
+        },
+        "set": {
+          "background": {
+            "literal": "transparent",
+            "reason": "No fill or border at this state."
+          },
+          "border-color": "color.border.default",
+          "color": "color.text.disabled"
+        }
+      }
+    ],
+    "Icon": [
+      {
+        "when": {
+          "direction": "left"
+        },
+        "set": {
+          "transform": {
+            "literal": "translateX(-1px)",
+            "reason": "Optical nudge; a 1px offset has no token (the smallest size is 2px)."
+          }
+        }
+      },
+      {
+        "when": {
+          "direction": "right"
+        },
+        "set": {
+          "transform": {
+            "literal": "translateX(1px)",
+            "reason": "Optical nudge; a 1px offset has no token (the smallest size is 2px)."
+          }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  }
+}
