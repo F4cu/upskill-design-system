@@ -93,6 +93,8 @@ External anchors for the gate-plus-generator architecture generally: the LLM-Mod
 
 ## The harness ablation: what the context buys, and what the loop doesn't (yet)
 
+*What the eval taught and what it changed in the system, told as a narrative: [Taking the harness apart](12-harness-ablation-learnings.md). This section stays the source of record for its numbers.*
+
 The pattern-schema harness measured *context*: single-shot prompts, no tools. The second controlled experiment (`scripts/harness-ablation/`, October 2026) measures the *harness* — tools, gates, the retry loop, the reviewer — by taking pieces of it away. It follows the with/without method of Vercel's AGENTS.md eval and Atlassian's context-delivery eval. Three arms, the same brief, the same model (`claude-opus-5-5`, effort medium, $5 cap per run), each run agentic (`claude -p` with tools) in a fresh workspace:
 
 - **Arm 0, bare repo.** Components, tokens, stories and the standard npm scripts. No `CLAUDE.md`, no `.claude/`, no ADRs, no metadata. The fair baseline: a team with a good component library and no agent harness, not "Claude with nothing".
