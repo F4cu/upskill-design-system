@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-09-30
-completed:
+completed: 2026-10-12
 ---
 
 # CardVertical subcomponents — rollout plan
@@ -229,3 +229,9 @@ Run through `/figma-cli` (figma-cli `eval` over Figma Desktop; Figma MCP only as
 2. Storybook: all 10 compositions render in light and dark and in both brands. Keyboard-only run-through of Favorite and Menu.
 3. `npm run layout:validate` passes a layout that uses `CardVertical.Root`, and fails a layout that uses `CardVertical.Bogus` or `<CardVertical.Body gap="lg">` (the latter is a TypeScript error).
 4. `run-ledger.json` gains the PR 3 review run.
+
+## Closed (2026-10-12)
+
+All PRs shipped. The two unchecked items are not handoff work:
+- **"Watch for a second use case"** is the ADR-023 test, applied whenever a component gains a requirement. CardHorizontal was ruled out on 2026-10-02.
+- **Case-study HTML refresh** was deliberately deferred until the eval work was done. With the evals frozen, it can now be planned on its own.

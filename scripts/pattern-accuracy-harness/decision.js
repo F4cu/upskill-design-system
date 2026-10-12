@@ -14,6 +14,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { execFileSync } from 'child_process'
 import { publicComponents } from '../lib.js'
+import { FROZEN_BANNER } from '../frozen-eval.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '../..')
@@ -222,6 +223,8 @@ export function writeDecisionReport() {
 
   const lines = [
     '# Governance decision eval results',
+    '',
+    FROZEN_BANNER,
     '',
     `Generated: ${new Date().toISOString()} — ${new Set(rows.map((r) => r.id)).size} of ${ids.length} tasks scored.`,
     '',

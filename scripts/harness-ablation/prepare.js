@@ -13,6 +13,7 @@ import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { execSync, spawnSync } from 'child_process'
+import { exitIfFrozen } from '../frozen-eval.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '../..')
@@ -357,6 +358,7 @@ function leakReport(ws, target) {
 }
 
 function main() {
+  exitIfFrozen('harness-ablation')
   const args = parseArgs(process.argv.slice(2))
   const [taskId, arm] = args.positional
   if (!taskId || !ARMS.includes(arm)) usage()

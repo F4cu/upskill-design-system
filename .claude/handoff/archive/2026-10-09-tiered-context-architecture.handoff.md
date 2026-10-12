@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-10-09
-completed:
+completed: 2026-10-12
 ---
 
 # Tiered context architecture (ADR-029) + implementation
@@ -224,3 +224,8 @@ Step 1 → Step 2 → Step 3 → Step 4 → (Step 5 any time) → Step 6.
 
 - Each step touches a declared doc source, so each PR needs a same-PR doc touch (docs-check coupling).
 - Run `npm run handoff:tidy` when this handoff's status changes.
+
+## Closed (2026-10-12)
+
+- **Portability smoke test (Step 2.6):** not run, because no Codex or Cursor is installed. ADR-029 already lists portability as unmeasured; that stands.
+- **Live `/add-component` checks (Steps 4–5):** moved to the first real spec-first `/add-component` or `/review-component` run (ADR-029 amendment 2026-10-12). The evals that would have re-checked them are frozen at `044d28f`.

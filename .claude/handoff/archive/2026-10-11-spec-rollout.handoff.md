@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-10-11
-completed:
+completed: 2026-10-12
 ---
 
 # ADR-027 spec rollout: from two pilot specs to every component
@@ -74,3 +74,7 @@ Step 1 could not remove the sections from all 27 metadata files, because that ne
 - `spec:validate` needs built tokens, so run `npm run tokens:build` first (CI does).
 - The harness-ablation eval's `prepare.js` keeps and strips specs like metadata and redacts the target's own spec; update it if the spec's shape changes in step 1.
 - Run `npm run handoff:tidy` after marking this handoff `done` so the index and ledger regenerate.
+
+## Closed (2026-10-12)
+
+Merged in PR #142 (docs synced in the same PR). The harness-tooling item is settled: the evals are frozen (ADR-029 amendment 2026-10-12, PR #143). Every other open item moved to `2026-10-12-spec-rollout-followups.handoff.md`.

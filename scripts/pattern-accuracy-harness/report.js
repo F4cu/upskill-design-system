@@ -10,6 +10,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { FROZEN_BANNER } from '../frozen-eval.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const TASKS_DIR = path.join(__dirname, 'tasks')
@@ -67,6 +68,8 @@ export function writeReport() {
 
   const lines = [
     '# Pattern-accuracy harness results',
+    '',
+    FROZEN_BANNER,
     '',
     `Generated: ${new Date().toISOString()} — ${new Set(cells.map((c) => c.task)).size} of ${taskIds.length} tasks scored.`,
     '',

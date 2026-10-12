@@ -5,7 +5,7 @@ title: "ADR-027 — Component spec file, split from metadata by reader"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-11
+**Amended:** 2026-10-12
 
 ## Context
 
@@ -239,3 +239,7 @@ The acceptance list ended with correcting ADR-026 and deciding the findings the 
 **The six raw values with an exact token are migrated.** `font-weight: 600` became `var(--ds-font-weight-semibold)` (AppHeader, Breadcrumb, DropdownMenu), `height: 4px` became `var(--ds-size-050)` (ProgressBar), and `3rem` became `var(--ds-size-600)` (VideoFrame, width and height). Their spec literals are now token paths. `size.050` is `0.25rem`, so the progress track now follows the root font size where `4px` did not; at the default size it is identical. A same-machine before/after screenshot of the five components' default stories, light and dark (10 shots), differed in 0 pixels. The committed ADR-019 baselines were not used, because they come from a different OS.
 
 **Decision for the owner: a border-width token.** Recommended: add one, because 17 declarations repeat the same value and the spec now records them all as unexplained literals. It is a token-scale change (a new primitive and device alias, a Figma variable, an Airtable row), so it goes through `/tokens-author` as its own PR, not through this migration. Checkbox's 1.5px and 2px should be decided in the same change: either align the box to the 1px default or add a second step.
+
+## Amendment (2026-10-12) — The Arm C exit test is frozen
+
+The pattern-accuracy harness's Arm C (the target's spec added to the prompt), which this ADR used as its exit test, is frozen with the rest of the harness at `044d28f`. It scored a model's emitted metadata against a schema that still had `tokens`, so it can't be re-run on the current schema. Rationale and the guard: ADR-029 amendment 2026-10-12. The accept bar for the spec rollout (scaffolding does not regress with the smaller metadata) is now checked by the first real spec-first scaffold, not by re-running Arm C.

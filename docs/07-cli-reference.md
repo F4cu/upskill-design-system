@@ -11,6 +11,7 @@ sources:
 # 2026-10-09: adds component:risk (risk-triggered reviewer, ADR-029)
 # 2026-10-09: adds metadata:derive-tokens (ADR-029 Step 5)
 # 2026-10-12: spec:validate row — every component has a spec, TODO check
+# 2026-10-12: the two eval harnesses are frozen (scripts/frozen-eval.js, ADR-029 amendment)
 ---
 # CLI reference
 
@@ -170,7 +171,7 @@ The self-documenting side of the system: two gates that keep the human docs and 
 
 ## Handoff & telemetry
 
-Housekeeping for `.claude/handoff/` (see [agentic moments](06-agentic-moments.md)) and the two measurement harnesses: the pattern-accuracy harness behind ADR-013's "patterns help layouts, hurt scaffolds" finding, and the harness-ablation eval, which measures whether the `/add-component` harness itself earns its cost.
+Housekeeping for `.claude/handoff/` (see [agentic moments](06-agentic-moments.md)) and the two measurement harnesses, both frozen since the ADR-027 spec rollout (`harness:run`, `ablation:run` and the ablation's `prepare.js` exit on a later commit and print the `git worktree` command for the frozen commit; scoring and reports still run): the pattern-accuracy harness behind ADR-013's "patterns help layouts, hurt scaffolds" finding, and the harness-ablation eval, which measures whether the `/add-component` harness itself earns its cost.
 
 | Command | What it does | When it runs |
 |---|---|---|
