@@ -132,6 +132,14 @@
       "packages/components/src/components/TextLink/TextLink.module.css",
       "packages/components/src/components/TextLink/TextLink.stories.tsx"
     ],
+    "--ds-font-weight-semibold": [
+      "packages/components/src/components/AppHeader/AppHeader.module.css",
+      "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
+      "packages/components/src/components/Button/Button.module.css",
+      "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
+      "packages/components/src/components/Heading/Heading.module.css",
+      "packages/components/src/components/TextLink/TextLink.module.css"
+    ],
     "--ds-font-line-height-relaxed": [
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/Breadcrumb/Breadcrumb.module.css",
@@ -248,11 +256,6 @@
       "packages/components/src/styles/utilities.module.css",
       "packages/components/src/tokens/tokenComponents.module.css"
     ],
-    "--ds-font-weight-semibold": [
-      "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/Heading/Heading.module.css",
-      "packages/components/src/components/TextLink/TextLink.module.css"
-    ],
     "--ds-font-line-height-none": [
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
@@ -272,7 +275,8 @@
     ],
     "--ds-size-600": [
       "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/TextField/TextField.module.css"
+      "packages/components/src/components/TextField/TextField.module.css",
+      "packages/components/src/components/VideoFrame/VideoFrame.module.css"
     ],
     "--ds-border-radius-full": [
       "packages/components/src/components/Button/Button.module.css",
@@ -483,6 +487,9 @@
     ],
     "--ds-space-inline-xxl": [
       "packages/components/src/components/Inline/Inline.module.css"
+    ],
+    "--ds-size-050": [
+      "packages/components/src/components/ProgressBar/ProgressBar.module.css"
     ],
     "--ds-color-background-progress": [
       "packages/components/src/components/ProgressBar/ProgressBar.module.css"
