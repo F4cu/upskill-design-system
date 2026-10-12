@@ -203,3 +203,20 @@ The ADR-027 spec rollout (PR #142, merged 2026-10-12) moved `states`, `tokens` a
 **Decision.** The evals are not rewritten. They stay as the evidence for ADR-013, ADR-027 and this ADR, frozen at `044d28f` (the last `main` commit before the rollout). `scripts/frozen-eval.js` makes this a gate, not a convention: `harness:run`, `ablation:run` and the ablation's `prepare.js` exit when HEAD contains the spec-required commit and print the `git worktree` command for the frozen commit. Scoring and report rendering still run, and each results file carries a "Historical" banner.
 
 **Consequences.** The revisit triggers above can no longer fire from these harnesses on the current architecture. A future question about the spec-based architecture gets its own pre-registered eval, built on the current schema, rather than a revived arm. The two residual Step 4–5 checks (a display component finishing with no subagent; a scaffold passing the gate on the first attempt) move to the first real spec-first `/add-component` or `/review-component` run.
+
+## Amendment (2026-10-12) — Figma fidelity study B: a separate, pre-registered eval
+
+The freeze amendment above says a new question about the spec-based architecture gets "its own pre-registered eval, built on the current schema, rather than a revived arm". The first such question is whether the layered metadata lets an agent build a correctly structured Figma component. That's Measurement B in `.claude/handoff/2026-10-12-figma-fidelity-measurements.handoff.md`. This amendment records that B is that kind of eval, and the limits it runs under.
+
+**Decision.**
+
+- **Separate from the frozen harnesses.** B doesn't use `harness:run`, `ablation:run`, the ablation's `prepare.js` or its scorers, adds no arm to `harness-ablation`, and doesn't touch `scripts/frozen-eval.js`. Its results aren't comparable with the frozen results and aren't presented as such.
+- **Design.** 2 components (Button; CardVertical) × 2 arms (code only; code + `spec.json` + `metadata.json`) × 1 run, so 4 runs, generated into scratch duplicates of the Figma file and scored by the fidelity checker against the specs and the hand-aligned sets. Predictions, reporting bars and the verbatim task prompt are pre-registered in the handoff before the first run and frozen after.
+- **Isolation runs outside the repo.** Tier 1 delivery (the 2026-10-09 amendment, option b) loads `packages/components/AGENTS.md` whenever a session reads a file under the package. For B, that is the leak: it states the Figma mapping rules the code-only arm is meant to do without. Each run is therefore a fresh session in a directory holding only its arm's files, with no root or nested `AGENTS.md`/`CLAUDE.md`, no `.claude/`, and no project memory. The same separation that makes tiered context work in normal sessions is what B has to switch off.
+- **Interactive, scratch-only, no committed tooling.** Runs need Figma Desktop and the developer present (ADR-002). They write only to scratch duplicates, never to the main file. Runner and scoring scripts stay in the session scratchpad. No `npm` script, workflow or committed snapshot is added unless the checker graduates into #103's snapshot, which needs its own ADR-002 amendment.
+
+**Consequences.**
+
+- B's result is an N = 1-per-cell observation about Figma generation from the layered metadata. It doesn't fire this ADR's revisit triggers, which concern code generation and the reviewer.
+- Results go in `docs/case-study-source/08-measured-impact.md` with B's caveats (one run per cell, one rater, spec and metadata tested together rather than separately).
+- If B is ever repeated with more runs, or extended to separate the spec from the metadata, that's a new pre-registration under this amendment, not an edit to B's frozen lines.
