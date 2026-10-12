@@ -178,6 +178,7 @@ Files: `.claude/handoff/runs/figma-fidelity/visual/` (`pairs.json`, `capture.mjs
   - The code side is the default story, set to that variant's configuration and content through Storybook's `updateStoryArgs` channel (booleans and numbers also through URL args, because uncontrolled `default*` props are only read on mount). Examples: `certified` off, ButtonArrow `direction: left`, ProgressBar `value: 100`, Figma's text for labels, titles, durations and Breadcrumb items, CardHorizontal's thumbnail cleared to the placeholder.
   - Avatar's code side uses the Figma export as its `src`, so the photo is the same and only the component's own styling differs.
   - The code side renders in a container as wide as the Figma variant, captured at 2× as the story's root element.
+- **Rating waits for B** (developer decision 2026-10-12, keeping the frozen plan). After B's four runs, capture B's pairs with the same setup and run `node build-rating.mjs capture-log.json <B log>` to regenerate one shuffled batch. Don't rate the current `rate.html`.
 - **Blinding:** pairs are shuffled under random 4-character codes, code and Figma sides are randomly assigned to left and right, and both sit on the canvas colour (`rgb(251, 249, 243)`, the code shots' page background), so neither the background nor the position gives away the side. The key is in `key.json`; the rater doesn't open it before rating.
 
 ## D. Optional: translation speed on #136
