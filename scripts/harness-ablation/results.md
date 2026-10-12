@@ -1,5 +1,7 @@
 # Harness-ablation results
 
+> **Historical.** Measured against the pre-ADR-027 schema; the eval is frozen at `044d28f` (ADR-029 amendment 2026-10-12). Results are not comparable with a run on the current architecture.
+
 Generated: 2026-10-10T08:20:26.114Z · 48 scored run(s) · model: claude-opus-5-5
 
 Arm 0 = bare repo (no CLAUDE.md, .claude/, ADRs or metadata). Arm 1 = context only (no commands, agents or skills). Arm 2 = full harness (`/add-component <Name> --eval`). Scope, arms and scoring: `.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md`.

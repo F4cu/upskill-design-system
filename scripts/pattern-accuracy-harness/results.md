@@ -1,5 +1,7 @@
 # Pattern-accuracy harness results
 
+> **Historical.** Measured against the pre-ADR-027 schema; the eval is frozen at `044d28f` (ADR-029 amendment 2026-10-12). Results are not comparable with a run on the current architecture.
+
 Generated: 2026-10-08T07:08:36.549Z — 9 of 9 tasks scored.
 
 Arm A = brief + per-component metadata (what /layout-generation and /component-scaffold inject today).

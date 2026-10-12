@@ -4,7 +4,7 @@ title: "ADR-029 — Tiered context architecture and a risk-triggered reviewer"
 # ADR-029 — Tiered context architecture and a risk-triggered reviewer
 
 **Date:** 2026-10-09
-**Amended:** 2026-10-10
+**Amended:** 2026-10-12
 **Status:** `accepted`
 
 ## Context
@@ -196,3 +196,10 @@ The headline keeps the locked trap (developer decision). Under a narrower trap (
 
 **Decision unchanged.** The risk-triggered reviewer (Step 4) keeps spending the subagent on interactive components. This run is the first measured case where it's no worse than context alone on the headline, and it buys deeper tests. The trigger's other half, the reviewer on *display* components, can't be tested by an interactive task and stays open. Not counted: one Arm 1 attempt cut off by a 429 before any result was recorded; the run restarted in a fresh workspace.
 
+## Amendment (2026-10-12) — The evals are frozen at the pre-spec architecture
+
+The ADR-027 spec rollout (PR #142, merged 2026-10-12) moved `states`, `tokens` and `accessibility` from metadata into `<Name>.spec.json` and made the spec required. The harness-ablation eval and the pattern-accuracy harness (including the governance decision eval) were built on the old shape: their prompts inject metadata with those sections, `score.js` checks `data.tokens`, and the ablation's `prepare.js` redacts the target's spec, which the gate now requires. A run on the current HEAD would measure the harness, not the architecture, and would not be comparable with the committed results.
+
+**Decision.** The evals are not rewritten. They stay as the evidence for ADR-013, ADR-027 and this ADR, frozen at `044d28f` (the last `main` commit before the rollout). `scripts/frozen-eval.js` makes this a gate, not a convention: `harness:run`, `ablation:run` and the ablation's `prepare.js` exit when HEAD contains the spec-required commit and print the `git worktree` command for the frozen commit. Scoring and report rendering still run, and each results file carries a "Historical" banner.
+
+**Consequences.** The revisit triggers above can no longer fire from these harnesses on the current architecture. A future question about the spec-based architecture gets its own pre-registered eval, built on the current schema, rather than a revived arm. The two residual Step 4–5 checks (a display component finishing with no subagent; a scaffold passing the gate on the first attempt) move to the first real spec-first `/add-component` or `/review-component` run.

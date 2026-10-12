@@ -1,5 +1,7 @@
 # Governance decision eval results
 
+> **Historical.** Measured against the pre-ADR-027 schema; the eval is frozen at `044d28f` (ADR-029 amendment 2026-10-12). Results are not comparable with a run on the current architecture.
+
 Generated: 2026-10-08T08:01:59.936Z — 13 of 13 tasks scored.
 
 Arm A = brief + CLAUDE.md component scope + ADR text (redacted per task). Arm B = A + candidate metadata (pre-decision from git for historical tasks). Arm C = B + candidate specs (ADR-027).

@@ -14,6 +14,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { FROZEN_BANNER } from '../frozen-eval.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const TASKS_DIR = path.join(__dirname, 'tasks')
@@ -246,6 +247,8 @@ function main() {
   const underRun = scored.filter((c) => c.runs < PRE_REGISTERED_RUNS)
 
   const md = `# Harness-ablation results${smoke ? ' (SMOKE — plumbing check, not a result)' : ''}
+
+${FROZEN_BANNER}
 
 Generated: ${new Date().toISOString()} · ${sum(scored.map((c) => c.runs))} scored run(s) · model${models.length === 1 ? '' : 's'}: ${models.join(', ') || '—'}
 

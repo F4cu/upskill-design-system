@@ -23,6 +23,7 @@ import { spawnSync } from 'child_process'
 import { scoreScratch, loadTask } from './score.js'
 import { writeReport } from './report.js'
 import { buildDecisionPrompt, scoreDecision, decisionArms, decisionTaskIds, writeDecisionReport } from './decision.js'
+import { exitIfFrozen } from '../frozen-eval.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '../..')
@@ -181,6 +182,7 @@ function runArm(task, arm, run) {
   return score
 }
 
+exitIfFrozen('pattern-accuracy-harness')
 const args = process.argv.slice(2)
 const taskIds = []
 const armFilter = []

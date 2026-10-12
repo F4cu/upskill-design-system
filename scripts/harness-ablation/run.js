@@ -21,6 +21,7 @@ import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { spawnSync } from 'child_process'
+import { exitIfFrozen } from '../frozen-eval.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const TASKS_DIR = path.join(__dirname, 'tasks')
@@ -254,6 +255,7 @@ function score(runDir) {
 }
 
 function main() {
+  exitIfFrozen('harness-ablation')
   const args = parseArgs(process.argv.slice(2))
   const tasks = taskIds(args.task).map(loadTask)
   fs.mkdirSync(WORKSPACES_DIR, { recursive: true })
