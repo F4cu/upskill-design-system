@@ -66,6 +66,7 @@ sources:
 # clock reset 2026-10-11: contract migration Tier 4 (ADR-025 Checkbox checked-hover amendment, ADR-026 close-out amendment); this page describes no component states or Figma cells, still accurate
 # clock reset 2026-10-12: ADR-001/027 amendments and command updates for the spec rollout; this page's map-level description of metadata and moments is unaffected, still accurate
 # clock reset 2026-10-12: ADR-027/029 amendments freeze the eval harnesses; this page doesn't describe them, still accurate
+# rewritten 2026-10-12: reading order lists 11 and 12, which it had omitted
 # rewritten 2026-10-12: reading-order blurbs for 09 (rung 2 is nested package AGENTS.md since ADR-029, not rules) and 10 (the contract is metadata plus its spec, ADR-027 rollout)
 ---
 # Start here
@@ -129,5 +130,7 @@ The suggested reading order is the page order — tokens first, because everythi
 - [08 — Glossary](08-glossary.md) — terms explained for a non-developer collaborator
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`AGENTS.md` + `CLAUDE.md` → [nested package `AGENTS.md`](08-glossary.md) → commands → snapshots → handoffs) and the CI gates that keep it honest
 - [10 — Machine-readable metadata](10-machine-readable-metadata.md) — the metadata stack: the per-component contract (metadata plus its [spec](08-glossary.md)), its validators, the cross-component pattern aggregate, and the write-back loop (reads naturally right after 02)
+- [11 — Self-improving loops](11-self-improving-loops.md) — the mechanisms that change their own behavior from evidence: learning loops, measurement ledgers, and the line between a loop that learns and a gate that only checks
+- [12 — Taming non-determinism](12-taming-non-determinism.md) — how deterministic structure wraps the model before, during and after generation, so only genuinely ambiguous judgment reaches a human
 
 The twenty-nine architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
