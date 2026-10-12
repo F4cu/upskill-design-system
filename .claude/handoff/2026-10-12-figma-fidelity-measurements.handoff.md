@@ -167,6 +167,19 @@ Correct structure doesn't guarantee it looks the same, so do a visual check on t
 - **Rating:** blind 3-point scale (matches / minor differences / wrong), pairs shuffled and lettered so the rater can't tell which component or side is which. One rater (the developer); say so. One traced cause per non-match (token, spacing, missing state, font, structure). Cross-reference causes with A's failed checks.
 - **B's generated sets are rated in the same blind batch**, mixed in among the 16 (default + one configured state each). This is required, not optional: B's hypothesis claims the code-only output looks right on the surface, and only this rating tests that.
 
+### C setup as built (2026-10-12, before any rating)
+
+Files: `.claude/handoff/runs/figma-fidelity/visual/` (`pairs.json`, `capture.mjs`, `build-rating.mjs`, `rate.html`, `key.json`, `shots/`).
+- **25 pairs:** 16 defaults, plus 9 configured states (Accordion `Open`, Button and ButtonArrow `Disabled`, CardHorizontal `Has progress`, CardVertical `Status=Completed`, Checkbox `Checked`, Chip `Pressed`, Select and TextField `Has error`).
+- **No state pair for seven components:** AppHeader, Avatar, Badge, Breadcrumb, DropdownMenu, Image and ProgressBar have no configured state on their Figma sets.
+- **Select and TextField use the error state instead of `disabled`:** their top-level sets only have `Has error`, and `Disabled` lives on the nested part, so a disabled preview would mean editing the read-only main file.
+- **Same configuration on both sides:**
+  - The Figma side is the variant matching the pair (`vp` in `pairs.json`), exported at 2× from the main file.
+  - The code side is the default story, set to that variant's configuration and content through Storybook's `updateStoryArgs` channel (booleans and numbers also through URL args, because uncontrolled `default*` props are only read on mount). Examples: `certified` off, ButtonArrow `direction: left`, ProgressBar `value: 100`, Figma's text for labels, titles, durations and Breadcrumb items, CardHorizontal's thumbnail cleared to the placeholder.
+  - Avatar's code side uses the Figma export as its `src`, so the photo is the same and only the component's own styling differs.
+  - The code side renders in a container as wide as the Figma variant, captured at 2× as the story's root element.
+- **Blinding:** pairs are shuffled under random 4-character codes, code and Figma sides are randomly assigned to left and right, and both sit on the canvas colour (`rgb(251, 249, 243)`, the code shots' page background), so neither the background nor the position gives away the side. The key is in `key.json`; the rater doesn't open it before rating.
+
 ## D. Optional: translation speed on #136
 
 #136 (Button `loading`) is the first component change built spec-first. If you're doing it anyway, record wall-clock time and the number of corrections from API proposal to passing gate (spec amended → code → gate green → review), plus every Figma ↔ code question and whether the spec or ADR-026 answered it. N = 1, no baseline: an observation. Skip without regret.
