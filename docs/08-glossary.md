@@ -41,6 +41,7 @@ sources:
 # clock reset 2026-10-10: packages/components/AGENTS.md active line names the TextField/Select exemption (ADR-025 Tier 2); the State entry already covers active, still accurate
 # clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 # rewritten 2026-10-12: ADR-027 spec rollout — new Component spec entry; Component metadata, States, Scaffold and Deterministic gate entries updated
+# clock reset 2026-10-12: packages/components/AGENTS.md gate line adds spec:validate and its a11y-coverage parenthesis is fixed; the Deterministic gate entry already lists spec:validate, still accurate
 ---
 # Glossary
 
