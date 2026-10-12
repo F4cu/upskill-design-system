@@ -24,6 +24,7 @@ sources:
 # clock reset 2026-10-10: validate-metadata.js also checks every <Name>.spec.json parses; the gate command this page describes is unchanged, still accurate
 # rewritten 2026-10-12: ADR-027 spec rollout — metadata requires four sections; states/tokens/accessibility live in the spec
 # sources 2026-10-12: declares ADR-027, which the spec-rollout rewrite of the schema section now describes
+# clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); this page describes lifecycle stages, not Figma property mappings, still accurate
 ---
 # Component lifecycle
 

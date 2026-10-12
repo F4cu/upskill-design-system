@@ -44,6 +44,7 @@ sources:
 # clock reset 2026-10-12: ADR-029 amendment freezes the evals at 044d28f; the measurements this page cites are historical results, still accurate
 # verified 2026-10-12 (/docs-sync 00 02 09 10 12): checked against the spec rollout and eval freeze diffs since 044d28f; the ladder, budgets and cited measurements are unchanged, still accurate
 # clock reset 2026-10-12: packages/components/AGENTS.md gate line adds spec:validate and its a11y-coverage parenthesis is fixed; this page describes rule scoping, not rule contents, still accurate
+# clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); Tier 1 file roles and loading unchanged, still accurate
 ---
 # Context engineering
 

@@ -28,6 +28,7 @@ sources:
 # clock reset 2026-10-12: ADR-027 amendment freezes the Arm C exit test; the ablation retry count this page cites is a historical result, still accurate
 # sources 2026-10-12: declares scripts/lib.js (readComponentMetadata, isInteractive), which the page describes
 # rewritten 2026-10-12: new subsection on how /component-scaffold writes a new component's spec (inputs, order, spec:generate is backfill only); declares component-scaffold.md as a source
+# clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); metadata and spec schemas unchanged, this page describes no individual mapping, still accurate
 ---
 # Machine-readable metadata
 
