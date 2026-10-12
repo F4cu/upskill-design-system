@@ -158,6 +158,12 @@ When you are done, reply with:
 
 `{FILE_LIST}` is the directory listing above for that arm, one path per line. The prompt doesn't name the spec or metadata files or say what's in them. In the code-metadata arm they're simply in the list.
 
+**B prepared (2026-10-12).** Tooling lives in `.claude/handoff/runs/figma-fidelity/b/` (gitignored); `RUNBOOK.md` there has the per-run steps.
+- **Run folders:** `~/fidelity-b-runs/` (outside the repo, persistent), built by `prepare-runs.sh` from commit `d222ce7`. The script refuses if token source differs from the commit. Prompts are in `prompts/`, outside the run folders. They're generated from the frozen template and differ only in component name, scratch file name and file list.
+- **Leak checks passed:** no `CLAUDE.md`/`AGENTS.md` in any parent directory or `~/.claude/`, no project memory for those paths, and no component-structure hints in `figma-variables.json`.
+- **Deletion:** `scratch-delete.sh` runs a dry run by default. It removes the target sets, every instance of them that isn't inside another instance (including instances inside other components' definitions, so nested copies disappear everywhere), and for CardVertical the examples section. It refuses unless the open file's name starts with `fidelity-b-`; this was verified against the main file, with and without `--execute`.
+- **Not in the frozen prompt but fixed for the runs:** the same model for all four runs, a tool allowlist (`figma-cli`, file reads and writes) so permission prompts don't need answers, and no human input after the prompt.
+
 ## C. Outcome check: does it look right?
 
 Correct structure doesn't guarantee it looks the same, so do a visual check on the current file.
