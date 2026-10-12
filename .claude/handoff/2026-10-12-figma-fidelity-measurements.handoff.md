@@ -11,7 +11,7 @@ completed:
 There are two measurements, run in order, which together tell one story:
 
 - **A. Before/after (read-only):** the contract brought Figma and code together. This shows how big the change was.
-- **B. With/without spec (4 generation runs):** the spec is what lets the system rebuild that alignment on its own. This shows what the spec contributes.
+- **B. With/without metadata (4 generation runs):** the layered metadata (spec + component metadata) is what lets the system rebuild that alignment on its own. This shows what the metadata contributes.
 
 **C** (visual outcome check) and **D** (speed, optional) support them. Both A and B use one shared instrument, the checker.
 
@@ -53,19 +53,29 @@ Run the checker on the file as it was before the October contract work and on th
 - **Output:** per set and in aggregate, the three scores before and after, plus the list of failed checks in each version.
 - **What A can claim:** the contract (ADR-026 rules, the alignment passes and the spec as their record) closed the gap between Figma and code, by this much. **What it can't:** credit the specs. Tier 3 (PR #140) fixed the file before the specs were written (PR #142), so the spec is A's yardstick, not its cause. That's B's job.
 
-## Measurement B: with/without spec (the spec's effect)
+## Measurement B: with/without metadata (the metadata's effect)
 
-Can the system rebuild a correctly built Figma component from code, and how much does the spec contribute?
+Can the system rebuild a correctly built Figma component from code, and how much does the layered metadata contribute?
 
-- **Components (2):** **Checkbox** (independent state groups, checked hover per the ADR-025 2026-10-11 amendment) and **Button** (two-set split `Button` / `Button icon`, a recorded divergence: no Danger icon-only style).
+- **Components (2), chosen to cover both halves of "correct structure":**
+  - **Button:** variants, interaction and configured states, tokens per state, the two-set split `Button` / `Button icon`, and a recorded divergence (no Danger icon-only style).
+  - **CardVertical:** compound architecture. A preset set plus `CardVertical.Root` with native slots, built from 12 parts (ADR-023 2026-10-06 amendment). This is where the metadata's structural guidance should matter most.
 - **Arms (2), 1 run each, so 4 runs:**
   - **Code-only:** `index.tsx`, `<Name>.module.css`, built `tokens.css`, `figma-variables.json`.
-  - **Code + spec:** the above plus `<Name>.spec.json`.
-  - Neither arm gets `metadata.json` (its usage/variants/composition fields say little about Figma; a third arm would double the cost for a weak signal), page 14, ADR-026, or the drift memory note. The task prompt is identical apart from the file list. Commit the prompt text to this handoff before the first run.
-- **Scratch file:** duplicate the main file and delete the target sets (`Button` `57:1265`, `Button icon` `54:1192`, `Checkbox` `92:8772`) **and their instances** in the copy, keeping the variable collections. Use a fresh duplicate per run so no arm sees another arm's output. The generator must never read the main file.
-- **Each run:** a fresh session (or one fresh subagent per run, sequential, never parallel, per the loop guardrails) builds the component set(s) with `/figma-cli` in its scratch file. No human correction during the run. Log turns, tokens and wall time.
-- **Scoring:** the checker on each generated set, compared with Measurement A's "after" score for the hand-aligned set (the human ceiling).
-- **Prediction to test (also pre-register it):** the CSS Module already names every `--ds-*` token, so token use should be close in both arms. The spec's advantage should show in structure: property names and values, the Button/Button icon split, `Disabled` outside `State`, anatomy layer names. If so, the finding is "the spec's value is structural."
+  - **Code + metadata:** the above plus `<Name>.spec.json` and `<Name>.metadata.json`. Metadata is in because the part kinds (`fixed` / `slot` / `open`) that determine how each part is built in Figma (`open` → native slot, `slot` → instance swap + `Has <x>`) live in `composition.parts`, not the spec.
+  - Neither arm gets page 14, ADR-023/025/026, `packages/components/AGENTS.md`, or the drift memory note. The task prompt is identical apart from the file list. Commit the prompt text to this handoff before the first run.
+- **Build scope:**
+  - **Button:** both sets.
+  - **CardVertical:** the preset set and `CardVertical.Root`, plus the part components Root needs (`Title`, `Meta`, `Duration`, `Certified`, `Completed`, `Favorite`, `Menu`). Excluded: the `CardVertical examples` section (`2871:8034`), which isn't a component and is built from instances only.
+  - Existing components the generated sets nest (`Image`, `ProgressBar`, `Button icon` for the action glyph, icons) stay in the scratch file and may be reused.
+- **Scratch file:** duplicate the main file. In the copy, delete the targets and **every instance of them**, keeping the variable collections. A deleted main component's instances stay readable, so the generator could copy them.
+  - Button targets: `Button` `57:1265`, `Button icon` `54:1192`.
+  - CardVertical targets: the preset `52:4270`, Root `2871:7567`, the part components (`2871:7493`, `7495`, `7500`, `7504`, `7505`; `Favorite` `2852:7708`, `Menu` `2852:7709`) and the examples section.
+  - CardVertical has 241 instances across `Layout Examples` (120), `Cards` (57), `Carrousels` (32) and `Mockups` (32), counted 2026-10-12.
+  - `Button icon` is also nested inside `Favorite`/`Menu`. Run the Button and CardVertical builds in separate duplicates, so each deletion is limited to its own targets.
+  - Use a fresh duplicate per run so no arm sees another arm's output. The generator must never read the main file.
+- **Each run:** a fresh session (or one fresh subagent per run, sequential, never parallel, per the loop guardrails) builds the component set(s) with `/figma-cli` in its scratch file. No human correction during the run. Log turns, tokens and wall time. CardVertical runs will be long: bound every eval and run them under a time limit (`/figma-cli` pitfalls: a runaway eval freezes Figma Desktop).
+- **Scoring:** the checker on each generated set, compared with Measurement A's "after" score for the hand-aligned sets (the human ceiling).
 - **What B can claim:** with N = 1 run per cell, a directional difference per score, reported as an observation, not an effect size. If the arms differ by less than the run-to-run noise you'd expect, say it's inconclusive. Don't add runs after seeing results unless the pre-registration says so.
 
 ## C. Outcome check: does it look right?
@@ -90,7 +100,15 @@ Fill in before the first read of each measurement. Don't edit after a result exi
 ### Checker validity
 
 - **Bar:** every gap in the Tier 0 matrix that predates the before version shows up as a failed check in A's "before" run. That includes Breadcrumb link `State=Active` as the resting state, `Property 1 = Default / Variant2`, `state3`/`state4`, `Disabled` inside `State` on the six Tier 3 sets, and missing `State=Active` on Accordion / DropdownMenu/Item / ButtonArrow. Plus the drift-log items from 2026-10-06: `Button icon` Accent default one step too light, Transparent hover with no tint, 9 Large variants bound to `space/250`. One missed item means fix the checker and re-run before reporting anything.
-- **Answer-key check (before B):** the Button and Checkbox specs' `figma` fields must match the hand-aligned sets. Button cleared 2026-10-12 (#145): `disabled` now maps to the `Disabled` property, confirmed by read-back on both sets. Checkbox cleared 2026-10-12 by read-back of `92:8772`: `Label` (text), `Checked`, `Disabled` (first, only at `State=Default`) and `State` `Default/Hover/Active` match the spec. **Scoring decision before B:** its layer names (`_Checkbox/Box`, `check_small`, `Label`) differ from the spec `anatomy` (`Checkbox`, `Checkmark`, `Label`). The ADR-023 naming contract binds `composition.parts`, and Checkbox has none. Pre-register whether the anatomy layer-name check applies to parts only or to every anatomy entry; otherwise the hand-aligned ceiling fails a check the spec arm may pass.
+- **Answer-key check (before B):** the B components' spec and metadata `figma` fields must match the hand-aligned sets.
+  - **Button: cleared 2026-10-12** (#145). `disabled` maps to the `Disabled` property, confirmed by read-back on both sets.
+  - **CardVertical: one blocker, read back 2026-10-12.**
+    - The preset (`52:4270`, 12 variants) matches the spec: `Has action` + `Action`, `Title`, `Duration`, `Certified`, `Size` lg/sm (lg), `Status` (Not started), `State` Default/Hover.
+    - Root (`2871:7567`) matches on `Body` (slot), `Has action` + `Action`, `Size`.
+    - Parts match: `Title`, `Duration` (text), `Meta` (`Children` slot), `Certified`, `Completed`, `Favorite` (`Pressed`), `Menu` (`Expanded`, a recorded divergence).
+    - **Mismatch:** the spec maps `Progress.value` → a `completion` property on `CardVertical.Root`. Figma has a `Has progress` boolean on Root, showing an exposed nested `ProgressBar` instance whose own property is `Value` (0/10/20/50/80/100). `completion` is ProgressBar's pre-Tier 3 name. Fix the spec before B.
+  - Checkbox was read back too (`92:8772`, all props match) before it was swapped out of B for CardVertical.
+- **Layer-name scoring rule (decided by the component choice):** the anatomy layer-name check applies only to components with `composition.parts` (the ADR-023 naming contract binds parts), so CardVertical is scored and Button is not. Naming note for the ceiling: `Favorite` and `Menu` are set names without the `CardVertical.` prefix the other parts carry. Score part names by layer name (the Root's `Action` layer is correct), not by set name.
 
 ### A — before/after
 
@@ -102,17 +120,26 @@ Fill in before the first read of each measurement. Don't edit after a result exi
   - **Hygiene:** before ≥ 4 placeholder property names (`Property 1`, `Variant2`, `state3`, `state4`) → after 0.
 - **Reporting bar:** a score counts as improved if it rises ≥ 20 points. Report every set whose "after" structure or token match is below 90% by name, with its failed checks, as a remaining gap. Don't fold it into the aggregate. If structure doesn't move ≥ 20 points, the headline claim is not supported. Say so.
 
-### B — with/without spec
+### B — with/without metadata
 
 - **Task prompt (verbatim):** _TODO_
-- **Hypothesis (developer's):** without the spec, the generated components look right at first glance. Underneath, the structure and labelling don't match code, tokens are bound to the wrong states, and property names don't align.
-- **Prediction per score (code-only vs code + spec, Checkbox and Button pooled, then reported per component):**
-  - **Visual (C rating):** about the same. Both default states rated "matches" or "minor"; code-only no more than one scale step below code + spec on any pair. *This is the "looks good on the surface" half.*
+- **Hypothesis (developer's):** without the metadata, the generated components look right at first glance. Underneath, the structure and labelling don't match code, tokens are bound to the wrong states, and property names don't align.
+- **Prediction per score (code-only vs code + metadata, Button and CardVertical reported separately, then pooled):**
+  - **Visual (C rating):** about the same on the preset defaults. Code-only no more than one scale step below code + metadata on any pair. *This is the "looks good on the surface" half.*
   - **Token use, binding coverage:** about the same, both ≥ 85% and within 10 points of each other. The CSS Module names every token, so tokens get used.
-  - **Token use, token match:** code-only ≥ 15 points lower. *Tokens on the wrong states.* Expected misses: Checkbox checked + hover (brand border must stay; `overlay.hover` darkens the fill), Checkbox active overlay in both checked states, Button per-variant hover/active fills, disabled treatment.
-  - **Structure:** code-only ≤ 60%, code + spec ≥ 85%. *Labelling and names don't align.* Expected code-only failures: one Button set with a `Shape` variant instead of the `Button` / `Button icon` split; `Disabled` modelled as a `State` value; missing `Has icon` / `Has trailing icon` booleans; text property named after the code prop (`children`/`label`) instead of `Text`; no `Active` state; anatomy layer names generic (`Frame`, `Group`).
-  - **Hygiene:** code-only ≥ code + spec violations (more placeholder layer names).
-- **Reporting bar:** N = 1 per cell. A % score counts as different only if the arms differ by ≥ 15 points, which is several checks on these two components. Below that, report "no difference shown." The hypothesis is **supported** if structure and token match both clear the bar in the spec arm's favour *and* the visual rating is within one step. It's **partly supported** if only one of structure or token match clears it. It's **not supported** if code-only structure is ≥ 80% or within 15 points of code + spec. If code-only looks clearly worse visually, the "surface" half is wrong. Report that as a finding too. No extra runs after seeing results.
+  - **Token use, token match:** code-only ≥ 15 points lower. *Tokens on the wrong states.* Expected misses: Button per-variant hover/active fills and disabled treatment; CardVertical hover on the card versus action-hover / action-active on the Favorite and Menu triggers, and the pressed Favorite glyph.
+  - **Structure:** code-only ≤ 60%, code + metadata ≥ 85%. *Labelling and names don't align.*
+    - Expected Button failures (code-only): one set with a `Shape` variant instead of the `Button` / `Button icon` split; `Disabled` modelled as a `State` value; missing `Has icon` / `Has trailing icon` booleans; text property named `children` instead of `Text`; no `Active` state.
+    - Expected CardVertical failures (code-only): the preset only, with no `CardVertical.Root`, or a Root with nested frames instead of native slots for `Body` and `Meta`; `progress` exposed as a number or omitted instead of the `Status` variant; no `Has action` + `Action` instance swap; part layers named generically (`Frame`, `Group`) instead of the part names.
+    - **The CardVertical structure gap should be the largest single difference in B.**
+  - **Hygiene:** code-only ≥ code + metadata violations (more placeholder layer names).
+- **Reporting bar:** N = 1 per cell. A % score counts as different only if the arms differ by ≥ 15 points. Below that, report "no difference shown."
+  - **Supported:** structure and token match both clear the bar in the metadata arm's favour *and* the visual rating is within one step.
+  - **Partly supported:** only one of structure or token match clears the bar.
+  - **Not supported:** code-only structure is ≥ 80%, or within 15 points of code + metadata.
+  - If code-only looks clearly worse visually, the "surface" half is wrong. Report that as a finding too.
+  - Report the CardVertical Root + slots result on its own line even if the pooled numbers hold up.
+  - No extra runs after seeing results.
 
 ### C — visual outcome
 
@@ -122,7 +149,7 @@ Fill in before the first read of each measurement. Don't edit after a result exi
 ## Caveats to carry into the case study
 
 - **Circularity.** Scoring Figma against the spec it was aligned to comes out high by construction. The hygiene score and the visual rating don't depend on the system's own yardstick, which is why they're in the report. Lead with them when the structure score is near 100%.
-- **Attribution.** A credits the contract plus the effort of applying it, not metadata alone. B is the part that isolates the spec, and it's small (2 components, 1 run per cell).
+- **Attribution.** A credits the contract plus the effort of applying it, not metadata alone. B is the part that isolates the layered metadata (spec + metadata together, not each separately), and it's small (2 components, 1 run per cell).
 - **One maintainer on both sides, one rater.** Same caveat as page 14 and the ablation rating.
 
 ## Where results go
