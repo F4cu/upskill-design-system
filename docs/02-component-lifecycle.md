@@ -10,6 +10,7 @@ sources:
   - docs/decisions/009-extend-vs-new-vs-internal.md
   - docs/decisions/010-component-lifecycle-two-axes.md
   - docs/decisions/023-subcomponents-compound-components.md
+  - docs/decisions/027-component-spec-file.md
 # clock reset 2026-07-13: sense.js change was STATUS_QUO rendering only (checklist table, compact maturity lists); stage derivation and checklist semantics unchanged, still accurate
 # clock reset 2026-10-09: validate-metadata.js token/tree helpers moved to lib.js and error messages now name the fix (ADR-029 Step 5); the gate this page describes is unchanged, still accurate
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
@@ -22,6 +23,7 @@ sources:
 # clock reset 2026-10-11: contract migration Tier 3 (ADR-025/026 amendments: Figma sets aligned, figmaNodeId pattern = node id or "none"; /figma-cli pitfalls for clone placement and auto-layout defaults); this page describes no Figma property detail or figmaNodeId format, still accurate
 # clock reset 2026-10-10: validate-metadata.js also checks every <Name>.spec.json parses; the gate command this page describes is unchanged, still accurate
 # rewritten 2026-10-12: ADR-027 spec rollout — metadata requires four sections; states/tokens/accessibility live in the spec
+# sources 2026-10-12: declares ADR-027, which the spec-rollout rewrite of the schema section now describes
 ---
 # Component lifecycle
 

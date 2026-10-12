@@ -11,6 +11,7 @@ sources:
   - docs/decisions/027-component-spec-file.md
   - packages/components/component.spec.schema.json
   - scripts/validate-spec.js
+  - scripts/lib.js
 # clock reset 2026-10-01: /code-review fixes in validate-metadata.js (component list = directories only; a children= prop counts as a slot child); behaviour this page describes unchanged, still accurate
 # 2026-10-09: tokens.* is derived by metadata:derive-tokens; validator errors carry the fix (ADR-029 Step 5)
 # clock reset 2026-10-01: CardVertical metadata learnings + ADR-023 amendment (Figma mirrors the preset; code slot → Figma instance swap, open parts not Figma slots); this page describes no Figma property mapping, still accurate
@@ -24,6 +25,7 @@ sources:
 # rewritten 2026-10-10: validate-metadata.js gains a fifth check (every <Name>.spec.json parses); the checks list names it
 # rewritten 2026-10-12: ADR-027 spec rollout (ADR-001 amendments 2026-10-11): states, tokens and accessibility leave metadata for <Name>.spec.json; token list derived from spec styles; metadata:derive-tokens deleted; validator checks, consumer map and diagram updated
 # clock reset 2026-10-12: ADR-027 amendment freezes the Arm C exit test; the ablation retry count this page cites is a historical result, still accurate
+# sources 2026-10-12: declares scripts/lib.js (readComponentMetadata, isInteractive), which the page describes
 ---
 # Machine-readable metadata
 
