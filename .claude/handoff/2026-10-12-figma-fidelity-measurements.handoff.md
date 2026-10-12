@@ -90,7 +90,7 @@ Fill in before the first read of each measurement. Don't edit after a result exi
 ### Checker validity
 
 - **Bar:** every gap in the Tier 0 matrix that predates the before version shows up as a failed check in A's "before" run. That includes Breadcrumb link `State=Active` as the resting state, `Property 1 = Default / Variant2`, `state3`/`state4`, `Disabled` inside `State` on the six Tier 3 sets, and missing `State=Active` on Accordion / DropdownMenu/Item / ButtonArrow. Plus the drift-log items from 2026-10-06: `Button icon` Accent default one step too light, Transparent hover with no tint, 9 Large variants bound to `space/250`. One missed item means fix the checker and re-run before reporting anything.
-- **Answer-key check (before B):** the Button and Checkbox specs' `figma` fields must match the hand-aligned sets. Known mismatch: `Button.spec.json` maps `disabled` → `State` ("not verified against node 57:1265"), but Tier 3 split Button's `Disabled` into its own boolean. Tracked in #145 (blocks B); B penalises a correct generation until it is fixed.
+- **Answer-key check (before B):** the Button and Checkbox specs' `figma` fields must match the hand-aligned sets. Button cleared 2026-10-12 (#145): `disabled` now maps to the `Disabled` property, confirmed by read-back on both sets. Checkbox still needs the same check against `92:8772` before B.
 
 ### A — before/after
 

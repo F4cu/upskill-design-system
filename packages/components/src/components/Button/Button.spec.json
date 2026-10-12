@@ -86,7 +86,7 @@
       "type": "boolean",
       "default": false,
       "concept": "Boolean",
-      "figma": { "surface": "both", "property": "State", "note": "Previewed as a State value. Not verified against node 57:1265 in the pilot." }
+      "figma": { "surface": "both", "property": "Disabled", "note": "In both sets (57:1265, 54:1192), built only at State=Default (ADR-025 amendment 2026-10-11)." }
     },
     "type": {
       "kind": "native",
