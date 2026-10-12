@@ -75,7 +75,7 @@ Correct structure doesn't guarantee it looks the same, so do a visual check on t
 - **Population:** the 16 linked components; for each, the Figma variant matching the story's default, plus one configured state (`disabled`, `checked`, `Current`, `Open`). Hover can't be captured statically. Light mode only.
 - **Code side:** the committed baselines in `packages/components/screenshots/` (`components-<name>--default.light.png`, ADR-019); `/run-storybook` for state shots not in the baselines. **Figma side:** `get_screenshot` (Figma MCP) or a figma-cli export of the matching variant node, at the same scale.
 - **Rating:** blind 3-point scale (matches / minor differences / wrong), pairs shuffled and lettered so the rater can't tell which component or side is which. One rater (the developer); say so. One traced cause per non-match (token, spacing, missing state, font, structure). Cross-reference causes with A's failed checks.
-- Optionally, B's generated sets can be rated the same way in the same blind batch, mixed in among the 16, to get B a visual score at no extra session cost.
+- **B's generated sets are rated in the same blind batch**, mixed in among the 16 (default + one configured state each). This is required, not optional: B's hypothesis claims the code-only output looks right on the surface, and only this rating tests that.
 
 ## D. Optional: translation speed on #136
 
@@ -85,15 +85,39 @@ Correct structure doesn't guarantee it looks the same, so do a visual check on t
 
 Fill in before the first read of each measurement. Don't edit after a result exists.
 
-- **Checker validity bar:** _TODO_ (e.g. every Tier 0 finding appears as a failed check in A's "before" run)
-- **A — before version used:** _TODO_ (version id, timestamp, and whether it's the pre-2026-10-06 or the fallback version)
-- **A — prediction (three scores, before → after):** _TODO_
-- **A — reporting bar:** _TODO_
-- **B — task prompt (verbatim):** _TODO_
-- **B — prediction per score (code-only vs code + spec):** _TODO_
-- **B — reporting bar (what difference counts as a difference at N = 1):** _TODO_
-- **C — prediction:** _TODO_
-- **C — reporting bar:** _TODO_
+*Drafted 2026-10-12. The developer confirms or edits each line before the first read; after that, the lines are frozen.*
+
+### Checker validity
+
+- **Bar:** every gap in the Tier 0 matrix that predates the before version shows up as a failed check in A's "before" run. That includes Breadcrumb link `State=Active` as the resting state, `Property 1 = Default / Variant2`, `state3`/`state4`, `Disabled` inside `State` on the six Tier 3 sets, and missing `State=Active` on Accordion / DropdownMenu/Item / ButtonArrow. Plus the drift-log items from 2026-10-06: `Button icon` Accent default one step too light, Transparent hover with no tint, 9 Large variants bound to `space/250`. One missed item means fix the checker and re-run before reporting anything.
+- **Answer-key check (before B):** the Button and Checkbox specs' `figma` fields must match the hand-aligned sets. Known mismatch: `Button.spec.json` maps `disabled` → `State` ("not verified against node 57:1265"), but Tier 3 split Button's `Disabled` into its own boolean. Correct the spec through the normal path before B, or B penalises a correct generation.
+
+### A — before/after
+
+- **Before version used:** _TODO at read time_ (version id, timestamp, pre-2026-10-06 or fallback)
+- **Prediction:** the contract closed most of the gap. Structure moved the most and token use the least, because variables have been mirrored since June.
+  - **Token use, binding coverage:** before ≈ 80% → after ≥ 95%.
+  - **Token use, token match:** before ≈ 70% → after ≥ 90%. Misses before: wrong ramp step, primitive instead of semantic, no hover tint.
+  - **Structure:** before ≤ 50% (4 of 16 sets unlinked and counted as missing, 6 sets with `Disabled` in `State`, no `Active` previews) → after ≥ 95%.
+  - **Hygiene:** before ≥ 4 placeholder property names (`Property 1`, `Variant2`, `state3`, `state4`) → after 0.
+- **Reporting bar:** a score counts as improved if it rises ≥ 20 points. Report every set whose "after" structure or token match is below 90% by name, with its failed checks, as a remaining gap. Don't fold it into the aggregate. If structure doesn't move ≥ 20 points, the headline claim is not supported. Say so.
+
+### B — with/without spec
+
+- **Task prompt (verbatim):** _TODO_
+- **Hypothesis (developer's):** without the spec, the generated components look right at first glance. Underneath, the structure and labelling don't match code, tokens are bound to the wrong states, and property names don't align.
+- **Prediction per score (code-only vs code + spec, Checkbox and Button pooled, then reported per component):**
+  - **Visual (C rating):** about the same. Both default states rated "matches" or "minor"; code-only no more than one scale step below code + spec on any pair. *This is the "looks good on the surface" half.*
+  - **Token use, binding coverage:** about the same, both ≥ 85% and within 10 points of each other. The CSS Module names every token, so tokens get used.
+  - **Token use, token match:** code-only ≥ 15 points lower. *Tokens on the wrong states.* Expected misses: Checkbox checked + hover (brand border must stay; `overlay.hover` darkens the fill), Checkbox active overlay in both checked states, Button per-variant hover/active fills, disabled treatment.
+  - **Structure:** code-only ≤ 60%, code + spec ≥ 85%. *Labelling and names don't align.* Expected code-only failures: one Button set with a `Shape` variant instead of the `Button` / `Button icon` split; `Disabled` modelled as a `State` value; missing `Has icon` / `Has trailing icon` booleans; text property named after the code prop (`children`/`label`) instead of `Text`; no `Active` state; anatomy layer names generic (`Frame`, `Group`).
+  - **Hygiene:** code-only ≥ code + spec violations (more placeholder layer names).
+- **Reporting bar:** N = 1 per cell. A % score counts as different only if the arms differ by ≥ 15 points, which is several checks on these two components. Below that, report "no difference shown." The hypothesis is **supported** if structure and token match both clear the bar in the spec arm's favour *and* the visual rating is within one step. It's **partly supported** if only one of structure or token match clears it. It's **not supported** if code-only structure is ≥ 80% or within 15 points of code + spec. If code-only looks clearly worse visually, the "surface" half is wrong. Report that as a finding too. No extra runs after seeing results.
+
+### C — visual outcome
+
+- **Prediction:** on the current file, ≥ 12 of 16 default states rated "matches", none rated "wrong". Non-matches trace to text rendering (Figma vs Chrome antialiasing) or the line-height representational divergence, not to tokens or structure. Configured states score slightly lower than defaults, because they were added later.
+- **Reporting bar:** report the full distribution (matches / minor / wrong) for defaults and states separately, with a traced cause for every non-match. Any "wrong" is reported by name and gets an issue, whatever the total.
 
 ## Caveats to carry into the case study
 
