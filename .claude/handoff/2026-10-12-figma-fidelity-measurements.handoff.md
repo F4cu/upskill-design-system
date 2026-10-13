@@ -172,10 +172,15 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
 |---|---|---|---|---|---|---|---|---|
 | code-only Button | 06:58:57–07:02:35 | 18 / 21.5k | clean, no permission prompts | 1 (`Button` `4001:8449`, 144 variants, `Shape` variant) | 66.7% (93.3%) | 100% | 11/20 = 55% | 0 |
 | code-metadata Button | 07:12:11–07:16:49 | 20 / 27.9k | clean, but see the id-leak near miss | 2 (`Button` `4002:10023`, 60 variants; `Button icon` `4002:10408`, 120) | 68.4% (92.0%) | 100% | 21/23 = 91.3% | 0 |
+| code-only CardVertical | 07:30:45–07:35:36 | 23 / 29.3k | clean (no target id anywhere in the transcript); prompt delivered by path, see below | 2 (`CardVertical` `4001:8312`, 12 variants; `_CardVertical/Action` `4001:8019`, 12) | 33.5% (82.7%) | 100% (52/52, see note) | 14/42 = 33.3% | 1 |
 
 - **Code-only structure failures:** no `Button icon` split (a `Shape` variant instead); `Disabled` is a `State` value; booleans are named `Icon` / `Trailing icon` instead of `Has …`; `Label` instead of `Text`. It did build an `Active` state.
 - **Code-metadata structure failures:** only `disabled-first` ordering in both sets.
 - The structure denominators differ (20 vs 23) because some checks run only once a `Button icon` set exists.
+- **Code-only CardVertical structure failures:** no `CardVertical.Root`, so no `Body`/`Meta` native slots, no `Has progress` + `Value`, and no part components (`Title`, `Meta`, `Duration`). Progress is a `Progress` variant (`None`/`In progress`/`Completed`) instead of `Status`. `Has action` exists, but there's no `Action` instance swap: the action is a separate `_CardVertical/Action` set with a `Type` = Favorite/Menu variant plus `Pressed`/`Open`/`State`. None of the 12 anatomy part names appear as layers. It passed `Title`, `Duration`, `Certified`, `Size` (values and default), `Favorite.pressed`, interaction-only `State` and the hover preview.
+- **Code-only CardVertical token match is 100% on a small denominator:** 52 checks, all on the card set. In the Action set every part is unlocated (layer names don't match anatomy), so nothing there is scored. Unlocated on the card: `Favorite`, `MenuTrigger`, `MenuPanel`, the glyphs, `Completed`. Unresolved: `action-hover`/`action-active` and `favorite-pressed`. Under the frozen rules, unlocated parts are listed, not scored, so the predicted "tokens on the wrong states" misses (Favorite/Menu triggers, pressed glyph) are mostly **unmeasured here, not disproven**. Report it that way.
+- **Code-only CardVertical hygiene:** 1 violation, 12 empty matrix cells in `_CardVertical/Action` (e.g. `Type=favorite, Open=true`).
+- **Protocol deviation, code-only CardVertical:** the first message was the prompt file's *path* (`~/fidelity-b-runs/prompts/code-only-CardVertical.txt`), not its pasted text. The session `cat`-ed that one file. It didn't list `prompts/` or open any other file in it, so the instructions it got were byte-identical to the frozen prompt. The difference is framing only: it read the prompt as a file instead of receiving it as a message. **Counted as valid, deviation recorded.** For the code-metadata run, paste the text as in the Button runs.
 
 **Setup fixes during B (both after the Button runs, before any CardVertical run):**
 - *`targetsLeft` false count.* A removed main component is still returned by `getNodeByIdAsync`, with no parent. The code-only Button `--execute` reported `targetsLeft: 2`, but a separate read found no sets in the tree. The check now counts only nodes still in the tree.
@@ -185,10 +190,11 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
   - Hollowing a node that was already removed fails: Figma refuses layer removal on it. So the step must run while the targets are still in the tree, which is the script's order on a fresh duplicate. It applies to both CardVertical arms equally.
 
 **Next (resume here):**
-1. `fidelity-b-code-only-CardVertical` is duplicated (2026-10-13). Pin `figma-cli` to it with `figma-cli daemon stop`, then `FIGMA_FILE=… figma-cli daemon start`.
-2. Do a dry run, then `--execute`, then `./scratch-probe.sh CardVertical fidelity-b-code-only-CardVertical`.
-3. Expect `hollowErrors: []`, `leftoverInstances: 0`, `targetsLeft: 0`, and a probe showing every target id with no properties, `Hollow=N` variants and 0 layers. If any structure survives, **stop before both CardVertical runs**.
-4. Then the run per `b/RUNBOOK.md` steps 4–5. CardVertical runs are long. Then do the same for `fidelity-b-code-metadata-CardVertical`.
+*Code-only CardVertical done (2026-10-13). Hollowing verified: `hollowErrors: []`, 25 instances removed, `leftoverInstances: 0`, `targetsLeft: 0`; probe shows every target as `Hollow=N` variants, 0 layers, 0 bindings, examples section `null` (`b/{dry-run,execute,probe}-code-only-CardVertical.json`).*
+
+1. Duplicate the **current main file** as `fidelity-b-code-metadata-CardVertical` and open it in **Figma Desktop**. `figma-cli files` must list it; a browser tab doesn't count. Close the main file.
+2. Pin `figma-cli` (`daemon stop`, then `FIGMA_FILE=… figma-cli daemon start`), then the dry run, `--execute` and `./scratch-probe.sh CardVertical fidelity-b-code-metadata-CardVertical`. Expect the same clean results as code-only. If any structure survives, stop.
+3. Run per `b/RUNBOOK.md` steps 4–5, **pasting the prompt text** (not its path). After that, all four runs are in: write the B comparison against the pre-registration, then capture B's C pairs and rebuild the blind batch.
 
 ## C. Outcome check: does it look right?
 
