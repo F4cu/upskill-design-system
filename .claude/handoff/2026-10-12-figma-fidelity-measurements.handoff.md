@@ -213,9 +213,9 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
 - **Rating batch built:** `node build-rating.mjs capture-log.json b/capture-log.json` → `rate.html`, 33 pairs (25 main + 8 B), shuffled, with `key.json` regenerated. No ratings exist yet.
 
 **Next (resume here):** C is rated and reported ("Results — Measurement C"). Open items:
-1. **Issues filed 2026-10-13:** #146 for the metadata font-size drift (Figma side) and #147 for the capture-method flaws behind the two "wrong" pairs.
+1. **Issues filed 2026-10-13:** #146 for the metadata font-size drift (Figma side; **fixed and closed 2026-10-13**, see the C results) and #147 for the capture-method flaws behind the two "wrong" pairs.
 2. The untraced (`?`) causes in C.
-3. D (record during #136 or skip), docs (`08-measured-impact.md`, page 14), the #103 comment, close-out.
+3. Docs (`08-measured-impact.md`, page 14), the #103 comment, close-out. D is skipped (developer decision 2026-10-13).
 
 ## C. Outcome check: does it look right?
 
@@ -241,6 +241,8 @@ Files: `.claude/handoff/runs/figma-fidelity/visual/` (`pairs.json`, `capture.mjs
 - **Blinding:** pairs are shuffled under random 4-character codes, code and Figma sides are randomly assigned to left and right, and both sit on the canvas colour (`rgb(251, 249, 243)`, the code shots' page background), so neither the background nor the position gives away the side. The key is in `key.json`; the rater doesn't open it before rating.
 
 ## D. Optional: translation speed on #136
+
+**Skipped** (developer decision 2026-10-13).
 
 #136 (Button `loading`) is the first component change built spec-first. If you're doing it anyway, record wall-clock time and the number of corrections from API proposal to passing gate (spec amended → code → gate green → review), plus every Figma ↔ code question and whether the spec or ADR-026 answered it. N = 1, no baseline: an observation. Skip without regret.
 
@@ -396,6 +398,7 @@ One rater (the developer), blind, 33 pairs in one shuffled batch (25 main + 8 B)
 
 **Traced causes per non-match** (✓ = verified against reads/CSS; ~ = consistent with A's failed checks, not separately verified; ? = untraced):
 - **Token, metadata font size (✓ CardVertical 14; ~ CardHorizontal 11/12, Accordion 01):** Figma `Body/Meta/Duration` is bound to `font/size/body-default`; code renders `<Text size="metadata">`. The checker misses this because the spec's `styles` has no font-size rule for the meta text (it comes from the nested `Text` component). **A checker blind spot, not covered by A's numbers.**
+  - *Follow-up 2026-10-13 (#146, closed):* fixed in the main file via `/figma-cli`. 31 text nodes rebound over the full text range to `font/size/metadata`: Accordion subtitle ×4, CardVertical variant Duration ×12, the CardVertical.Duration/Certified/Completed part mains, and CardHorizontal Author/Duration/Label ×12. Before, 21 were on `body-default` and 10 on the raw `font/size/2`. Read-back: all instances inherit the change, with no overrides. The pair re-capture was skipped (developer decision; the read-back is enough). Correction to the line above: the spec *does* record the size, as `builtOn: "Text"` + `builtOnProps.size: "metadata"`, which `Text.spec.json` maps to `font.size.metadata`. That matches EightShapes Specs, where a nested instance is recorded as the dependency plus its prop values and the dependency's styles live in its own spec. So no spec change is needed. The checker should follow `builtOn` into the child spec (carried to #103). Pitfall: on text nodes, `setBoundVariable("fontSize")` adds a node-level binding that the existing range binding overrides. Use `setRangeBoundVariable(0, len, "fontSize", v)`.
 - **Token, text colour (~):** Accordion title on `text/subtle` (01, code bolder); Chip label literal `#666666` (17/18, code bolder); Select trigger on `text/subtle` (22, code placeholder darker); TextField input on `text/disabled` (25, code label/error darker). All four are in A's after-mismatch list.
 - **Disabled treatment (?):** ButtonArrow disabled arrow lighter in Figma (10); B code-only Button disabled text lighter in Figma (b2).
 - **Size/stroke (?):** Checkbox border heavier and box bigger in Figma (15/16); CardVertical placeholder glyph bigger in Figma (13); Badge text darker and spacing bigger in code (05); Accordion open body spacing bigger in code (02).
@@ -423,8 +426,8 @@ One rater (the developer), blind, 33 pairs in one shuffled batch (25 main + 8 B)
 - [x] Checker built (2026-10-12, fixture-verified), and the validity bar is met against the Tier 0 matrix on A's before read.
 - [x] A pre-registered, run on both versions, and reported per set and in aggregate with failed-check lists (Results — Measurement A).
 - [x] ADR-029 amendment for B appended; B pre-registered (prompt included), 4 runs done, and scored against the human ceiling (Results — Measurement B; visual half pending C).
-- [ ] C pre-registered, run blind, and reported with a traced cause for every non-match. *(Rated and reported 2026-10-13; issues #146/#147 filed; some causes still untraced.)*
-- [ ] D recorded during #136, or explicitly skipped.
+- [ ] C pre-registered, run blind, and reported with a traced cause for every non-match. *(Rated and reported 2026-10-13; #146 fixed and closed, #147 open; some causes still untraced.)*
+- [x] D recorded during #136, or explicitly skipped. *(Skipped, developer decision 2026-10-13.)*
 - [ ] `08-measured-impact.md` and page 14 updated (docs-check clock reset if a declared source changed).
-- [ ] #103 commented with the checker method and whether it should become the snapshot.
+- [ ] #103 commented with the checker method and whether it should become the snapshot. Include: follow `builtOn` + `builtOnProps` into the child spec's `styles` (the #146 blind spot).
 - [ ] Frontmatter set to `status: done`, then `npm run handoff:tidy`.
