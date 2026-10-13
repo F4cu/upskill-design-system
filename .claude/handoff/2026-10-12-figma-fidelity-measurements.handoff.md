@@ -197,20 +197,22 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
   - **Fix:** `scratch-delete.plugin.js` now **hollows** each target before removing it. It deletes non-variant properties and every layer, renames variants to `Hollow=N`, and clears paints, bindings, auto-layout and descriptions. The step reports `hollowErrors`.
   - Hollowing a node that was already removed fails: Figma refuses layer removal on it. So the step must run while the targets are still in the tree, which is the script's order on a fresh duplicate. It applies to both CardVertical arms equally.
 
-**Next (resume here):** all four B runs are in and scored (2026-10-13); the comparison is in "Results — Measurement B". What's left for B is C's visual pairs.
+**B pairs captured (2026-10-13).** All four B runs are in and scored; the comparison is in "Results — Measurement B". C's B pairs are in `visual/b/` (`pairs-b.json`, `capture-b.mjs`, `capture-log.json`, `shots/b1…b8-{code,figma}.png`).
+- **8 pairs:** each run's primary set at its default and one configured state. The code side uses the same story and args as main pairs 07/08 (Button) and 13/14 (CardVertical).
 
-1. **State when the session paused:** all four scratch files (`fidelity-b-{code-only,code-metadata}-{Button,CardVertical}`) are open in Figma Desktop. The figma-cli daemon is still pinned to `fidelity-b-code-metadata-CardVertical`. Check Storybook on `:6006` and start it with `/run-storybook` if it's down.
-2. **Adapt `visual/capture.mjs` into a B variant** (e.g. `capture-b.mjs`, writing to `visual/b/` with its own `capture-log.json` and a pair-number prefix such as `b1`… so names don't collide with the 25 main pairs). It needs three changes:
-   - Read each run's set from `checker/reads/b-<arm>-<Comp>.json` instead of `a-after.json`.
-   - Re-pin figma-cli per file (`daemon stop`, then `FIGMA_FILE=… figma-cli daemon start`) before each export, because the current script assumes the main file.
-   - Map `vp` to each run's own property names.
-3. **Pairs (8):** each run's primary set, at its default and in one configured state, with the same code-side story and args as the main pairs (`pairs.json` entries for Button default/`Disabled` and CardVertical default/`Status=Completed`).
-   - **code-only Button** (`4001:8449`): default is `Shape=…` text button, Accent, md. Disabled is its `State=Disabled` value.
-   - **code-metadata Button** (`4002:10023`): `Disabled=true` for the state.
-   - **code-only CardVertical** (`4001:8312`): its `Progress=Completed` stands in for `Status=Completed`.
-   - **code-metadata CardVertical** (`4001:8730`): `Status=Completed`.
-   - Read the variant names from the reads to pick the exact matches, and record each choice in the capture log.
-4. Run `node build-rating.mjs capture-log.json b/capture-log.json` to make one shuffled batch of 33 pairs, then the developer rates it blind. Don't open `key.json`.
+| Pair | Run | Figma variant (node) |
+|---|---|---|
+| b1 / b2 | code-only Button | `Variant=neutral, Size=md, Shape=none, State=default` (`4001:8065`) / `State=disabled` (`4001:8083`) |
+| b3 / b4 | code-metadata Button | `Variant=Neutral, Size=md, State=Default, Disabled=false` (`4002:9775`) / `Disabled=true` (`4002:9800`) |
+| b5 / b6 | code-only CardVertical | `Size=lg, Progress=None, State=Default` (`4001:8020`) / `Progress=Completed` (`4001:8118`), standing in for `Status` |
+| b7 / b8 | code-metadata CardVertical | `Size=lg, Status=Not started, State=Default` (`4001:8438`) / `Status=Completed` (`4001:8536`) |
+
+- **Defaults:** the neutral Button default matches main pair 07, not Accent. All four sets default to Neutral (the hand file does too).
+- **Width:** the code container is as wide as each B variant's own export (Button 82, CardVertical 272), which is the same rule the main pairs use.
+- **Pinning gotcha:** `figma-cli status` prints the *active tab* as `File:`, not the daemon's pinned file. The script pins with `daemon stop` → `FIGMA_FILE=… daemon start` and verifies with `eval figma.root.name`.
+- **Rating batch built:** `node build-rating.mjs capture-log.json b/capture-log.json` → `rate.html`, 33 pairs (25 main + 8 B), shuffled, with `key.json` regenerated. No ratings exist yet.
+
+**Next (resume here):** the developer rates `visual/rate.html` blind (open it from `visual/` so the relative image paths resolve, and don't open `key.json`), then downloads `ratings.json` into `visual/`. After that: unblind with `key.json`, report C against its pre-registration (defaults and states separately, a traced cause per non-match, any "wrong" by name with an issue), and close B's verdict with the visual half (code-only within one scale step of code + metadata on every B pair?).
 
 ## C. Outcome check: does it look right?
 
