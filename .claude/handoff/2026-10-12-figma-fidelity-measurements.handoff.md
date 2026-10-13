@@ -212,7 +212,10 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
 - **Pinning gotcha:** `figma-cli status` prints the *active tab* as `File:`, not the daemon's pinned file. The script pins with `daemon stop` → `FIGMA_FILE=… daemon start` and verifies with `eval figma.root.name`.
 - **Rating batch built:** `node build-rating.mjs capture-log.json b/capture-log.json` → `rate.html`, 33 pairs (25 main + 8 B), shuffled, with `key.json` regenerated. No ratings exist yet.
 
-**Next (resume here):** the developer rates `visual/rate.html` blind (open it from `visual/` so the relative image paths resolve, and don't open `key.json`), then downloads `ratings.json` into `visual/`. After that: unblind with `key.json`, report C against its pre-registration (defaults and states separately, a traced cause per non-match, any "wrong" by name with an issue), and close B's verdict with the visual half (code-only within one scale step of code + metadata on every B pair?).
+**Next (resume here):** C is rated and reported ("Results — Measurement C"). Open items:
+1. **Issues for the "wrong" pairs** (pre-registered): both trace to the capture setup (AppHeader configuration mismatch, DropdownMenu shadow cropped). Also pending: the metadata font-size drift (`body-default` in Figma vs `metadata` in code), which is real.
+2. The untraced (`?`) causes in C.
+3. D (record during #136 or skip), docs (`08-measured-impact.md`, page 14), the #103 comment, close-out.
 
 ## C. Outcome check: does it look right?
 
@@ -374,6 +377,35 @@ There were four runs, one per cell, all on `claude-opus-5-5`, from run folders b
 - **Token match against the ceiling.** Both generated arms beat the hand-aligned file on token match (100 vs 85.1 and 76.7). The generator binds the dimension tokens (Button heights, `size/card/min/*`) that A found unbound by hand. This confirms A's reading that the "after" token-match misses are an unbinding gap, not wrong tokens.
 - **Structure below the ceiling, Button.** The code + metadata Button scored 91.3, short of the ceiling only on `Disabled`-first ordering in both sets.
 
+## Results — Measurement C (rated 2026-10-13)
+
+One rater (the developer), blind, 33 pairs in one shuffled batch (25 main + 8 B), rated 2026-10-13 08:15 UTC. Ratings: `visual/ratings.json`; unblinded with `key.json` afterwards. The rater noted *which side* differed and how, without knowing which side was code; the side and cause below come from unblinding.
+
+| Population | Matches | Minor | Wrong |
+|---|---|---|---|
+| Main, defaults (16) | 6 (Avatar, Breadcrumb, Button, Image, ProgressBar, TextField) | 8 (Accordion, Badge, ButtonArrow, CardHorizontal, CardVertical, Checkbox, Chip, Select) | 2 (AppHeader, DropdownMenu) |
+| Main, configured states (9) | 2 (Button `Disabled`, Select `Has error`) | 7 | 0 |
+| B code-only (4) | 1 (Button default) | 3 | 0 |
+| B code + metadata (4) | 2 (Button default, CardVertical `Completed`) | 2 | 0 |
+
+**Against the pre-registration:** **Miss.** The prediction was ≥ 12 of 16 defaults "matches" and none "wrong"; the result is 6 matches and 2 wrong. "States slightly lower than defaults" holds: 2 of 9 matches against 6 of 16. "Non-matches trace to text rendering or line-height, not tokens or structure" is **partly wrong**: several trace to token mismatches (below).
+
+**The two "wrong" ratings both trace to the capture setup, not to a component.** They're reported as rated, not re-rated:
+- **AppHeader (03):** the code story renders the Avatar's initials fallback (no `src`) and `My Courses` as the current link. The Figma variant has a photo and no current link. That's a configuration mismatch between the two sides, which C's setup was meant to prevent. The bottom border uses the same alias on both sides (`color/border/brand` → `brand/default`), so the tone difference there is rendering.
+- **DropdownMenu (19):** the code has a `box-shadow` (`DropdownMenu.module.css:4`), but Playwright's element screenshot crops at the border box, so the shadow never reached the shot. The note that list items are darker in code is untraced.
+
+**Traced causes per non-match** (✓ = verified against reads/CSS; ~ = consistent with A's failed checks, not separately verified; ? = untraced):
+- **Token, metadata font size (✓ CardVertical 14; ~ CardHorizontal 11/12, Accordion 01):** Figma `Body/Meta/Duration` is bound to `font/size/body-default`; code renders `<Text size="metadata">`. The checker misses this because the spec's `styles` has no font-size rule for the meta text (it comes from the nested `Text` component). **A checker blind spot, not covered by A's numbers.**
+- **Token, text colour (~):** Accordion title on `text/subtle` (01, code bolder); Chip label literal `#666666` (17/18, code bolder); Select trigger on `text/subtle` (22, code placeholder darker); TextField input on `text/disabled` (25, code label/error darker). All four are in A's after-mismatch list.
+- **Disabled treatment (?):** ButtonArrow disabled arrow lighter in Figma (10); B code-only Button disabled text lighter in Figma (b2).
+- **Size/stroke (?):** Checkbox border heavier and box bigger in Figma (15/16); CardVertical placeholder glyph bigger in Figma (13); Badge text darker and spacing bigger in code (05); Accordion open body spacing bigger in code (02).
+- **Text rendering (Chrome vs Figma, as predicted):** "code text slightly bolder" in B b4, b5, b7 and ButtonArrow 09. No token mismatch backs these up.
+- **B b6:** Figma metadata lighter, untraced.
+
+**B, visual half: holds.** On every B pair, code-only is within one scale step of code + metadata: Button default (matches / matches), Button disabled (minor / minor), CardVertical default (minor / minor), CardVertical completed (minor / matches). Both arms land in the same range as the hand-aligned file's pairs for the same components (07/08 matches, 13/14 minor).
+
+**B verdict, final: partly supported.** Structure clears the bar on both components, token match shows no difference, and the visual rating is within one step. The surface half of the hypothesis ("looks right without metadata") holds. The structure half holds. The "tokens on the wrong states" half isn't shown.
+
 ## Caveats to carry into the case study
 
 - **Circularity.** Scoring Figma against the spec it was aligned to comes out high by construction. The hygiene score and the visual rating don't depend on the system's own yardstick, which is why they're in the report. Lead with them when the structure score is near 100%.
@@ -391,7 +423,7 @@ There were four runs, one per cell, all on `claude-opus-5-5`, from run folders b
 - [x] Checker built (2026-10-12, fixture-verified), and the validity bar is met against the Tier 0 matrix on A's before read.
 - [x] A pre-registered, run on both versions, and reported per set and in aggregate with failed-check lists (Results — Measurement A).
 - [x] ADR-029 amendment for B appended; B pre-registered (prompt included), 4 runs done, and scored against the human ceiling (Results — Measurement B; visual half pending C).
-- [ ] C pre-registered, run blind, and reported with a traced cause for every non-match.
+- [ ] C pre-registered, run blind, and reported with a traced cause for every non-match. *(Rated and reported 2026-10-13; some causes still untraced, and the issues for the "wrong" pairs aren't filed yet.)*
 - [ ] D recorded during #136, or explicitly skipped.
 - [ ] `08-measured-impact.md` and page 14 updated (docs-check clock reset if a declared source changed).
 - [ ] #103 commented with the checker method and whether it should become the snapshot.
