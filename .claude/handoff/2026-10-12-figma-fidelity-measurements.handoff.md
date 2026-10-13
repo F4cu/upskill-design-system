@@ -213,7 +213,7 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
 - **Rating batch built:** `node build-rating.mjs capture-log.json b/capture-log.json` → `rate.html`, 33 pairs (25 main + 8 B), shuffled, with `key.json` regenerated. No ratings exist yet.
 
 **Next (resume here):** C is rated and reported ("Results — Measurement C"). Open items:
-1. **Issues for the "wrong" pairs** (pre-registered): both trace to the capture setup (AppHeader configuration mismatch, DropdownMenu shadow cropped). Also pending: the metadata font-size drift (`body-default` in Figma vs `metadata` in code), which is real.
+1. **Issues filed 2026-10-13:** #146 for the metadata font-size drift (Figma side) and #147 for the capture-method flaws behind the two "wrong" pairs.
 2. The untraced (`?`) causes in C.
 3. D (record during #136 or skip), docs (`08-measured-impact.md`, page 14), the #103 comment, close-out.
 
@@ -423,7 +423,7 @@ One rater (the developer), blind, 33 pairs in one shuffled batch (25 main + 8 B)
 - [x] Checker built (2026-10-12, fixture-verified), and the validity bar is met against the Tier 0 matrix on A's before read.
 - [x] A pre-registered, run on both versions, and reported per set and in aggregate with failed-check lists (Results — Measurement A).
 - [x] ADR-029 amendment for B appended; B pre-registered (prompt included), 4 runs done, and scored against the human ceiling (Results — Measurement B; visual half pending C).
-- [ ] C pre-registered, run blind, and reported with a traced cause for every non-match. *(Rated and reported 2026-10-13; some causes still untraced, and the issues for the "wrong" pairs aren't filed yet.)*
+- [ ] C pre-registered, run blind, and reported with a traced cause for every non-match. *(Rated and reported 2026-10-13; issues #146/#147 filed; some causes still untraced.)*
 - [ ] D recorded during #136, or explicitly skipped.
 - [ ] `08-measured-impact.md` and page 14 updated (docs-check clock reset if a declared source changed).
 - [ ] #103 commented with the checker method and whether it should become the snapshot.
