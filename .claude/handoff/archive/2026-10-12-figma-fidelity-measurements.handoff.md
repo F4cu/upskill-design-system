@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-10-12
-completed:
+completed: 2026-10-13
 ---
 
 # Figma fidelity measurements: does the layered metadata bring Figma and code together?
@@ -212,10 +212,13 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
 - **Pinning gotcha:** `figma-cli status` prints the *active tab* as `File:`, not the daemon's pinned file. The script pins with `daemon stop` → `FIGMA_FILE=… daemon start` and verifies with `eval figma.root.name`.
 - **Rating batch built:** `node build-rating.mjs capture-log.json b/capture-log.json` → `rate.html`, 33 pairs (25 main + 8 B), shuffled, with `key.json` regenerated. No ratings exist yet.
 
-**Next (resume here):** C is rated and reported ("Results — Measurement C"). Open items:
-1. **Issues filed 2026-10-13:** #146 for the metadata font-size drift (Figma side; **fixed and closed 2026-10-13**, see the C results) and #147 for the capture-method flaws behind the two "wrong" pairs.
-2. The untraced (`?`) causes in C.
-3. Docs (`08-measured-impact.md`, page 14), the #103 comment, close-out. D is skipped (developer decision 2026-10-13).
+**Closed out 2026-10-13.**
+- Issues: #146 (metadata font size, fixed and closed) and #147 (capture-method flaws behind the two "wrong" pairs, open).
+- Every C non-match now has a traced cause.
+- Docs: `08-measured-impact.md` has a new "Figma fidelity" section; on page 14, "How to close the gap" is replaced by "What the measurements showed".
+- #103 comment: issuecomment-6141939806.
+- D skipped.
+- **Follow-ups not filed yet:** ButtonArrow glyph `icon/*` vs `text/*`, the Checkbox box at 18px vs 16px, and the triage of spec claims of Figma properties the file doesn't have (A's structure gaps).
 
 ## C. Outcome check: does it look right?
 
@@ -399,11 +402,16 @@ One rater (the developer), blind, 33 pairs in one shuffled batch (25 main + 8 B)
 **Traced causes per non-match** (✓ = verified against reads/CSS; ~ = consistent with A's failed checks, not separately verified; ? = untraced):
 - **Token, metadata font size (✓ CardVertical 14; ~ CardHorizontal 11/12, Accordion 01):** Figma `Body/Meta/Duration` is bound to `font/size/body-default`; code renders `<Text size="metadata">`. The checker misses this because the spec's `styles` has no font-size rule for the meta text (it comes from the nested `Text` component). **A checker blind spot, not covered by A's numbers.**
   - *Follow-up 2026-10-13 (#146, closed):* fixed in the main file via `/figma-cli`. 31 text nodes rebound over the full text range to `font/size/metadata`: Accordion subtitle ×4, CardVertical variant Duration ×12, the CardVertical.Duration/Certified/Completed part mains, and CardHorizontal Author/Duration/Label ×12. Before, 21 were on `body-default` and 10 on the raw `font/size/2`. Read-back: all instances inherit the change, with no overrides. The pair re-capture was skipped (developer decision; the read-back is enough). Correction to the line above: the spec *does* record the size, as `builtOn: "Text"` + `builtOnProps.size: "metadata"`, which `Text.spec.json` maps to `font.size.metadata`. That matches EightShapes Specs, where a nested instance is recorded as the dependency plus its prop values and the dependency's styles live in its own spec. So no spec change is needed. The checker should follow `builtOn` into the child spec (carried to #103). Pitfall: on text nodes, `setBoundVariable("fontSize")` adds a node-level binding that the existing range binding overrides. Use `setRangeBoundVariable(0, len, "fontSize", v)`.
-- **Token, text colour (~):** Accordion title on `text/subtle` (01, code bolder); Chip label literal `#666666` (17/18, code bolder); Select trigger on `text/subtle` (22, code placeholder darker); TextField input on `text/disabled` (25, code label/error darker). All four are in A's after-mismatch list.
-- **Disabled treatment (?):** ButtonArrow disabled arrow lighter in Figma (10); B code-only Button disabled text lighter in Figma (b2).
-- **Size/stroke (?):** Checkbox border heavier and box bigger in Figma (15/16); CardVertical placeholder glyph bigger in Figma (13); Badge text darker and spacing bigger in code (05); Accordion open body spacing bigger in code (02).
-- **Text rendering (Chrome vs Figma, as predicted):** "code text slightly bolder" in B b4, b5, b7 and ButtonArrow 09. No token mismatch backs these up.
-- **B b6:** Figma metadata lighter, untraced.
+- **Token, text colour (~):** Chip label literal `#666666` (17/18, code bolder); Select trigger on `text/subtle` (22, code placeholder darker); TextField input on `text/disabled` (25, code label/error darker). All three are in A's after-mismatch list. *(Accordion 01 was listed here; see the correction below.)*
+- **Traced 2026-10-13** (read-only probe of the main file's variant nodes, compared with the CSS Modules and the built tokens; nothing in the file changed):
+  - **Token, glyph colour (✓ ButtonArrow 09/10):** Figma binds the chevron's *stroke* to `color/icon/default` (neutral-11), and to `color/icon/disabled` (neutral-7) when disabled. The code sets `color: text-default` (neutral-12) and `text-disabled` (neutral-8), and the glyph uses `currentColor`. So Figma is one step lighter in both states. That makes 09 a token mismatch, not text rendering as first listed. **Checker blind spot:** the read records no paint for a vector inside an instance, so a glyph's stroke colour is never scored.
+  - **Size (✓ Checkbox 15/16):** the `_Checkbox/Box` main is 18×18 and unbound, against `size/icon/sm` = 16px in code, so the box is bigger in Figma. The Figma root also has `space/inset/xs` top and bottom padding that the code root doesn't have (68 vs 48 px tall at 2×). The border is the same token and 1.5px inside on both sides, so it looks heavier only because the box is bigger. **Checker blind spot:** the spec's `Checkbox` part is the layer `container` inside the box instance, so it's unlocated and its size rule was never scored.
+  - **Box model (✓ Badge 05):** same tokens on both sides (`text/subtle`, `body-small`, `inset/xxs` / `inset/xs`). The Figma stroke is `INSIDE`, while the CSS border adds 1px on each side, so the code is 58×30 against Figma's 56×28. That's the "spacing bigger". "Text darker" has no token difference behind it, so it's rendering.
+  - **Structure, spacing (✓ Accordion 02):** in Figma the description sits in the `Content` stack under the title with a `space/stack/xs` (4px) gap. In code it's a separate panel below the trigger, so the trigger's `inset/md` bottom padding (16px) comes between them. 356 vs 378 px tall at 2×. The spec scores each part's CSS, not where the panel sits relative to the trigger, so the checker can't see this.
+  - **Asset (✓ CardVertical 13):** the Figma placeholder is a raster `IMAGE` fill (343×340 rect) with the glyph baked in. Code draws the `Icon` at `clamp(3rem, 30%, 5rem)`. It's a different asset, not a token.
+  - **Rendering, no binding difference (✓ checked):** DropdownMenu items (19; `text/default`, `body-default`, Regular on both sides), B b2 (label `text/disabled` = code `.neutral:disabled`, SemiBold on both) and B b6 (meta `text/subtle` + `font/size/metadata` = code). These join the "text rendering" bucket.
+  - **Correction to A (checker false positive):** A's Accordion "Title on `text/subtle`" mismatch (4 of its 12 token checks) comes from the `Title` *frame*, which wraps both title and subtitle. The checker found the part by the frame name and scored the subtitle text. The title text itself is bound to `color/text/default`, and the subtitle on `text/subtle` matches code (`<Text size="metadata" color="subtle">`). So Accordion 01's "code bolder" is rendering. A's numbers are left as reported, because the checker is frozen, and this is recorded as a known false positive: Accordion token match would be 12/12 without it.
+- **Text rendering (Chrome vs Figma, as predicted):** "code text slightly bolder" in B b4, b5, b7, plus Accordion 01, DropdownMenu 19, b2 and b6 after tracing. No token mismatch backs these up.
 
 **B, visual half: holds.** On every B pair, code-only is within one scale step of code + metadata: Button default (matches / matches), Button disabled (minor / minor), CardVertical default (minor / minor), CardVertical completed (minor / matches). Both arms land in the same range as the hand-aligned file's pairs for the same components (07/08 matches, 13/14 minor).
 
@@ -426,8 +434,8 @@ One rater (the developer), blind, 33 pairs in one shuffled batch (25 main + 8 B)
 - [x] Checker built (2026-10-12, fixture-verified), and the validity bar is met against the Tier 0 matrix on A's before read.
 - [x] A pre-registered, run on both versions, and reported per set and in aggregate with failed-check lists (Results — Measurement A).
 - [x] ADR-029 amendment for B appended; B pre-registered (prompt included), 4 runs done, and scored against the human ceiling (Results — Measurement B; visual half pending C).
-- [ ] C pre-registered, run blind, and reported with a traced cause for every non-match. *(Rated and reported 2026-10-13; #146 fixed and closed, #147 open; some causes still untraced.)*
+- [x] C pre-registered, run blind, and reported with a traced cause for every non-match. *(Rated 2026-10-13; the remaining causes were traced the same day; #146 fixed and closed, #147 open.)*
 - [x] D recorded during #136, or explicitly skipped. *(Skipped, developer decision 2026-10-13.)*
-- [ ] `08-measured-impact.md` and page 14 updated (docs-check clock reset if a declared source changed).
-- [ ] #103 commented with the checker method and whether it should become the snapshot. Include: follow `builtOn` + `builtOnProps` into the child spec's `styles` (the #146 blind spot).
-- [ ] Frontmatter set to `status: done`, then `npm run handoff:tidy`.
+- [x] `08-measured-impact.md` and page 14 updated (no declared docs-check source changed).
+- [x] #103 commented with the checker method and whether it should become the snapshot. Include: follow `builtOn` + `builtOnProps` into the child spec's `styles` (the #146 blind spot).
+- [x] Frontmatter set to `status: done`, then `npm run handoff:tidy`.

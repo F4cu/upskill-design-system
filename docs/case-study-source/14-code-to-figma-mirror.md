@@ -9,7 +9,7 @@
 1. **Fidelity.** Figma and the shipped components show the same thing. Evidence: how often they disagreed, what the disagreements were, and whether anything now catches a new one.
 2. **Translation.** Going from a Figma frame to code takes fewer judgement calls. Evidence: how many Figma names a developer or agent has to *interpret*, versus look up.
 
-The measured-impact chapter is right that neither has a headline number. What exists is a log of every reconciliation since June 2026, each verified by read-back, and a before/after of the component-property layer from the October contract migration. That's enough to show the mechanism works. It's not enough to show the size of the effect, and the last section says what would be.
+The measured-impact chapter is right that neither has a headline number. What exists is a log of every reconciliation since June 2026, each verified by read-back, and a before/after of the component-property layer from the October contract migration. That shows the mechanism works. Three pre-registered measurements then sized the effect; "What the measurements showed" reports them.
 
 ## Why the direction flipped
 
@@ -100,28 +100,31 @@ This is the clearest fidelity gain in the chapter that isn't about a value. A de
 
 The guarantee is one-sided. `spec:validate` checks the spec against **code**: props against the TypeScript types, `styles` against the CSS Module's `--ds-*` reads. Its only use of a prop's `figma` field is to skip `figma-only` props. Nothing compares the spec's Figma property names, sets or layer names against the **Figma file**, because reading Figma is interactive and stays out of CI.
 
-So today the spec guarantees "code and its Figma record agree", not "Figma agrees with the record". The second half is held up by the alignment passes and their read-backs, which are as good as the last time someone ran them. The binding-coverage measurement below is the missing check: the spec's `styles` already state which token each part uses in which state, so the expected side of a Figma comparison exists. Only the read is missing.
+So today the spec guarantees "code and its Figma record agree", not "Figma agrees with the record". The second half is held up by the alignment passes and their read-backs, which are as good as the last time someone ran them. The measurements below ran that missing check once, interactively: the spec's `styles` state which token each part uses in which state, so the expected side of a Figma comparison already existed.
+
+## What the measurements showed
+
+Three pre-registered measurements (2026-10-12 → 10-13) turned this chapter's mechanism into numbers. They ran outside the frozen eval harness, with one read-only checker that scores a Figma file against the committed specs. Full method, tables and caveats: [the numbers chapter](08-measured-impact.md#figma-fidelity-what-the-contract-changed-and-what-the-metadata-adds).
+
+- **The contract moved structure, not token use.** Across the 16 linked components, structure went from 32.7% to 78.6% between the 2026-10-06 file and today's. Token match rose from 66.5% to 80.9% and binding coverage barely moved, both short of the pre-registered bar. What's left in token use is mostly *unbinding*: dimension tokens the spec names that Figma leaves raw. It isn't wrong tokens.
+- **The spec and metadata are what rebuild the structure.** An agent given only the code built a Button and a CardVertical that bound the right tokens, 100% in both arms, and looked the same in a blind rating. But it got the shape wrong: one Button set with a `Shape` variant, `Disabled` inside `State`, and no `CardVertical.Root` or native slots (structure 55% and 33%). Given the spec and metadata as well, it reached 91% and 98%. The CardVertical build matched the hand-aligned file check for check, `Root` and slots included. The metadata buys the thing a screenshot can't show: whether a designer can use the component without detaching it.
+- **Visual fidelity is mostly "minor differences".** Blind-rated, 6 of 16 defaults match, 8 differ in small ways and 2 are "wrong". Both "wrong" ratings trace to the capture setup, not the component. Every non-match has a cause. Text rendering is the largest group; the rest are small token gaps (one fixed in Figma the same day, #146), Figma's inside strokes against CSS borders, and an unbound Checkbox box size.
+
+The spec's one-sidedness, described above, is now counted. Most of the remaining structure gaps are spec claims of a Figma property the file doesn't have.
 
 ## What it doesn't prove
 
-- **No measured link from mirror to built output.** The harness ablation's blind rating against Figma (one rater, N = 1 per cell) gave the full-context arm no "matches" on any task. The gates and the reviewer check conventions, not the design. The mirror makes Figma *correct*; it hasn't been shown to make an agent's first draft *match* it. One traced cause was a primitive (`size.300`) used where Figma binds a semantic (`size.icon.sm`), which is exactly the kind of gap a Figma-aware check could catch and nothing currently does.
-- **No translation-time baseline.** "Fewer judgement calls" is argued from the shape of the contract (7 mappings vs unbounded interpretation), not timed. There's no before/after on how long a Figma → code task takes.
-- **The visual baseline compares code to code.** ADR-019's screenshot baselines catch regressions in Storybook, not divergence from Figma.
-- **It's one maintainer on both sides.** In a team, the mirror's value depends on designers working in the file the push maintains. That's untested here.
-- **The mirror is interactive.** Every push needs Figma Desktop and a person present, so drift between pushes is caught by the next audit, not by CI.
+- **N = 1 per cell, one rater, one maintainer.** B's with/without comparison is one run per component and arm. The visual rating has a single rater, who also maintains both sides. In a team, the mirror's value depends on designers working in the file the push maintains, and that's untested.
+- **Structure is scored against its own yardstick.** The file was aligned to the contract the spec records, so a high structure score is partly circular. The hygiene count and the blind visual rating are the independent checks.
+- **The checker has blind spots the visual check exposed:** a font size that comes from a nested component, a glyph's stroke colour inside an icon instance, and a part that lives inside a nested instance. Extending it, and deciding whether its read becomes a committed snapshot, is #103.
+- **No translation-time baseline.** "Fewer judgement calls" is argued from the shape of the contract, not timed. The spec-first timing on #136 was skipped.
+- **The mirror is interactive.** Every push and every read needs Figma Desktop and a person present, so drift between them is caught by the next run, not by CI.
 
-## How to close the gap (cheaply, outside the frozen harness)
-
-The harness is frozen at `044d28f` (ADR-029 amendment, 2026-10-12), so new evidence shouldn't come from new eval arms. Two read-only measurements would turn this chapter's mechanism into numbers:
-
-1. **Binding coverage per linked set.** One figma-cli read over the 16 linked sets: the share of fills, strokes, padding, gap and radius bound to a variable vs a literal, and the share of those variables that resolve to the token the spec's `styles` names for that part and state. Captured into a committed snapshot like `figma-variables.json`, it becomes a fidelity number that can be re-run after every push. The spec's `styles` already state which token each part uses in which state, so the expected side of the comparison exists.
-2. **A side-by-side fidelity check for the shipped components.** Storybook screenshot vs `get_screenshot` of the matching Figma variant, for each linked set's default and one state, rated blind the same way the ablation did. It's still one rater, but N = 16 components instead of 3 tasks, and it measures the shipped library rather than an agent's first draft.
-
-The second one also answers the reviewer directly: it's visual fidelity to Figma, measured.
+**Next experiment:** a multi-run B, so the structure gap can be stated as an effect size rather than a direction.
 
 ## Why this belongs in the case study
 
-The interesting move is that a plan limit (no Enterprise, no Code Connect) forced a code-first mirror, and the mirror turned fidelity from a judgement into a diff. Variable drift is now a resolved-value comparison with a zero to aim at. Component-property drift is a closed list of recorded mappings, so translation is a lookup. The spec carries that lookup on every prop and is written before the code, and Figma now mirrors code's structure as well as its names, so compound designs stay instances instead of detached copies. Keeping Figma honest also found errors on the code side: a Checkbox hover bug in the CSS, and a wrong claim in an ADR. What the system can't yet claim is that this makes what an agent builds look more like the design. That's the next measurement, and it's a small one.
+The interesting move is that a plan limit (no Enterprise, no Code Connect) forced a code-first mirror, and the mirror turned fidelity from a judgement into a diff. Variable drift is now a resolved-value comparison with a zero to aim at. Component-property drift is a closed list of recorded mappings, so translation is a lookup. The spec carries that lookup on every prop and is written before the code, and Figma now mirrors code's structure as well as its names, so compound designs stay instances instead of detached copies. Keeping Figma honest also found errors on the code side: a Checkbox hover bug in the CSS, and a wrong claim in an ADR. The measurements add the part a screenshot can't show. Given only the code, an agent builds a Figma component that looks right and binds the right tokens, but has the wrong shape. Given the spec and metadata, it builds the shape the hand-aligned file has.
 
 ## Sources for this section
 
@@ -137,4 +140,5 @@ The interesting move is that a plan limit (no Enterprise, no Code Connect) force
 - Drift log (maintainer memory note `figma-file-variable-drift.md`) — every reconciliation 2026-06-17 → 2026-10-11 with its read-back
 - `packages/components/src/components/*/<Name>.spec.json` (`figma` sections), `*.metadata.json` (`figmaNodeId`)
 - `.claude/commands/component-scaffold.md` — translation rules, API proposal Figma columns
-- `docs/case-study-source/08-measured-impact.md` (blind visual rating, open gaps), `12-harness-ablation-learnings.md`, `13-spec-architecture.md`
+- `.claude/handoff/archive/2026-10-12-figma-fidelity-measurements.handoff.md` — fidelity measurements A/B/C: pre-registration, run log, results, traced causes
+- `docs/case-study-source/08-measured-impact.md` (Figma fidelity section, blind visual rating, open gaps), `12-harness-ablation-learnings.md`, `13-spec-architecture.md`

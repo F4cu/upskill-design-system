@@ -182,6 +182,87 @@ Step 4 of ADR-029 kept the adversarial reviewer for interactive components only.
 
 ADR-029 records the readout. The decision stands: the reviewer stays on interactive components, where this is the first measured case of it being no worse than context alone on the headline while buying deeper tests. Whether it would earn its cost on display components can't be tested by this task, and stays open.
 
+## Figma fidelity: what the contract changed, and what the metadata adds
+
+*The mechanism is in [Figma as a mirror](14-code-to-figma-mirror.md). This section is the source of record for its numbers.*
+
+Three measurements, run 2026-10-12 → 10-13, each pre-registered (predictions, reporting bars, scoring rules and the generation prompt frozen before the first read), interactive and local through figma-cli, and outside the frozen eval harness (ADR-029 amendment, 2026-10-12). One read-only checker scores a Figma file against the committed specs. `spec:validate` already ties each spec's `styles` and `props` to the shipped CSS and types, so a mismatch means Figma differs from code, not from a document. It produces three scores per set:
+
+- **Token use:** *binding coverage* (bound ÷ bound + literal) and *token match* (bound variable = the spec's token for that part, property and state).
+- **Structure:** property names, values and defaults, states as independent properties, the set split, anatomy layer names, `Root` + native slots.
+- **Hygiene:** placeholder names, empty or duplicate matrix cells, independent of the spec.
+
+The population is the 16 of 27 components linked to a Figma set, 31 sets including part sets; the other 11 are `none` by decision. The checker was verified on planted fixtures, then had to reproduce every gap in the October Tier 0 read-back before any result counted. It did.
+
+### A. Before/after: what the contract changed (measured)
+
+The file as of 2026-10-06 (before the per-variant Button pass, `CardVertical.Root`, ADR-026 and Tier 3) against the current file. Sets were matched by node id across renames, and the six that didn't exist before count as missing, not as 0%.
+
+| Score | Before | After | Pre-registered prediction | Verdict (bar: +20 points) |
+|---|---:|---:|---|---|
+| Structure | 32.7% (52/159) | 78.6% (132/168) | ≤ 50 → ≥ 95 | **Improved, +45.9.** After fell short of 95. |
+| Token match | 66.5% | 80.9% | ≈ 70 → ≥ 90 | **Miss, +14.4.** |
+| Binding coverage | 52.7% | 54.3% | ≈ 80 → ≥ 95 | **Miss, +1.6.** |
+| Placeholder names | 3 | 0 | ≥ 4 → 0 | After as predicted |
+
+The headline claim holds **for structure only**. The October work renamed, split and re-bound states. It didn't bind the raw values left behind: zero paddings, literal radii, unbound heights. 116 of the 151 remaining token-match misses are dimension tokens the spec names that Figma leaves unbound. Most of the structure still below 90% (11 components) is **spec claims of a Figma property the file doesn't have**, such as Image `Src`/`Alt` or DropdownMenu `Items`. That's the "spec guarantees code ↔ record, not Figma ↔ record" gap, now counted. One known checker false positive: Accordion's title-colour mismatch is the subtitle under a frame named `Title` (4 checks, left in the frozen numbers).
+
+What A can't do is credit the spec: Tier 3 fixed the file before the specs existed. That's B's job.
+
+### B. With/without metadata: what the spec and metadata add (measured, N = 1 per cell)
+
+Four fresh agent sessions (`claude-opus-5-5`) each rebuilt a component in a scratch copy of the file with the target sets and their instances removed. Each ran in an isolated folder outside the repo, with nothing pointing at the Figma conventions, from the same frozen prompt. The **code-only** arm got `index.tsx`, the CSS Module, the built tokens and `figma-variables.json`. The **code + metadata** arm also got `<Name>.spec.json` and `<Name>.metadata.json`. Button tests variants, states and a two-set split; CardVertical tests compound architecture. Each transcript was audited for reads outside the run folder; all four are valid, with deviations recorded. The ceiling is A's "after" read of the hand-aligned sets.
+
+| | Code-only | + metadata | Hand-aligned ceiling |
+|---|---:|---:|---:|
+| Structure, Button | 55.0% | 91.3% | 100% |
+| Structure, CardVertical | 33.3% | 97.7% | 97.6% |
+| Token match, pooled | 100% | 100% | 84.2% |
+| Binding coverage, pooled (excl. zero literals) | 54.7% (90.7%) | 60.0% (91.0%) | 51.1% (88.1%) |
+| Sets built (Button + CardVertical) | 3 | 11 | 11 |
+
+- **Structure is where the metadata pays (+36 Button, +64 CardVertical, bar 15).**
+  - Without it, Button got a `Shape` variant instead of the `Button` / `Button icon` split, `Disabled` inside `State`, and `Icon` instead of `Has icon`.
+  - CardVertical got no `Root`, no native slots, no part components, `Progress` instead of `Status`, and none of the 12 anatomy names as layers.
+  - With it, the CardVertical build matched the hand-aligned file check for check: `Root` with a native `Body` slot, `Meta` with a `Children` slot, `Action` as an instance swap behind `Has action`.
+- **Token match shows no difference.** Both arms scored 100%; the prediction was that code-only would be ≥ 15 points lower. The CSS Module's per-state `--ds-*` reads were enough. Both generated arms beat the hand-aligned file because they bound the dimension tokens A found unbound by hand.
+- **Verdict: partly supported.** The metadata is what produces the right *structure*. The code alone already carries the right *tokens*.
+
+### C. Blind visual check: does it look the same? (measured, one rater)
+
+33 Storybook ↔ Figma pairs (16 defaults, 9 configured states, 8 from B), in light mode. Both sides used the same configuration and width, were exported at 2× onto the same background, and were shuffled, lettered and randomly sided. One rater (the developer) used a 3-point scale and was unblinded afterwards.
+
+| | Matches | Minor | Wrong |
+|---|---:|---:|---:|
+| Library defaults (16) | 6 | 8 | 2 |
+| Library configured states (9) | 2 | 7 | 0 |
+| B code-only (4) | 1 | 3 | 0 |
+| B code + metadata (4) | 2 | 2 | 0 |
+
+- **The prediction missed.** It said ≥ 12 of 16 defaults would match, with none wrong.
+- **Both "wrong" ratings come from the capture setup, not a component** (#147). AppHeader's two sides were configured differently, and the DropdownMenu crop cut off the code shadow.
+- **Every non-match has a traced cause:**
+  - text rendering (Chrome vs Figma), the largest group;
+  - token mismatches: CardVertical/CardHorizontal/Accordion metadata size (#146, fixed in Figma the same day), Chip's literal label colour, Select and TextField text colours, ButtonArrow's glyph on `icon/*` in Figma vs `text/*` in code;
+  - box model: Figma strokes inside, CSS borders outside (Badge);
+  - an unbound 18px Checkbox box against code's 16px;
+  - the Accordion panel's spacing structure;
+  - a raster placeholder asset.
+- **Three of the token causes are checker blind spots:** a font size that comes from a nested `Text` (`builtOn`), a glyph stroke inside an icon instance, and a part that lives inside a nested instance. So the visual check found what the structural scores couldn't.
+- **B's "looks right without metadata" half holds.** Code-only was within one scale step of code + metadata on every pair.
+
+### The honest reading
+
+- **The contract moved structure, not token use.** A shows +46 points of structure. Token use barely moved, and what's missing is mostly unbinding, not wrong tokens.
+- **The spec and metadata are what an agent needs to rebuild that structure.** Without them it builds a component that looks the same and binds the right tokens, but is the wrong shape: options a designer can't find under the code's names, compound designs that have to be detached. That's the case-study claim: *the metadata buys structural fidelity, the thing you can't see in a screenshot.*
+- **Visual fidelity is "minor differences", not "matches", for most of the library.** The causes are mostly small, traceable token and box-model gaps, plus rendering.
+
+**Caveats.**
+- **Circularity:** structure is scored against the spec the file was aligned to, so the hygiene count and the blind rating are the independent checks.
+- **Attribution:** A credits the contract plus the effort of applying it. B isolates spec + metadata together, not each alone, at N = 1 per cell.
+- **One maintainer on both sides, one rater.**
+- **Next experiment:** a multi-run B, with the checker extended to follow `builtOn` into child specs and to read glyph paints inside instances (#103).
+
 ## Context budget: a cap that bites
 
 `CLAUDE.md` sits at **19,993 bytes / 199 lines against a CI-enforced cap of 20,000 / 200 — over 99% utilized** (measured, 2026-10-09). The budget isn't a comfortable margin nobody tests; it's full, and the "Where knowledge lives" routing table exists because it's full. Path-scoping keeps **~4,800 tokens** out of sessions that don't need them: the component conventions (14,428 bytes, ~3,600 tokens) load only when touching `packages/components/**`, the token conventions (4,642 bytes, ~1,200) only for `packages/tokens/**` (measured, 2026-10-09, as `.claude/rules/*.md`; the same day they moved to nested `packages/*/AGENTS.md` files with the same lazy loading, ADR-029). With 27 components the always-loaded file has no room left, which is the structural reason ADR-029 splits it into a tool-agnostic `AGENTS.md` index and a Claude-specific layer. After the split shipped (same day), `CLAUDE.md` is 15,017 bytes and `AGENTS.md` 5,843, which makes 20,860 bytes always loaded against a 24,000-byte combined cap. The prefix grew by about 4%, but the always-loaded surface now has headroom and a second budget line. ADR-017's before-state (289 lines / ~35KB) is the ADR's own record, not independently re-derived from git history — consistent with the current measured size representing a ~44% reduction, and labeled here as self-reported.
@@ -207,5 +288,6 @@ Keeping the gaps on the record is the same discipline as keeping the ledger:
 - `.claude/handoff/run-ledger.json` (12 entries, recomputed)
 - `scripts/pattern-accuracy-harness/results.md`, `docs/decisions/013-cross-component-pattern-schema.md` (+ amendment)
 - `scripts/harness-ablation/results.md`, `scripts/harness-ablation/results/visual-rating.json`, per-run `.run.json`/`.review.json` (gitignored `.runs/`), `.claude/handoff/archive/2026-10-07-harness-ablation-eval.handoff.md` (scope, pre-registration, every scorer fix)
+- `.claude/handoff/archive/2026-10-12-figma-fidelity-measurements.handoff.md` (pre-registration, run log, per-set results, traced causes), checker reads/scores and visual pairs under the gitignored `.claude/handoff/runs/figma-fidelity/`, issues #146 and #147
 - `docs/decisions/017-claude-md-context-budget.md`, `scripts/claude-md-check.js`
 - External: Anthropic engineering posts (code-execution-with-mcp; building-effective-agents; writing-tools-for-agents), Anthropic prompt-caching docs, arXiv:2402.01817, arXiv:2310.01798, arXiv:2603.12123, arXiv:2401.01701, Sparkbox Carbon ROI study
