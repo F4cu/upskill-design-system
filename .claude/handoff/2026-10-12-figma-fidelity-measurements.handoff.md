@@ -173,6 +173,14 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
 | code-only Button | 06:58:57–07:02:35 | 18 / 21.5k | clean, no permission prompts | 1 (`Button` `4001:8449`, 144 variants, `Shape` variant) | 66.7% (93.3%) | 100% | 11/20 = 55% | 0 |
 | code-metadata Button | 07:12:11–07:16:49 | 20 / 27.9k | clean, but see the id-leak near miss | 2 (`Button` `4002:10023`, 60 variants; `Button icon` `4002:10408`, 120) | 68.4% (92.0%) | 100% | 21/23 = 91.3% | 0 |
 | code-only CardVertical | 07:30:45–07:35:36 | 23 / 29.3k | clean (no target id anywhere in the transcript); prompt delivered by path, see below | 2 (`CardVertical` `4001:8312`, 12 variants; `_CardVertical/Action` `4001:8019`, 12) | 33.5% (82.7%) | 100% (52/52, see note) | 14/42 = 33.3% | 1 |
+| code-metadata CardVertical | 07:43:05–07:50:54 | 39 / 46.3k | clean (no target id, no `Hollow` in any tool result); prompt delivered by path again | 9 (preset `CardVertical` `4001:8730`, 12 variants; `CardVertical.Root` `4001:8437`, 2; `.Favorite` `4001:8202`, 6; `.Menu` `4001:8287`, 6; `.Title`/`.Duration`/`.Certified`/`.Completed`/`.Meta` `4001:8308`/`8310`/`8312`/`8316`/`8320`) | 36.0% (86.4%) | 100% (61/61) | 42/43 = 97.7% | 0 |
+
+- **Code-metadata CardVertical setup:** fresh duplicate; dry run, `--execute` and probe all match the code-only run (`hollowErrors: []`, 25 instances removed, `leftoverInstances: 0`, `targetsLeft: 0`; the probe is byte-identical apart from the file name). Files: `b/{dry-run,execute,probe}-code-metadata-CardVertical.json`.
+- **Code-metadata CardVertical audit:** 43 tool calls (33 Bash, 10 Read). All reads are inside the run folder or the session's own scratchpad (PNG exports of its own output and of reused library sets, Image and DropdownMenu). It read and reused the existing `Button icon` (`54:1192`), Image, ProgressBar and icon components, which the prompt allows. No MCP calls and no forbidden figma-cli commands. It also built a `CardVertical examples` frame, which isn't a component and isn't scored.
+- **Protocol deviation, code-metadata CardVertical:** the same as code-only. The first message was the prompt file's path; the session `cat`-ed that one file plus `ls` of its own folder. **Counted as valid, deviation recorded.** Both CardVertical arms got the prompt the same way, so the deviation doesn't differ between them.
+- **Code-metadata CardVertical structure failure:** only `Progress.value → Value @CardVertical.Root`, the same single failure as the human ceiling. **It's a checker gap, not a modelling difference:** both Roots nest a `ProgressBar` instance behind `Has progress` and expose it, so `Value` is the nested instance's property. The checker reads only the set's own `componentPropertyDefinitions`. Left unfixed (post-freeze, and it affects ceiling and arm equally).
+- **Code-metadata CardVertical token match:** 61 checks scored, against 52 in code-only. Favorite, Menu and Completed are now located by layer name; only `FavoriteGlyph` and `MenuTriggerGlyph` stay unlocated in every set. `action-hover` / `action-active` / `favorite-pressed` stay unresolved in both arms: the generated Favorite and Menu sets carry them as `State=Hover/Active` and `Pressed`, but the frozen mapping sends `State` to `hover`/`active`, not to the `action-*` states.
+- **Code-metadata CardVertical decisions worth noting for C:** an extra `Has meta` boolean (not in code; it hides an empty meta row) and `Has duration`. The thumbnail is the library Image with a 4/5 or 3/2 lock. The hover thumbnail is at 80% opacity as a literal, because there's no opacity token. `min-width` is bound to `size/card/min/*`; the hand file leaves it unbound.
 
 - **Code-only structure failures:** no `Button icon` split (a `Shape` variant instead); `Disabled` is a `State` value; booleans are named `Icon` / `Trailing icon` instead of `Has …`; `Label` instead of `Text`. It did build an `Active` state.
 - **Code-metadata structure failures:** only `disabled-first` ordering in both sets.
@@ -189,12 +197,7 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
   - **Fix:** `scratch-delete.plugin.js` now **hollows** each target before removing it. It deletes non-variant properties and every layer, renames variants to `Hollow=N`, and clears paints, bindings, auto-layout and descriptions. The step reports `hollowErrors`.
   - Hollowing a node that was already removed fails: Figma refuses layer removal on it. So the step must run while the targets are still in the tree, which is the script's order on a fresh duplicate. It applies to both CardVertical arms equally.
 
-**Next (resume here):**
-*Code-only CardVertical done (2026-10-13). Hollowing verified: `hollowErrors: []`, 25 instances removed, `leftoverInstances: 0`, `targetsLeft: 0`; probe shows every target as `Hollow=N` variants, 0 layers, 0 bindings, examples section `null` (`b/{dry-run,execute,probe}-code-only-CardVertical.json`).*
-
-1. Duplicate the **current main file** as `fidelity-b-code-metadata-CardVertical` and open it in **Figma Desktop**. `figma-cli files` must list it; a browser tab doesn't count. Close the main file.
-2. Pin `figma-cli` (`daemon stop`, then `FIGMA_FILE=… figma-cli daemon start`), then the dry run, `--execute` and `./scratch-probe.sh CardVertical fidelity-b-code-metadata-CardVertical`. Expect the same clean results as code-only. If any structure survives, stop.
-3. Run per `b/RUNBOOK.md` steps 4–5, **pasting the prompt text** (not its path). After that, all four runs are in: write the B comparison against the pre-registration, then capture B's C pairs and rebuild the blind batch.
+**Next (resume here):** all four B runs are in and scored (2026-10-13), and the comparison is in "Results — Measurement B". Capture B's C pairs: the default plus one configured state for each generated primary set (4 runs → the code-only `Button`, the code-metadata `Button`, and the two `CardVertical` presets), using the same setup as `visual/`. Then run `node build-rating.mjs capture-log.json <B log>` to regenerate one shuffled batch, and the developer rates it blind. Every scratch file must still be open in Figma Desktop for its export.
 
 ## C. Outcome check: does it look right?
 
@@ -317,6 +320,45 @@ Not applicable: `state3`/`state4` (the Figma-only Accordion list, outside the po
 - **Structure below 90%:** Accordion 3/6, AppHeader 1/9, Avatar 3/5, Badge 3/4, Breadcrumb 1/2, Chip 7/8, DropdownMenu 3/9, Image 0/5, ProgressBar 1/2, Select 8/12, TextField 14/17. Almost all are **spec claims of a Figma property the file doesn't have**: AppHeader `Logo`/`Nav items`/`User name`, Image `Src`/`Alt`/`Aspect ratio`, Badge/Chip/Accordion `Children`, DropdownMenu `Items`/`Open`/`List role`, Select/TextField `Hide label`/`Placeholder`. This is the "spec guarantees code ↔ record, not Figma ↔ record" gap page 14 describes, now counted. Each is either a spec over-claim (should be `code-only` or a recorded gap) or a missing Figma property, to triage afterwards.
 - **Token match below 90%:** Accordion 66.7%, Avatar 0%, Badge 50%, Button icon 66.7%, ButtonArrow 52.6%, CardVertical 76.9%, CardVertical.Root 50%, Chip 75.6%, ProgressBar 33.3%, Select 62.5%, TextField 81.3%. Besides unbound dimensions: literal radii (Chip 50, ProgressBar 24, Badge 8), Chip's literal `#666666` label, Accordion title on `text/subtle` instead of `text/default`, Select trigger padding `inset/sm` instead of `inset/md`.
 
+## Results — Measurement B (runs 2026-10-13)
+
+There were four runs, one per cell, all on `claude-opus-5-5`, from run folders built at `d222ce7`. All four are valid; deviations are recorded in the run log. Scores come from the frozen checker. The ceiling is Measurement A's "after" read of the hand-aligned sets. Population: Button (2 sets in the ceiling) and CardVertical (9 sets in the ceiling). Each arm is scored on whatever sets it built.
+
+| Score | Button: code-only | Button: + metadata | Button: ceiling | CardVertical: code-only | CardVertical: + metadata | CardVertical: ceiling | Pooled: code-only | Pooled: + metadata | Pooled: ceiling |
+|---|---|---|---|---|---|---|---|---|---|
+| Sets built | 1 | 2 | 2 | 2 | 9 | 9 | 3 | 11 | 11 |
+| Binding coverage (excl. zero) | 66.7 (93.3) | 68.4 (92.0) | 63.1 (91.1) | 33.5 (82.7) | 36.0 (86.4) | 28.0 (76.9) | 54.7 (90.7) | 60.0 (91.0) | 51.1 (88.1) |
+| Token match | 100 (576/576) | 100 (747/747) | 85.1 (429/504) | 100 (52/52) | 100 (61/61) | 76.7 (46/60) | 100 (628/628) | 100 (808/808) | 84.2 (475/564) |
+| Structure | 55.0 (11/20) | 91.3 (21/23) | 100 (23/23) | 33.3 (14/42) | 97.7 (42/43) | 97.6 (40/41) | 40.3 (25/62) | 95.5 (63/66) | 98.4 (63/64) |
+| Hygiene violations | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 |
+
+**Against the pre-registration** (the bar: arms count as different only if they differ by ≥ 15 points):
+- **Structure: hit.** Code-only came in at ≤ 60% (55.0 and 33.3), and code + metadata at ≥ 85% (91.3 and 97.7). The gaps are +36.3 points for Button, +64.4 for CardVertical and +55.2 pooled, all above the bar. **CardVertical is the largest single difference in B, as predicted.**
+- **Token match: miss.** The prediction was that code-only would score ≥ 15 points lower. Both arms scored 100% on both components, so **no difference shown**.
+  - For Button the measurement is complete (576 checks), so this is a genuine miss. The CSS Module's per-variant `--ds-*` reads were enough to put tokens on the right states without metadata.
+  - For CardVertical the code-only number is partly unmeasured. Its Favorite and Menu triggers and its Completed part couldn't be located by layer name, so those checks weren't scored. In both arms `action-hover`, `action-active` and `favorite-pressed` have no Figma counterpart under the frozen mapping.
+- **Binding coverage:**
+  - **"About the same" holds:** the two arms are 1.7 and 2.5 points apart.
+  - **"Both ≥ 85%" misses on the primary number:** Button is near 67 and CardVertical near 35, because zero paddings count. On the secondary number it holds for Button (93.3 / 92.0). For CardVertical only code + metadata clears 85 (86.4); code-only is at 82.7.
+- **Hygiene: holds weakly.** Code-only has ≥ the violations of code + metadata (1 vs 0). The one violation is empty matrix cells in code-only's `_CardVertical/Action` set, not the predicted placeholder layer names. No run produced a placeholder name.
+- **Expected failures:**
+  - **Button (code-only):** four of five happened. It built a `Shape` variant instead of the `Button icon` split, modelled `Disabled` as a `State` value, and used `Icon` / `Trailing icon` instead of `Has …`. The text property was named `Label` instead of `Text` (the prediction said `children`). The fifth didn't happen: **it did build `Active`.**
+  - **CardVertical (code-only):** all four happened. There's no `Root`. Progress is a `Progress` variant instead of `Status`. There's no `Action` instance swap (it built a separate Action set). None of the 12 anatomy part names appears as a layer.
+
+**CardVertical Root + slots (separate line, as pre-registered):**
+- **Code-only:** no `CardVertical.Root`, no native slots and no part components.
+- **Code + metadata:** `CardVertical.Root` with a native `Body` slot, `Meta` as a part component with a native `Children` slot, `Action` as an instance swap with `Has action`, and `Has progress` driving an exposed nested ProgressBar. All 12 part names appear as layers or part components.
+- **Matches the ceiling** check for check. Its only failure, `Value`, is the same checker gap the ceiling has (see the run log).
+
+**Verdict: partly supported, pending C.**
+- **Structure clears the bar on both components.** The pre-registered "Not supported" condition doesn't apply: code-only structure is 40.3% pooled, 55.2 points below code + metadata.
+- **Token match doesn't clear the bar.** That limits the verdict to "partly supported" whatever C shows. The "tokens on the wrong states" half of the hypothesis isn't shown: given the CSS Module, the generator bound the right tokens either way.
+- **The "looks right on the surface" half** waits for the blind C rating.
+
+**Found along the way, not pre-registered:**
+- **Token match against the ceiling.** Both generated arms beat the hand-aligned file on token match (100 vs 85.1 and 76.7). The generator binds the dimension tokens (Button heights, `size/card/min/*`) that A found unbound by hand. This confirms A's reading that the "after" token-match misses are an unbinding gap, not wrong tokens.
+- **Structure below the ceiling, Button.** The code + metadata Button scored 91.3, short of the ceiling only on `Disabled`-first ordering in both sets.
+
 ## Caveats to carry into the case study
 
 - **Circularity.** Scoring Figma against the spec it was aligned to comes out high by construction. The hygiene score and the visual rating don't depend on the system's own yardstick, which is why they're in the report. Lead with them when the structure score is near 100%.
@@ -333,7 +375,7 @@ Not applicable: `state3`/`state4` (the Figma-only Accordion list, outside the po
 
 - [x] Checker built (2026-10-12, fixture-verified), and the validity bar is met against the Tier 0 matrix on A's before read.
 - [x] A pre-registered, run on both versions, and reported per set and in aggregate with failed-check lists (Results — Measurement A).
-- [ ] ADR-029 amendment for B appended; B pre-registered (prompt included), 4 runs done, and scored against the human ceiling.
+- [x] ADR-029 amendment for B appended; B pre-registered (prompt included), 4 runs done, and scored against the human ceiling (Results — Measurement B; visual half pending C).
 - [ ] C pre-registered, run blind, and reported with a traced cause for every non-match.
 - [ ] D recorded during #136, or explicitly skipped.
 - [ ] `08-measured-impact.md` and page 14 updated (docs-check clock reset if a declared source changed).
