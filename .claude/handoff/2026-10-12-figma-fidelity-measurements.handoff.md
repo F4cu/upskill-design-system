@@ -164,6 +164,32 @@ When you are done, reply with:
 - **Deletion:** `scratch-delete.sh` runs a dry run by default. It removes the target sets, every instance of them that isn't inside another instance (including instances inside other components' definitions, so nested copies disappear everywhere), and for CardVertical the examples section. It refuses unless the open file's name starts with `fidelity-b-`; this was verified against the main file, with and without `--execute`.
 - **Not in the frozen prompt but fixed for the runs:** the same model for all four runs, a tool allowlist (`figma-cli`, file reads and writes) so permission prompts don't need answers, and no human input after the prompt.
 
+### B run log (2026-10-13)
+
+All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and scores in `checker/{reads,scores}/b-<arm>-<Comp>.json`. The comparison against the pre-registration waits until all four runs are in.
+
+| Run | UTC | Turns / output tokens | Audit | Sets | Coverage (excl. zero) | Token match | Structure | Hygiene |
+|---|---|---|---|---|---|---|---|---|
+| code-only Button | 06:58:57–07:02:35 | 18 / 21.5k | clean, no permission prompts | 1 (`Button` `4001:8449`, 144 variants, `Shape` variant) | 66.7% (93.3%) | 100% | 11/20 = 55% | 0 |
+| code-metadata Button | 07:12:11–07:16:49 | 20 / 27.9k | clean, but see the id-leak near miss | 2 (`Button` `4002:10023`, 60 variants; `Button icon` `4002:10408`, 120) | 68.4% (92.0%) | 100% | 21/23 = 91.3% | 0 |
+
+- **Code-only structure failures:** no `Button icon` split (a `Shape` variant instead); `Disabled` is a `State` value; booleans are named `Icon` / `Trailing icon` instead of `Has …`; `Label` instead of `Text`. It did build an `Active` state.
+- **Code-metadata structure failures:** only `disabled-first` ordering in both sets.
+- The structure denominators differ (20 vs 23) because some checks run only once a `Button icon` set exists.
+
+**Setup fixes during B (both after the Button runs, before any CardVertical run):**
+- *`targetsLeft` false count.* A removed main component is still returned by `getNodeByIdAsync`, with no parent. The code-only Button `--execute` reported `targetsLeft: 2`, but a separate read found no sets in the tree. The check now counts only nodes still in the tree.
+- *Id leak, metadata arm only.* `Button.spec.json` / `.metadata.json` hold the target ids (`57:1265`, `54:1192`), and `CardVertical.spec.json` holds `52:4270`, `2871:7567` and `2871:8034`. The code-only files hold none. A removed set stays **fully readable by id**: all properties, variant names, layers and bindings, confirmed with the new read-only `b/scratch-probe.sh <Comp> <file>`.
+  - The code-metadata Button run tried to dump the removed sets' properties and variant names (`inspect3.js`). The script crashed on the null parent before returning, and the retry read only type, name and parent. The run is **counted as valid with this near miss recorded**. It learned nothing beyond the set names, which the spec states anyway.
+  - **Fix:** `scratch-delete.plugin.js` now **hollows** each target before removing it. It deletes non-variant properties and every layer, renames variants to `Hollow=N`, and clears paints, bindings, auto-layout and descriptions. The step reports `hollowErrors`.
+  - Hollowing a node that was already removed fails: Figma refuses layer removal on it. So the step must run while the targets are still in the tree, which is the script's order on a fresh duplicate. It applies to both CardVertical arms equally.
+
+**Next (resume here):**
+1. `fidelity-b-code-only-CardVertical` is duplicated (2026-10-13). Pin `figma-cli` to it with `figma-cli daemon stop`, then `FIGMA_FILE=… figma-cli daemon start`.
+2. Do a dry run, then `--execute`, then `./scratch-probe.sh CardVertical fidelity-b-code-only-CardVertical`.
+3. Expect `hollowErrors: []`, `leftoverInstances: 0`, `targetsLeft: 0`, and a probe showing every target id with no properties, `Hollow=N` variants and 0 layers. If any structure survives, **stop before both CardVertical runs**.
+4. Then the run per `b/RUNBOOK.md` steps 4–5. CardVertical runs are long. Then do the same for `fidelity-b-code-metadata-CardVertical`.
+
 ## C. Outcome check: does it look right?
 
 Correct structure doesn't guarantee it looks the same, so do a visual check on the current file.
