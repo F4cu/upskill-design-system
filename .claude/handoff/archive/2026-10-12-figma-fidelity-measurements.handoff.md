@@ -218,7 +218,7 @@ All runs use `claude-opus-5-5`. Transcripts are in `b/transcripts/`, reads and s
 - Docs: `08-measured-impact.md` has a new "Figma fidelity" section; on page 14, "How to close the gap" is replaced by "What the measurements showed".
 - #103 comment: issuecomment-6141939806.
 - D skipped.
-- **Follow-ups not filed yet:** ButtonArrow glyph `icon/*` vs `text/*`, the Checkbox box at 18px vs 16px, and the triage of spec claims of Figma properties the file doesn't have (A's structure gaps).
+- **Follow-ups** (filed in `2026-10-13-figma-fidelity-follow-ups.handoff.md`): ButtonArrow glyph `icon/*` vs `text/*`, the Checkbox box at 18px vs 16px, and the triage of spec claims of Figma properties the file doesn't have (A's structure gaps).
 
 ## C. Outcome check: does it look right?
 
