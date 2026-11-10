@@ -35,7 +35,10 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 
 **Pattern stories** (see "Follow-up: pattern trees vs stories")
 - [x] Choose A, B, C or D: D (2026-11-10)
-- [ ] Triage the 62 patterns: proposed (24 keep, 38 delete), awaiting approval
+- [x] Triage the 62 patterns: 24 keep, 38 delete, approved 2026-11-10 (see "Pattern triage")
+- [x] Figma: deleted the 6 CardVertical state frames (`2871:8064` default-card, `2871:8090` in-progress-card, `2871:8118` completed-card, `2871:8207` placeholder-favorite, `2871:8234` favorite-progress, `2871:8277` title-only) from "CardVertical examples" (`2871:8034`) via figma-cli, 2026-11-10. Read-back: Preset row = favorite-saved, overflow-menu; Parts row = custom-meta, instructor-row, grouped-meta. The component set (`52:4270`) is the variant matrix; example frames are for compositions only
+- [ ] Figma example sections for the other owners, after their stories exist: a `<Name> examples` section per component with one instance-only frame per pattern id (Accordion, Breadcrumb, Button ×4, CardHorizontal ×3, Checkbox, Chip, Divider, TextField ×2, TextLink, ScrollArea `scrollable-list`). `page-landmarks`, `card-carousel` and `native-scroll-carousel` go on the Layout Examples page (ADR-023 2026-10-06). Today only CardVertical has a section, so designers can't see the other compositions in Figma
+- [ ] Gate for frames ↔ patterns: a committed snapshot of example-frame names per component (captured interactively via figma-cli, like `figma-variables.json`; Figma reads stay out of CI), which `usage:validate` compares against `composition.patterns` names
 - [ ] Decide the fate of `/layout-generation`'s "Recurring patterns" section (carousel, CourseModuleList)
 - [ ] `<Name>.patterns.stories.tsx` per component; `usage:validate` checks exports ↔ pattern names; `anatomy:test`, `AnatomyOverlay`, screenshot and a11y scripts pick up the new files
 - [ ] Drop `patterns[].tree` from schema and files
