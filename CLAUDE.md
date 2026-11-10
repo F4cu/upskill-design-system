@@ -79,19 +79,7 @@ Commit directly to the current branch — do not create new branches unless expl
 
 ## Agentic moments
 
-The only scenarios where invoking Claude with MCP context is worth the cost. All developer-triggered; full inputs, steps, and success signals live in each command file — this is the index and the load-bearing invariants. Everything else is a script or a GitHub Action.
-
-| # | Moment | Command | Invariant that must survive |
-|---|---|---|---|
-| 1 | Figma variable audit (drift check) | `/figma-variable-audit` | Never overwrite primitives without a usage diff; capture the read into `figma-variables.json`; exclude representational divergences. |
-| 2 | Token deprecation pass | `/token-deprecation-pass` | Replace usages with the successor from source `$deprecated`; `airtable-governance.json` is the cross-check, no MCP. |
-| 3 | Component scaffold | `/component-scaffold` | Read schema + template + Figma context; produce the four component files. |
-| 4 | Layout generation | `/layout-generation` | Only fixed-set components and tokens; every structural choice cites a metadata rule. |
-| 5 | Figma variable push (code → Figma) | `/figma-variable-push` | Write only clean-missing variables; never delete or overwrite without explicit confirmation. |
-| 6 | Add component (verified scaffold) | `/add-component` | Sense → scaffold → gate → visual checkpoint → reviewer if interactive (moment 7), else in-session `/code-review`. Frozen snapshot is the only handoff. ADR-007, ADR-029. |
-| 7 | Review component | `/review-component` | One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for moment 8. |
-| 8 | Extract learnings | `/extract-learnings` | Route each finding to its durable home — component metadata first; token conventions → `/tokens-author`; contrast misses → the curated `PAIRS` list. `--all` proposals require developer confirmation. |
-| 9 | Docs sync | `/docs-sync` | Detection is CI (`npm run docs:check`); rewriting is developer-triggered, never CI. Rewrite only stale sections; never touch Autodocs/docgen-owned content. One read-only `docs-scribe` subagent reviews rewritten sections before the PR (ADR-018). PR on `docs-sync/<date>`. |
+The only scenarios where invoking Claude with MCP context is worth the cost, all developer-triggered: (1) `/figma-variable-audit`, (2) `/token-deprecation-pass`, (3) `/component-scaffold`, (4) `/layout-generation`, (5) `/figma-variable-push`, (6) `/add-component`, (7) `/review-component`, (8) `/extract-learnings`, (9) `/docs-sync`. Each command file opens with the invariant that must survive, then its inputs, steps and success signal. Everything else is a script or a GitHub Action.
 
 **For existing component reviews:** `/review-component <Name>` for the `full` path (fresh adversarial subagent + learnings loop); `/code-review` on the diff for the `standard` path — no subagent, no handoff file, no learnings step.
 
@@ -106,7 +94,7 @@ The only scenarios where invoking Claude with MCP context is worth the cost. All
 
 ## Layout and component scope
 
-Layout invariants live in `AGENTS.md`; the full grammar table lives in `/layout-generation`. The fixed component set in `AGENTS.md` is canonical; `/component-scaffold` and `/layout-generation` defer to it. CSS Modules, implementation rules, story conventions, metadata model, a11y tiers: `packages/components/AGENTS.md`. Token JSON conventions: `packages/tokens/AGENTS.md`.
+Layout invariants live in `AGENTS.md`; the full grammar table lives in `/layout-generation`. The fixed component set in `AGENTS.md` is canonical; `/component-scaffold` and `/layout-generation` defer to it. CSS Modules, implementation rules, state model, prop vocabulary, parts, and the story/metadata/a11y rules: `packages/components/AGENTS.md`. Token JSON conventions: `packages/tokens/AGENTS.md`.
 
 ## Architectural decisions (ADRs)
 
@@ -118,29 +106,15 @@ Durable decisions live in `docs/decisions/NNN-kebab-title.md` (template: `000-te
 
 ## Common tasks
 
-Most recurring work is a skill or command — invoke it rather than reproducing the steps by hand. The nine developer-triggered commands are the "Agentic moments" above.
+Recurring work is a command or skill: invoke it rather than reproducing its steps, and let its description route you (they are in context every session). This table holds only tasks without one.
 
 | Task | How |
 |---|---|
-| Add/change a primitive token, semantic alias, or the SD build | `/tokens-author` |
 | Add a brand | Checklist in `packages/tokens/AGENTS.md` (ADR-012) |
-| Push tokens to Airtable, or pull governance state | `/airtable-sync` |
-| Scaffold a new component from the fixed set | `/component-scaffold` |
 | Draft a spec for an existing component (backfill, ADR-027) | `npm run spec:generate -- <Name>`, fill every `TODO`, then `npm run tokens:build && npm run spec:validate` |
-| Verified component loop (sense → scaffold → review → PR) | `/add-component` |
-| Review an existing component after changes | `/review-component <Name>` |
-| In-session review path, no subagent | `/code-review` on the diff + `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test` |
-| Back-fill metadata learnings after a review/bug-fix session | `/extract-learnings <Name>` or `/extract-learnings --all` |
+| In-session review path, no subagent | `/code-review` on the diff + the `AGENTS.md` gates |
 | Regenerate the frozen status-quo snapshot | `npm run sense` (or `npm run sense:component <Name>`) |
-| Quick terminal read on where things stand | `npm run status` (dashboard), `npm run status:board` (per-component table), `npm run status:component -- <Name>` (one component's checklist) |
+| Quick terminal read on where things stand | `npm run status`, `npm run status:board`, `npm run status:component -- <Name>` |
 | Archive done/superseded handoffs, regenerate index | `npm run handoff:tidy` |
-| Rewrite stale `docs/NN-*.md` pages | `/docs-sync` (detection: `npm run docs:check`) |
-| Run a11y checks | `npm run lint` (Tier 1) · `npm run a11y:coverage && npm run a11y:test` (Tier 2 — ADR-008) |
-| Generate a page or section layout | `/layout-generation` |
-| Audit / push Figma variables (drift / code → Figma) | `/figma-variable-audit` · `/figma-variable-push` |
-| Mechanical Figma canvas edits (rename, restructure, bind) | `/figma-cli` (local, never CI) |
-| Migrate deprecated token usages to successors | `/token-deprecation-pass` |
-| Build, run, or screenshot Storybook | `/run-storybook` |
-| Add a story to an existing component | Story conventions in `packages/components/AGENTS.md` |
+| Run a11y checks | `npm run lint` (Tier 1) · `npm run a11y:coverage && npm run a11y:test` (Tier 2, ADR-008) |
 | Add a GitHub Action | Workflow YAML in `.github/workflows/`. Actions call scripts and REST directly — never MCP, never Claude. |
-| Record or amend an ADR | "Architectural decisions (ADRs)" above |

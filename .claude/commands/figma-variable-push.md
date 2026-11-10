@@ -5,6 +5,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SlashCommand, Skill, ReadMcp
 
 # Figma variable push (code → Figma)
 
+**Invariant that must survive:** Write only clean-missing variables; never delete or overwrite without explicit confirmation.
+
 **Trigger:** Developer, when the committed tokens have moved ahead of the Figma file and Figma needs to mirror them.
 
 **When to use:** Tokens were added or changed in `packages/tokens/src/` and you want the Figma variable collections to match. This is the inverse of the Figma variable audit (which pulls Figma → code). Code is the source of truth (ADR-002 amendment); Figma is the downstream mirror, so this only ever writes to Figma, never the reverse.

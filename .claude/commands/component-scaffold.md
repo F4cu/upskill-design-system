@@ -5,6 +5,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 
 # Component scaffold
 
+**Invariant that must survive:** Read schema + template + Figma context; produce the four component files.
+
 **Trigger:** Developer, when starting a new component from the fixed set.
 
 **Fixed component set:** the canonical list lives in AGENTS.md → "Components" (single source — do not copy it here). Do not scaffold anything outside that list.
@@ -49,12 +51,13 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 
    Inside `/add-component` this checkpoint is part of Stage 1. The approved names are final for steps 4–6. Under `/add-component --eval` it is auto-approved: write the proposal to `api-proposal.md` and continue (see that command's "Eval mode").
 4. **Write `<Name>.spec.json` now, from the approved proposal, before any code** (ADR-027). Create the component folder `packages/components/src/components/<Name>/` and write the spec against `component.spec.schema.json`: `anatomy` and `props` from the proposal tables (prop `kind` per the schema enum; Figma surface, property and set per prop), `constraints`, `states`, `accessibility`, `figma` (sets and recorded divergences), and `styles` from the Figma token mapping of step 1: part → rules of `when` (prop values and `state`) → CSS property → token path. A raw value needs `{ literal, reason }`. The spec states what the component must be; it is not a description of code you have not written. Do not list tokens separately: the spec's `styles` are the component's token list.
-5. Fill the metadata schema fields from the approved API proposal and what you observe in Figma: `component`, `usage`, `variants`, `composition` only. Leave out `states`, `tokens` and `accessibility`: the spec owns them and `metadata:validate` fails if metadata repeats them. Anti-patterns must reference only components in the fixed set. Variant and prop names match the approved table; Figma differs only by casing or a recorded mapping.
+5. Fill the metadata schema fields from the approved API proposal and what you observe in Figma: `component`, `usage`, `variants`, `composition` only. Leave out `states`, `tokens` and `accessibility`: the spec owns them and `metadata:validate` fails if metadata repeats them. Anti-patterns must reference only components in the fixed set. Variant and prop names match the approved table; Figma differs only by casing or a recorded mapping. Fill `composition.accepts`/`containedBy` and `usage.patterns`: `/layout-generation` depends on them.
 6. Produce the rest of the component folder:
    - `index.tsx` — typed props matching the spec's `props` (a variant axis is typed to the same `options` as `variants.<axis>` in metadata) and `states`; no hard-coded design values; import CSS module for class names
    - `ComponentName.module.css` — one rule per variant + state combination in the spec's `styles`; only `var(--ds-*)` custom properties, never raw values
    - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls. **Storybook title rule:** layout primitives (`category: layout` in metadata) use `title: 'Layout/ComponentName'`; everything else uses `title: 'Components/ComponentName'`.
    - `ComponentName.metadata.json` — written in step 5.
+   - `ComponentName.a11y.test.tsx` — interactive components only; the rule and how to write it are in `/add-component` → Stage 2.
    - Then reconcile: run `npm run tokens:build && npm run spec:validate`. It checks the spec against the code (props, defaults, variant options, the `--ds-*` properties the CSS reads, cross-references). Fix the code when the spec is right. When building showed the spec is wrong, amend the spec first, say so in your summary, and re-run. Never edit the spec only to make a failure go away. For a component that already exists without a spec (backfill, not a new component), do not write one by hand: run `npm run spec:generate -- <Name>`, which drafts `props`, anatomy, states and `styles` from the code and leaves `TODO`s for what code cannot say.
 7. Record the Figma node ID in the metadata file's `figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
 

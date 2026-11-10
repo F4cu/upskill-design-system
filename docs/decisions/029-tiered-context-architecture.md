@@ -4,7 +4,7 @@ title: "ADR-029 — Tiered context architecture and a risk-triggered reviewer"
 # ADR-029 — Tiered context architecture and a risk-triggered reviewer
 
 **Date:** 2026-10-09
-**Amended:** 2026-10-12
+**Amended:** 2026-11-10
 **Status:** `accepted`
 
 ## Context
@@ -220,3 +220,18 @@ The freeze amendment above says a new question about the spec-based architecture
 - B's result is an N = 1-per-cell observation about Figma generation from the layered metadata. It doesn't fire this ADR's revisit triggers, which concern code generation and the reviewer.
 - Results go in `docs/case-study-source/08-measured-impact.md` with B's caveats (one run per cell, one rater, spec and metadata tested together rather than separately).
 - If B is ever repeated with more runs, or extended to separate the spec from the metadata, that's a new pre-registration under this amendment, not an edit to B's frozen lines.
+
+## Amendment (2026-11-10) — Moment invariants and component procedures move to their commands
+
+**Context.** `packages/components/AGENTS.md` reached 15,990 of its 16,000-byte budget, blocking spec-renderers Phase A3. The always-loaded total stood at 21,260 of 24,000. Two sources of overhead turned up. CLAUDE.md routed recurring work three ways: the command descriptions Claude Code keeps in context every session, the "Agentic moments" table, and the "Common tasks" table. And the components file held material needed only when scaffolding or testing a component: Storybook setup, the metadata field enums already in `component.schema.json`, and the mechanics of the a11y tiers. Anthropic's guidance for CLAUDE.md is the same rule as "Where knowledge lives": multi-step procedures and part-of-the-codebase detail go to skills or path-scoped files.
+
+**Decision.**
+
+- **Moment invariants live at the top of each command file** (`**Invariant that must survive:**`). CLAUDE.md keeps a one-line numbered index of the nine moments.
+- **"Common tasks" lists only tasks with no command or skill.** Command descriptions do the routing; a row that only restates one is removed.
+- **The components file keeps rules, not procedures.** Its "Stories, metadata, a11y" section states what must hold (story shape, the spec owns `states`/`accessibility`/`styles`, the Tier-2 test requirement, never add to the backlog or waiver ledgers, add a `PAIRS` entry). The how-to moves to the place where it's done: Storybook setup to `/run-storybook`, writing the a11y test to `/add-component` Stage 2 (which already held it, so the copy is gone), and the `composition`/`usage.patterns` requirement to `/component-scaffold` step 5. The axe-sweep and contrast-check mechanics are already in `docs/03-accessibility.md`.
+
+**Result.** CLAUDE.md is 12,406 bytes (was 15,364). Always-loaded is 18,302 (was 21,260). `packages/components` is 11,993 (was 15,990). Budgets are unchanged.
+
+**Not measured.** No harness-ablation arm has run since this move. The removed text was procedural or duplicated in a schema or command, so this amendment predicts no change in violations. If a later eval or review shows a rule missed that used to be in the components file, the rule comes back to it.
+

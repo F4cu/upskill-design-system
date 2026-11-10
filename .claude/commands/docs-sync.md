@@ -5,6 +5,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
 
 # Docs sync
 
+**Invariant that must survive:** Detection is CI (`npm run docs:check`); rewriting is developer-triggered, never CI. Rewrite only stale sections; never touch Autodocs/docgen-owned content. One read-only `docs-scribe` subagent reviews rewritten sections before the PR (ADR-018). PR on `docs-sync/<date>`.
+
 **Trigger:** Developer, when `npm run docs:check` (or `docs-check.yml` on a PR) reports one or more `docs/NN-*.md` pages as stale. Never runs in CI — detection is the script's job; rewriting is this moment's.
 
 **When to use:** A source file a docs page declares in its `sources:` frontmatter has a git commit newer than the doc's last commit, and the doc needs its stale sections brought back in line. Also accepts an explicit work queue: `/docs-sync 00 04 06` syncs those pages regardless of what the check currently reports (needed when a commit has already reset the staleness clocks, e.g. the inaugural run after the frontmatter landed).

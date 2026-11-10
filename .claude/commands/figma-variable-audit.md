@@ -5,6 +5,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SlashCommand, Skill, ReadMcp
 
 # Figma variable audit
 
+**Invariant that must survive:** Never overwrite primitives without a usage diff; capture the read into `figma-variables.json`; exclude representational divergences.
+
 **Trigger:** Developer, before replacing `packages/tokens/src/primitives.json` with a fresh Figma export.
 
 **When to use:** A new Figma variable export is ready and you want to understand what will break before committing it.

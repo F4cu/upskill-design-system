@@ -5,6 +5,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Agent, SlashCommand, S
 
 # Add component
 
+**Invariant that must survive:** Sense → scaffold → gate → visual checkpoint → reviewer if interactive (`/review-component`), else in-session `/code-review`. The frozen snapshot is the only handoff. ADR-007, ADR-029.
+
 **Trigger:** Developer, when building any component from the fixed set that will go to `main`. This is the production path — use it instead of `/component-scaffold` directly. Scaffold alone skips the gate and adversarial review, meaning agent-written code reaches human review unverified.
 
 **Invocation:** `/add-component <Name>` (e.g. `/add-component Accordion`). `--review` forces the adversarial reviewer for a display component; `--no-review` skips it for an interactive one (Stage 3). `/add-component <Name> --eval` runs the unattended harness-ablation variant — see "Eval mode" below; it is valid only inside an ablation workspace.

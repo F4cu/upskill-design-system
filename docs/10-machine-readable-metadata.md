@@ -29,6 +29,7 @@ sources:
 # sources 2026-10-12: declares scripts/lib.js (readComponentMetadata, isInteractive), which the page describes
 # rewritten 2026-10-12: new subsection on how /component-scaffold writes a new component's spec (inputs, order, spec:generate is backfill only); declares component-scaffold.md as a source
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); metadata and spec schemas unchanged, this page describes no individual mapping, still accurate
+# clock reset 2026-11-10: /component-scaffold step 5 names the composition/usage.patterns fields layout generation needs; the metadata model described here is unchanged, still accurate
 ---
 # Machine-readable metadata
 

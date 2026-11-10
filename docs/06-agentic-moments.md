@@ -50,7 +50,7 @@ One boundary is worth stating explicitly (from `CLAUDE.md`): a developer-trigger
 
 ## The nine moments
 
-Each command file in `.claude/commands/` holds the full inputs, steps, and success signals; `CLAUDE.md` holds the index and the invariant each moment must never violate:
+Each command file in `.claude/commands/` opens with the invariant the moment must never violate, followed by its full inputs, steps, and success signals; `CLAUDE.md` holds a one-line index (ADR-029 amendment 2026-11-10). The invariants:
 
 | # | Moment | Command | Load-bearing invariant |
 |---|---|---|---|

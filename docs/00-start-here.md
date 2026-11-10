@@ -75,6 +75,7 @@ sources:
 # clock reset 2026-11-10: ADR-027/030 amendments (data-part markers); ADR count unchanged, this page lists no ADR detail, still accurate
 # clock reset 2026-11-10: ADR-030 Phase A1 amendment (component pages for Button and CardVertical); this page gets its Components link in A3, still accurate
 # clock reset 2026-11-10: ADR-030 Phase A2 spike amendment (anatomy overlay); this page doesn't describe component pages yet, still accurate
+# clock reset 2026-11-10: moment invariants move from CLAUDE.md into each command file, Common tasks trimmed (ADR-029 amendment 2026-11-10); this page lists the moments and files, not their contents, still accurate
 ---
 # Start here
 

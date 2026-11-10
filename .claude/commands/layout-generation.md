@@ -5,6 +5,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion, mcp__claude
 
 # Layout generation
 
+**Invariant that must survive:** Only fixed-set components and tokens; every structural choice cites a metadata rule.
+
 **Trigger:** Developer, when starting a new page or section layout.
 
 **When to use:** You have a layout brief (one paragraph describing the page intent and key content areas), a Figma file URL pointing to the design, or both. The skill works from either input; a Figma reference improves fidelity significantly.

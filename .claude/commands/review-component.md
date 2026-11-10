@@ -5,6 +5,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Agent
 
 # Review component
 
+**Invariant that must survive:** One fresh adversarial subagent; branch `component/<kebab-name>`; writes `.review.json` + `.run.json` for `/extract-learnings`.
+
 **Trigger:**
 - Called by `/add-component` after Stage 2b (visual checkpoint passes) — continues the verified scaffold loop.
 - Standalone, after code changes to an existing component that deserve a fresh-context review.

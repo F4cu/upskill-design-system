@@ -11,6 +11,17 @@ server, then driving its story iframes headlessly with Playwright via
 checks). The token build and `metadata:validate`/`typecheck`/`build` are the
 non-visual checks every component change must pass.
 
+**What's installed** (in `packages/components/`): React + Vite framework;
+`@storybook/addon-themes` toggling `data-theme`; a custom brand toolbar (global
+`brand`, toggling `data-brand`). The addon supports only one
+`withThemeByDataAttribute` instance, so brand switching is a separate
+`globalTypes` + decorator in `.storybook/preview.ts`. MDX token showcase stories
+(colors by hue, spacing, typography, radii). Visual regression baselines
+(ADR-019): each component's canonical `--default` story in light and dark, as
+committed PNGs in `packages/components/screenshots/`; diff with
+`npm run screenshot:check`, re-baseline with `npm run screenshot:approve`
+(or `-- --component <Name>`) after an intentional visual change.
+
 All paths below are relative to the repo root
 (`/Users/facundorosales/projects/upskill-design-system`).
 

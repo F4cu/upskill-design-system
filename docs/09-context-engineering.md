@@ -48,6 +48,7 @@ sources:
 # clock reset 2026-10-12: ADR-029 amendment records Figma fidelity study B (runs isolated outside the repo so Tier 1 delivery cannot leak); the ladder, delivery mechanism and cited measurements are unchanged, still accurate
 # clock reset 2026-11-10: packages/components AGENTS.md gains a ruledOut line and a shortened contrast aside; this page describes tiers and budgets, not per-rule content, still accurate
 # clock reset 2026-11-10: AGENTS.md/CLAUDE.md gate lists gain anatomy:test, packages/components AGENTS.md gains the part-marker rule; this page describes tiers and budgets, not rule content, still accurate
+# clock reset 2026-11-10: CLAUDE.md drops duplicated routing and packages/components/AGENTS.md moves procedures to commands (ADR-029 amendment 2026-11-10); the layering, routing table and budget gate described here are unchanged, still accurate
 ---
 # Context engineering
 

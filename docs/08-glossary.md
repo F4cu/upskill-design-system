@@ -45,6 +45,7 @@ sources:
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value) and /component-scaffold spec-template wording (every component has a spec since the ADR-027 backfill); no new term, Scaffold and Component spec entries still accurate
 # 2026-11-10: Component spec entry mentions the optional decisions and ruledOut sections (ADR-027 amendment); packages/components AGENTS.md ruledOut line + contrast aside shortened
 # 2026-11-10: gate list gains anatomy:test (data-part markers, ADR-030 amendment); packages/components AGENTS.md part-marker rule
+# clock reset 2026-11-10: CLAUDE.md moment table becomes a one-line index; packages/components/AGENTS.md stories/metadata/a11y sections condensed to rules (ADR-029 amendment 2026-11-10); no glossary entry describes those sections, still accurate
 ---
 # Glossary
 

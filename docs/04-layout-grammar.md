@@ -24,6 +24,7 @@ sources:
 # clock reset 2026-10-09: a validate-layout.js comment repoints .claude/rules/components.md to packages/components/AGENTS.md (ADR-029 Tier 1); the grammar is unchanged, still accurate
 # clock reset 2026-10-10: /layout-generation grammar table: AppHeader navItems take current instead of active (ADR-026 Tier 1); this page names no NavItem field, still accurate
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); layout rules and the part kinds it cites are unchanged, still accurate
+# clock reset 2026-11-10: /layout-generation gains an invariant line at its top (ADR-029 amendment 2026-11-10); the grammar is unchanged, still accurate
 ---
 # Layout grammar
 

@@ -6,6 +6,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 # Token deprecation pass
 
+**Invariant that must survive:** Replace usages with the successor from source `$deprecated`; `airtable-governance.json` is the cross-check, no MCP.
+
 **Trigger:** Developer, after marking one or more tokens as `deprecated` in Airtable and running `npm run airtable:pull:governance`.
 
 **When to use:** `packages/tokens/airtable-governance.json` contains tokens with `"status": "deprecated"` and you want a migration PR that eliminates all usages.

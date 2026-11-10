@@ -22,6 +22,7 @@ sources:
 # clock reset 2026-10-09: sense.js imports the review-path normalizer from scripts/lib.js; stage derivation and the Airtable push are unchanged, still accurate
 # clock reset 2026-10-09: lib.js gained token-tree helpers for metadata validation (ADR-029 Step 5); the Airtable helpers this page describes are unchanged
 # rewritten 2026-10-12: component token columns now derive from the spec (ADR-027 rollout); token-deprecation-pass reads spec styles, governance flow unchanged
+# clock reset 2026-11-10: command files gain an invariant line at their top (ADR-029 amendment 2026-11-10); governance flow unchanged, still accurate
 ---
 # Governance
 
