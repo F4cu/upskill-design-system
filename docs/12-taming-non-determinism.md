@@ -18,6 +18,7 @@ sources:
 # clock reset 2026-10-10: validate-metadata.js also checks every <Name>.spec.json parses; this page describes the gate's role, not its check list, still accurate
 # rewritten 2026-10-12: token checking moved from metadata tokens.* to spec styles via spec:validate (ADR-001/027 amendments 2026-10-11)
 # sources 2026-10-12: declares scripts/validate-spec.js and ADR-027, since the token check this page describes moved to spec:validate
+# clock reset 2026-11-10: validate-spec.js checks anatomyExamples and decision ADR refs (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
 ---
 # Taming non-determinism
 

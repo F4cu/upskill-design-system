@@ -25,6 +25,7 @@ sources:
 # rewritten 2026-10-12: ADR-027 spec rollout — metadata requires four sections; states/tokens/accessibility live in the spec
 # sources 2026-10-12: declares ADR-027, which the spec-rollout rewrite of the schema section now describes
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); this page describes lifecycle stages, not Figma property mappings, still accurate
+# clock reset 2026-11-10: ADR-027 amendment adds optional spec sections (anatomyExamples, decisions, ruledOut); this page describes the metadata schema and the gate, not spec sections, still accurate
 ---
 # Component lifecycle
 
