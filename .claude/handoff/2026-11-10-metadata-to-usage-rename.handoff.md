@@ -77,6 +77,93 @@ What that does to the takeaways:
 
 The name still fits: "usage" covers *how to use* a component, not only *when to pick* it. **Change the audit's focus to match:** study how other systems document composition (GOV.UK patterns built from components, shadcn blocks, Atlassian/Polaris do and don't pairs on placement, ADR-013's pattern aggregate) more than their when-to-use pages, which toolkit-research has already covered.
 
+## Audit (step 1, run 2026-11-10)
+
+### What the 27 files hold and who reads it
+
+112 KB in all. Bytes by section: `antiPatterns` 35.8 KB (32%), `patterns` 16.8 KB, `variants` 10.7 KB, `component` 10.0 KB, `composition` 7.7 KB, `when` 6.9 KB, `keywords` 2.1 KB.
+
+| Field | Script readers | Agent readers | Verdict |
+|---|---|---|---|
+| `usage.keywords` | none | none | drop |
+| `usage.when` | docs page | `/layout-generation` cites it | keep |
+| `usage.patterns` | docs page, `validate-spec` | `/layout-generation`, `/component-scaffold`, `/extract-learnings` | keep; core |
+| `usage.antiPatterns` | docs page | `/extract-learnings` writes it; `/layout-generation` reads it whole | split (below) |
+| `variants.*.purpose` | docs page | `/layout-generation` reads it whole | relabel |
+| `composition.accepts` / `containedBy` | `validate-metadata` (cross-refs); `validate-layout` checks **parts only**, not component-level | `/layout-generation` cites both | keep; enforce component-level too |
+| `composition.parts` | `validate-metadata`, `validate-layout`, `generate-spec`, `validate-spec`, `generate-pattern-schema` | — | keep |
+| `composition.composedOf` | `generate-pattern-schema` (drift check against JSX), docs page ("Built from") | — | drop: derived from JSX, which the drift check already scans |
+| `layoutBehavior.widthBehavior` | none | `/layout-generation` cites it | keep, flatten |
+| `layoutBehavior.displayType` | none | none | drop (derivable from the CSS) |
+| `layoutBehavior.canNest` | none | none | keep as data, **and enforce it** (replaces 5 anti-patterns) |
+| `component.category` | `generate-pattern-schema` (only `=== "layout"`) | — | replace with `type: "layout"` |
+| `component.type` | `generate-pattern-schema` | — | keep |
+| `component.status` | ~12 scripts (`lib`, `sense`, `airtable-sync`, `status`, …) | — | keep in place: moving it buys nothing in a 27-file read and breaks the Airtable push |
+| `component.figmaNodeId` | `airtable-sync`, `sense-component` | `/add-component`, `/component-scaffold` | duplicates `spec.figma.sets[0].nodeId`. Move its readers to spec and drop it |
+
+### The 106 anti-patterns, sorted
+
+| Kind | Count | Examples | Home |
+|---|---|---|---|
+| **Wrong pick** (use X instead) | 35 | Badge#0 → Chip, Select#1 → Checkbox, Image#1 → Avatar | `usage.json` `notFor`, `instead` as a component id |
+| **Composition** (placement, nesting, weight, grouping, mixing) | 30 | Button#1 (accent in a repeated item), Card#4/CH#1/CV#0 (mixing card types), Chip#3, CV parts rules | `usage.json` `rules`. 5 are "X inside X" (Accordion#1, Card#0, ScrollArea#2, Text#1, Stack#1) → derived from `nests: false` |
+| **Call-site prop use** | 37 | open+defaultOpen, missing `label`, raw `style` on Box/Button/Card/Icon/TextLink, "·" in CardHorizontal strings | split: ~11 raw-style restatements → delete (`AGENTS.md` grammar + `validate-layout` style check already cover them); prop combinations and required props (~14) → `spec.json` `constraints`; content format (~12, e.g. CH#6/#7/#9, PB#1) → `spec.json` prop descriptions |
+| **Implementation** (inside the component or for new components) | 4 | Accordion#4/#5, DropdownMenu#2, Button#5 | `spec.json` `decisions` / `accessibility.notes`; Button#5 is cross-component → `packages/components/AGENTS.md` |
+
+**This changes T1.** Only 4 rules are true build rules. The ~26 call-site rules moving to `spec.json` are still read by the *layout writer*, who sets those props. `/layout-generation` doesn't read `spec.json` today, so moving them without changing that reader is a likely regression. The options are (a) `/layout-generation` also reads `spec.constraints` (small: most components have 0–2), or (b) they stay in usage as `rules`. The harness decides. Default (a): constraints are machine-checkable, prose rules aren't.
+
+Duplicates to collapse: Box#4 = Stack#2; CV#0 ≈ CV#3 ≈ CH#1 ≈ CH#3 ≈ Card#4 (one "one card type per section" rule, owned by Card); patterns `certified-badge` (CH, CV) and `form-field-stack` (Select, TextField) each on one owner.
+
+### How other systems document composition
+
+| Source | What they do | What it means here |
+|---|---|---|
+| **Carbon** button usage | Weight as a per-region budget: "only one primary button" per screen, "not including the application header, modal dialog, or side panel"; "Do not use two high-emphasis buttons in a button group"; >3 actions → menu. | Same model as ADR-024, but stated as a **count per container**. Our version is prose in 3 places (Button `when`, `purpose`, antiPattern #1) plus a hard-coded check in `validate-layout`. |
+| **Curtis, Figma slots for repeating items** | Slot rules live in spec data, not Figma: permitted items (`anyOf`), `minItems`/`maxItems`, slot named for its purpose (`items`, not `children`). Figma "preferred instances" are only a suggestion. | Our `accepts` has the `anyOf` but no counts. CV#9 ("only a single Action in Media") and CV#7 ("exactly one Title") are counts written as prose. |
+| **GOV.UK patterns** | Patterns are **separate pages** for a task ("Check answers"). They name the components and give placement, order and copy rules, not a component tree. | Our `patterns` are per-component trees. Fine for 27 components read whole. No separate patterns file: a whole read gains nothing. |
+| **shadcn registry** | Composition as data: `registryDependencies` (what an item is built from), `type: registry:block` for multi-component compositions, `categories`. | Confirms dropping `composedOf` here: the dependency list is derived from code, not written by hand. |
+| **Atlassian primitives** | Box = container with tokens, Inline/Stack nested inside; no fixed card, Box is used to build card-like components; `use-primitives` ESLint rule suggests the primitive. | Our layout-primitive anti-patterns (Box#0, Inline#0, Stack#0) are the same lint, written as prose. Low value, keep as picks. |
+| **Custom Elements Manifest** | `slots[]` with name + description; **no parent/child field**. | Our `accepts`/`containedBy`/`parts` go further than the main machine-readable standard. Keep the names. |
+| **Storybook MCP manifest** | Props, usage snippets and types from static analysis. No composition fields found. | Nothing to borrow for composition. |
+
+Takeaway: no system has a better composition *vocabulary* than `accepts`/`containedBy`/`parts`. What two of them add is **counts** (Carbon per region, Curtis per slot). Our counts are prose, apart from one hard-coded check.
+
+### Proposed field map (old → new)
+
+```
+component.name                  → component.name
+component.category              → (dropped; "layout" joins component.type)
+component.type                  → component.type   (+ "layout")
+component.status                → component.status (unchanged, ADR-010)
+component.description           → component.description (rule: opens "A <noun> that …", no counts/ADRs/a11y claims — T6)
+component.figmaNodeId           → (dropped; readers use spec.figma.sets[0].nodeId)
+usage.keywords                  → (dropped)
+usage.when                      → when            (flattened; self-describing lines removed — T2)
+usage.patterns                  → patterns        (flattened; unchanged shape; 2 duplicates deduped)
+usage.antiPatterns (35 picks)   → notFor[]: { case, because, instead }   instead = fixed-set name | null + optional note
+usage.antiPatterns (30 comp.)   → composition.rules[]: { case, because, do }
+usage.antiPatterns (37 + 4)     → spec.json constraints / prop descriptions / decisions; AGENTS.md; or deleted as restatements
+variants.<axis>.purpose         → variants.<axis>.when   (per option; px sizes and requirements moved to spec — T7)
+composition.composedOf          → (dropped; derived from JSX by generate-pattern-schema)
+composition.accepts             → composition.accepts
+composition.containedBy         → composition.containedBy
+composition.parts               → composition.parts
+composition.layoutBehavior.widthBehavior → composition.width
+composition.layoutBehavior.displayType   → (dropped)
+composition.layoutBehavior.canNest       → composition.nests  (enforced by validate-layout)
+(new, candidate)                → composition.limits[]: { if: {prop: value}, max, per: "region"|"repeated"|"parent" }
+```
+
+`limits` would turn the hard-coded accent check in `validate-layout` into data (`Button: {if:{variant:"accent"}, max:1, per:"region"}` and `max:0, per:"repeated"`) and would carry CV#7/#9's counts. Add it only if the migration can drive `validate-layout` from it. Otherwise it's another field the agent reads but nothing enforces.
+
+Expected effect: drop keywords, `composedOf`, `displayType`, `category`, `figmaNodeId`, about 40 relocated or deleted anti-patterns and the duplicates. That should cut roughly 30–35% of the bytes `/layout-generation` reads on every run, while composition (patterns, rules, accepts, counts) becomes most of the file. To be checked with the harness (step 6), not taken on trust.
+
+### Decisions needed before step 2
+
+1. **Call-site prop rules (~26):** move to `spec.json` and have `/layout-generation` also read `spec.constraints` (default), or keep them in usage as `rules`?
+2. **`composition.limits`:** include it in this migration, with `validate-layout` driven by it, or defer?
+3. **`figmaNodeId` removal:** in scope for this migration (it touches `airtable-sync`), or a follow-up?
+
 ## Rename blast radius (measured 2026-11-10)
 
 27 data files plus about 50 live references outside `.claude/handoff/archive/`:
@@ -90,7 +177,7 @@ The name still fits: "usage" covers *how to use* a component, not only *when to 
 
 ## Steps when unblocked
 
-1. Audit other design systems → proposed field map (old → new) recorded in this handoff.
+1. ~~Audit other design systems → proposed field map (old → new) recorded in this handoff.~~ Done 2026-11-10 (see "Audit"). Open: the three decisions listed there.
 2. Amend ADR-001 (dated amendment: rename + relabel + rationale), and note it in ADR-027.
 3. `git mv` the 27 files; migrate field names with a one-off script; rename the schema/validator if the labels change (`component.usage.schema.json`?, `usage:validate`).
 4. Update the live references above; leave history as is.
