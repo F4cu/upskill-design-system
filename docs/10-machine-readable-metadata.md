@@ -32,6 +32,7 @@ sources:
 # clock reset 2026-11-10: /component-scaffold step 5 names the composition/usage.patterns fields layout generation needs; the metadata model described here is unchanged, still accurate
 # rewritten 2026-11-10: usage.json rename and relabel (ADR-001 amendment 2026-11-10): where each "don't" lives, composition limits/nests, validator checks, consumption map, diagram
 # rewritten 2026-11-10: consumption map replaced by a per-field readers table across usage.json and spec.json (incl. anatomy:test, docs renderer, airtable-sync)
+# rewritten 2026-11-10: deterministic-reader audit (gated/used/rendered/none per field, totals, gaps); layout:validate row corrected (part-level accepts/containedBy only)
 ---
 # Machine-readable metadata
 
@@ -151,13 +152,13 @@ The two files are split by reader. The usage file is for **picking and composing
 |---|---|---|---|---|
 | `/component-scaffold` (Stage 1 of `/add-component`) | Writer | Writes it after the spec | Writes it first, from the approved API proposal | A new component's contract, written before the code. The closest existing pair is read as a template. |
 | `/layout-generation` | Picker / composer | Every file, whole: `composition` (incl. `parts`, `limits`, `rules`), `patterns`, `notFor`, each option's `useWhen` | `constraints` only | Choosing components and citing a field for every structural choice |
-| `layout:validate` (`validate-layout.js`) | Gate | `composition` (`accepts`, `containedBy`, `nests`, `limits`, `parts`) | — | Checking a layout file against the composition graph |
+| `layout:validate` (`validate-layout.js`) | Gate | `composition.nests`, `composition.limits`, and `composition.parts` (each part's `accepts`, `containedBy`, `required`) | — | Checking a layout file against the composition graph. The component-level `accepts`/`containedBy` are not checked (see the audit below). |
 | `/review-component` | Builder check | — | The whole spec, as the intent the code is held to: each `anatomy` role and `action` against the markup, `constraints` against their `enforcedBy`, `states` against the CSS and handlers | Findings that `spec:validate` can't produce |
 | `spec:validate` (`validate-spec.js`) | Gate | `variants` (options must match the spec's props) | Every section, against the code and the built tokens | Keeping the spec and the code in step |
 | `usage:validate` (`validate-usage.js`) | Gate | Every section, against the schema and the fixed set | Parse check only | Keeping the usage file well-formed |
 | `anatomy:test` | Gate | — (a pattern example renders the story named after the pattern) | `anatomy`, `anatomyExamples` | Every part renders with its `data-part` marker |
 | `a11y-coverage.js` | Gate | `component.type` | `accessibility.role`, `accessibility.keyboardInteractions` | Deriving "interactive" and requiring a behavioral a11y test |
-| `generate-pattern-schema.js` | Aggregator | `component.type`, `component.status` | — | Building `.claude/component-patterns.json` (with the JSX scan) |
+| `generate-pattern-schema.js` | Aggregator | `component.type`, `component.status`, `composition.parts` | `accessibility.notes`, `accessibility.ariaAttributes` | Building `.claude/component-patterns.json` (with the JSX scan) |
 | `airtable-sync.js` | Governance push | `component` (incl. `status`, `figmaNodeId`), `variants` | `styles` tokens, through `readComponentUsage` | The Airtable component table (ADR-010) |
 | `spec-bundle.js` → docs component pages | Renderer | `component`, `useWhen`, `notFor`, `patterns`, `variants`, `composition` | `anatomy`, `anatomyExamples`, `props`, `constraints`, `states`, `accessibility`, `styles`, `figma`, `decisions`, `ruledOut` | Generated pages: the anatomy overlay drawn on rendered examples, a parts tree and a parts table ([ADR-030](decisions/030-spec-renderers.md)) |
 | Figma parity plugin (planned, ADR-030 Part B) | Renderer | Through `specs.bundle.json` | Through `specs.bundle.json` | Flagging differences between Figma and the spec |
@@ -165,6 +166,68 @@ The two files are split by reader. The usage file is for **picking and composing
 | `/extract-learnings` | Writer | Writes `notFor`, `composition.*` | Writes `accessibility.*`, `constraints`, `decisions` | Turning review findings into durable rules |
 
 `anatomy` is builder context, not only renderer input. The scaffold writes it before any code, the code marks each part with `data-part`, `anatomy:test` checks the markers, and the reviewer checks each part's role. The docs diagram reuses the same data. `anatomyExamples` is the one section that exists mainly for display, but `anatomy:test` renders the same examples, so it stays in the spec.
+
+### What scripts read deterministically (audit 2026-11-10)
+
+The case for keeping the contracts as JSON rests on which fields code reads, not on how well a model reads JSON. Research on prompt formats doesn't settle that question: results vary by model and task, and Markdown's clearest advantage is fewer tokens, not better answers. So this audit traced every field to the scripts, tests and renderers that parse it. Agents are left out. Each field gets the strongest of four levels:
+
+- **Gated:** a check compares the value with the code, another file, the fixed component set or the built tokens, and fails the build when they disagree.
+- **Used:** a script derives something from the value or pushes it elsewhere, without checking it.
+- **Rendered:** only the generated docs page reads it, and shows it as written.
+- **None:** no code reads it beyond the schema's shape check. Only agents read it.
+
+**`usage.json`**
+
+| Field | Level | Read by |
+|---|---|---|
+| `component.name` | Gated | `usage:validate` (must equal the folder name) |
+| `component.type` | Used | `isInteractive` → `a11y:coverage` (which test a component owes), `component:risk`, the pattern aggregate's fallback bucket |
+| `component.status`, `component.figmaNodeId` | Used | `airtable-sync.js` (Maturity column, ADR-010); `generate-pattern-schema.js`, `sense-component.js` |
+| `component.description`, `useWhen` | Rendered | Docs page |
+| `notFor[].instead` | Gated | `usage:validate` (a fixed-set component, not the component itself; `null` needs a `note`) |
+| `notFor[].case`, `because`, `note` | Rendered | Docs page |
+| `patterns[].name` | Gated | `spec:validate` (an `anatomyExamples` pattern must exist); `anatomy:test` renders the story with that name |
+| `patterns[].description`, `tree` | Rendered | Docs page. No code parses `tree`. |
+| `variants.<axis>.options`, `default` | Gated | `spec:validate` (must equal the spec prop and the TypeScript union); `usage:validate` (`limits` and `useWhen` keys must name options); `airtable-sync.js` |
+| `variants.<axis>.useWhen` | Gated (keys) | `usage:validate` (each key is an option); the text is rendered |
+| `composition.nests`, `composition.limits` | Gated | `layout:validate`; `usage:validate` checks the axis and option each limit names |
+| `composition.parts` | Gated | `usage:validate`, `layout:validate`, `spec:validate` (must match `anatomy`), `generate-pattern-schema.js`, `spec:generate` |
+| `composition.containedBy` | Rendered | Docs page ("Placed inside"). The names aren't validated. |
+| `composition.rules` | Rendered | Docs page. Rules a check can't express, by design. |
+| `composition.accepts`, `composition.width` | None | Agents only |
+
+**`spec.json`**
+
+| Field | Level | Read by |
+|---|---|---|
+| `component` | Gated | `spec:validate` (must equal the folder name) |
+| `anatomy[].name`, `parent` | Gated | `spec:validate` (parents resolve, `styles` keys and `<Name>PartProps` types name parts); `anatomy:test` (a `data-part` marker per part) |
+| `anatomy[].builtOn`, `builtOnPart`, `notRendered` | Gated | `spec:validate` (a fixed-set component, matches `composition.parts`, the host spec has that part); `anatomy:test` |
+| `anatomy[].element`, `role`, `action`, `required`, `when`, `notes`, `builtOnProps` | Rendered | Docs page; `/review-component` checks `role` and `action` against the markup |
+| `anatomyExamples` | Gated | `spec:validate` (props and patterns exist); `anatomy:test` renders each one |
+| `props.<p>.kind`, `options`, `default` | Gated | `spec:validate` against the TypeScript props types and the code's defaults, and against `usage.json` variants |
+| `props.<p>.figma` (`surface`, `property`) | Gated | `spec:validate` (figma-only props are skipped); `prop-vocabulary.js` (Figma name vs prop name, ADR-026) |
+| `props.<p>.type` | Rendered | Docs page |
+| `props.<p>.concept` | None | Written by `spec:generate` as a `TODO` that fails the check until filled. Nothing reads the content. |
+| `constraints[].if`, `require`, `ignore`, `forbid` | Gated | `spec:validate` (every reference is a spec prop) |
+| `constraints[].enforcedBy` | Used | `spec:validate` lists empty ones as backlog |
+| `constraints[].reason` | Rendered | Docs page |
+| `states[].name` | Gated | `spec:validate` (`styles` `when.state` must name one) |
+| `states[].kind`, `trigger`, `notes` | Rendered | Docs page; `kind` is limited to the ADR-025 values by the schema |
+| `accessibility.role`, `keyboardInteractions` | Used | `isInteractive` → `a11y:coverage`, `component:risk`, the bundle's a11y tier |
+| `accessibility.ariaAttributes`, `notes` | Used | Copied into `component-patterns.json`; rendered |
+| `styles` | Gated | `spec:validate` (token set = the CSS Module's `var(--ds-*)` reads, each defined in the built CSS; part and `when` keys resolve); `airtable-sync.js` via `readComponentUsage`; `spec-bundle.js` resolves each token's values |
+| `figma.sets`, `figma.divergences` | Rendered | Docs page |
+| `decisions[].adr` | Gated | `spec:validate` (the ADR file exists) |
+| `decisions[].decision`, `reason`, `ruledOut` | Rendered | Docs page |
+
+**Totals.** Of the 40 field groups above, 18 are gated and 6 are used by a script, so 24 depend on code parsing a fixed shape. Another 13 are rendered by the docs page, which needs the same stable structure. Only 3 have no code reader. In Markdown, every one of the 24 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
+
+**Gaps the audit found.** None of these is fixed here; each needs its own decision:
+
+- **`patterns[].tree` is never parsed.** Its 62 trees are written in a notation agents read, but a misspelled component name in a tree passes every check. A check that each name in a tree is a component or a declared part would be cheap.
+- **Component-level `accepts` and `containedBy` are unchecked.** `usage:validate` doesn't confirm their entries are components, and `layout:validate` checks containment only for `composition.parts`. They work only as citations for `/layout-generation`.
+- **`composition.width` and `props.<p>.concept` have no code reader.** By the rule above, each should either get a reader (a check, or a column on the docs page) or be dropped, as `usage.keywords` was.
 
 `component.type` is the one place the schema enforces a closed taxonomy (`interactive|display|container|input|layout`; the atomic-design `category` it used to sit beside was dropped on 2026-11-10, since only its `layout` value was ever read). Every other section is free-text within its shape. That's deliberate: the field is load-bearing for both `a11y-coverage.js`'s interactivity derivation and `generate-pattern-schema.js`'s bucketing fallback (`layout-primitive` when structural detection finds nothing else), so an unenforced vocabulary there would quietly break two downstream consumers at once.
 
