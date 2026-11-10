@@ -41,8 +41,7 @@
     "patterns": [
       {
         "name": "page-header-trail",
-        "useWhen": "A page more than one level deep needs a trail back up, placed above its title.",
-        "tree": "Stack(gap=sm) > [Breadcrumb, Heading(as=h1)]"
+        "useWhen": "A page more than one level deep needs a trail back up, placed above its title."
       }
     ]
   }

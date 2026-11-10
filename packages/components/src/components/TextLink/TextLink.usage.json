@@ -56,8 +56,7 @@
     "patterns": [
       {
         "name": "author-credit",
-        "useWhen": "Naming an author inline, linked to their profile, followed by their role.",
-        "tree": "Text(size=body-default, color=subtle) > [TextLink(href=...), ', Author and educator, MICA']"
+        "useWhen": "Naming an author inline, linked to their profile, followed by their role."
       }
     ]
   }

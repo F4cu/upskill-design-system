@@ -16,7 +16,7 @@ const components = import.meta.glob<Record<string, ComponentType<Record<string, 
   { eager: true },
 )
 const stories = import.meta.glob<Record<string, Story & { component?: ComponentType }>>(
-  '../../../../packages/components/src/components/*/*.stories.tsx',
+  '../../../../packages/components/src/components/*/*.patterns.stories.tsx',
   { eager: true },
 )
 
@@ -34,7 +34,7 @@ function exampleElement(name: string, example: Example) {
   const dir = `../../../../packages/components/src/components/${name}`
   const Component = components[`${dir}/index.tsx`][name]
   if (example.props) return <Component {...example.props} />
-  const module = stories[`${dir}/${name}.stories.tsx`]
+  const module = stories[`${dir}/${name}.patterns.stories.tsx`]
   const meta = module.default as Story
   const story = module[pascal(example.pattern!)] as Story
   return <Component {...meta.args} {...story.args} />

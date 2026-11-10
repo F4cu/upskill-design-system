@@ -42,8 +42,7 @@
     "patterns": [
       {
         "name": "section-break",
-        "useWhen": "Separating groups of fields or content inside one card.",
-        "tree": "Card > Stack(gap=lg) > [...fields, Divider, ...fields]"
+        "useWhen": "Separating groups of fields or content inside one card."
       }
     ]
   }

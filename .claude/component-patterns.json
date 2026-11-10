@@ -1,7 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [],
-  "generatedFrom": "deb5b6d4e5101d1400e19a8d5073ec9b5df08b3b",
+  "generatedFrom": "db48cc8b20a2fc417b3dfec6b5ad0220b6eddeb9",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -58,7 +58,7 @@
           "consumers": [
             "apps/showcase/src/pages/CourseOverview.tsx",
             "apps/showcase/src/pages/Homepage.tsx",
-            "packages/components/src/stories/Carousel.stories.tsx"
+            "packages/components/src/components/CardVertical/CardVertical.patterns.stories.tsx"
           ],
           "hook": "useCarousel",
           "params": [

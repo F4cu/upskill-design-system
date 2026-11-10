@@ -64,8 +64,7 @@
     "patterns": [
       {
         "name": "filter-bar",
-        "useWhen": "Narrowing a list by categories the user toggles. Multi-select by default; single-select when the page keeps one active value (page logic, same tree).",
-        "tree": "Inline(gap=sm, wrap=true, role=group, aria-labelledby=<heading id>) > [Chip(pressed=true), Chip(pressed=true), Chip, Chip]"
+        "useWhen": "Narrowing a list by categories the user toggles. Multi-select by default; single-select when the page keeps one active value (page logic, same tree)."
       }
     ]
   }

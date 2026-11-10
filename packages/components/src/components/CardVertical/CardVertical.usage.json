@@ -205,33 +205,27 @@
     "patterns": [
       {
         "name": "favorite-saved",
-        "useWhen": "A course card the learner can save or unsave in place.",
-        "tree": "CardVertical(size=lg, title, duration, certified, action=CardVertical.Favorite(pressed, onPressedChange))"
+        "useWhen": "A course card the learner can save or unsave in place."
       },
       {
         "name": "overflow-menu",
-        "useWhen": "A course card has several secondary actions (share, remove, mark complete) that don't fit as buttons.",
-        "tree": "CardVertical(size=sm, title, duration, action=CardVertical.Menu(items, onSelect))"
+        "useWhen": "A course card has several secondary actions (share, remove, mark complete) that don't fit as buttons."
       },
       {
         "name": "custom-meta",
-        "useWhen": "A card's meta row shows something other than duration and certified status.",
-        "tree": "CardVertical.Root(size=lg) > [CardVertical.Media > CardVertical.Action > CardVertical.Menu(items, onSelect), CardVertical.Body > [CardVertical.Title, CardVertical.Meta > Text(as=span, size=metadata, color=subtle)]]"
+        "useWhen": "A card's meta row shows something other than duration and certified status."
       },
       {
         "name": "instructor-row",
-        "useWhen": "A card shows who teaches the course, between the title and the meta row.",
-        "tree": "CardVertical.Root(size=lg) > [CardVertical.Media > CardVertical.Action > CardVertical.Favorite, CardVertical.Body > [CardVertical.Title, Inline(gap=sm, align=center, wrap=false) > [Avatar(size=sm), Stack(gap=xs) > [Text(as=span, size=metadata), Text(as=span, size=metadata, color=subtle)]], CardVertical.Meta > [CardVertical.Duration, CardVertical.Certified]]]"
+        "useWhen": "A card shows who teaches the course, between the title and the meta row."
       },
       {
         "name": "grouped-meta",
-        "useWhen": "A card's meta row pairs a badge with a related value (New and a date) that should read as one item.",
-        "tree": "CardVertical.Root(size=sm) > [CardVertical.Media, CardVertical.Body > [CardVertical.Title, CardVertical.Meta > [CardVertical.Duration, Inline(gap=xs, align=center) > [Badge(label=New), Text(as=span, size=metadata, color=subtle)]]]]"
+        "useWhen": "A card's meta row pairs a badge with a related value (New and a date) that should read as one item."
       },
       {
         "name": "card-carousel",
-        "useWhen": "A row of course cards wider than the viewport, paged with arrows (Discover, Saved courses).",
-        "tree": "Stack > [Box(overflow=hidden, className='carousel-outer') > Inline(gap=md, wrap=false, translateX by useCarousel offset) > [CardVertical, ...], Inline(gap=sm) > [ButtonArrow(direction=left, disabled=!canPrev), ButtonArrow(direction=right, disabled=!canNext)]] (story: Carousel)"
+        "useWhen": "A row of course cards wider than the viewport, paged with arrows (Discover, Saved courses)."
       }
     ]
   }

@@ -56,18 +56,15 @@
     "patterns": [
       {
         "name": "started-courses-list",
-        "useWhen": "Listing the courses a learner has started, with their progress.",
-        "tree": "Stack(gap=sm) > [CardHorizontal(title, progress=65, duration, certified), CardHorizontal(title, progress=20, duration), ...]"
+        "useWhen": "Listing the courses a learner has started, with their progress."
       },
       {
         "name": "footer-recommendations",
-        "useWhen": "Promoting courses the learner hasn't started on a dark footer or other inverted band.",
-        "tree": "Box(background=color.background.container.inverted) > Stack(gap=md) > [CardHorizontal(variant=inverted, title, author, duration), ...]"
+        "useWhen": "Promoting courses the learner hasn't started on a dark footer or other inverted band."
       },
       {
         "name": "certified-badge",
-        "useWhen": "Showing a course's certified status outside a card, e.g. in a course-detail metadata row.",
-        "tree": "span(className=<module>.badge) > [Icon(name='badge-check', size='sm'), Text(as='span', size='metadata', color='subtle')]"
+        "useWhen": "Showing a course's certified status outside a card, e.g. in a course-detail metadata row."
       }
     ]
   }

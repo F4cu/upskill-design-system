@@ -23,8 +23,7 @@
       "packages/components/src/components/Card/Card.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
       "packages/components/src/components/Select/Select.module.css",
-      "packages/components/src/components/TextField/TextField.module.css",
-      "packages/components/src/stories/CourseModuleList.stories.tsx"
+      "packages/components/src/components/TextField/TextField.module.css"
     ],
     "--ds-color-background-container-elevated": [
       "packages/components/src/components/Accordion/Accordion.module.css",
@@ -109,6 +108,7 @@
     "--ds-space-inline-md": [
       "packages/components/src/components/AppHeader/AppHeader.module.css",
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.patterns.stories.tsx",
       "packages/components/src/components/Inline/Inline.module.css"
     ],
     "--ds-space-inset-xs": [
@@ -228,8 +228,7 @@
       "packages/components/src/components/Box/Box.module.css"
     ],
     "--ds-color-background-container-inverted": [
-      "packages/components/src/components/Box/Box.module.css",
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
+      "packages/components/src/components/Box/Box.module.css"
     ],
     "--ds-border-radius-xs": [
       "packages/components/src/components/Box/Box.module.css",
@@ -239,8 +238,7 @@
       "packages/components/src/components/Stack/Stack.stories.module.css"
     ],
     "--ds-color-border-inverted": [
-      "packages/components/src/components/Box/Box.module.css",
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
+      "packages/components/src/components/Box/Box.module.css"
     ],
     "--ds-font-family-body": [
       "packages/components/src/components/Button/Button.module.css",
@@ -293,8 +291,7 @@
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
-      "packages/components/src/components/Text/Text.module.css",
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
+      "packages/components/src/components/Text/Text.module.css"
     ],
     "--ds-color-background-button-accent-hover": [
       "packages/components/src/components/Button/Button.module.css"
@@ -378,11 +375,11 @@
     ],
     "--ds-color-text-inverted-subtle": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
-      "packages/components/src/components/Text/Text.module.css",
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
+      "packages/components/src/components/Text/Text.module.css"
     ],
     "--ds-color-icon-subtle": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardHorizontal/CardHorizontal.patterns.stories.module.css",
       "packages/components/src/components/CardVertical/CardVertical.module.css"
     ],
     "--ds-color-icon-inverted-default": [
@@ -524,8 +521,7 @@
       "packages/components/src/components/Stack/Stack.module.css"
     ],
     "--ds-color-text-accent-inverted": [
-      "packages/components/src/components/Text/Text.module.css",
-      "packages/components/src/stories/FooterHighlights.stories.tsx"
+      "packages/components/src/components/Text/Text.module.css"
     ],
     "--ds-font-weight-regular": [
       "packages/components/src/components/Text/Text.module.css"
@@ -546,11 +542,10 @@
       "packages/components/src/layout/Layout.stories.module.css",
       "packages/components/src/layout/Layout.stories.tsx"
     ],
-    "--ds-grid-gutter": [
-      "packages/components/src/stories/Carousel.stories.tsx",
+    "--ds-grid-columns": [
       "packages/components/src/styles/grid.css"
     ],
-    "--ds-grid-columns": [
+    "--ds-grid-gutter": [
       "packages/components/src/styles/grid.css"
     ],
     "--ds-size-focus-width": [

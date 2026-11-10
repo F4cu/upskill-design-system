@@ -88,8 +88,7 @@
     "patterns": [
       {
         "name": "page-landmarks",
-        "useWhen": "Every route page: the app shell with one main, named sections and a footer.",
-        "tree": "Box(as='main') > [AppHeader, Box(as='section', aria-labelledby, paddingY='xl') > Box(className='container') > [...], Box(as='footer', background='inverted', borderTop='inverted') > Box(className='container') > [...]]"
+        "useWhen": "Every route page: the app shell with one main, named sections and a footer."
       }
     ]
   }

@@ -106,6 +106,8 @@ Apply spacing tokens to the structure — never raw values:
 
 ## Recurring patterns (use these exact shapes — do not reinvent)
 
+Compositions owned by one component are `composition.patterns` with a story; this section keeps only cross-component grammar and the showcase specifics those stories can't carry.
+
 ### Fonts
 Fonts are referenced via CSS tokens (`--ds-font-family-body`, `--ds-font-family-headline-serif`) but the typefaces must be loaded. Check `apps/showcase/index.html` — if the Google Fonts `<link>` for Roboto / Playfair Display is missing, add it before generating the page. Without it the browser falls back to a system serif.
 
@@ -141,57 +143,14 @@ When the Figma design context shows an AppHeader, map every visible sub-element 
 **Checklist before leaving AppHeader:** logo ✓ · nav items ✓ · `userAvatarSrc` ✓ · `userName` ✓ · `userMenuItems` ✓ (when chevron visible).
 
 ### Accordion with show-more
-When the design has an accordion list with a "Show more / Show less" trigger, use the CourseModuleList pattern (`Layout/Examples/CourseModuleList` in Storybook):
-- Keep the full data array outside the component.
-- Add `const [showAll, setShowAll] = useState(false)` (import `useState` from `'react'`).
-- Slice: `const visible = showAll ? ALL : ALL.slice(0, DEFAULT_COUNT)`.
-- Render only `visible` items inside `<Accordion>`.
-- Below the accordion, render a `<Button variant="transparent" size="sm" trailingIcon={…} onClick={…}>` whose label and icon reflect the toggle state.
-- Wrap the `<Accordion>` + button in a `<div>` (not `<Stack>`) so button indentation via `marginLeft` isn't overridden.
+Use the Accordion pattern `course-module-list`; its code is `CourseModuleList` in `Accordion.patterns.stories.tsx`. Keep the full data array outside the component and slice it with `useState`.
 
 ### Card carousel with arrows
-When the design shows a horizontal row of cards that paginate with left/right arrows — **or when Figma design context contains a component named "Carousel", "carousel", or a scrollable card row with navigation arrows** — use this pattern exactly:
+When the design shows a horizontal row of cards that paginate with left/right arrows, use the CardVertical pattern `card-carousel`; its code is `CardCarousel` in `CardVertical.patterns.stories.tsx`. On a showcase page add two classes the story doesn't carry, since they live in `apps/showcase/src/styles/global.css`:
+- `className="carousel-outer"` on the clipping `<Box overflow="hidden">`: it switches to native scroll with snap on mobile.
+- `className="hide-on-mobile"` on the arrow row: mobile users scroll with their finger.
 
-```tsx
-import { useCarousel } from '@upskill/components'
-
-const CARD_WIDTH = 280   // adjust to fit ~VISIBLE_COUNT cards in the container
-const VISIBLE_COUNT = 4
-
-const carousel = useCarousel(items.length, VISIBLE_COUNT)
-
-<Stack gap="md">
-  {/* Box owns the clip; .carousel-outer only overrides to native scroll on mobile */}
-  <Box overflow="hidden" className="carousel-outer">
-    <div
-      style={{
-        display: 'flex',
-        gap: 'var(--ds-grid-gutter)',
-        transform: `translateX(calc(-${carousel.offset} * (${CARD_WIDTH}px + var(--ds-grid-gutter))))`,
-        transition: 'transform 300ms ease',
-      }}
-    >
-      {items.map((item) => (
-        <div key={item.title} style={{ flexShrink: 0, width: `${CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
-          <CardVertical … />
-        </div>
-      ))}
-    </div>
-  </Box>
-  {/* .hide-on-mobile: arrows hidden on mobile — user scrolls with finger instead */}
-  <Inline gap="sm" justify="end" className="hide-on-mobile">
-    <ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} aria-label="Previous" />
-    <ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} aria-label="Next" />
-  </Inline>
-</Stack>
-```
-
-**Rules:**
-- **Always** import `useCarousel` from `@upskill/components` — never use page-based `useState` for carousel navigation.
-- No counter (no "X of Y" text) — arrows only, right-aligned via `justify="end"`.
-- `CARD_WIDTH` is a px constant; set it so ~`VISIBLE_COUNT` cards fit the container.
-- Use `<Box overflow="hidden" className="carousel-outer">` — `overflow="hidden"` (Box prop) clips the track on desktop; `.carousel-outer` only overrides to `overflow-x:auto` + scroll-snap on mobile (`global.css`).
-- Use `className="hide-on-mobile"` on the arrow row — mobile users scroll with their finger.
+Always use `useCarousel` from `@upskill/components`, never page-level `useState` for the offset. Arrows only, right-aligned, no "X of Y" counter.
 
 **Figma signal checklist** — treat any of these as a carousel trigger:
 - A Figma component or frame named "Carousel" or "carousel".

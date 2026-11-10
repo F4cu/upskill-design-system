@@ -50,8 +50,7 @@
     "patterns": [
       {
         "name": "course-module-list",
-        "useWhen": "A course page lists its modules, each with a short description opened on demand, and the list is long enough to need Show more.",
-        "tree": "Stack(gap=md) > [Accordion > [AccordionItem(title, subtitle), ...], Button(variant=transparent, \"Show more\")] (story: CourseModuleList)"
+        "useWhen": "A course page lists its modules, each with a short description opened on demand, and the list is long enough to need Show more."
       }
     ]
   }

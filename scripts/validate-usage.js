@@ -2,7 +2,8 @@
 // Validates every <Name>.usage.json against component.usage.schema.json
 // (ADR-001 amendment 2026-11-10). Also checks that component.name matches the
 // folder, that notFor.instead names a component, that composition.limits name
-// real variant options, that pattern names are unique across the set, resolves composition.parts cross-references, validates
+// real variant options, that pattern names are unique across the set and match
+// the exports of <Name>.patterns.stories.tsx, resolves composition.parts cross-references, validates
 // the canonical example file, and checks every <Name>.spec.json parses. Exits
 // non-zero on any failure so it can gate CI. This is the contract the
 // component-scaffold and layout-generation agentic moments consume — keep it
@@ -138,6 +139,24 @@ function checkPatterns(data, rel) {
   return errors;
 }
 
+// Each pattern is one export of <Name>.patterns.stories.tsx, named in
+// PascalCase (ADR-001 amendment 2026-11-10, option D); the file holds nothing
+// else, so the two sets must be equal.
+const pascal = (kebab) => kebab.replace(/(?:^|-)([a-z0-9])/g, (_, c) => c.toUpperCase());
+function checkPatternStories(data, dir) {
+  const names = (data.composition?.patterns ?? []).map((p) => pascal(p.name));
+  const file = path.join(dir, `${data.component?.name}.patterns.stories.tsx`);
+  const rel = path.relative(ROOT, file);
+  if (!fs.existsSync(file)) {
+    return names.length ? [`composition.patterns: ${rel} is missing (one export per pattern)`] : [];
+  }
+  const exports = [...fs.readFileSync(file, "utf8").matchAll(/^export const (\w+)/gm)].map((m) => m[1]);
+  const errors = [];
+  for (const n of names) if (!exports.includes(n)) errors.push(`composition.patterns: no export ${n} in ${rel}`);
+  for (const e of exports) if (!names.includes(e)) errors.push(`${rel}: export ${e} is not a composition.patterns name`);
+  return errors;
+}
+
 // variants.<axis>.useWhen keys must be options of that axis.
 function checkVariantUseWhen(data) {
   const errors = [];
@@ -192,7 +211,7 @@ for (const { file, expectedName, stray, legacy } of targets) {
 
   if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
   errors.push(...checkNotFor(data), ...checkLimits(data), ...checkVariantUseWhen(data));
-  if (expectedName) errors.push(...checkPatterns(data, rel));
+  if (expectedName) errors.push(...checkPatterns(data, rel), ...checkPatternStories(data, path.dirname(file)));
 
   if (errors.length) {
     console.error(`✗ ${rel}`);

@@ -7,7 +7,8 @@ import type { ComponentType } from 'react'
 // anatomy part must carry data-part="<name>" in at least one example's render,
 // unless the spec says why no example can render it (notRendered). A props
 // example renders the component; a pattern example renders the story named
-// after the pattern (overflow-menu → OverflowMenu). A part inside its parent's
+// after the pattern in <Name>.patterns.stories.tsx (overflow-menu →
+// OverflowMenu). A part inside its parent's
 // builtOn component is found by that component's own marker (builtOnPart).
 type Part = { name: string; parent?: string; builtOnPart?: string; notRendered?: string }
 type Example = { props?: Record<string, unknown>; pattern?: string }
@@ -38,7 +39,7 @@ for (const [file, spec] of Object.entries(specs)) {
     for (const example of examples) {
       let Example: ComponentType | undefined
       if (example.pattern) {
-        const composed = composeStories(stories[`${dir}/${spec.component}.stories.tsx`] as never) as Record<string, ComponentType>
+        const composed = composeStories(stories[`${dir}/${spec.component}.patterns.stories.tsx`] as never) as Record<string, ComponentType>
         Example = composed[pascal(example.pattern)]
         expect(Example, `story ${pascal(example.pattern)} for pattern "${example.pattern}"`).toBeDefined()
       } else {

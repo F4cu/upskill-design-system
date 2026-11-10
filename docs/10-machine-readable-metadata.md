@@ -34,6 +34,7 @@ sources:
 # rewritten 2026-11-10: consumption map replaced by a per-field readers table across usage.json and spec.json (incl. anatomy:test, docs renderer, airtable-sync)
 # rewritten 2026-11-10: deterministic-reader audit (gated/used/rendered/none per field, totals, gaps); layout:validate row corrected (part-level accepts/containedBy only)
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts {case, because, instead}; patterns → composition.patterns {name, useWhen}, code in <Name>.patterns.stories.tsx (option D); pattern-name uniqueness check
+# rewritten 2026-11-10: pattern stories shipped: usage:validate checks pattern names against <Name>.patterns.stories.tsx exports; tree dropped
 ---
 # Machine-readable metadata
 
@@ -188,8 +189,8 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `component.description`, `useWhen` | Rendered | Docs page |
 | `notFor[].instead` | Gated | `usage:validate` (a fixed-set component, not the component itself; `null` needs a `note`) |
 | `notFor[].case`, `because`, `note` | Rendered | Docs page |
-| `composition.patterns[].name` | Gated | `usage:validate` (unique across the set); `spec:validate` (an `anatomyExamples` pattern must exist); `anatomy:test` renders the story with that name |
-| `composition.patterns[].useWhen` | Rendered | Docs page. The pattern's code is its story in `<Name>.patterns.stories.tsx`; the transitional `tree` is unparsed and goes once every story exists. |
+| `composition.patterns[].name` | Gated | `usage:validate` (unique across the set; equal to the exports of `<Name>.patterns.stories.tsx`, PascalCase); `spec:validate` (an `anatomyExamples` pattern must exist); `anatomy:test` renders the story with that name |
+| `composition.patterns[].useWhen` | Rendered | Docs page, linked to the pattern's story in `<Name>.patterns.stories.tsx`, which holds its code |
 | `variants.<axis>.options`, `default` | Gated | `spec:validate` (must equal the spec prop and the TypeScript union); `usage:validate` (`limits` and `useWhen` keys must name options); `airtable-sync.js` |
 | `variants.<axis>.useWhen` | Gated (keys) | `usage:validate` (each key is an option); the text is rendered |
 | `composition.nests`, `composition.limits` | Gated | `layout:validate`; `usage:validate` checks the axis and option each limit names |
@@ -227,7 +228,7 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 
 **Gaps the audit found.** None of these is fixed here; each needs its own decision:
 
-- **`patterns[].tree` was never parsed.** Its 62 trees were written in a notation agents read, and a misspelled component name in one passed every check. Resolved by option D (ADR-001 second amendment, 2026-11-10): patterns became `{ name, useWhen }` and their code moves to type-checked stories.
+- **`patterns[].tree` was never parsed.** Its 62 trees were written in a notation agents read, and a misspelled component name in one passed every check. Resolved by option D (ADR-001 second amendment, 2026-11-10): patterns became `{ name, useWhen }` and their code moved to type-checked stories, one export per pattern.
 - **Component-level `accepts` and `containedBy` are unchecked.** `usage:validate` doesn't confirm their entries are components, and `layout:validate` checks containment only for `composition.parts`. They work only as citations for `/layout-generation`.
 - **`composition.width` and `props.<p>.concept` have no code reader.** By the rule above, each should either get a reader (a check, or a column on the docs page) or be dropped, as `usage.keywords` was.
 

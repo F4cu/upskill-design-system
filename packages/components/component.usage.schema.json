@@ -280,10 +280,6 @@
               "useWhen": {
                 "type": "string",
                 "description": "The situation a layout is in when this pattern fits, not a description of the tree."
-              },
-              "tree": {
-                "type": "string",
-                "description": "Transitional: removed once the pattern's story exists."
               }
             },
             "additionalProperties": false

@@ -95,23 +95,19 @@
     "patterns": [
       {
         "name": "form-actions",
-        "useWhen": "A form or dialog ends in one decision: confirm it or cancel it.",
-        "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=accent)]"
+        "useWhen": "A form or dialog ends in one decision: confirm it or cancel it."
       },
       {
         "name": "destructive-confirm",
-        "useWhen": "The decision deletes or irreversibly changes something, and the user confirms it.",
-        "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=danger)]"
+        "useWhen": "The decision deletes or irreversibly changes something, and the user confirms it."
       },
       {
         "name": "card-actions",
-        "useWhen": "A card or other repeated item offers one or two actions of its own.",
-        "tree": "Card > Stack(gap=md) > [Heading, Text, Inline(gap=sm) > [Button(variant=neutral, size=sm), Button(variant=transparent, size=sm)]]"
+        "useWhen": "A card or other repeated item offers one or two actions of its own."
       },
       {
         "name": "hero-cta",
-        "useWhen": "A hero or landing section leads to one main action.",
-        "tree": "Stack(gap=lg) > [Heading(size=display), Text(size=body-default), Button(variant=accent, size=lg)]"
+        "useWhen": "A hero or landing section leads to one main action."
       }
     ]
   }

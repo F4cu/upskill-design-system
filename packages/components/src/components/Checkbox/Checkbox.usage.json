@@ -48,8 +48,7 @@
     "patterns": [
       {
         "name": "notification-preferences",
-        "useWhen": "A settings section of independent on/off preferences.",
-        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
+        "useWhen": "A settings section of independent on/off preferences."
       }
     ]
   }

@@ -215,7 +215,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
                 <dt><code>{p.name}</code></dt>
                 <dd>
                   <p>{p.useWhen}</p>
-                  {p.tree && <pre><code>{p.tree}</code></pre>}
+                  <p><a href={`${STORYBOOK}?path=/story/${storybookId}-patterns--${p.name}`}>Example and code in Storybook</a></p>
                 </dd>
               </>
             ))}

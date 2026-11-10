@@ -71,13 +71,11 @@
     "patterns": [
       {
         "name": "form-field-stack",
-        "useWhen": "A settings or onboarding form section groups related fields under a heading.",
-        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+        "useWhen": "A settings or onboarding form section groups related fields under a heading."
       },
       {
         "name": "inline-name-row",
-        "useWhen": "Two short related fields share a row (first and last name).",
-        "tree": "Inline(gap=md, align=start) > [Box(grow=1) > TextField(label='First name'), Box(grow=1) > TextField(label='Last name')]"
+        "useWhen": "Two short related fields share a row (first and last name)."
       }
     ]
   }

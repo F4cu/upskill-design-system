@@ -56,13 +56,11 @@
     "patterns": [
       {
         "name": "native-scroll-carousel",
-        "useWhen": "A horizontally overflowing row that scrolls natively without arrows, e.g. on touch.",
-        "tree": "ScrollArea(orientation=horizontal) > Inline(gap=md, wrap=false, align=start, style={width:'max-content'}) > [CardVertical, CardVertical, ...]"
+        "useWhen": "A horizontally overflowing row that scrolls natively without arrows, e.g. on touch."
       },
       {
         "name": "scrollable-list",
-        "useWhen": "A list longer than its fixed-height region, scrolled inside the region.",
-        "tree": "ScrollArea(orientation=vertical, style={height:300px}) > Stack(gap=sm) > [Text, Text, ...]"
+        "useWhen": "A list longer than its fixed-height region, scrolled inside the region."
       }
     ]
   }
