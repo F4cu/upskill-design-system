@@ -20,13 +20,6 @@
       "note": "Choose the closest existing icon, or propose expanding the fixed set deliberately."
     }
   ],
-  "patterns": [
-    {
-      "name": "icon-label-pair",
-      "description": "An Icon followed by a Text label inside an Inline, used for navigation items and feature callouts.",
-      "tree": "Inline(gap=xs, align=center) > [Icon(size=md), Text(size=body-default)]"
-    }
-  ],
   "variants": {
     "size": {
       "options": [
@@ -60,16 +53,16 @@
     ],
     "width": "fixed",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Using Icon as the sole accessible label for an interactive control",
         "because": "aria-hidden=true by default; a visually icon-only button has no accessible name.",
-        "do": "Pass the label prop to set aria-label, or wrap in a Button with a visually-hidden text label."
+        "instead": "Pass the label prop to set aria-label, or wrap in a Button with a visually-hidden text label."
       },
       {
         "case": "Setting a color prop or inline style directly on the Icon element",
         "because": "Icon uses currentColor, so color belongs on the ancestor that owns the color context, set with a semantic token.",
-        "do": "Apply the token via style or CSS on the ancestor span/element, never on <Icon> itself. Token choice depends on context: use color.icon.default for standalone or button-adjacent icons; use color.icon.subtle when the icon appears inline alongside color.text.subtle or metadata-scale text, so the icon sits in the same visual register as its label."
+        "instead": "Apply the token via style or CSS on the ancestor span/element, never on <Icon> itself. Token choice depends on context: use color.icon.default for standalone or button-adjacent icons; use color.icon.subtle when the icon appears inline alongside color.text.subtle or metadata-scale text, so the icon sits in the same visual register as its label."
       }
     ]
   }

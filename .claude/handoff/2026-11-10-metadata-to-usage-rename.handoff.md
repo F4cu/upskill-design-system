@@ -28,14 +28,14 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 **Second relabel** (see "Follow-up: second relabel")
 - [x] Naming decisions recorded (2026-11-10, `c5db130`)
 - [x] Content sweep of the `rules` (2026-11-10, see "Content sweep result")
-- [ ] Schema + `validate-usage.js`: `composition.donts` `{case, because, instead}`, `composition.patterns` with `useWhen`, `notFor.instead` description
-- [ ] Migrate the 27 files (key moves by script) and rewrite each pattern's `useWhen` situation-first
-- [ ] Readers: `validate-spec.js`, docs site component page, `/layout-generation`, `/extract-learnings`, `/component-scaffold`, `packages/components/AGENTS.md`, `docs/10`
-- [ ] ADR-001 amendment (relabel + D, if chosen)
+- [x] Schema + `validate-usage.js`: `composition.donts` `{case, because, instead}`, `composition.patterns` `{name, useWhen, tree?}` (tree transitional), `notFor.instead` description, pattern-name uniqueness check (2026-11-10)
+- [x] Migrate the 27 files (key moves by script) and write each kept pattern's `useWhen` situation-first (2026-11-10)
+- [x] Readers: `validate-spec.js`, docs site component page, `/layout-generation`, `/extract-learnings`, `/component-scaffold`, `packages/components/AGENTS.md`, docs 02/06/10/11/12 (2026-11-10)
+- [x] ADR-001 amendment (relabel + D): second 2026-11-10 amendment
 
 **Pattern stories** (see "Follow-up: pattern trees vs stories")
 - [x] Choose A, B, C or D: D (2026-11-10)
-- [x] Triage the 62 patterns: 24 keep, 38 delete, approved 2026-11-10 (see "Pattern triage")
+- [x] Triage the 62 patterns: 23 kept + new `page-landmarks`, 39 removed, approved and applied 2026-11-10 (see "Pattern triage"; Card `content-card` was missing from the table and merged into Button `card-actions`)
 - [x] Figma: deleted the 6 CardVertical state frames (`2871:8064` default-card, `2871:8090` in-progress-card, `2871:8118` completed-card, `2871:8207` placeholder-favorite, `2871:8234` favorite-progress, `2871:8277` title-only) from "CardVertical examples" (`2871:8034`) via figma-cli, 2026-11-10. Read-back: Preset row = favorite-saved, overflow-menu; Parts row = custom-meta, instructor-row, grouped-meta. The component set (`52:4270`) is the variant matrix; example frames are for compositions only
 - [ ] Figma example sections for the other owners, after their stories exist: a `<Name> examples` section per component with one instance-only frame per pattern id (Accordion, Breadcrumb, Button ×4, CardHorizontal ×3, Checkbox, Chip, Divider, TextField ×2, TextLink, ScrollArea `scrollable-list`). `page-landmarks`, `card-carousel` and `native-scroll-carousel` go on the Layout Examples page (ADR-023 2026-10-06). Today only CardVertical has a section, so designers can't see the other compositions in Figma
 - [ ] Gate for frames ↔ patterns: a committed snapshot of example-frame names per component (captured interactively via figma-cli, like `figma-variables.json`; Figma reads stay out of CI), which `usage:validate` compares against `composition.patterns` names
@@ -372,11 +372,11 @@ B and C overlap: C makes B unnecessary, and B is a cheaper first step if C never
 
 **Decision (2026-11-10): D.**
 
-### Pattern triage (proposed 2026-11-10, awaiting approval)
+### Pattern triage (approved and applied 2026-11-10)
 
 Test for keeping a pattern: it records a decision the writer can't get from `accepts`/`containedBy`/`limits`/`useWhen` (weight, landmarks, parts use, a11y wiring, placement), and a consumer builds it. Delete: a preset's prop combination (that's a state story), a component's internal markup, trivial "Heading + Text in a Stack" shapes, duplicates, and trees that break the grammar or contradict a `notFor`.
 
-**Keep: 24 patterns (5 already have stories, 19 need one)**
+**Keep: 24 patterns (23 existing + new `page-landmarks`; 5 already have stories, 19 need one)**
 
 | Owner | Pattern | Story source |
 |---|---|---|
@@ -397,11 +397,11 @@ Test for keeping a pattern: it records a decision the writer can't get from `acc
 
 - **Preset prop combinations, already state stories** (6): CardVertical `default-card`, `in-progress-card`, `completed-card`, `placeholder-favorite`, `favorite-progress`, `title-only`. Check the CardVertical Figma examples section for frames named after them.
 - **A component's internal markup, not a consumer composition** (5): Avatar `nav-user-chip` (AppHeader), DropdownMenu `user-context-menu` and `custom-select` (AppHeader, Select), Image `card-thumbnail` and ProgressBar `course-progress` (CardHorizontal). DropdownMenu gets a consumer pattern once #151 lands.
-- **Merged into a kept pattern** (13): Box `page-main`, `page-header`, `page-section`, `page-footer`, `container`; AppHeader `full-page-layout`; Heading `hero-block`; ButtonArrow `carousel-paginator`; CardVertical `saved-courses-carousel`; Card `preferences-section`, `form-section`; Stack `form-field-group`; Chip `filter-bar-single`.
+- **Merged into a kept pattern** (14): Card `content-card` → Button `card-actions` (missed in the first draft, found by the migration script); Box `page-main`, `page-header`, `page-section`, `page-footer`, `container`; AppHeader `full-page-layout`; Heading `hero-block`; ButtonArrow `carousel-paginator`; CardVertical `saved-courses-carousel`; Card `preferences-section`, `form-section`; Stack `form-field-group`; Chip `filter-bar-single`.
 - **Trivial, no decision recorded** (11): Accordion `faq-list`, Avatar `profile-header`, Badge `card-category-row` (`grouped-meta` covers badge-in-meta), Box `padded-surface`, Heading `titled-section`, Text `body-section`, Stack `content-block`, `card-body`, Icon `icon-label-pair` (`certified-badge` covers icon + text color), Image `hero-banner`, VideoFrame `video-preview-card`.
 - **Contradict another rule** (3): Inline `form-actions-row` (accent first, the opposite of Button `form-actions`), `nav-bar` (rebuilds AppHeader), `tag-group` (Text as tags; Badge/Chip exist).
 
-Renames (`course-curriculum`, `discover-carousel`) are not counted as deletions: 6 + 5 + 13 + 11 + 3 = 38, and 38 + 24 = 62.
+Renames (`course-curriculum`, `discover-carousel`) are not counted as deletions: 6 + 5 + 14 + 11 + 3 = 39 removed, 23 kept, 39 + 23 = 62; `page-landmarks` is new, so 24 patterns after.
 
 14 components end up with no patterns (AppHeader, Avatar, Badge, ButtonArrow, Card, DropdownMenu, Heading, Icon, Image, Inline, ProgressBar, Stack, Text, VideoFrame). The schema doesn't require `patterns`.
 

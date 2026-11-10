@@ -19,38 +19,6 @@
       "note": "Use Stack for vertical flex layout or Inline for horizontal flex layout"
     }
   ],
-  "patterns": [
-    {
-      "name": "padded-surface",
-      "description": "A Box wrapping a Stack to create a padded vertical content region.",
-      "tree": "Box(padding=lg) > Stack > [Heading, Text, Button]"
-    },
-    {
-      "name": "page-main",
-      "description": "Box rendered as the page's <main> landmark — the polymorphic as prop emits a real <main> element. Exactly one per route (ADR-011).",
-      "tree": "Box(as='main') > [Box(as='header'), Box(as='section'), Box(as='footer')]"
-    },
-    {
-      "name": "page-header",
-      "description": "Box rendered as the page's <header> landmark. Use AppHeader directly when the full header component is available; any child <nav> needs a unique aria-label.",
-      "tree": "Box(as='header') > AppHeader"
-    },
-    {
-      "name": "page-section",
-      "description": "Box rendered as a <section> landmark. aria-labelledby must point to the visible Heading id; use aria-label only when there is no visible heading. Add paddingY for vertical rhythm. A .container div inside handles max-width and grid margins.",
-      "tree": "Box(as='section', aria-labelledby='section-heading-id', paddingY='xl') > [div.container > ...]"
-    },
-    {
-      "name": "page-footer",
-      "description": "Box rendered as the page's <footer> (contentinfo landmark). One per page; a .container div inside handles max-width and grid margins. Pair background='inverted' with borderTop='inverted' for a footer that separates from an inverted-background section above it.",
-      "tree": "Box(as='footer', background='inverted', borderTop='inverted') > [div.container > ...]"
-    },
-    {
-      "name": "container",
-      "description": "Box with className='container' to center content in a section. The .container global class applies max-width + grid margin (packages/components/src/styles/grid.css). Prefer this over a raw <div className='container'>.",
-      "tree": "Box(className='container') > Stack > [...]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -110,11 +78,18 @@
     ],
     "width": "fill",
     "nests": true,
-    "rules": [
+    "donts": [
       {
         "case": "Nesting Boxes purely to add padding when a single Box with paddingX/paddingY suffices",
         "because": "Unnecessary nesting inflates the DOM and makes spacing harder to reason about",
-        "do": "Use the paddingX and paddingY props on a single Box to apply asymmetric spacing"
+        "instead": "Use the paddingX and paddingY props on a single Box to apply asymmetric spacing"
+      }
+    ],
+    "patterns": [
+      {
+        "name": "page-landmarks",
+        "useWhen": "Every route page: the app shell with one main, named sections and a footer.",
+        "tree": "Box(as='main') > [AppHeader, Box(as='section', aria-labelledby, paddingY='xl') > Box(className='container') > [...], Box(as='footer', background='inverted', borderTop='inverted') > Box(className='container') > [...]]"
       }
     ]
   }

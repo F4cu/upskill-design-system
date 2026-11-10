@@ -18,23 +18,6 @@
       "instead": "Stack"
     }
   ],
-  "patterns": [
-    {
-      "name": "form-actions-row",
-      "description": "Primary + secondary button pair at the bottom of a form.",
-      "tree": "Inline(gap=sm) > [Button(variant=accent), Button(variant=neutral)]"
-    },
-    {
-      "name": "tag-group",
-      "description": "A wrapping row of label chips or filter tags.",
-      "tree": "Inline(gap=xs, wrap=true) > [Text, Text, Text, ...]"
-    },
-    {
-      "name": "nav-bar",
-      "description": "Top navigation with logo on the left and actions on the right.",
-      "tree": "Inline(justify=space-between) > [Text(logo), Inline(gap=md) > [Button, Button]]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [

@@ -29,13 +29,6 @@
       "instead": "Text"
     }
   ],
-  "patterns": [
-    {
-      "name": "card-category-row",
-      "description": "A row of static category badges in a card's metadata area.",
-      "tree": "Card > Stack > [Heading, Inline(gap=xs) > [Badge(outline), Badge(filled)]]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [

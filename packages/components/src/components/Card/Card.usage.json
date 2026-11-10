@@ -26,23 +26,6 @@
       "note": "Use CardVertical for catalog grids or CardHorizontal for course lists and footers."
     }
   ],
-  "patterns": [
-    {
-      "name": "form-section",
-      "description": "A Card wrapping a Stack of form inputs, used to group related fields in a settings or onboarding form.",
-      "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
-    },
-    {
-      "name": "preferences-section",
-      "description": "A Card wrapping a group of Checkboxes with a section heading.",
-      "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
-    },
-    {
-      "name": "content-card",
-      "description": "A Card presenting a single content item (course, article) with title, metadata, body text, and a CTA Button.",
-      "tree": "Card > Stack(gap=md) > [Stack(gap=xs) > [Heading, Text(size=body-small)], Text, Button(variant=neutral, size=sm)]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -69,11 +52,11 @@
     ],
     "width": "fill",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Mixing Card, CardVertical and CardHorizontal in the same section, list or grid row",
         "because": "Card is a generic surface container; CardVertical and CardHorizontal are semantic course cards with fixed layouts. Mixing them in the same list or grid breaks visual rhythm and semantic consistency.",
-        "do": "Choose one card type per section. Use Card for generic content grouping; use CardVertical or CardHorizontal for course content — never both in the same visual row or list."
+        "instead": "Choose one card type per section. Use Card for generic content grouping; use CardVertical or CardHorizontal for course content — never both in the same visual row or list."
       }
     ]
   }

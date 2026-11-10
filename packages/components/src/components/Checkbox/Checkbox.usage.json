@@ -25,13 +25,6 @@
       "note": "Use native <input type='checkbox'> with an immediate onChange handler and role='switch' until a Switch component is added."
     }
   ],
-  "patterns": [
-    {
-      "name": "notification-preferences",
-      "description": "A group of independent Checkboxes in a Stack, each representing a toggleable preference.",
-      "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -51,6 +44,13 @@
       "Card"
     ],
     "width": "hug",
-    "nests": false
+    "nests": false,
+    "patterns": [
+      {
+        "name": "notification-preferences",
+        "useWhen": "A settings section of independent on/off preferences.",
+        "tree": "Card > Stack(gap=lg) > [Heading, Stack(gap=md) > [Checkbox, Checkbox, Checkbox]]"
+      }
+    ]
   }
 }

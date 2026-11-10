@@ -2,7 +2,7 @@
 // Validates every <Name>.usage.json against component.usage.schema.json
 // (ADR-001 amendment 2026-11-10). Also checks that component.name matches the
 // folder, that notFor.instead names a component, that composition.limits name
-// real variant options, resolves composition.parts cross-references, validates
+// real variant options, that pattern names are unique across the set, resolves composition.parts cross-references, validates
 // the canonical example file, and checks every <Name>.spec.json parses. Exits
 // non-zero on any failure so it can gate CI. This is the contract the
 // component-scaffold and layout-generation agentic moments consume — keep it
@@ -22,7 +22,11 @@ const EXAMPLE_PATH = path.resolve(ROOT, "packages/components/component.usage.exa
 
 const SPEC_SECTIONS = ["states", "tokens", "accessibility"];
 const RENAMED = {
-  usage: "its fields moved to the top level (useWhen, notFor, patterns) and composition (rules, limits)",
+  usage: "its fields moved to the top level (useWhen, notFor) and composition (patterns, donts, limits)",
+  patterns: "moved to composition.patterns as { name, useWhen }",
+};
+const RENAMED_IN_COMPOSITION = {
+  rules: "renamed to composition.donts, with do renamed to instead",
 };
 
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
@@ -42,6 +46,9 @@ function schemaError(e) {
     }
     if (at === "/" && RENAMED[prop]) {
       return `/ has unknown property "${prop}" — ${RENAMED[prop]} (ADR-001 amendment 2026-11-10)`;
+    }
+    if (at === "/composition" && RENAMED_IN_COMPOSITION[prop]) {
+      return `/composition has unknown property "${prop}" — ${RENAMED_IN_COMPOSITION[prop]} (ADR-001 amendment 2026-11-10)`;
     }
     return `${at} has unknown property "${prop}"`;
   }
@@ -117,6 +124,20 @@ function checkLimits(data) {
   return errors;
 }
 
+// Pattern names are ids shared with the story export, the Figma example frame
+// and spec.anatomyExamples, so they must be unique across the whole set.
+const patternOwners = new Map();
+function checkPatterns(data, rel) {
+  const errors = [];
+  for (const p of data.composition?.patterns ?? []) {
+    const owner = patternOwners.get(p.name);
+    if (owner && owner !== rel) errors.push(`composition.patterns: "${p.name}" is already a pattern of ${owner}`);
+    else if (owner) errors.push(`composition.patterns: duplicate name "${p.name}"`);
+    patternOwners.set(p.name, rel);
+  }
+  return errors;
+}
+
 // variants.<axis>.useWhen keys must be options of that axis.
 function checkVariantUseWhen(data) {
   const errors = [];
@@ -171,6 +192,7 @@ for (const { file, expectedName, stray, legacy } of targets) {
 
   if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
   errors.push(...checkNotFor(data), ...checkLimits(data), ...checkVariantUseWhen(data));
+  if (expectedName) errors.push(...checkPatterns(data, rel));
 
   if (errors.length) {
     console.error(`✗ ${rel}`);

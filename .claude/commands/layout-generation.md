@@ -27,7 +27,7 @@ Before reading the usage files or drafting any structure, determine which inputs
 
 ## Inputs (read all before starting)
 
-- All component usage files in `packages/components/src/` (`*.usage.json`) — focus on `composition` (`accepts`, `containedBy`, `width`, `nests`, `limits`, `rules`), `patterns`, `notFor` and each option's `variants.<axis>.useWhen`
+- All component usage files in `packages/components/src/` (`*.usage.json`) — focus on `composition` (`accepts`, `containedBy`, `width`, `nests`, `limits`, `donts`, `patterns`), `notFor` and each option's `variants.<axis>.useWhen`. A pattern is a name and a `useWhen` line; its code is the same-named PascalCase export in `<Name>.patterns.stories.tsx`. Open that file only for the patterns you pick (ADR-001 amendment 2026-11-10, option D)
 - Each component's spec `constraints` (`*.spec.json` → `constraints` only): prop combinations, required props and value formats for the props you set (ADR-001 amendment 2026-11-10). Read nothing else from the specs
 - `.claude/component-patterns.json` — the cross-component pattern aggregate (ADR-013). Read it whole; it fits in context. Use `patterns.*.implementedBy` to pick between components that implement the same interaction pattern, `state.props` for each pattern's canonical state/callback prop names, and the `drift` array to avoid guessing a prop name by analogy — when two components name the same axis differently (e.g. Accordion `onOpenChange` vs Select `onValueChange`), always use the prop name listed for the component you are composing. This file is a consumer input for layout/composition work only — do not inject it into component scaffolding (ADR-013 records why).
 - Device grid tokens and `packages/components/src/styles/grid.css` utilities — these are part of the layout vocabulary
@@ -65,10 +65,10 @@ Every generated page must follow this fixed hierarchy. One abstraction level per
 - Every structural choice must cite the usage.json rule that justifies it:
   - `accepts` — a component can only contain what its usage file says it accepts
   - `containedBy` — a component can only appear inside what its usage file allows
-  - `patterns` — prefer named patterns over ad-hoc composition when one fits
+  - `composition.patterns` — prefer a named pattern over ad-hoc composition when its `useWhen` matches; copy the shape from its story
   - `composition.width` — whether a component fills its container or hugs its content
   - `composition.limits` and `nests` — counts per region, repeated item or parent, and self-nesting; `npm run layout:validate` enforces both
-  - `composition.rules` — weight and placement in context (e.g. a card's lead action is `neutral`, never `accent`)
+  - `composition.donts` — placement and grouping in context, each with what to do `instead`
 - **Responsive rule:** rely on device tokens for spacing/typography (device CSS auto-applies media queries). Use `.grid` or `Inline wrap` for column→stack reflow. Never write `@media` queries by hand.
 
 ## Steps
@@ -90,7 +90,7 @@ Output the structure skeleton before proceeding to Pass 2.
 
 For each content area identified in Pass 1, select the appropriate library component. For every leaf node:
 
-- Cite the `useWhen` (component or variant option) or `patterns` entry from that component's usage file that justifies the choice, and check its `notFor` for a better pick.
+- Cite the `useWhen` (component or variant option) or `composition.patterns` entry from that component's usage file that justifies the choice, and check its `notFor` for a better pick.
 - Check `accepts`/`containedBy` — the parent must accept the child, the child must allow being contained by the parent.
 - Apply the CLAUDE.md typography rules: any visible text must go through `<Text>` or `<Heading>`, never a raw string, `<span>`, or `<p>`.
 - **Map every visible Figma sub-element to a prop** — do not only read the text labels. Images, icons, badges, chevrons, and avatar circles each correspond to a prop. A missing prop silently omits the element with no error at build or runtime. For composite components (AppHeader, CardHorizontal, Breadcrumb), cross-check the emitted props against the component's Storybook `Default` story to confirm all required props are present.

@@ -11,7 +11,7 @@
 //   - states, constraints, anatomy: internal cross-references resolve; every
 //     composition.parts entry appears in the spec.
 //   - anatomyExamples, decisions (ADR-030): example props are root spec props
-//     with valid options, example patterns are usage.json patterns names,
+//     with valid options, example patterns are usage.json composition.patterns names,
 //     every builtOnPart is an anatomy part of the parent's builtOn component,
 //     and every decision's adr has a file in docs/decisions/.
 //   - vocabulary (ADR-025, ADR-026): prop names, boolean defaults, the
@@ -181,10 +181,10 @@ for (const { name, file } of specs) {
   }
 
   // Anatomy examples and decisions (ADR-030)
-  const patternNames = new Set((metadata.patterns ?? []).map((p) => p.name));
+  const patternNames = new Set((metadata.composition?.patterns ?? []).map((p) => p.name));
   spec.anatomyExamples?.forEach((example, i) => {
     const at = `anatomyExamples[${i}]`;
-    if (example.pattern && !patternNames.has(example.pattern)) errors.push(`${at}.pattern: "${example.pattern}" is not a usage.json patterns name`);
+    if (example.pattern && !patternNames.has(example.pattern)) errors.push(`${at}.pattern: "${example.pattern}" is not a usage.json composition.patterns name`);
     for (const [prop, value] of Object.entries(example.props ?? {})) {
       const def = spec.props[prop];
       if (!def || prop.includes(".") || def.figma.surface === "figma-only") errors.push(`${at}.props: "${prop}" is not a root code prop in the spec`);

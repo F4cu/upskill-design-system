@@ -23,28 +23,6 @@
       "note": "Its Favorite and Menu parts carry the media-overlay treatment (icon.on-media glyph plus halo). Reuse them rather than restyling Button (ADR-009 rule 3)."
     }
   ],
-  "patterns": [
-    {
-      "name": "form-actions",
-      "description": "Decision-region footer: one accent confirm with a neutral cancel.",
-      "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=accent)]"
-    },
-    {
-      "name": "destructive-confirm",
-      "description": "Confirming a destructive action: danger replaces accent; cancel stays neutral.",
-      "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=danger)]"
-    },
-    {
-      "name": "card-actions",
-      "description": "Actions inside a card or other repeated item: the lead action is neutral, the second transparent. Never accent — N cards would mean N primaries.",
-      "tree": "Card > Stack(gap=md) > [Heading, Text, Inline(gap=sm) > [Button(variant=neutral, size=sm), Button(variant=transparent, size=sm)]]"
-    },
-    {
-      "name": "hero-cta",
-      "description": "A single large accent Button below a Heading and Text block.",
-      "tree": "Stack(gap=lg) > [Heading(size=display), Text(size=body-default), Button(variant=accent, size=lg)]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -112,6 +90,28 @@
         "max": 0,
         "per": "repeated",
         "because": "A card's lead action isn't the page's lead action; N repeated items would render N competing primaries. Use neutral, then transparent (pattern card-actions)."
+      }
+    ],
+    "patterns": [
+      {
+        "name": "form-actions",
+        "useWhen": "A form or dialog ends in one decision: confirm it or cancel it.",
+        "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=accent)]"
+      },
+      {
+        "name": "destructive-confirm",
+        "useWhen": "The decision deletes or irreversibly changes something, and the user confirms it.",
+        "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=danger)]"
+      },
+      {
+        "name": "card-actions",
+        "useWhen": "A card or other repeated item offers one or two actions of its own.",
+        "tree": "Card > Stack(gap=md) > [Heading, Text, Inline(gap=sm) > [Button(variant=neutral, size=sm), Button(variant=transparent, size=sm)]]"
+      },
+      {
+        "name": "hero-cta",
+        "useWhen": "A hero or landing section leads to one main action.",
+        "tree": "Stack(gap=lg) > [Heading(size=display), Text(size=body-default), Button(variant=accent, size=lg)]"
       }
     ]
   }

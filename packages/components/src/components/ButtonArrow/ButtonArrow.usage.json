@@ -19,13 +19,6 @@
       "note": "Use Button with shape=round for general icon-only actions."
     }
   ],
-  "patterns": [
-    {
-      "name": "carousel-paginator",
-      "description": "A pair of ButtonArrow components flanking or below a carousel row, with the left disabled at the start and right disabled at the end.",
-      "tree": "Inline(gap=sm, align=center) > [ButtonArrow(direction=left, disabled), ButtonArrow(direction=right)]"
-    }
-  ],
   "variants": {
     "direction": {
       "options": [

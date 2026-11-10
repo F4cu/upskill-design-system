@@ -181,3 +181,34 @@ The system has 27 components with mostly distinct roles, read whole, so choosing
 - The pattern-accuracy harness can't confirm that layout accuracy held: it is frozen at the pre-spec architecture and refuses to run on HEAD (ADR-029 amendment 2026-10-12). Checking this change needs its own pre-registered eval on the current schema, or the first real `/layout-generation` run with the new files. Until then, the claim that nothing the layout writer needs was lost rests on the sort of all 106 anti-patterns, each one placed by hand.
 - Composition rules that can be counted become checks. Rules that can't stay as prose with a `because`.
 - The "Deliberately excluded" list gains `keywords` (no reader; its intent-matching role never materialised) and `composedOf` (derived).
+
+## Amendment (2026-11-10, second) — composition labels, and patterns become names with stories
+
+A review of `Button.usage.json` after the rename found two labels still unclear, and the content sweep that followed (handoff `2026-11-10-metadata-to-usage-rename`, "Content sweep result") moved 3 rules to `notFor`, deleted 4 and trimmed 3.
+
+**Labels.**
+
+| Old | New | Why |
+|---|---|---|
+| `composition.rules[]` `{ case, because, do }` | `composition.donts[]` `{ case, because, instead }` | Every entry is a don't with a do (Atlassian/Primer do/don't pairs); "rules" read like another `useWhen`. Same shape as `notFor`, so there's one shape to learn: in `notFor`, `instead` is a fixed-set component name (validated); in `donts` it's prose. |
+| top-level `patterns` | `composition.patterns` | The top level answers *should I pick this component?* (`useWhen`, `notFor`, `variants`); `composition` answers *how do I assemble it?* For readability only: no script or agent gain is claimed. |
+| `patterns[].description` | `patterns[].useWhen` | Most descriptions restated the tree. A situation-first line is what matches a pattern to a brief. |
+
+`patterns[].name` stays: it's the id shared by the usage entry, the Storybook export (PascalCase), the Figma example frame and `spec.anatomyExamples[].pattern`. `usage:validate` now checks that it's unique across the set.
+
+**Patterns are names, and the code lives in stories (option D).** Pattern `tree`s were hand-written shorthand that nothing parsed, so a tree could name a missing component, an invalid prop or a forbidden nesting, and no gate would notice. No system compared writes a tree in metadata. Polaris lists example files, Atlassian keeps an `examples/` folder, Primer splits `.examples.stories.tsx` from the component stories, and the Storybook MCP manifest generates snippets from stories. A pattern is now `{ name, useWhen }`, and its code is the same-named export in `<Name>.patterns.stories.tsx`. `/layout-generation` reads names and `useWhen` lines for all 27 components, then opens a patterns story file only for the patterns it picks. `tree` stays as an optional field only until each pattern has its story, and then it's removed from the schema.
+
+**Triage.** The 62 patterns became 24: 23 kept plus `page-landmarks`, which merges the five Box landmark patterns and AppHeader's shell. 39 were removed: preset prop combinations that are state stories (6), a component's internal markup (5), merges into a kept pattern (14), trivial shapes (11), and trees that contradicted another rule (3). The kept patterns are listed in the handoff, along with the 2 inline-style trees that wait on #151.
+
+**Figma.** The ADR-023 rule of one example frame per pattern now covers compositions only. The component set is the variant matrix, so the 6 CardVertical frames that showed states were deleted. Example sections for the other owners' patterns follow their stories.
+
+**Alternatives considered.**
+- *A: leave trees as they are.* Rejected because drift stays invisible.
+- *B: parse trees in `usage:validate`.* That needs a grammar and a parser to keep a second notation honest. Rejected because D removes the notation instead.
+- *C: generate trees from stories.* That gives one source and keeps the trees, but `/layout-generation` would still read 24 trees on every run that it can't run or type-check. D keeps that context small and puts the code where the compiler checks it.
+- *Linking each pattern to a story URL.* Rejected because the name is already the link (the convention `anatomy:test` and `AnatomyOverlay` use), so a URL field would duplicate it.
+
+**Consequences.**
+- Readers move in the same change: the schema, `validate-usage.js`, `validate-spec.js`, the docs component page, `/layout-generation`, `/extract-learnings`, `/component-scaffold`, `packages/components/AGENTS.md`, and docs 02, 06, 10, 11 and 12.
+- Still to do: 19 patterns need stories, after which `usage:validate` checks exports against pattern names; `anatomy:test`, `AnatomyOverlay`, and the screenshot and a11y scripts must pick up `*.patterns.stories.tsx`; and `tree` is dropped from the schema.
+- Whether `/layout-generation` still picks the right shapes without trees is unmeasured, because the harness is frozen. Either the first real runs check it, or a pre-registered eval with and without patterns does (ADR-029).

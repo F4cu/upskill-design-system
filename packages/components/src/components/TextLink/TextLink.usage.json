@@ -19,13 +19,6 @@
       "note": "Use Button variant='transparent' for low-emphasis in-page text actions."
     }
   ],
-  "patterns": [
-    {
-      "name": "author-credit",
-      "description": "An author or contributor name linked inline before a role or affiliation label.",
-      "tree": "Text(size=body-default, color=subtle) > [TextLink(href=...), ', Author and educator, MICA']"
-    }
-  ],
   "variants": {
     "size": {
       "options": [
@@ -53,11 +46,18 @@
     ],
     "width": "hug",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Wrapping block-level content (Heading, Card, Stack) inside TextLink",
         "because": "Interactive content must not contain other interactive content; block elements inside an <a> create invalid HTML.",
-        "do": "Place the TextLink adjacent to the content, or use a card-level overlay link pattern with a separate invisible <a> spanning the card."
+        "instead": "Place the TextLink adjacent to the content, or use a card-level overlay link pattern with a separate invisible <a> spanning the card."
+      }
+    ],
+    "patterns": [
+      {
+        "name": "author-credit",
+        "useWhen": "Naming an author inline, linked to their profile, followed by their role.",
+        "tree": "Text(size=body-default, color=subtle) > [TextLink(href=...), ', Author and educator, MICA']"
       }
     ]
   }

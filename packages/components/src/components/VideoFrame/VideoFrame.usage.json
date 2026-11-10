@@ -17,13 +17,6 @@
       "instead": "Image"
     }
   ],
-  "patterns": [
-    {
-      "name": "video-preview-card",
-      "description": "A VideoFrame above a title and description, used to preview a course video.",
-      "tree": "Stack(gap=md) > [VideoFrame, Heading(size=subheader), Text(size=body-default)]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [

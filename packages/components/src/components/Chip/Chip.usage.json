@@ -28,18 +28,6 @@
       "instead": "Select"
     }
   ],
-  "patterns": [
-    {
-      "name": "filter-bar",
-      "description": "A labelled group of Chips for multi-select filtering: each chip toggles its filter independently, and the page holds the set of active filters. The row is a role=group named by the section heading or an aria-label.",
-      "tree": "Inline(gap=sm, wrap=true, role=group, aria-labelledby=<heading id>) > [Chip(pressed=true), Chip(pressed=true), Chip, Chip]"
-    },
-    {
-      "name": "filter-bar-single",
-      "description": "The same labelled group used as a single-select filter: the page keeps one active value and presses exactly one chip (Homepage 'Discover new courses'). Chip itself is unchanged; exclusivity is page logic.",
-      "tree": "Inline(gap=sm, wrap=true, role=group, aria-labelledby=<heading id>) > [Chip(pressed=true), Chip, Chip, Chip]"
-    }
-  ],
   "variants": {
     "pressed": {
       "options": [
@@ -61,16 +49,23 @@
     ],
     "width": "hug",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Placing a Chip alongside a Button in the same Inline row as interactive siblings",
         "because": "Chip is a selection toggle (state); Button is an action trigger (event). Mixing them in the same row conflates filtering with acting and confuses interaction semantics.",
-        "do": "Group Chips in their own Inline filter bar. Place action Buttons in a separate row. Never use Chip as a substitute for a Button or vice versa."
+        "instead": "Group Chips in their own Inline filter bar. Place action Buttons in a separate row. Never use Chip as a substitute for a Button or vice versa."
       },
       {
         "case": "A row of Chips without a group name",
         "because": "Screen readers announce each chip as 'toggle button, pressed' with no indication of what the chips filter or that they belong together.",
-        "do": "Give the Inline role=group and aria-labelledby pointing at the nearest heading (or an aria-label)."
+        "instead": "Give the Inline role=group and aria-labelledby pointing at the nearest heading (or an aria-label)."
+      }
+    ],
+    "patterns": [
+      {
+        "name": "filter-bar",
+        "useWhen": "Narrowing a list by categories the user toggles. Multi-select by default; single-select when the page keeps one active value (page logic, same tree).",
+        "tree": "Inline(gap=sm, wrap=true, role=group, aria-labelledby=<heading id>) > [Chip(pressed=true), Chip(pressed=true), Chip, Chip]"
       }
     ]
   }

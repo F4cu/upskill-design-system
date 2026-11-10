@@ -17,18 +17,6 @@
       "note": "Use a nav element with anchor links for navigation."
     }
   ],
-  "patterns": [
-    {
-      "name": "user-context-menu",
-      "description": "AppHeader renders DropdownMenu anchored below the user button trigger using absolute positioning.",
-      "tree": "AppHeader > div.userWrapper(position:relative) > [button.userButton, DropdownMenu(listRole=menu)]"
-    },
-    {
-      "name": "custom-select",
-      "description": "Select renders DropdownMenu as a custom listbox anchored below its trigger button.",
-      "tree": "Select > div.wrapper(position:relative) > [button.trigger, DropdownMenu(listRole=listbox)]"
-    }
-  ],
   "variants": {
     "listRole": {
       "options": [
@@ -50,11 +38,11 @@
     ],
     "width": "fixed",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Rendering DropdownMenu outside a position:relative container",
         "because": "The panel is absolutely positioned and will be offset incorrectly without a positioned ancestor.",
-        "do": "Always wrap the trigger and DropdownMenu in a position:relative container."
+        "instead": "Always wrap the trigger and DropdownMenu in a position:relative container."
       }
     ]
   }

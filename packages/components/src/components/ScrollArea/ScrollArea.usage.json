@@ -19,18 +19,6 @@
       "note": "Use a plain div with overflow: hidden as the clip container for transform-based carousels."
     }
   ],
-  "patterns": [
-    {
-      "name": "native-scroll-carousel",
-      "description": "A horizontally scrollable row of fixed-width cards — no JS state required. Touch and trackpad users scroll naturally; ButtonArrow can call scrollBy() programmatically if arrows are needed.",
-      "tree": "ScrollArea(orientation=horizontal) > Inline(gap=md, wrap=false, align=start, style={width:'max-content'}) > [CardVertical, CardVertical, ...]"
-    },
-    {
-      "name": "scrollable-list",
-      "description": "A fixed-height vertical region with overflow content and no visible scrollbar.",
-      "tree": "ScrollArea(orientation=vertical, style={height:300px}) > Stack(gap=sm) > [Text, Text, ...]"
-    }
-  ],
   "variants": {
     "orientation": {
       "options": [
@@ -58,11 +46,23 @@
     ],
     "width": "fill",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Placing a block-level Inline inside ScrollArea without width: max-content",
         "because": "Block-level flex containers are constrained to their parent's width by the browser. Inside overflow-x: auto the browser squeezes items rather than creating scroll, causing cards to shrink and titles to wrap unexpectedly.",
-        "do": "Always pass style={{ width: 'max-content' }} to Inline when it is the direct child of a horizontal ScrollArea."
+        "instead": "Always pass style={{ width: 'max-content' }} to Inline when it is the direct child of a horizontal ScrollArea."
+      }
+    ],
+    "patterns": [
+      {
+        "name": "native-scroll-carousel",
+        "useWhen": "A horizontally overflowing row that scrolls natively without arrows, e.g. on touch.",
+        "tree": "ScrollArea(orientation=horizontal) > Inline(gap=md, wrap=false, align=start, style={width:'max-content'}) > [CardVertical, CardVertical, ...]"
+      },
+      {
+        "name": "scrollable-list",
+        "useWhen": "A list longer than its fixed-height region, scrolled inside the region.",
+        "tree": "ScrollArea(orientation=vertical, style={height:300px}) > Stack(gap=sm) > [Text, Text, ...]"
       }
     ]
   }

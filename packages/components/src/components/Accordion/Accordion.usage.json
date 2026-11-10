@@ -25,18 +25,6 @@
       "note": "Use Stack with Heading and Text for always-visible sections"
     }
   ],
-  "patterns": [
-    {
-      "name": "course-curriculum",
-      "description": "A list of course modules, each expandable to reveal a description.",
-      "tree": "Accordion > [AccordionItem(title, subtitle), AccordionItem(title, subtitle), ...]"
-    },
-    {
-      "name": "faq-list",
-      "description": "A set of frequently asked questions where each answer is hidden by default.",
-      "tree": "Accordion > [AccordionItem(title='Question?') > Text(answer), ...]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -58,6 +46,13 @@
       "Card"
     ],
     "width": "fill",
-    "nests": false
+    "nests": false,
+    "patterns": [
+      {
+        "name": "course-module-list",
+        "useWhen": "A course page lists its modules, each with a short description opened on demand, and the list is long enough to need Show more.",
+        "tree": "Stack(gap=md) > [Accordion > [AccordionItem(title, subtitle), ...], Button(variant=transparent, \"Show more\")] (story: CourseModuleList)"
+      }
+    ]
   }
 }

@@ -208,13 +208,13 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
         )}
 
         <h2 id="patterns">{h.patterns}</h2>
-        {usage.patterns?.length ? (
+        {usage.composition?.patterns?.length ? (
           <dl class="patterns">
-            {usage.patterns.map((p) => (
+            {usage.composition.patterns.map((p) => (
               <>
                 <dt><code>{p.name}</code></dt>
                 <dd>
-                  <p>{p.description}</p>
+                  <p>{p.useWhen}</p>
                   {p.tree && <pre><code>{p.tree}</code></pre>}
                 </dd>
               </>
@@ -247,7 +247,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
         )}
 
         <h2 id="composition">{h.composition}</h2>
-        {usage.composition?.limits?.length || usage.composition?.rules?.length ? (
+        {usage.composition?.limits?.length || usage.composition?.donts?.length ? (
           <>
             {usage.composition.limits?.length > 0 && (
               <table>
@@ -262,12 +262,12 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
                 </tbody>
               </table>
             )}
-            {usage.composition.rules?.length > 0 && (
+            {usage.composition.donts?.length > 0 && (
               <table>
-                <thead><tr><th scope="col">Don't</th><th scope="col">Why</th><th scope="col">Do</th></tr></thead>
+                <thead><tr><th scope="col">Don't</th><th scope="col">Why</th><th scope="col">Instead</th></tr></thead>
                 <tbody>
-                  {usage.composition.rules.map((r) => (
-                    <tr><td>{r.case}</td><td>{r.because}</td><td>{r.do}</td></tr>
+                  {usage.composition.donts.map((r) => (
+                    <tr><td>{r.case}</td><td>{r.because}</td><td>{r.instead}</td></tr>
                   ))}
                 </tbody>
               </table>

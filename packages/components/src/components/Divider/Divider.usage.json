@@ -18,13 +18,6 @@
       "note": "Use the container's own border. Divider separates content inside a container."
     }
   ],
-  "patterns": [
-    {
-      "name": "section-break",
-      "description": "Divider placed between two Stacks inside a Card to visually separate form sections.",
-      "tree": "Card > Stack(gap=lg) > [...fields, Divider, ...fields]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -45,6 +38,13 @@
       "AppHeader"
     ],
     "width": "fill",
-    "nests": false
+    "nests": false,
+    "patterns": [
+      {
+        "name": "section-break",
+        "useWhen": "Separating groups of fields or content inside one card.",
+        "tree": "Card > Stack(gap=lg) > [...fields, Divider, ...fields]"
+      }
+    ]
   }
 }

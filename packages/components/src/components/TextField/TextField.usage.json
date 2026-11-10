@@ -24,18 +24,6 @@
       "instead": "Select"
     }
   ],
-  "patterns": [
-    {
-      "name": "inline-name-row",
-      "description": "Two TextFields side by side for first/last name — each wrapped in a Box with flex:1 so they share the available width equally.",
-      "tree": "Inline(gap=md, align=start) > [Box(style={flex:1}) > TextField(label='First name'), Box(style={flex:1}) > TextField(label='Last name')]"
-    },
-    {
-      "name": "form-field-stack",
-      "description": "A vertical series of labelled fields inside a Card, grouped by topic.",
-      "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
-    }
-  ],
   "variants": {
     "icon": {
       "options": [
@@ -79,6 +67,18 @@
       "Card"
     ],
     "width": "fill",
-    "nests": false
+    "nests": false,
+    "patterns": [
+      {
+        "name": "form-field-stack",
+        "useWhen": "A settings or onboarding form section groups related fields under a heading.",
+        "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+      },
+      {
+        "name": "inline-name-row",
+        "useWhen": "Two short related fields share a row (first and last name).",
+        "tree": "Inline(gap=md, align=start) > [Box(grow=1) > TextField(label='First name'), Box(grow=1) > TextField(label='Last name')]"
+      }
+    ]
   }
 }

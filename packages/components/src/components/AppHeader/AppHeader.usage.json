@@ -9,13 +9,6 @@
   "useWhen": [
     "Every page that requires global navigation and search"
   ],
-  "patterns": [
-    {
-      "name": "full-page-layout",
-      "description": "AppHeader at the top, followed by a page content Stack, composing the full-width application shell.",
-      "tree": "Stack(gap=none) > [AppHeader, main > Stack(gap=xl) > [...pageContent]]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -32,11 +25,11 @@
     "containedBy": [],
     "width": "fill",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Using AppHeader inside a page section or Card",
         "because": "AppHeader is a full-width page-level organism; nesting it breaks its width and positioning semantics.",
-        "do": "Place AppHeader at the root layout level, above the page content container."
+        "instead": "Place AppHeader at the root layout level, above the page content container."
       }
     ]
   }

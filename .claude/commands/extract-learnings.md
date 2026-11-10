@@ -23,7 +23,7 @@ When a review catches a mistake — a wrong ARIA contract, a missing keyboard in
 
 Each component has two co-located, machine-readable files: **`<Name>.usage.json`** (how to use and compose it) and **`<Name>.spec.json`** (how it's built). Together they drive three things:
 - **Scaffolding** — `/add-component` and `/component-scaffold` read them to generate new components correctly
-- **Layout generation** — `/layout-generation` reads every `usage.json` (`composition`, `patterns`, `notFor`) and each spec's `constraints` to build valid component trees
+- **Layout generation** — `/layout-generation` reads every `usage.json` (`composition`, including `patterns`, and `notFor`) and each spec's `constraints` to build valid component trees
 - **Future reviews** — `/review-component` reads the spec's `accessibility` block to judge whether the ARIA contract and keyboard interactions are correctly implemented
 
 Back-filling a learning into these files means: the next scaffold, the next layout, and the next review all know about it. The fix becomes a guardrail, not just a one-time correction.
@@ -38,7 +38,7 @@ Running only step 1 fixes the code. Running both steps fixes the system.
 
 ## What "routing to the right target" means
 
-Not every finding is the same kind of lesson. The `accessibility.*`, `constraints` and `decisions` targets below live in `<Name>.spec.json`; `notFor`, `patterns` and `composition.*` live in `<Name>.usage.json` (ADR-001 amendment 2026-11-10, ADR-027). A finding about a wrong ARIA attribute belongs in `accessibility.ariaAttributes` — not in `composition.rules`. Putting it in the wrong place means the right consumer (scaffolding, layout generation, or a future reviewer) won't see it. The routing table:
+Not every finding is the same kind of lesson. The `accessibility.*`, `constraints` and `decisions` targets below live in `<Name>.spec.json`; `notFor` and `composition.*` (including `patterns`) live in `<Name>.usage.json` (ADR-001 amendment 2026-11-10, ADR-027). A finding about a wrong ARIA attribute belongs in `accessibility.ariaAttributes` — not in `composition.donts`. Putting it in the wrong place means the right consumer (scaffolding, layout generation, or a future reviewer) won't see it. The routing table:
 
 | Finding type | Target |
 |---|---|
@@ -51,7 +51,7 @@ Not every finding is the same kind of lesson. The `accessibility.*`, `constraint
 | Parent container constraint missing | `composition.containedBy` — correct or extend |
 | Wrong pick: another component was the right one | `notFor` — `{ case, because, instead }` with `instead` a component name (or null + `note`) |
 | A countable composition rule (at most N per region / repeated item / parent) | `composition.limits` — `validate-layout` enforces it |
-| Layout/composition mistake tied to one component (wrong weight in a container, missed sub-element, undesigned wrapper around it) | The composed component's `composition.rules` (mistake) or `patterns` (correct shape worth naming). **Component files first** — only genuinely cross-component grammar, true regardless of which component is composed, may go into `/layout-generation`'s "Recurring patterns" section, and only with developer confirmation. |
+| Layout/composition mistake tied to one component (wrong weight in a container, missed sub-element, undesigned wrapper around it) | The composed component's `composition.donts` (mistake) or `composition.patterns` (correct shape worth naming: a `{ name, useWhen }` entry plus a same-named story in `<Name>.patterns.stories.tsx`). **Component files first** — only genuinely cross-component grammar, true regardless of which component is composed, may go into `/layout-generation`'s "Recurring patterns" section, and only with developer confirmation. |
 | Wrong token pick, scale-mixing, or a token convention the code violated | `/tokens-author` → "Conventions" section — append the rule |
 | Contrast miss: a foreground/background combination a component actually renders that `tokens:contrast-check` didn't cover | Add the pair to `PAIRS` in `scripts/token-contrast-check.js` (use the `T`/`I`/`B`/`BG` helpers, match neighboring entries), then run `npm run tokens:contrast-check` |
 
@@ -93,12 +93,12 @@ Note skipped findings as "no target" in the PR description with a one-line reaso
 
 Write the smallest amendment that captures the lesson. Match the existing format of sibling entries exactly.
 
-**`composition.rules` entry (usage.json):**
+**`composition.donts` entry (usage.json):**
 ```json
 {
   "case": "<Concrete situation a developer or agent would encounter>",
   "because": "<Why it breaks — weight, layout, AT behavior, etc.>",
-  "do": "<The correct approach, specific enough to act on; name a pattern when one fits>"
+  "instead": "<The correct approach, specific enough to act on; name a pattern when one fits>"
 }
 ```
 
@@ -128,7 +128,7 @@ After classifying all findings: scan for the same pattern in 2+ components. If f
 ### 5. Pattern-section consolidation (`--all` only)
 
 `/layout-generation`'s "Recurring patterns" section accretes learnings by hand and rots if nothing prunes it. In `--all` mode, after routing:
-- Read that section and compare each entry against the current usage files (`patterns`, `composition.rules`, `notFor`) and `.claude/component-patterns.json`.
+- Read that section and compare each entry against the current usage files (`composition.patterns`, `composition.donts`, `notFor`) and `.claude/component-patterns.json`.
 - Flag entries that are now duplicated there, are app-specific trivia rather than cross-component grammar (e.g. a specific asset path, a one-page workaround), or contradict what the usage files now say.
 - List each flagged entry in the PR description with a proposed disposition: **prune** (covered elsewhere), **move** (belongs in one component's usage.json — draft that amendment), or **keep** (genuinely cross-component).
 - Same rule as the CLAUDE.md escalation: do not edit `layout-generation.md` without explicit developer confirmation. The PR carries the proposal; the developer's reply authorizes the edit.

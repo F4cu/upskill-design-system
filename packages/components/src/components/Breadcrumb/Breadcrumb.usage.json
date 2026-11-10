@@ -18,13 +18,6 @@
       "note": "Omit the breadcrumb."
     }
   ],
-  "patterns": [
-    {
-      "name": "page-header-trail",
-      "description": "Breadcrumb placed below AppHeader and above the page title in a Stack.",
-      "tree": "Stack(gap=sm) > [Breadcrumb, Heading(as=h1)]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -44,6 +37,13 @@
       "AppHeader"
     ],
     "width": "fill",
-    "nests": false
+    "nests": false,
+    "patterns": [
+      {
+        "name": "page-header-trail",
+        "useWhen": "A page more than one level deep needs a trail back up, placed above its title.",
+        "tree": "Stack(gap=sm) > [Breadcrumb, Heading(as=h1)]"
+      }
+    ]
   }
 }

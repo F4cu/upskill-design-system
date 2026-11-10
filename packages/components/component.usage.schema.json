@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "upskill-design-system/component.usage.schema.json",
   "title": "Component Usage",
-  "description": "How to use a component: when to use it, what not to use it for, its named patterns, when to use each variant option, and how it composes (ADR-001 amendment 2026-11-10). The builder sections live in <Name>.spec.json (ADR-027).",
+  "description": "How to use a component: when to use it, what not to use it for, when to use each variant option, and how it composes, including its named patterns (ADR-001 amendment 2026-11-10). The builder sections live in <Name>.spec.json (ADR-027).",
   "type": "object",
   "required": [
     "component",
@@ -82,35 +82,10 @@
               "string",
               "null"
             ],
-            "description": "The fixed-set component to use instead, or null when the alternative is outside the library (say what in note)."
+            "description": "A fixed-set component name, not prose (checked by validate-usage), or null when the alternative is outside the library; then say what in note."
           },
           "note": {
             "type": "string"
-          }
-        },
-        "additionalProperties": false
-      }
-    },
-    "patterns": {
-      "description": "Named, proven compositions using this component. Prefer a named pattern over ad-hoc composition when one fits.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "name",
-          "description",
-          "tree"
-        ],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "tree": {
-            "type": "string",
-            "description": "Component tree as a readable expression, e.g. 'Card > Stack > [Heading, Text, Button(primary)]'"
           }
         },
         "additionalProperties": false
@@ -153,7 +128,7 @@
       }
     },
     "composition": {
-      "description": "How this component composes: what it accepts, where it belongs, its parts, how it sizes, and the rules and counts for combining it.",
+      "description": "How this component composes: what it accepts, where it belongs, its parts, how it sizes, its named patterns, and the counts and don'ts for combining it.",
       "type": "object",
       "properties": {
         "accepts": {
@@ -287,15 +262,42 @@
             "additionalProperties": false
           }
         },
-        "rules": {
-          "description": "Composition rules that can't be stated as data: placement, grouping, weight in context. Each says what to do instead.",
+        "patterns": {
+          "description": "Named, approved compositions this component owns (ADR-001 amendment 2026-11-10). Each name is the PascalCase export of a story in <Name>.patterns.stories.tsx, which holds the code; usage.json holds only the name and when to use it.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "useWhen"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+                "description": "kebab-case id shared with the story export (PascalCase), the Figma example frame and spec.anatomyExamples[].pattern."
+              },
+              "useWhen": {
+                "type": "string",
+                "description": "The situation a layout is in when this pattern fits, not a description of the tree."
+              },
+              "tree": {
+                "type": "string",
+                "description": "Transitional: removed once the pattern's story exists."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "donts": {
+          "description": "Composition don'ts that can't be stated as data: placement, grouping, weight in context. Same shape as notFor, but instead is prose.",
           "type": "array",
           "items": {
             "type": "object",
             "required": [
               "case",
               "because",
-              "do"
+              "instead"
             ],
             "properties": {
               "case": {
@@ -304,8 +306,9 @@
               "because": {
                 "type": "string"
               },
-              "do": {
-                "type": "string"
+              "instead": {
+                "type": "string",
+                "description": "What to do instead, in prose."
               }
             },
             "additionalProperties": false

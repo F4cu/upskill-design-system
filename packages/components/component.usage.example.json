@@ -15,28 +15,12 @@
       "case": "Using Button for navigation that produces a URL",
       "because": "Produces a <button> element; links that change the URL should be <a> elements for correct semantics and accessibility.",
       "instead": "TextLink"
-    }
-  ],
-  "patterns": [
-    {
-      "name": "form-actions",
-      "description": "Decision-region footer: one accent confirm with a neutral cancel.",
-      "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=accent)]"
     },
     {
-      "name": "destructive-confirm",
-      "description": "Confirming a destructive action: danger replaces accent; cancel stays neutral.",
-      "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=danger)]"
-    },
-    {
-      "name": "card-actions",
-      "description": "Actions inside a card or other repeated item: the lead action is neutral, the second transparent. Never accent — N cards would mean N primaries.",
-      "tree": "Card > Stack(gap=md) > [Heading, Text, Inline(gap=sm) > [Button(variant=neutral, size=sm), Button(variant=transparent, size=sm)]]"
-    },
-    {
-      "name": "hero-cta",
-      "description": "A single large accent Button below a Heading and Text block.",
-      "tree": "Stack(gap=lg) > [Heading(size=display), Text(size=body-default), Button(variant=accent, size=lg)]"
+      "case": "An icon button over an image or video thumbnail",
+      "because": "transparent and neutral have no opaque background, so glyph contrast depends on the pixels underneath and can drop to near zero on a light or busy photo; hover tints do not help on touch.",
+      "instead": "CardVertical",
+      "note": "Its Favorite and Menu parts carry the media-overlay treatment (icon.on-media glyph plus halo). Reuse them rather than restyling Button (ADR-009 rule 3)."
     }
   ],
   "variants": {
@@ -108,16 +92,26 @@
         "because": "A card's lead action isn't the page's lead action; N repeated items would render N competing primaries. Use neutral, then transparent (pattern card-actions)."
       }
     ],
-    "rules": [
+    "patterns": [
       {
-        "case": "Using accent or neutral for a destructive action",
-        "because": "Making delete look like the page's main call to action trains users to click it. Weight alone does not signal consequence.",
-        "do": "Use variant=danger, paired with a neutral Cancel (pattern destructive-confirm)."
+        "name": "form-actions",
+        "useWhen": "A form or dialog ends in one decision: confirm it or cancel it.",
+        "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=accent)]"
       },
       {
-        "case": "Using a transparent or neutral icon button over an image or video thumbnail without a contrast treatment",
-        "because": "Both have no opaque background, so the glyph's contrast depends on whatever pixels are underneath and can drop to near zero on a light or busy photo. Hover tints do not fix it: there is no hover on touch, and contrast is judged at rest.",
-        "do": "The media-overlay treatment is owned by the parent molecule (ADR-009 rule 3): CardVertical's Favorite and Menu render variant=transparent with an icon.on-media glyph plus icon.on-media.halo drop-shadow. Reuse those parts rather than re-styling Button."
+        "name": "destructive-confirm",
+        "useWhen": "The decision deletes or irreversibly changes something, and the user confirms it.",
+        "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=danger)]"
+      },
+      {
+        "name": "card-actions",
+        "useWhen": "A card or other repeated item offers one or two actions of its own.",
+        "tree": "Card > Stack(gap=md) > [Heading, Text, Inline(gap=sm) > [Button(variant=neutral, size=sm), Button(variant=transparent, size=sm)]]"
+      },
+      {
+        "name": "hero-cta",
+        "useWhen": "A hero or landing section leads to one main action.",
+        "tree": "Stack(gap=lg) > [Heading(size=display), Text(size=body-default), Button(variant=accent, size=lg)]"
       }
     ]
   }

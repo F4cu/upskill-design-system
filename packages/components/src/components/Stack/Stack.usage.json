@@ -18,23 +18,6 @@
       "instead": "Inline"
     }
   ],
-  "patterns": [
-    {
-      "name": "form-field-group",
-      "description": "Vertical list of form fields with consistent spacing.",
-      "tree": "Stack(gap=md) > [TextField, TextField, Select, Checkbox]"
-    },
-    {
-      "name": "content-block",
-      "description": "Heading followed by body text and a CTA action.",
-      "tree": "Stack(gap=sm) > [Heading, Text, Button]"
-    },
-    {
-      "name": "card-body",
-      "description": "Card inner content arranged as a vertical stack.",
-      "tree": "Card > Box(padding=lg) > Stack(gap=sm) > [Heading, Text]"
-    }
-  ],
   "variants": {
     "variant": {
       "options": [
@@ -68,11 +51,11 @@
     ],
     "width": "fill",
     "nests": true,
-    "rules": [
+    "donts": [
       {
         "case": "Nesting Stack inside Stack with the same gap just to group items",
         "because": "Redundant nesting with identical gaps is visual noise with no structural benefit",
-        "do": "Use a single Stack and rely on Box with padding to create visual grouping if needed"
+        "instead": "Use a single Stack and rely on Box with padding to create visual grouping if needed"
       }
     ]
   }

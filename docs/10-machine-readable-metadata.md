@@ -33,6 +33,7 @@ sources:
 # rewritten 2026-11-10: usage.json rename and relabel (ADR-001 amendment 2026-11-10): where each "don't" lives, composition limits/nests, validator checks, consumption map, diagram
 # rewritten 2026-11-10: consumption map replaced by a per-field readers table across usage.json and spec.json (incl. anatomy:test, docs renderer, airtable-sync)
 # rewritten 2026-11-10: deterministic-reader audit (gated/used/rendered/none per field, totals, gaps); layout:validate row corrected (part-level accepts/containedBy only)
+# rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts {case, because, instead}; patterns → composition.patterns {name, useWhen}, code in <Name>.patterns.stories.tsx (option D); pattern-name uniqueness check
 ---
 # Machine-readable metadata
 
@@ -58,7 +59,7 @@ Until 2026-11-10 every "don't" was one `usage.antiPatterns` list: 106 entries mi
 | Wrong pick | Badge used as a toggleable filter → use Chip | `usage.json` `notFor`, with `instead` naming the component | `usage:validate` (that `instead` exists) |
 | Countable composition rule | At most one accent Button per region, none inside a repeated item | `usage.json` `composition.limits` | `layout:validate` |
 | Self-nesting | Card inside Card | `usage.json` `composition.nests: false` | `layout:validate` |
-| Other composition rule | Mixing Card, CardVertical and CardHorizontal in one section | `usage.json` `composition.rules` (`case`, `because`, `do`) | Read by `/layout-generation` |
+| Other composition don't | Mixing Card, CardVertical and CardHorizontal in one section | `usage.json` `composition.donts` (`case`, `because`, `instead`) | Read by `/layout-generation` |
 | Prop rule | Accordion `open` together with `defaultOpen` | spec `constraints` | `spec:validate` lists unenforced ones as backlog |
 | How it's built | Accordion's panel is always mounted | spec `decisions` | Read by `/review-component` |
 
@@ -74,7 +75,7 @@ The hand-written list caused 8 of the 12 gate retries in the harness ablation's 
 
 The same graph goes one level down for components with subcomponents. An optional `composition.parts` list declares each part (`CardVertical.Body`, `CardVertical.Action`, …) with its own `accepts` and `containedBy`, so a composed card can be checked the same way a page layout is ([ADR-023](decisions/023-subcomponents-compound-components.md); the block is shown below).
 
-`composition.accepts`/`containedBy` (the section was renamed from ADR-001's original `relationships` — see ADR-001's 2026-07-23 amendment) encode which components are valid parents and children. `composition.width` says whether the component fills its container or hugs its content, `nests` whether it may sit inside itself, and `limits` how many of a given variant a region, repeated item or parent may hold. `/layout-generation` must cite one of these fields, or a named entry in `patterns`, for every structural choice it makes (see [Layout grammar](04-layout-grammar.md)) — a graph an agent can walk beats prose it has to interpret, and a count `layout:validate` can check beats a rule it can only read. No other system compared in the audit (Carbon, GOV.UK, Atlassian, shadcn, the Custom Elements Manifest) has a richer vocabulary for this; Carbon and Nathan Curtis's work on Figma slots are where counts as data come from.
+`composition.accepts`/`containedBy` (the section was renamed from ADR-001's original `relationships` — see ADR-001's 2026-07-23 amendment) encode which components are valid parents and children. `composition.width` says whether the component fills its container or hugs its content, `nests` whether it may sit inside itself, and `limits` how many of a given variant a region, repeated item or parent may hold. `/layout-generation` must cite one of these fields, or a named entry in `composition.patterns`, for every structural choice it makes (see [Layout grammar](04-layout-grammar.md)) — a graph an agent can walk beats prose it has to interpret, and a count `layout:validate` can check beats a rule it can only read. No other system compared in the audit (Carbon, GOV.UK, Atlassian, shadcn, the Custom Elements Manifest) has a richer vocabulary for this; Carbon and Nathan Curtis's work on Figma slots are where counts as data come from.
 
 ### The cross-component aggregate exists, but stays layout-only
 
@@ -86,11 +87,11 @@ The same graph goes one level down for components with subcomponents. An optiona
 
 ### The write-back loop makes the usage and spec files the system's memory
 
-`/extract-learnings` reads a component's `.review.json` after an adversarial review and routes each finding to a specific sub-field — ARIA findings to the spec's `accessibility.ariaAttributes`, keyboard findings to `accessibility.keyboardInteractions`, prop rules to `constraints`, and in the usage file, wrong picks to `notFor`, parent/child mistakes to `composition.accepts`/`containedBy`, composition mistakes to `composition.rules` or `limits` (see [Agentic moments](06-agentic-moments.md)). A bug fixed only in code rots the next time someone reads the usage file or spec instead of the implementation; fixed there, it becomes something the next scaffold or layout generation can't repeat.
+`/extract-learnings` reads a component's `.review.json` after an adversarial review and routes each finding to a specific sub-field — ARIA findings to the spec's `accessibility.ariaAttributes`, keyboard findings to `accessibility.keyboardInteractions`, prop rules to `constraints`, and in the usage file, wrong picks to `notFor`, parent/child mistakes to `composition.accepts`/`containedBy`, composition mistakes to `composition.donts` or `limits` (see [Agentic moments](06-agentic-moments.md)). A bug fixed only in code rots the next time someone reads the usage file or spec instead of the implementation; fixed there, it becomes something the next scaffold or layout generation can't repeat.
 
 ## How it works, concretely
 
-Button's `composition`, abridged from `Button.usage.json`. The two limits are what `layout:validate` checks; the rule is prose a check can't express:
+Button's `composition`, abridged from `Button.usage.json`. The two limits are what `layout:validate` checks; the patterns are names whose code is in `Button.patterns.stories.tsx`:
 
 ```json
 "composition": {
@@ -101,8 +102,9 @@ Button's `composition`, abridged from `Button.usage.json`. The two limits are wh
     { "if": { "variant": "accent" }, "max": 1, "per": "region", "because": "Variants are absolute weights: the region's one decision gets accent ... (ADR-024)." },
     { "if": { "variant": "accent" }, "max": 0, "per": "repeated", "because": "N repeated items would render N competing primaries ..." }
   ],
-  "rules": [
-    { "case": "accent or neutral on a destructive action", "because": "Weight alone doesn't signal consequence ...", "do": "Use variant=danger, paired with a neutral Cancel (pattern destructive-confirm)." }
+  "patterns": [
+    { "name": "form-actions", "useWhen": "A form or dialog ends in one decision: confirm it or cancel it." },
+    { "name": "destructive-confirm", "useWhen": "The decision deletes or irreversibly changes something, and the user confirms it." }
   ]
 }
 ```
@@ -121,14 +123,14 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 
 - `component.name` must equal the containing directory name.
 - Every `composition.parts` entry must be internally consistent: names are unique and don't collide with a component name, `accepts` appears only on `slot`/`open` parts (and is required there), each `accepts` entry is a component or a sibling part, each `containedBy` entry is a sibling part, and `builtOn` is a component or `null`. "Component" means one exported by `@upskill/components` (`publicComponents()` in `scripts/lib.js`), the same list `layout:validate` uses (#98).
-- Every `notFor.instead` is a component (or `null` with a `note` naming the alternative outside the library); every `composition.limits[].if` names a real variant axis and option; every `variants.<axis>.useWhen` key is an option of that axis.
+- Every `notFor.instead` is a component (or `null` with a `note` naming the alternative outside the library); every `composition.limits[].if` names a real variant axis and option; every `variants.<axis>.useWhen` key is an option of that axis; every `composition.patterns[].name` is unique across the set, since the story export, the Figma example frame and `spec.anatomyExamples` share it.
 - No `<Name>.metadata.json` is left behind.
 - Every `<Name>.spec.json` must parse as JSON. The full spec check is `spec:validate`, which needs built tokens and runs as its own CI step; the parse check keeps a malformed spec from passing the token-free local gate.
 
 `scripts/validate-spec.js` (`npm run spec:validate`) checks each spec against `component.spec.schema.json` and then against the code: every prop in the props types is in the spec and vice versa, variant options match the TypeScript union and the usage file's axis, the `styles` tokens match the code's reads (above), internal references between states, constraints, anatomy and `composition.parts` resolve, and prop names follow the prop vocabulary (below). Every component must have a spec, and a `TODO` left by `spec:generate` fails the check.
 
 Three optional spec sections serve the generated docs pages and the Figma parity check ([ADR-030](decisions/030-spec-renderers.md)):
-- `anatomyExamples` lists the examples that together render every part. Each entry is root props, or the name of a `patterns` entry in the usage file for compositions written in JSX.
+- `anatomyExamples` lists the examples that together render every part. Each entry is root props, or the name of a `composition.patterns` entry in the usage file for compositions written in JSX.
 - `decisions` records per-component choices too small for an ADR.
 - `ruledOut` records options considered and rejected, so nobody proposes them again without new evidence.
 
@@ -151,7 +153,7 @@ The two files are split by reader. The usage file is for **picking and composing
 | Reader | Kind | From `usage.json` | From `spec.json` | What for |
 |---|---|---|---|---|
 | `/component-scaffold` (Stage 1 of `/add-component`) | Writer | Writes it after the spec | Writes it first, from the approved API proposal | A new component's contract, written before the code. The closest existing pair is read as a template. |
-| `/layout-generation` | Picker / composer | Every file, whole: `composition` (incl. `parts`, `limits`, `rules`), `patterns`, `notFor`, each option's `useWhen` | `constraints` only | Choosing components and citing a field for every structural choice |
+| `/layout-generation` | Picker / composer | Every file, whole: `composition` (incl. `parts`, `limits`, `donts`, `patterns`), `notFor`, each option's `useWhen`; a `<Name>.patterns.stories.tsx` only for a pattern it picks | `constraints` only | Choosing components and citing a field for every structural choice |
 | `layout:validate` (`validate-layout.js`) | Gate | `composition.nests`, `composition.limits`, and `composition.parts` (each part's `accepts`, `containedBy`, `required`) | — | Checking a layout file against the composition graph. The component-level `accepts`/`containedBy` are not checked (see the audit below). |
 | `/review-component` | Builder check | — | The whole spec, as the intent the code is held to: each `anatomy` role and `action` against the markup, `constraints` against their `enforcedBy`, `states` against the CSS and handlers | Findings that `spec:validate` can't produce |
 | `spec:validate` (`validate-spec.js`) | Gate | `variants` (options must match the spec's props) | Every section, against the code and the built tokens | Keeping the spec and the code in step |
@@ -160,7 +162,7 @@ The two files are split by reader. The usage file is for **picking and composing
 | `a11y-coverage.js` | Gate | `component.type` | `accessibility.role`, `accessibility.keyboardInteractions` | Deriving "interactive" and requiring a behavioral a11y test |
 | `generate-pattern-schema.js` | Aggregator | `component.type`, `component.status`, `composition.parts` | `accessibility.notes`, `accessibility.ariaAttributes` | Building `.claude/component-patterns.json` (with the JSX scan) |
 | `airtable-sync.js` | Governance push | `component` (incl. `status`, `figmaNodeId`), `variants` | `styles` tokens, through `readComponentUsage` | The Airtable component table (ADR-010) |
-| `spec-bundle.js` → docs component pages | Renderer | `component`, `useWhen`, `notFor`, `patterns`, `variants`, `composition` | `anatomy`, `anatomyExamples`, `props`, `constraints`, `states`, `accessibility`, `styles`, `figma`, `decisions`, `ruledOut` | Generated pages: the anatomy overlay drawn on rendered examples, a parts tree and a parts table ([ADR-030](decisions/030-spec-renderers.md)) |
+| `spec-bundle.js` → docs component pages | Renderer | `component`, `useWhen`, `notFor`, `variants`, `composition` | `anatomy`, `anatomyExamples`, `props`, `constraints`, `states`, `accessibility`, `styles`, `figma`, `decisions`, `ruledOut` | Generated pages: the anatomy overlay drawn on rendered examples, a parts tree and a parts table ([ADR-030](decisions/030-spec-renderers.md)) |
 | Figma parity plugin (planned, ADR-030 Part B) | Renderer | Through `specs.bundle.json` | Through `specs.bundle.json` | Flagging differences between Figma and the spec |
 | `spec:generate` (`generate-spec.js`) | Writer | `composition.parts` | Drafts every section from existing code | Backfilling specs only, never a new component |
 | `/extract-learnings` | Writer | Writes `notFor`, `composition.*` | Writes `accessibility.*`, `constraints`, `decisions` | Turning review findings into durable rules |
@@ -186,14 +188,14 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `component.description`, `useWhen` | Rendered | Docs page |
 | `notFor[].instead` | Gated | `usage:validate` (a fixed-set component, not the component itself; `null` needs a `note`) |
 | `notFor[].case`, `because`, `note` | Rendered | Docs page |
-| `patterns[].name` | Gated | `spec:validate` (an `anatomyExamples` pattern must exist); `anatomy:test` renders the story with that name |
-| `patterns[].description`, `tree` | Rendered | Docs page. No code parses `tree`. |
+| `composition.patterns[].name` | Gated | `usage:validate` (unique across the set); `spec:validate` (an `anatomyExamples` pattern must exist); `anatomy:test` renders the story with that name |
+| `composition.patterns[].useWhen` | Rendered | Docs page. The pattern's code is its story in `<Name>.patterns.stories.tsx`; the transitional `tree` is unparsed and goes once every story exists. |
 | `variants.<axis>.options`, `default` | Gated | `spec:validate` (must equal the spec prop and the TypeScript union); `usage:validate` (`limits` and `useWhen` keys must name options); `airtable-sync.js` |
 | `variants.<axis>.useWhen` | Gated (keys) | `usage:validate` (each key is an option); the text is rendered |
 | `composition.nests`, `composition.limits` | Gated | `layout:validate`; `usage:validate` checks the axis and option each limit names |
 | `composition.parts` | Gated | `usage:validate`, `layout:validate`, `spec:validate` (must match `anatomy`), `generate-pattern-schema.js`, `spec:generate` |
 | `composition.containedBy` | Rendered | Docs page ("Placed inside"). The names aren't validated. |
-| `composition.rules` | Rendered | Docs page. Rules a check can't express, by design. |
+| `composition.donts` | Rendered | Docs page. Don'ts a check can't express, by design. |
 | `composition.accepts`, `composition.width` | None | Agents only |
 
 **`spec.json`**
@@ -225,7 +227,7 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 
 **Gaps the audit found.** None of these is fixed here; each needs its own decision:
 
-- **`patterns[].tree` is never parsed.** Its 62 trees are written in a notation agents read, but a misspelled component name in a tree passes every check. A check that each name in a tree is a component or a declared part would be cheap.
+- **`patterns[].tree` was never parsed.** Its 62 trees were written in a notation agents read, and a misspelled component name in one passed every check. Resolved by option D (ADR-001 second amendment, 2026-11-10): patterns became `{ name, useWhen }` and their code moves to type-checked stories.
 - **Component-level `accepts` and `containedBy` are unchecked.** `usage:validate` doesn't confirm their entries are components, and `layout:validate` checks containment only for `composition.parts`. They work only as citations for `/layout-generation`.
 - **`composition.width` and `props.<p>.concept` have no code reader.** By the rule above, each should either get a reader (a check, or a column on the docs page) or be dropped, as `usage.keywords` was.
 
@@ -248,7 +250,7 @@ The order:
 2. Name the component noun first (`ButtonArrow`, not `ArrowButton`).
 3. Present an API proposal and stop for approval: anatomy, a props table (concept, kind, type, default, Figma property, surface), constraints with what enforces each, states grouped by kind, accessibility, and every Figma-to-code divergence.
 4. Write `<Name>.spec.json` from the approved proposal. `styles` comes from the Figma token mapping in step 1, and a raw value must carry `{ literal, reason }`.
-5. Write the usage file (`component`, `useWhen`, `notFor`, `patterns`, `variants`, `composition` only), then the code.
+5. Write the usage file (`component`, `useWhen`, `notFor`, `variants`, `composition` only; patterns as `{ name, useWhen }` with a story each), then the code.
 6. Run `spec:validate`. When the code disagrees with the spec, the code is fixed. When building shows the spec itself was wrong, the spec is amended and the change is reported. The spec is never edited only to make a failure go away.
 
 `npm run spec:generate` takes no part in this. It drafts a spec from code that already exists and is meant for backfilling existing components; a new component has no code to read.

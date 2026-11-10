@@ -21,73 +21,6 @@
       "note": "Use Card with a custom inner layout for other content types."
     }
   ],
-  "patterns": [
-    {
-      "name": "discover-carousel",
-      "description": "A horizontal row of large CardVertical cards in the Discover section, paginated by PaginationArrows.",
-      "tree": "Box > Inline(gap=md, wrap=false) > [CardVertical(size=lg), CardVertical(size=lg), ...]"
-    },
-    {
-      "name": "saved-courses-carousel",
-      "description": "A horizontal row of compact CardVertical cards showing in-progress saved courses.",
-      "tree": "Box > Inline(gap=md, wrap=false) > [CardVertical(size=sm, progress=65), CardVertical(size=sm, progress=20), ...]"
-    },
-    {
-      "name": "default-card",
-      "description": "Gallery state: large card, certified, no action. The preset default.",
-      "tree": "CardVertical(size=lg, title, duration, certified)"
-    },
-    {
-      "name": "in-progress-card",
-      "description": "Gallery state: compact card for a started course in Saved Courses. Story: WithProgress with size=sm.",
-      "tree": "CardVertical(size=sm, title, duration, progress=65)"
-    },
-    {
-      "name": "completed-card",
-      "description": "Gallery state: a finished course. Story: Completed. The Completed marker is derived from progress — never pass a separate completed flag.",
-      "tree": "CardVertical(size=sm, title, duration, certified, progress=100)"
-    },
-    {
-      "name": "favorite-saved",
-      "description": "Gallery state: large card the user has saved. Favorite is controlled by the app's saved state.",
-      "tree": "CardVertical(size=lg, title, duration, certified, action=CardVertical.Favorite(pressed, onPressedChange))"
-    },
-    {
-      "name": "overflow-menu",
-      "description": "Gallery state: compact card with a kebab menu of course actions. Items reuse DropdownMenu's items array.",
-      "tree": "CardVertical(size=sm, title, duration, action=CardVertical.Menu(items, onSelect))"
-    },
-    {
-      "name": "placeholder-favorite",
-      "description": "Gallery state: no thumbnailSrc (Image placeholder) with an unsaved favorite.",
-      "tree": "CardVertical(size=lg, title, duration, action=CardVertical.Favorite(pressed=false, onPressedChange))"
-    },
-    {
-      "name": "favorite-progress",
-      "description": "Gallery state: compact card that is both saved and started.",
-      "tree": "CardVertical(size=sm, title, duration, certified, progress=20, action=CardVertical.Favorite(pressed, onPressedChange))"
-    },
-    {
-      "name": "custom-meta",
-      "description": "Gallery state (parts only): Meta holds consumer Text instead of Duration/Certified. The preset deliberately has no metaSlot — compose the parts.",
-      "tree": "CardVertical.Root(size=lg) > [CardVertical.Media > CardVertical.Action > CardVertical.Menu(items, onSelect), CardVertical.Body > [CardVertical.Title, CardVertical.Meta > Text(as=span, size=metadata, color=subtle)]]"
-    },
-    {
-      "name": "title-only",
-      "description": "Gallery state: compact placeholder card with no meta row (no duration, not certified).",
-      "tree": "CardVertical(size=sm, title)"
-    },
-    {
-      "name": "instructor-row",
-      "description": "Parts composition: an instructor row between Title and Meta. Body's Stack owns the spacing around it; the row's own layout comes from nested primitives, never from a margin or a layout prop on a part.",
-      "tree": "CardVertical.Root(size=lg) > [CardVertical.Media > CardVertical.Action > CardVertical.Favorite, CardVertical.Body > [CardVertical.Title, Inline(gap=sm, align=center, wrap=false) > [Avatar(size=sm), Stack(gap=xs) > [Text(as=span, size=metadata), Text(as=span, size=metadata, color=subtle)]], CardVertical.Meta > [CardVertical.Duration, CardVertical.Certified]]]"
-    },
-    {
-      "name": "grouped-meta",
-      "description": "Parts composition: Meta keeps its sm spacing while a nested Inline(gap=xs) groups a badge with its date more tightly.",
-      "tree": "CardVertical.Root(size=sm) > [CardVertical.Media, CardVertical.Body > [CardVertical.Title, CardVertical.Meta > [CardVertical.Duration, Inline(gap=xs, align=center) > [Badge(label=New), Text(as=span, size=metadata, color=subtle)]]]]"
-    }
-  ],
   "variants": {
     "size": {
       "options": [
@@ -242,31 +175,63 @@
     ],
     "width": "fill",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Adding gap or margin to a part (e.g. <CardVertical.Body gap=\"lg\">, or a margin on content inside Body)",
         "because": "Parts own the card's rhythm (ADR-023): open parts accept children only, so a layout prop is a TypeScript error, and a margin breaks the shared vertical rhythm.",
-        "do": "Nest a Stack or Inline inside the open part for custom spacing."
+        "instead": "Nest a Stack or Inline inside the open part for custom spacing."
       },
       {
         "case": "Wrapping CardVertical.Root (or the preset) in an <a>",
         "because": "The Favorite/Menu buttons would become interactive content nested inside a link, which is invalid and confuses keyboard and screen-reader users.",
-        "do": "If the card must link, put the link on the Title and stretch it over the card, keeping Action as a sibling on top."
+        "instead": "If the card must link, put the link on the Title and stretch it over the card, keeping Action as a sibling on top."
       },
       {
         "case": "Using Heading instead of CardVertical.Title inside CardVertical.Body, omitting Title from a parts composition, or rendering two Titles",
         "because": "Title registers the id that names the article, the Favorite/Menu buttons and the progress bar; a plain Heading leaves them unnamed and loses the card's serif size override. Nothing checks for Title at runtime: without it every aria-labelledby on the card points at a missing id and the buttons read only 'Save' / 'More options'; two Titles duplicate the id. `required` is enforced by layout:validate only.",
-        "do": "Always render exactly one CardVertical.Title as the first child of CardVertical.Body (set its `as` for the page outline)."
+        "instead": "Always render exactly one CardVertical.Title as the first child of CardVertical.Body (set its `as` for the page outline)."
       },
       {
         "case": "Putting anything other than a single CardVertical.Action inside CardVertical.Media (e.g. a Badge, text or a second overlay button)",
         "because": "Media is a fixed part whose only optional child is the Action overlay; it throws on anything else. The overlay corner is sized and positioned for one round icon button.",
-        "do": "Put extra content in CardVertical.Body/Meta; put a second action into CardVertical.Menu's items."
+        "instead": "Put extra content in CardVertical.Body/Meta; put a second action into CardVertical.Menu's items."
       },
       {
         "case": "Using a Badge to signal completion",
         "because": "Completion is derived from progress (ADR-025); a separate badge can disagree with the bar (Completed with progress=40).",
-        "do": "Pass progress={100}. Only in a parts composition render <CardVertical.Completed /> inside CardVertical.Meta."
+        "instead": "Pass progress={100}. Only in a parts composition render <CardVertical.Completed /> inside CardVertical.Meta."
+      }
+    ],
+    "patterns": [
+      {
+        "name": "favorite-saved",
+        "useWhen": "A course card the learner can save or unsave in place.",
+        "tree": "CardVertical(size=lg, title, duration, certified, action=CardVertical.Favorite(pressed, onPressedChange))"
+      },
+      {
+        "name": "overflow-menu",
+        "useWhen": "A course card has several secondary actions (share, remove, mark complete) that don't fit as buttons.",
+        "tree": "CardVertical(size=sm, title, duration, action=CardVertical.Menu(items, onSelect))"
+      },
+      {
+        "name": "custom-meta",
+        "useWhen": "A card's meta row shows something other than duration and certified status.",
+        "tree": "CardVertical.Root(size=lg) > [CardVertical.Media > CardVertical.Action > CardVertical.Menu(items, onSelect), CardVertical.Body > [CardVertical.Title, CardVertical.Meta > Text(as=span, size=metadata, color=subtle)]]"
+      },
+      {
+        "name": "instructor-row",
+        "useWhen": "A card shows who teaches the course, between the title and the meta row.",
+        "tree": "CardVertical.Root(size=lg) > [CardVertical.Media > CardVertical.Action > CardVertical.Favorite, CardVertical.Body > [CardVertical.Title, Inline(gap=sm, align=center, wrap=false) > [Avatar(size=sm), Stack(gap=xs) > [Text(as=span, size=metadata), Text(as=span, size=metadata, color=subtle)]], CardVertical.Meta > [CardVertical.Duration, CardVertical.Certified]]]"
+      },
+      {
+        "name": "grouped-meta",
+        "useWhen": "A card's meta row pairs a badge with a related value (New and a date) that should read as one item.",
+        "tree": "CardVertical.Root(size=sm) > [CardVertical.Media, CardVertical.Body > [CardVertical.Title, CardVertical.Meta > [CardVertical.Duration, Inline(gap=xs, align=center) > [Badge(label=New), Text(as=span, size=metadata, color=subtle)]]]]"
+      },
+      {
+        "name": "card-carousel",
+        "useWhen": "A row of course cards wider than the viewport, paged with arrows (Discover, Saved courses).",
+        "tree": "Stack > [Box(overflow=hidden, className='carousel-outer') > Inline(gap=md, wrap=false, translateX by useCarousel offset) > [CardVertical, ...], Inline(gap=sm) > [ButtonArrow(direction=left, disabled=!canPrev), ButtonArrow(direction=right, disabled=!canNext)]] (story: Carousel)"
       }
     ]
   }

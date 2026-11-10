@@ -19,18 +19,6 @@
       "note": "Use Text with size body-default, body-small, metadata, or label"
     }
   ],
-  "patterns": [
-    {
-      "name": "titled-section",
-      "description": "A Heading followed by Text inside a Stack to form a titled content block.",
-      "tree": "Stack(gap=sm) > [Heading(size=headline, as=h2), Text(size=body-default)]"
-    },
-    {
-      "name": "hero-block",
-      "description": "A display-scale heading centered in a padded Box with supporting Text and an Inline of actions.",
-      "tree": "Box(paddingY=xxl) > Stack(gap=md, align=center) > [Heading(size=display, as=h1), Text(size=subheader, color=subtle), Inline(gap=sm) > [Button, Button]]"
-    }
-  ],
   "variants": {
     "size": {
       "options": [
@@ -75,11 +63,11 @@
     ],
     "width": "fill",
     "nests": false,
-    "rules": [
+    "donts": [
       {
         "case": "Choosing size to match visual hierarchy instead of semantic level",
         "because": "size and as are independent — use as for document structure and size for visual scale",
-        "do": "Set as to the correct heading level (h1 for the page title, h2 for sections, etc.) then choose size independently"
+        "instead": "Set as to the correct heading level (h1 for the page title, h2 for sections, etc.) then choose size independently"
       }
     ]
   }

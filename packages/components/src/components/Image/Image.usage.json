@@ -18,18 +18,6 @@
       "instead": "Avatar"
     }
   ],
-  "patterns": [
-    {
-      "name": "card-thumbnail",
-      "description": "Used as the thumbnail slot in CardHorizontal. Falls back to placeholder when no src.",
-      "tree": "CardHorizontal > Image(aspectRatio=1/1, src?)"
-    },
-    {
-      "name": "hero-banner",
-      "description": "Full-width landscape image at the top of a page section.",
-      "tree": "Box(width=100%) > Image(aspectRatio=16/9, src)"
-    }
-  ],
   "variants": {
     "aspectRatio": {
       "options": [

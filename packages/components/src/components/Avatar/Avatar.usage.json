@@ -17,18 +17,6 @@
       "instead": "Image"
     }
   ],
-  "patterns": [
-    {
-      "name": "nav-user-chip",
-      "description": "Avatar (sm) alongside user name and a chevron icon in the nav bar user dropdown trigger.",
-      "tree": "Inline(gap=xs, align=center) > [Avatar(size=sm), Text(size=body-small), Icon(name=chevron-down, size=sm)]"
-    },
-    {
-      "name": "profile-header",
-      "description": "Avatar (lg) above a Stack of the user's display name and account email in a profile section.",
-      "tree": "Stack(gap=md, align=center) > [Avatar(size=lg), Stack(gap=xs) > [Heading(as=h2, size=title-small), Text(color=subtle)]]"
-    }
-  ],
   "variants": {
     "size": {
       "options": [
