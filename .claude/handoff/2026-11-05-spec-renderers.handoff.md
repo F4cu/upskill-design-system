@@ -265,6 +265,7 @@ Full reasoning and rejected options are in `docs/decisions/030-spec-renderers.md
 ## Measurement (for the case study; decide before Phase A1)
 
 - Time to document Button by hand, using the same three sub-pages, vs. generating them. Time it; don't estimate it.
+  - **Prediction, written before timing (2026-11-10):** ~4.5 h (range 3–6 h): Usage ~1.3 h, Spec ~2.4 h, Accessibility ~0.4 h, setup ~0.5 h. It assumes the guidance text is transcribed from `Button.metadata.json`, not written from scratch. Per-row rates are assumptions: ~2 min per guidance row, ~10 min per live pattern, ~1.5 min per style row (token looked up and resolved), ~3 min per anatomy part or state. Outside reference points: Nathan Curtis puts anatomy + props + spacing alone at about [two hours](https://nathanacurtis.substack.com/p/the-eightshapes-specs-figma-plugin-2892f21adc96), and [DesignWhine](https://www.designwhine.com/how-to-estimate-creating-a-design-system-in-hours/) gives a 40–120 h planning range (not a benchmark) for a whole first release. A miss outside the range is a finding to record, not a reason to adjust the prediction. This is a forecast only and never goes into the case study.
 - Traceability: the share of rendered rows on the Button and CardVertical pages that trace to a spec or metadata field (target: all of them). Count it; don't assume it.
 - Phase B2 known-answer result: how many of the traced fidelity items the plugin flags, and how many new ones.
 - Until measured, the portfolio and CV say "built", never a number.
