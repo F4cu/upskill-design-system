@@ -244,6 +244,7 @@ Full reasoning and rejected options are in `docs/decisions/030-spec-renderers.md
 7. **Mismatch policy:** flag-only in v1; a per-finding "bind to spec token" action is a v2 candidate.
 8. **Name:** "Figma parity" (working name).
 9. **Part names in rendered HTML:** `data-part="<anatomy name>"` on each part's element.
+   - **Value:** the exact `anatomy[].name`, PascalCase (`data-part="TrailingIcon"`), not Ark's kebab-case (`item-trigger`). The same string then matches in spec, code and Figma layer names, and the test is a plain string comparison. The attribute itself stays `data-part` because HTML only treats `data-*` attributes as custom data; React passes them through unchanged.
    - **Enforcement:** a render test that fails when a declared part doesn't render.
    - **Bare-text parts** (Button's `Label`) are wrapped in an element.
    - **Optional parts** are turned on by a new optional spec field (working name `anatomyProps`).
