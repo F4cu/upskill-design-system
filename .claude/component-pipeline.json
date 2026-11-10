@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T09:04:23.934Z",
+  "generatedAt": "2026-11-10T13:17:29.828Z",
   "components": [
     {
       "name": "Accordion",
@@ -18,7 +18,7 @@
       },
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -49,7 +49,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -80,7 +80,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -111,7 +111,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -131,7 +131,7 @@
     },
     {
       "name": "Box",
-      "type": "container",
+      "type": "layout",
       "maturity": "beta",
       "implementation": "in review",
       "substate": null,
@@ -142,7 +142,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -173,7 +173,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -217,7 +217,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -248,7 +248,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -279,7 +279,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -310,7 +310,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -341,7 +341,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -372,7 +372,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -403,7 +403,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -434,7 +434,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -465,7 +465,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -496,7 +496,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -527,7 +527,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -547,7 +547,7 @@
     },
     {
       "name": "Inline",
-      "type": "container",
+      "type": "layout",
       "maturity": "beta",
       "implementation": "in review",
       "substate": null,
@@ -558,7 +558,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -589,7 +589,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -609,7 +609,7 @@
     },
     {
       "name": "ScrollArea",
-      "type": "container",
+      "type": "layout",
       "maturity": "beta",
       "implementation": "in review",
       "substate": null,
@@ -620,7 +620,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -653,7 +653,7 @@
     },
     {
       "name": "Stack",
-      "type": "container",
+      "type": "layout",
       "maturity": "beta",
       "implementation": "in review",
       "substate": null,
@@ -664,7 +664,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -695,7 +695,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -726,7 +726,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -757,7 +757,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {
@@ -788,7 +788,7 @@
       "visualReview": null,
       "checklist": [
         {
-          "label": "Automated gate — lint · typecheck · build · metadata · a11y scripts",
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
           "done": true
         },
         {

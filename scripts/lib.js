@@ -62,12 +62,13 @@ export function readSpec(name, componentsDir = COMPONENTS_ROOT) {
   return fs.existsSync(file) ? readJson(file) : null;
 }
 
-// A component's metadata with the sections its spec owns (tokens, derived from
-// the spec's styles, and accessibility) merged back in, so a reader that wants
-// "everything about this component" gets one object (ADR-001 amendment
-// 2026-10-11, ADR-027). Returns null when the component has no metadata file.
-export function readComponentMetadata(name, componentsDir = COMPONENTS_ROOT) {
-  const file = path.join(componentsDir, name, `${name}.metadata.json`);
+// A component's <Name>.usage.json with the sections its spec owns (tokens,
+// derived from the spec's styles, and accessibility) merged back in, so a reader
+// that wants "everything about this component" gets one object (ADR-001
+// amendments 2026-10-11 and 2026-11-10, ADR-027). Returns null when the
+// component has no usage file.
+export function readComponentUsage(name, componentsDir = COMPONENTS_ROOT) {
+  const file = path.join(componentsDir, name, `${name}.usage.json`);
   if (!fs.existsSync(file)) return null;
   const meta = readJson(file);
   const spec = readSpec(name, componentsDir);

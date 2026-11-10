@@ -5,7 +5,7 @@ on:
     paths:
       - 'packages/components/**'
       - 'packages/tokens/**'
-      - 'scripts/validate-metadata.js'
+      - 'scripts/validate-usage.js'
       - 'scripts/validate-spec.js'
       - 'scripts/spec-props.js'
       - 'scripts/prop-vocabulary.js'
@@ -49,8 +49,8 @@ jobs:
       - name: Lint (Tier-1 a11y via jsx-a11y)
         run: npm run lint
 
-      - name: Validate component metadata
-        run: npm run metadata:validate
+      - name: Validate component usage files
+        run: npm run usage:validate
 
       - name: Validate component specs (ADR-027)
         run: npm run spec:validate

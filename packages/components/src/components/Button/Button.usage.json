@@ -1,0 +1,124 @@
+{
+  "component": {
+    "name": "Button",
+    "type": "interactive",
+    "status": "beta",
+    "description": "Triggers an action. Four variants that name an absolute visual weight, not a rank (accent brand-fill, neutral bordered, transparent ghost, danger error-fill) — the container decides which weight an action gets (ADR-024). Three sizes, optional leading and/or trailing icon, icon-only shapes. Fully keyboard-accessible via the native button element.",
+    "figmaNodeId": "57:1265"
+  },
+  "useWhen": [
+    "An action happens in place and the URL doesn't change: a form submits, a dialog opens, a panel expands",
+    "An icon-only control in a toolbar, table row or inline action group (set shape)"
+  ],
+  "notFor": [
+    {
+      "case": "Using Button for navigation that produces a URL",
+      "because": "Produces a <button> element; links that change the URL should be <a> elements for correct semantics and accessibility.",
+      "instead": "TextLink"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "form-actions",
+      "description": "Decision-region footer: one accent confirm with a neutral cancel.",
+      "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=accent)]"
+    },
+    {
+      "name": "destructive-confirm",
+      "description": "Confirming a destructive action: danger replaces accent; cancel stays neutral.",
+      "tree": "Inline(gap=sm, justify=end) > [Button(variant=neutral), Button(variant=danger)]"
+    },
+    {
+      "name": "card-actions",
+      "description": "Actions inside a card or other repeated item: the lead action is neutral, the second transparent. Never accent — N cards would mean N primaries.",
+      "tree": "Card > Stack(gap=md) > [Heading, Text, Inline(gap=sm) > [Button(variant=neutral, size=sm), Button(variant=transparent, size=sm)]]"
+    },
+    {
+      "name": "hero-cta",
+      "description": "A single large accent Button below a Heading and Text block.",
+      "tree": "Stack(gap=lg) > [Heading(size=display), Text(size=body-default), Button(variant=accent, size=lg)]"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "accent",
+        "neutral",
+        "transparent",
+        "danger"
+      ],
+      "default": "neutral",
+      "useWhen": {
+        "accent": "The one action a decision region exists for: form or dialog footer, hero. Brand fill.",
+        "neutral": "Everyday and supporting actions, and the lead action in a card or other repeated item. Bordered.",
+        "transparent": "Low-weight actions inline with content ('Show more', Close) and a card's second action. No fill at rest.",
+        "danger": "Destructive or irreversible actions (delete, deactivate), next to a neutral Cancel. Error fill."
+      }
+    },
+    "size": {
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "useWhen": {
+        "sm": "Dense UI: table rows, inline actions, toolbars.",
+        "md": "Most page contexts.",
+        "lg": "Hero sections, prominent calls to action, touch-first flows."
+      }
+    },
+    "shape": {
+      "options": [
+        "square",
+        "round"
+      ],
+      "default": null,
+      "useWhen": {
+        "square": "Icon-only actions in toolbars, table rows and inline groups. Small rounded corners.",
+        "round": "Floating actions or controls next to an avatar. Circular."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
+    ],
+    "width": "hug",
+    "nests": false,
+    "limits": [
+      {
+        "if": {
+          "variant": "accent"
+        },
+        "max": 1,
+        "per": "region",
+        "because": "Variants are absolute weights: the region's one decision gets accent, everything else neutral or transparent (ADR-024)."
+      },
+      {
+        "if": {
+          "variant": "accent"
+        },
+        "max": 0,
+        "per": "repeated",
+        "because": "A card's lead action isn't the page's lead action; N repeated items would render N competing primaries. Use neutral, then transparent (pattern card-actions)."
+      }
+    ],
+    "rules": [
+      {
+        "case": "Using accent or neutral for a destructive action",
+        "because": "Making delete look like the page's main call to action trains users to click it. Weight alone does not signal consequence.",
+        "do": "Use variant=danger, paired with a neutral Cancel (pattern destructive-confirm)."
+      },
+      {
+        "case": "Using a transparent or neutral icon button over an image or video thumbnail without a contrast treatment",
+        "because": "Both have no opaque background, so the glyph's contrast depends on whatever pixels are underneath and can drop to near zero on a light or busy photo. Hover tints do not fix it: there is no hover on touch, and contrast is judged at rest.",
+        "do": "The media-overlay treatment is owned by the parent molecule (ADR-009 rule 3): CardVertical's Favorite and Menu render variant=transparent with an icon.on-media glyph plus icon.on-media.halo drop-shadow. Reuse those parts rather than re-styling Button."
+      }
+    ]
+  }
+}

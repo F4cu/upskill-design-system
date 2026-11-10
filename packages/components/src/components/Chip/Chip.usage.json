@@ -1,0 +1,77 @@
+{
+  "component": {
+    "name": "Chip",
+    "type": "interactive",
+    "status": "beta",
+    "description": "Pill-shaped filter toggle. Each chip is an independent toggle button (aria-pressed); the page owns which chips are pressed. Default: neutral border and subtle text. Pressed: brand border and brand text. Pure filter indicator — not a navigation element. Label-only; no dropdown arrow.",
+    "figmaNodeId": "29:1257"
+  },
+  "useWhen": [
+    "Filtering a list or carousel by category (e.g. All Courses, Design, Development)",
+    "Multi-select filtering: each chip toggles one filter on or off independently",
+    "Showing current filter state visually — a pressed chip reads as brand-colored"
+  ],
+  "notFor": [
+    {
+      "case": "Using Chip for navigation that changes the URL",
+      "because": "Chip renders a <button> — links that produce a URL change should be <a> elements.",
+      "instead": "TextLink"
+    },
+    {
+      "case": "Using Chip for a primary call-to-action",
+      "because": "Chips signal filter/selection; they carry no action weight.",
+      "instead": "Button"
+    },
+    {
+      "case": "Using Chip with a dropdown arrow",
+      "because": "The dropdown variant is out of scope; the page uses label-only chips.",
+      "instead": "Select"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "filter-bar",
+      "description": "A labelled group of Chips for multi-select filtering: each chip toggles its filter independently, and the page holds the set of active filters. The row is a role=group named by the section heading or an aria-label.",
+      "tree": "Inline(gap=sm, wrap=true, role=group, aria-labelledby=<heading id>) > [Chip(pressed=true), Chip(pressed=true), Chip, Chip]"
+    },
+    {
+      "name": "filter-bar-single",
+      "description": "The same labelled group used as a single-select filter: the page keeps one active value and presses exactly one chip (Homepage 'Discover new courses'). Chip itself is unchanged; exclusivity is page logic.",
+      "tree": "Inline(gap=sm, wrap=true, role=group, aria-labelledby=<heading id>) > [Chip(pressed=true), Chip, Chip, Chip]"
+    }
+  ],
+  "variants": {
+    "pressed": {
+      "options": [
+        "false",
+        "true"
+      ],
+      "default": "false",
+      "useWhen": {
+        "false": "Resting state. Transparent background, subtle text, default border.",
+        "true": "Active selection. Brand border and brand text to signal the active filter."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Inline"
+    ],
+    "width": "hug",
+    "nests": false,
+    "rules": [
+      {
+        "case": "Placing a Chip alongside a Button in the same Inline row as interactive siblings",
+        "because": "Chip is a selection toggle (state); Button is an action trigger (event). Mixing them in the same row conflates filtering with acting and confuses interaction semantics.",
+        "do": "Group Chips in their own Inline filter bar. Place action Buttons in a separate row. Never use Chip as a substitute for a Button or vice versa."
+      },
+      {
+        "case": "A row of Chips without a group name",
+        "because": "Screen readers announce each chip as 'toggle button, pressed' with no indication of what the chips filter or that they belong together.",
+        "do": "Give the Inline role=group and aria-labelledby pointing at the nearest heading (or an aria-label)."
+      }
+    ]
+  }
+}

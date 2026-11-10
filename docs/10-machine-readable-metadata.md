@@ -1,8 +1,8 @@
 ---
 title: "Machine-readable metadata"
 sources:
-  - packages/components/component.schema.json
-  - scripts/validate-metadata.js
+  - packages/components/component.usage.schema.json
+  - scripts/validate-usage.js
   - scripts/generate-pattern-schema.js
   - scripts/a11y-coverage.js
   - docs/decisions/001-component-metadata-schema.md
@@ -30,59 +30,78 @@ sources:
 # rewritten 2026-10-12: new subsection on how /component-scaffold writes a new component's spec (inputs, order, spec:generate is backfill only); declares component-scaffold.md as a source
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); metadata and spec schemas unchanged, this page describes no individual mapping, still accurate
 # clock reset 2026-11-10: /component-scaffold step 5 names the composition/usage.patterns fields layout generation needs; the metadata model described here is unchanged, still accurate
+# rewritten 2026-11-10: usage.json rename and relabel (ADR-001 amendment 2026-11-10): where each "don't" lives, composition limits/nests, validator checks, consumption map, diagram
 ---
 # Machine-readable metadata
 
 ## What it is
 
-Every component ships a `<Name>.metadata.json` file — a structured fact sheet covering its purpose, usage guidance, variants, and its place in the component graph. Its sibling `<Name>.spec.json`, the [component spec](08-glossary.md), holds what only the builders read: anatomy (the component's named parts), props, states, the accessibility contract, and `styles`, the design tokens each part uses ([ADR-027](decisions/027-component-spec-file.md)). The `states`, `tokens` and `accessibility` sections moved from metadata to the spec on 2026-10-11 (see the ADR-001 amendments). This page covers the metadata file; the spec's checks are summarized below. That per-component contract is the base of a four-layer stack: a schema validates it, a scanner aggregates all 27 files into a cross-component index, and three downstream consumers (a11y coverage, layout generation, and the learnings loop) read from it instead of from implementation code. The point of the stack is that an agent — or a developer — can generate or verify a component without reading its `index.tsx`.
+Every component ships a `<Name>.usage.json` file — a structured fact sheet saying when to use the component, what not to use it for, when to use each variant option, and how it composes with the rest of the library. Until 2026-11-10 it was called `<Name>.metadata.json`; it was renamed and relabelled around composition, which is the hard part of using this library (ADR-001 amendment 2026-11-10). Its sibling `<Name>.spec.json`, the [component spec](08-glossary.md), holds how the component is built: anatomy (the component's named parts), props, the rules for combining props (`constraints`), states, the accessibility contract, and `styles`, the design tokens each part uses ([ADR-027](decisions/027-component-spec-file.md)). The `states`, `tokens` and `accessibility` sections moved there on 2026-10-11 (see the ADR-001 amendments). This page covers the usage file; the spec's checks are summarized below. That per-component contract is the base of a four-layer stack: a schema validates it, a scanner aggregates all 27 files into a cross-component index, and three downstream consumers (a11y coverage, layout generation, and the learnings loop) read from it instead of from implementation code. The point of the stack is that an agent — or a developer — can generate or verify a component without reading its `index.tsx`.
 
 | Layer | Files | Producer | Consumers | CI gate | ADR |
 |---|---|---|---|---|---|
-| Per-component contract | `<Name>.metadata.json` (27 files) + `component.schema.json`, beside `<Name>.spec.json` + `component.spec.schema.json` | Component author, via `/component-scaffold` or hand-edit; `npm run spec:generate` drafts a spec from code | `/component-scaffold`, `/layout-generation`, `a11y-coverage.js`, `/extract-learnings` | `metadata:validate` in `components-check.yml` | [001](decisions/001-component-metadata-schema.md) |
-| Validation | `scripts/validate-metadata.js`, `scripts/validate-spec.js` | Scripts (Ajv, draft 2020-12) | Every moment that trusts a metadata file is well-formed and a spec matches the code | `metadata:validate` and `spec:validate` in `components-check.yml` | [001](decisions/001-component-metadata-schema.md), [027](decisions/027-component-spec-file.md) |
+| Per-component contract | `<Name>.usage.json` (27 files) + `component.usage.schema.json`, beside `<Name>.spec.json` + `component.spec.schema.json` | Component author, via `/component-scaffold` or hand-edit; `npm run spec:generate` drafts a spec from code | `/component-scaffold`, `/layout-generation`, `a11y-coverage.js`, `/extract-learnings` | `usage:validate` in `components-check.yml` | [001](decisions/001-component-metadata-schema.md) |
+| Validation | `scripts/validate-usage.js`, `scripts/validate-spec.js` | Scripts (Ajv, draft 2020-12) | Every moment that trusts a usage file is well-formed and a spec matches the code | `usage:validate` and `spec:validate` in `components-check.yml` | [001](decisions/001-component-metadata-schema.md), [027](decisions/027-component-spec-file.md) |
 | Cross-component aggregate | `.claude/component-patterns.json` | `scripts/generate-pattern-schema.js` (`npm run patterns:generate`) | `/layout-generation` only | Staleness check (regenerate + `git diff --exit-code`) in `components-check.yml` | [013](decisions/013-cross-component-pattern-schema.md) |
 | Downstream consumers | a11y coverage derivation, layout citations, `/extract-learnings` write-back | `scripts/a11y-coverage.js`, `/layout-generation`, `/extract-learnings` | Developers and agents building pages and tests | `a11y:coverage` in `components-check.yml` | [008](decisions/008-behavioral-a11y-tier.md) |
 
 ## Why it's built this way
 
-### `usage.antiPatterns` carries implementation constraints, not just usage advice
+### Each "don't" lives where its reader looks
 
-The schema requires all three fields of an anti-pattern — `scenario`, `reason`, `alternative` — because partial guidance isn't useful to an agent (ADR-001). In practice the field does more than warn against misuse: several of Accordion's anti-patterns document a hard-won implementation constraint (the `aria-controls`/always-mounted-panel rule below is one). `packages/components/AGENTS.md`'s type-enforced anti-pattern rule tightens this further — when a constraint is a hard "never do X," the component's prop type must make the violation a compile error (a narrowed `Omit<...>` on the spread native-attributes type), not just a documented warning. The metadata is the source the type narrowing is checked against.
+Until 2026-11-10 every "don't" was one `usage.antiPatterns` list: 106 entries mixing four kinds of rule with four different readers. The audit behind the rename sorted them, and each kind now has its own home:
+
+| Kind | Example | Home | Checked by |
+|---|---|---|---|
+| Wrong pick | Badge used as a toggleable filter → use Chip | `usage.json` `notFor`, with `instead` naming the component | `usage:validate` (that `instead` exists) |
+| Countable composition rule | At most one accent Button per region, none inside a repeated item | `usage.json` `composition.limits` | `layout:validate` |
+| Self-nesting | Card inside Card | `usage.json` `composition.nests: false` | `layout:validate` |
+| Other composition rule | Mixing Card, CardVertical and CardHorizontal in one section | `usage.json` `composition.rules` (`case`, `because`, `do`) | Read by `/layout-generation` |
+| Prop rule | Accordion `open` together with `defaultOpen` | spec `constraints` | `spec:validate` lists unenforced ones as backlog |
+| How it's built | Accordion's panel is always mounted | spec `decisions` | Read by `/review-component` |
+
+Rules something else already enforced (the inline-style ban, a `label` the types require, a parent `containedBy` already excludes) were deleted rather than moved. Every entry still says *why*: partial guidance isn't useful to an agent (ADR-001). `packages/components/AGENTS.md`'s type-enforced rule still applies: when a constraint is a hard "never do X," the prop type must make the violation a compile error (a narrowed `Omit<...>` on the spread native-attributes type), not just a documented warning.
 
 ### The token list is derived, never written
 
 A component's token list is no longer written by hand: it is the set of tokens its spec's `styles` reference, and `spec:validate` checks that set against the code. (Metadata no longer carries a `tokens.*` list.) The set must equal the `var(--ds-*)` [CSS custom properties](08-glossary.md) the component's stylesheet (its CSS Module) reads (plus reads in `index.tsx`, such as the `` var(--ds-size-avatar-${size}) `` template), and every one must be defined in the built token CSS. A component can't reference a token that was renamed or never existed, and a token a child `Text`, `Icon` or `Stack` applies belongs to that child's spec.
 
-The hand-written list caused 8 of the 12 gate retries in the harness ablation's full-harness arm: the scaffold listed tokens it saw rendered, not the ones its own files read. A stopgap script derived the list from the CSS (ADR-029 Step 5). The spec rollout made it unnecessary: with every component on a spec, the list exists only as the spec's `styles`, so there's nothing to keep in step, and the script was deleted (ADR-001 amendment 2026-10-11). Readers that still want a grouped token list, such as the Airtable component push, get one from `readComponentMetadata` in `scripts/lib.js`, which merges the spec's tokens and `accessibility` back into the metadata object.
+The hand-written list caused 8 of the 12 gate retries in the harness ablation's full-harness arm: the scaffold listed tokens it saw rendered, not the ones its own files read. A stopgap script derived the list from the CSS (ADR-029 Step 5). The spec rollout made it unnecessary: with every component on a spec, the list exists only as the spec's `styles`, so there's nothing to keep in step, and the script was deleted (ADR-001 amendment 2026-10-11). Readers that still want a grouped token list, such as the Airtable component push, get one from `readComponentUsage` in `scripts/lib.js`, which merges the spec's tokens and `accessibility` back into the usage object.
 
 ### `composition` is a machine-checkable graph because layout generation has to cite it
 
 The same graph goes one level down for components with subcomponents. An optional `composition.parts` list declares each part (`CardVertical.Body`, `CardVertical.Action`, …) with its own `accepts` and `containedBy`, so a composed card can be checked the same way a page layout is ([ADR-023](decisions/023-subcomponents-compound-components.md); the block is shown below).
 
-`composition.accepts`/`containedBy` (the section was renamed from ADR-001's original `relationships` when `compositionPatterns` moved to `usage.patterns` and `neverPairWith` was absorbed into `usage.antiPatterns` — see ADR-001's 2026-07-23 amendment) encode which components are valid parents and children. `/layout-generation` must cite one of these fields, plus `usage.patterns`, for every structural choice it makes (see [Layout grammar](04-layout-grammar.md)) — a graph an agent can walk beats prose it has to interpret.
+`composition.accepts`/`containedBy` (the section was renamed from ADR-001's original `relationships` — see ADR-001's 2026-07-23 amendment) encode which components are valid parents and children. `composition.width` says whether the component fills its container or hugs its content, `nests` whether it may sit inside itself, and `limits` how many of a given variant a region, repeated item or parent may hold. `/layout-generation` must cite one of these fields, or a named entry in `patterns`, for every structural choice it makes (see [Layout grammar](04-layout-grammar.md)) — a graph an agent can walk beats prose it has to interpret, and a count `layout:validate` can check beats a rule it can only read. No other system compared in the audit (Carbon, GOV.UK, Atlassian, shadcn, the Custom Elements Manifest) has a richer vocabulary for this; Carbon and Nathan Curtis's work on Figma slots are where counts as data come from.
 
 ### The cross-component aggregate exists, but stays layout-only
 
-`.claude/component-patterns.json` buckets all 27 components into 10 interaction patterns and records a `drift[]` list where observed JSX disagrees with declared metadata. It was gated on a measured result, not intuition: ADR-013's harness found feeding it into every generation task improved layout/composition tasks but worsened component scaffolds, so it's wired into `/layout-generation` only — see [Rejected alternatives](case-study-source/04-rejected-alternatives.md) for the fuller telling and [Context engineering](09-context-engineering.md) for the "measure, don't assert" principle it's the worked example of.
+`.claude/component-patterns.json` buckets all 27 components into 10 interaction patterns and records a `drift[]` list where component code disagrees with the prop vocabulary. It was gated on a measured result, not intuition: ADR-013's harness found feeding it into every generation task improved layout/composition tasks but worsened component scaffolds, so it's wired into `/layout-generation` only — see [Rejected alternatives](case-study-source/04-rejected-alternatives.md) for the fuller telling and [Context engineering](09-context-engineering.md) for the "measure, don't assert" principle it's the worked example of.
 
 ### Interactivity is derived, not declared twice
 
-`a11y-coverage.js` doesn't add an `isInteractive` field to the schema. It derives the fact from data the two files already require. A component counts as interactive if any one of three things holds: its metadata `component.type` is `interactive` or `input`; its spec's `accessibility.role` is on the script's list of interactive ARIA roles; or its spec declares a `keyboardInteractions` entry beyond plain Tab. (The script reads the spec fields through `readComponentMetadata`.) That keeps the schema from growing a redundant flag that could drift from the fields it would be summarizing, and it means declaring a keyboard interaction in the spec has a real consequence: the component now owes a behavioral `<Name>.a11y.test.tsx`, or the gate fails (see [Accessibility](03-accessibility.md)). The derivation lives in `scripts/lib.js` as `isInteractive`, and `npm run component:risk` uses the same function to decide whether `/add-component` spawns the adversarial reviewer (ADR-029). The same fields therefore decide both the a11y test obligation and the review path.
+`a11y-coverage.js` doesn't add an `isInteractive` field to the schema. It derives the fact from data the two files already require. A component counts as interactive if any one of three things holds: its usage file's `component.type` is `interactive` or `input`; its spec's `accessibility.role` is on the script's list of interactive ARIA roles; or its spec declares a `keyboardInteractions` entry beyond plain Tab. (The script reads the spec fields through `readComponentUsage`.) That keeps the schema from growing a redundant flag that could drift from the fields it would be summarizing, and it means declaring a keyboard interaction in the spec has a real consequence: the component now owes a behavioral `<Name>.a11y.test.tsx`, or the gate fails (see [Accessibility](03-accessibility.md)). The derivation lives in `scripts/lib.js` as `isInteractive`, and `npm run component:risk` uses the same function to decide whether `/add-component` spawns the adversarial reviewer (ADR-029). The same fields therefore decide both the a11y test obligation and the review path.
 
-### The write-back loop makes metadata the system's memory
+### The write-back loop makes the usage and spec files the system's memory
 
-`/extract-learnings` reads a component's `.review.json` after an adversarial review and routes each finding to a specific sub-field — ARIA findings to the spec's `accessibility.ariaAttributes`, keyboard findings to the spec's `accessibility.keyboardInteractions`, and in metadata, consumer misuse to `usage.antiPatterns`, parent/child mistakes to `composition.accepts`/`containedBy` (see [Agentic moments](06-agentic-moments.md)). A bug fixed only in code rots the next time someone reads the metadata or spec instead of the implementation; fixed there, it becomes something the next scaffold or layout generation can't repeat.
+`/extract-learnings` reads a component's `.review.json` after an adversarial review and routes each finding to a specific sub-field — ARIA findings to the spec's `accessibility.ariaAttributes`, keyboard findings to `accessibility.keyboardInteractions`, prop rules to `constraints`, and in the usage file, wrong picks to `notFor`, parent/child mistakes to `composition.accepts`/`containedBy`, composition mistakes to `composition.rules` or `limits` (see [Agentic moments](06-agentic-moments.md)). A bug fixed only in code rots the next time someone reads the usage file or spec instead of the implementation; fixed there, it becomes something the next scaffold or layout generation can't repeat.
 
 ## How it works, concretely
 
-A trimmed anti-pattern from `Accordion.metadata.json` — it encodes an ARIA constraint that would otherwise have to be rediscovered by reading the implementation:
+Button's `composition`, abridged from `Button.usage.json`. The two limits are what `layout:validate` checks; the rule is prose a check can't express:
 
 ```json
-{
-  "scenario": "Conditionally rendering the panel element (e.g. {isOpen && <div>}) instead of always mounting it",
-  "reason": "aria-controls on the trigger must point to an element that is always in the DOM. Unmounting the panel when closed means the target id does not exist in the collapsed state, breaking the ARIA association for screen readers such as NVDA + Firefox.",
-  "alternative": "Always render the panel div. ... pair aria-hidden={!isOpen} with the panel element's inert DOM property ..."
+"composition": {
+  "containedBy": ["Box", "Stack", "Inline", "Card"],
+  "width": "hug",
+  "nests": false,
+  "limits": [
+    { "if": { "variant": "accent" }, "max": 1, "per": "region", "because": "Variants are absolute weights: the region's one decision gets accent ... (ADR-024)." },
+    { "if": { "variant": "accent" }, "max": 0, "per": "repeated", "because": "N repeated items would render N competing primaries ..." }
+  ],
+  "rules": [
+    { "case": "accent or neutral on a destructive action", "because": "Weight alone doesn't signal consequence ...", "do": "Use variant=danger, paired with a neutral Cancel (pattern destructive-confirm)." }
+  ]
 }
 ```
 
@@ -96,16 +115,18 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 ]
 ```
 
-`scripts/validate-metadata.js` runs three checks beyond the Ajv schema pass. The schema itself rejects a metadata file that still carries `states`, `tokens` or `accessibility`, and the error says where the section went.
+`scripts/validate-usage.js` runs these checks beyond the Ajv schema pass. The schema itself rejects a usage file that still carries `states`, `tokens`, `accessibility` or the old `usage` section, and the error says where it went.
 
 - `component.name` must equal the containing directory name.
 - Every `composition.parts` entry must be internally consistent: names are unique and don't collide with a component name, `accepts` appears only on `slot`/`open` parts (and is required there), each `accepts` entry is a component or a sibling part, each `containedBy` entry is a sibling part, and `builtOn` is a component or `null`. "Component" means one exported by `@upskill/components` (`publicComponents()` in `scripts/lib.js`), the same list `layout:validate` uses (#98).
+- Every `notFor.instead` is a component (or `null` with a `note` naming the alternative outside the library); every `composition.limits[].if` names a real variant axis and option; every `variants.<axis>.useWhen` key is an option of that axis.
+- No `<Name>.metadata.json` is left behind.
 - Every `<Name>.spec.json` must parse as JSON. The full spec check is `spec:validate`, which needs built tokens and runs as its own CI step; the parse check keeps a malformed spec from passing the token-free local gate.
 
-`scripts/validate-spec.js` (`npm run spec:validate`) checks each spec against `component.spec.schema.json` and then against the code: every prop in the props types is in the spec and vice versa, variant options match the TypeScript union and the metadata axis, the `styles` tokens match the code's reads (above), internal references between states, constraints, anatomy and `composition.parts` resolve, and prop names follow the prop vocabulary (below). Every component must have a spec, and a `TODO` left by `spec:generate` fails the check.
+`scripts/validate-spec.js` (`npm run spec:validate`) checks each spec against `component.spec.schema.json` and then against the code: every prop in the props types is in the spec and vice versa, variant options match the TypeScript union and the usage file's axis, the `styles` tokens match the code's reads (above), internal references between states, constraints, anatomy and `composition.parts` resolve, and prop names follow the prop vocabulary (below). Every component must have a spec, and a `TODO` left by `spec:generate` fails the check.
 
 Three optional spec sections serve the generated docs pages and the Figma parity check ([ADR-030](decisions/030-spec-renderers.md)):
-- `anatomyExamples` lists the examples that together render every part. Each entry is root props, or the name of a metadata `usage.patterns` entry for compositions written in JSX.
+- `anatomyExamples` lists the examples that together render every part. Each entry is root props, or the name of a `patterns` entry in the usage file for compositions written in JSX.
 - `decisions` records per-component choices too small for an ADR.
 - `ruledOut` records options considered and rejected, so nobody proposes them again without new evidence.
 
@@ -117,29 +138,18 @@ Each anatomy part is marked in the rendered HTML with `data-part="<name>"`, and 
 
 `scripts/validate-layout.js` then uses the same block to check layouts that compose a component from its parts.
 
-`.claude/component-patterns.json`'s top level is `{ generatedFrom, architecturalStyle, patterns, drift }` — `patterns` keyed by the 10 buckets (`controlled-selection`, `disclosure`, `navigation`, `status-indicator`, `toggle-button`, `form-field`, `action-trigger`, `layout-primitive`, `static-display`, `content-stepper`), each holding a `description` and an `implementedBy` list. `architecturalStyle` is `flat-props` everywhere except components that attach parts (ADR-023): their own entry carries `architecturalStyle: "compound"` and their part names, and the top-level string lists them. The scanner reads `<CardVertical.Body>` as a use of `CardVertical`, never as a component of its own. One real `drift[]` entry:
+`.claude/component-patterns.json`'s top level is `{ generatedFrom, architecturalStyle, patterns, drift }` — `patterns` keyed by the 10 buckets (`controlled-selection`, `disclosure`, `navigation`, `status-indicator`, `toggle-button`, `form-field`, `action-trigger`, `layout-primitive`, `static-display`, `content-stepper`), each holding a `description` and an `implementedBy` list. `architecturalStyle` is `flat-props` everywhere except components that attach parts (ADR-023): their own entry carries `architecturalStyle: "compound"` and their part names, and the top-level string lists them. The scanner reads `<CardVertical.Body>` as a use of `CardVertical`, never as a component of its own. `drift[]` is empty today. Until 2026-11-10 it also compared the JSX with a hand-written `composition.composedOf` list; that field was dropped because the scanner already reads the JSX, so the list could only drift.
 
-```json
-{
-  "components": [
-    "Badge"
-  ],
-  "detail": "Badge JSX uses [Text] but metadata composition.composedOf declares [].",
-  "issue": "composition-metadata-mismatch",
-  "pattern": "static-display"
-}
-```
-
-`drift[]` also checks prop names against the prop vocabulary ([ADR-026](decisions/026-component-prop-vocabulary.md)). Every `on<X>Change` callback needs an `x` prop, every `default<X>` needs both `x` and `on<X>Change`, and a selection component never carries a `selected*` prop. That is how `selectedValue` on `DropdownMenu` was caught. Components may use different callback names, because each callback is named after its own state (`onOpenChange`, `onValueChange`, `onPressedChange`). Since 2026-11-10 the same rules, plus banned names and prefixes, `false`-default booleans, collection names, axis values and Figma names, also **block** in `spec:validate` (`scripts/prop-vocabulary.js`, [ADR-026](decisions/026-component-prop-vocabulary.md) amendment). Known exceptions are listed by id in `scripts/prop-vocabulary-waivers.json`, a ledger that only shrinks.
+`drift[]` checks prop names against the prop vocabulary ([ADR-026](decisions/026-component-prop-vocabulary.md)). Every `on<X>Change` callback needs an `x` prop, every `default<X>` needs both `x` and `on<X>Change`, and a selection component never carries a `selected*` prop. That is how `selectedValue` on `DropdownMenu` was caught. Components may use different callback names, because each callback is named after its own state (`onOpenChange`, `onValueChange`, `onPressedChange`). Since 2026-11-10 the same rules, plus banned names and prefixes, `false`-default booleans, collection names, axis values and Figma names, also **block** in `spec:validate` (`scripts/prop-vocabulary.js`, [ADR-026](decisions/026-component-prop-vocabulary.md) amendment). Known exceptions are listed by id in `scripts/prop-vocabulary-waivers.json`, a ledger that only shrinks.
 
 The consumption map — which command reads which section for what:
 
-- `/component-scaffold` reads both schemas, an existing component's metadata and spec as templates, and Figma design context — it *produces* the new spec (first, from the approved API proposal) and metadata rather than consuming them.
-- `/layout-generation` reads `composition.accepts`/`containedBy` (plus `composition.parts` when composing a component from its parts), `usage.patterns`, and (layout/composition tasks only) `component-patterns.json`. It never reads specs.
+- `/component-scaffold` reads both schemas, an existing component's usage file and spec as templates, and Figma design context — it *produces* the new spec (first, from the approved API proposal) and usage file rather than consuming them.
+- `/layout-generation` reads every usage file whole (`composition` including `parts`, `limits` and `rules`; `patterns`; `notFor`; each option's `useWhen`), each spec's `constraints` and nothing else from the specs, and (layout/composition tasks only) `component-patterns.json`.
 - `a11y-coverage.js` derives "interactive" from `component.type` and the spec's `accessibility.role` and `accessibility.keyboardInteractions`, and fails the build if an interactive component has no behavioral a11y test.
-- `/extract-learnings` writes back into the spec's `accessibility.*` and metadata's `usage.antiPatterns` and `composition.*`.
+- `/extract-learnings` writes back into the spec's `accessibility.*`, `constraints` and `decisions`, and the usage file's `notFor` and `composition.*`.
 
-`component.category` and `component.type` are the one place the schema enforces a closed taxonomy (`atom|molecule|organism|layout` and `interactive|display|container|input`) — every other section is free-text within its shape. That's deliberate: those two fields are load-bearing for both `a11y-coverage.js`'s interactivity derivation and `generate-pattern-schema.js`'s bucketing fallback (`layout-primitive` when structural detection finds nothing else), so an unenforced vocabulary there would quietly break two downstream consumers at once.
+`component.type` is the one place the schema enforces a closed taxonomy (`interactive|display|container|input|layout`; the atomic-design `category` it used to sit beside was dropped on 2026-11-10, since only its `layout` value was ever read). Every other section is free-text within its shape. That's deliberate: the field is load-bearing for both `a11y-coverage.js`'s interactivity derivation and `generate-pattern-schema.js`'s bucketing fallback (`layout-primitive` when structural detection finds nothing else), so an unenforced vocabulary there would quietly break two downstream consumers at once.
 
 ### How a new component's spec gets written
 
@@ -158,7 +168,7 @@ The order:
 2. Name the component noun first (`ButtonArrow`, not `ArrowButton`).
 3. Present an API proposal and stop for approval: anatomy, a props table (concept, kind, type, default, Figma property, surface), constraints with what enforces each, states grouped by kind, accessibility, and every Figma-to-code divergence.
 4. Write `<Name>.spec.json` from the approved proposal. `styles` comes from the Figma token mapping in step 1, and a raw value must carry `{ literal, reason }`.
-5. Write metadata (`component`, `usage`, `variants`, `composition` only), then the code.
+5. Write the usage file (`component`, `useWhen`, `notFor`, `patterns`, `variants`, `composition` only), then the code.
 6. Run `spec:validate`. When the code disagrees with the spec, the code is fixed. When building shows the spec itself was wrong, the spec is amended and the change is reported. The spec is never edited only to make a failure go away.
 
 `npm run spec:generate` takes no part in this. It drafts a spec from code that already exists and is meant for backfilling existing components; a new component has no code to read.
@@ -167,22 +177,24 @@ The order:
 
 ```mermaid
 flowchart TB
-    M["ComponentName.metadata.json<br/>(27 files, validated against component.schema.json)"]
+    M["ComponentName.usage.json<br/>(27 files, validated against component.usage.schema.json)"]
     S["ComponentName.spec.json<br/>(27 files, spec:validate against the code)"]
-    SC["/component-scaffold<br/>writes spec first, then metadata"] --> S
+    SC["/component-scaffold<br/>writes spec first, then usage"] --> S
     SC --> M
-    M --> LG["/layout-generation<br/>reads composition + usage.patterns"]
+    M --> LG["/layout-generation<br/>reads composition + patterns"]
+    S -->|"constraints only"| LG
+    M --> LV["layout:validate<br/>checks limits + nests"]
     M --> A11Y["a11y-coverage.js<br/>derives interactivity, gates test coverage"]
     S --> A11Y
     M --> AGG[".claude/component-patterns.json<br/>generate-pattern-schema.js"]
     AGG --> LG
     R["/review-component<br/>adversarial reviewer"] --> EL["/extract-learnings"]
-    EL -->|"usage.antiPatterns / composition.*"| M
-    EL -->|"accessibility.*"| S
+    EL -->|"notFor / composition.*"| M
+    EL -->|"accessibility.* / constraints / decisions"| S
 ```
 
 ## Related
 
 - Docs: [Component lifecycle](02-component-lifecycle.md), [Accessibility](03-accessibility.md), [Layout grammar](04-layout-grammar.md), [Agentic moments](06-agentic-moments.md), [Context engineering](09-context-engineering.md)
 - ADRs: [001 — Component metadata schema](decisions/001-component-metadata-schema.md) (+ amendments), [027 — Component spec file](decisions/027-component-spec-file.md), [008 — Behavioral a11y tier](decisions/008-behavioral-a11y-tier.md), [013 — Cross-component pattern schema](decisions/013-cross-component-pattern-schema.md) (+ amendment), [023 — Subcomponents](decisions/023-subcomponents-compound-components.md)
-- Scripts: `npm run metadata:validate`, `npm run spec:validate`, `npm run spec:generate`, `npm run patterns:generate`, `npm run a11y:coverage` — see the [CLI reference](07-cli-reference.md)
+- Scripts: `npm run usage:validate`, `npm run spec:validate`, `npm run spec:generate`, `npm run patterns:generate`, `npm run a11y:coverage` — see the [CLI reference](07-cli-reference.md)

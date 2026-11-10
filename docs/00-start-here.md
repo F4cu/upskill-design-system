@@ -77,6 +77,7 @@ sources:
 # clock reset 2026-11-10: ADR-030 Phase A2 spike amendment (anatomy overlay); this page doesn't describe component pages yet, still accurate
 # clock reset 2026-11-10: moment invariants move from CLAUDE.md into each command file, Common tasks trimmed (ADR-029 amendment 2026-11-10); this page lists the moments and files, not their contents, still accurate
 # clock reset 2026-11-10: packages/components/AGENTS.md state-model and vocabulary prose shrinks once spec:validate enforces it (ADR-026 amendment 2026-11-10); this page doesn't describe either, still accurate
+# rewritten 2026-11-10: reading-order blurbs for 02 and 10 name usage.json (ADR-001 amendment 2026-11-10: metadata.json renamed usage.json)
 ---
 # Start here
 
@@ -130,7 +131,7 @@ Pages 01–06, 09, and 10 each follow the same template:
 The suggested reading order is the page order — tokens first, because everything downstream consumes them:
 
 - [01 — Token pipeline](01-token-pipeline.md) — the four-layer model, the Style Dictionary build, and why code (not Figma) is the source of truth
-- [02 — Component lifecycle](02-component-lifecycle.md) — the metadata schema, the two-axis lifecycle, and the tests for when a new component is justified
+- [02 — Component lifecycle](02-component-lifecycle.md) — the usage and spec files, the two-axis lifecycle, and the tests for when a new component is justified
 - [03 — Accessibility](03-accessibility.md) — the three-tier a11y contract (plus the automatic story axe sweep) and the jsdom trade-off
 - [04 — Layout grammar](04-layout-grammar.md) — the fixed Figma-level → HTML-landmark mapping
 - [05 — Governance](05-governance.md) — the Airtable two-way sync and the "don't downgrade done" guard
@@ -138,7 +139,7 @@ The suggested reading order is the page order — tokens first, because everythi
 - [07 — CLI reference](07-cli-reference.md) — every command, grouped by purpose
 - [08 — Glossary](08-glossary.md) — terms explained for a non-developer collaborator
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`AGENTS.md` + `CLAUDE.md` → [nested package `AGENTS.md`](08-glossary.md) → commands → snapshots → handoffs) and the CI gates that keep it honest
-- [10 — Machine-readable metadata](10-machine-readable-metadata.md) — the metadata stack: the per-component contract (metadata plus its [spec](08-glossary.md)), its validators, the cross-component pattern aggregate, and the write-back loop (reads naturally right after 02)
+- [10 — Machine-readable metadata](10-machine-readable-metadata.md) — the per-component contract (`usage.json` plus its [spec](08-glossary.md)), its validators, the cross-component pattern aggregate, and the write-back loop (reads naturally right after 02)
 - [11 — Self-improving loops](11-self-improving-loops.md) — the mechanisms that change their own behavior from evidence: learning loops, measurement ledgers, and the line between a loop that learns and a gate that only checks
 - [12 — Taming non-determinism](12-taming-non-determinism.md) — how deterministic structure wraps the model before, during and after generation, so only genuinely ambiguous judgment reaches a human
 

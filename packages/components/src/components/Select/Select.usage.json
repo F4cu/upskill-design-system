@@ -1,0 +1,48 @@
+{
+  "component": {
+    "name": "Select",
+    "type": "input",
+    "status": "beta",
+    "description": "A labelled dropdown selector for choosing one option from a predefined list. Includes a visible label, a custom chevron indicator, optional placeholder, and an optional error message. Wraps a native <select> element for built-in accessibility and mobile keyboard support.",
+    "figmaNodeId": "2879:8375"
+  },
+  "useWhen": [
+    "The user must pick exactly one value from a known, finite set of options",
+    "The option list is too long for radio buttons (more than 4–5 options)",
+    "Mobile usability is a priority — native selects open the platform picker"
+  ],
+  "notFor": [
+    {
+      "case": "Using Select for freeform text entry",
+      "because": "Select only accepts predefined options; typed input is silently ignored.",
+      "instead": "TextField"
+    },
+    {
+      "case": "Using Select for boolean or two-option choices",
+      "because": "Two-option selects are harder to scan than a pair of radio buttons or a Checkbox.",
+      "instead": "Checkbox",
+      "note": "Use Checkbox for a single on/off toggle; use radio inputs for two mutually exclusive choices."
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "useWhen": {
+        "default": "Standard dropdown with label. Error state is controlled via the error prop."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
+    ],
+    "width": "fill",
+    "nests": false
+  }
+}

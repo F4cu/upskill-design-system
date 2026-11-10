@@ -3,14 +3,14 @@ name: Docs site build
 # Builds the Starlight reference site (ADR-022) on PRs that can break it:
 # a page or ADR missing `title:` frontmatter fails the content schema before
 # the change reaches main and the Pages deploy. Component pages render from
-# the spec bundle (ADR-030), so a spec or metadata change rebuilds them too.
+# the spec bundle (ADR-030), so a spec or usage.json change rebuilds them too.
 on:
   pull_request:
     paths:
       - "docs/**"
       - "apps/docs/**"
       - "packages/components/src/components/**/*.spec.json"
-      - "packages/components/src/components/**/*.metadata.json"
+      - "packages/components/src/components/**/*.usage.json"
       - "packages/tokens/src/**"
       - "packages/tokens/figma-variables.json"
       - "scripts/spec-bundle.js"

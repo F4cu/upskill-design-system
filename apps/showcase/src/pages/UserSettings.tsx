@@ -131,7 +131,7 @@ export default function UserSettings() {
                   so the Cards below fill this column's full width */}
               <Stack gap="xl" align="stretch" grow={2} minWidth="20rem">
 
-                {/* User Form card — usage.patterns "form-section": Card > Stack > [TextField, TextField, ...]
+                {/* User Form card — usage.json pattern "form-section": Card > Stack > [TextField, TextField, ...]
                     variant="transparent": Card only supplies the border/padding here, not a fill */}
                 <Card padding="lg" variant="transparent">
                   {/* Inner Inline wraps independently at a higher minWidth, matching the Tablet/Mobile
@@ -141,7 +141,7 @@ export default function UserSettings() {
                       via flex: 1 0 0 */}
                   <Inline wrap align="start" justify="center" gap="md">
                     <Stack gap="sm" align="center" minWidth="13rem">
-                      {/* Avatar usage.patterns "profile-header": Stack > [Avatar(lg), Stack > [Heading, Text]] */}
+                      {/* Avatar usage.json pattern "profile-header": Stack > [Avatar(lg), Stack > [Heading, Text]] */}
                       <Avatar src="https://picsum.photos/seed/sarahjones/128/128" alt="Sarah Jones" size="lg" />
                       <Stack gap="xs" align="center">
                         <Heading as="h2" size="title-small">Sarah Jones</Heading>
@@ -187,7 +187,7 @@ export default function UserSettings() {
 
                       <Stack gap="md">
                         <Heading as="h3" size="title-small">Email Subscriptions</Heading>
-                        {/* Checkbox usage.patterns "notification-preferences" */}
+                        {/* Checkbox usage.json pattern "notification-preferences" */}
                         <Stack gap="sm">
                           <Checkbox label="Weekly Newsletter" />
                           <Checkbox label="New course announcements" defaultChecked />
@@ -197,7 +197,7 @@ export default function UserSettings() {
                   </Card>
                 </Stack>
 
-                {/* Button metadata "form-actions" pattern (single primary action) */}
+                {/* Button usage.json "form-actions" pattern (single primary action) */}
                 <Inline justify="start">
                   <Button variant="accent" className="full-width-mobile">Save</Button>
                 </Inline>
@@ -229,7 +229,7 @@ export default function UserSettings() {
                   <Button variant="neutral" size="sm" icon="download">Download All Certificates</Button>
                 </Stack>
 
-                {/* CardHorizontal usage.patterns "started-courses-list" */}
+                {/* CardHorizontal usage.json pattern "started-courses-list" */}
                 <Stack gap="md">
                   <Heading as="h2" size="subheader">Started Courses</Heading>
                   <Stack gap="md">

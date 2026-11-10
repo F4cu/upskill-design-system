@@ -153,7 +153,7 @@ The system has 27 components with mostly distinct roles, read whole, so choosing
    | `usage.patterns` | `patterns`, shape unchanged |
    | `usage.antiPatterns`, wrong picks | `notFor[]`: `{ case, because, instead }`. `instead` is a fixed-set name, checked by the validator, or `null` when the alternative is outside the library. |
    | `usage.antiPatterns`, composition | `composition.rules[]`: `{ case, because, do }`, or `composition.limits` / `composition.nests` when the rule can be stated as data |
-   | `usage.antiPatterns`, call-site props | `spec.json` `constraints` (prop combinations, required props) or prop descriptions (content format). Restatements of the inline-style ban are deleted; `validate-layout` enforces it. |
+   | `usage.antiPatterns`, call-site props | `spec.json` `constraints`: prop combinations, required props, and content-format rules as documented-only constraints on the prop (empty `enforcedBy`). Rules a type already enforces and restatements of the inline-style ban are deleted. |
    | `usage.antiPatterns`, build rules | `spec.json` `decisions` / `accessibility.notes`, or `packages/components/AGENTS.md` when they apply to new components |
    | `variants.<axis>.purpose` | `variants.<axis>.useWhen`: option → situation first, then at most one clause on how it looks (to map Figma instances). Sizes in px and required props go to the spec. |
    | `composition.{accepts, containedBy, parts}` | unchanged |
@@ -177,6 +177,7 @@ The system has 27 components with mostly distinct roles, read whole, so choosing
 
 **Consequences.**
 - Every reader of the old names moves in the same change: the validator, `lib.js`, `sense.js`, the docs component page, the commands and the `AGENTS.md` files. Recorded history (archived handoffs, harness results) keeps the old names.
-- The file `/layout-generation` reads shrinks. The audit estimates 30–35%, to be confirmed by measurement. The pattern-accuracy harness is re-run after the migration; a regression blocks the merge.
+- The files `/layout-generation` reads shrink from 112 KB to 82 KB (−27%), or about −24% counting the spec `constraints` it now also reads. The audit estimated 30–35%; the rest depends on the wording pass (situation-first `useWhen`, descriptions that open on a category noun), which is not part of this change.
+- The pattern-accuracy harness can't confirm that layout accuracy held: it is frozen at the pre-spec architecture and refuses to run on HEAD (ADR-029 amendment 2026-10-12). Checking this change needs its own pre-registered eval on the current schema, or the first real `/layout-generation` run with the new files. Until then, the claim that nothing the layout writer needs was lost rests on the sort of all 106 anti-patterns, each one placed by hand.
 - Composition rules that can be counted become checks. Rules that can't stay as prose with a `because`.
 - The "Deliberately excluded" list gains `keywords` (no reader; its intent-matching role never materialised) and `composedOf` (derived).

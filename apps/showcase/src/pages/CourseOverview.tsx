@@ -155,7 +155,7 @@ export default function CourseOverview() {
               {/* ── Left column: video + course description ── */}
               <Stack gap="md" grow={1} minWidth="34.5rem">
 
-                {/* VideoFrame — usage.when: "displaying a video thumbnail with play overlay" */}
+                {/* VideoFrame — usage.json useWhen: "displaying a video thumbnail with play overlay" */}
                 <VideoFrame src={VIDEO_SRC} alt="The Ten Faces of Innovation — course preview" />
 
                 <Stack gap="sm">
@@ -244,7 +244,7 @@ export default function CourseOverview() {
                   )}
                 </div>
 
-                {/* CTA row — Button metadata "form-actions-row" pattern */}
+                {/* CTA row — Button usage.json "form-actions-row" pattern */}
                 <Inline fullWidth justify="end" gap="sm">
                   <Button
                     variant="neutral"

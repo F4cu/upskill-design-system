@@ -1,0 +1,71 @@
+{
+  "component": {
+    "name": "Inline",
+    "type": "layout",
+    "status": "beta",
+    "description": "Horizontal flex container. Arranges children side-by-side with consistent spacing from the space.inline token scale. Wraps by default when children exceed the container width.",
+    "figmaNodeId": "none"
+  },
+  "useWhen": [
+    "Arranging items side-by-side with consistent spacing",
+    "Displaying a group of buttons, tags, or chips that may wrap to a second line",
+    "Building a toolbar row, breadcrumb trail, or action bar"
+  ],
+  "notFor": [
+    {
+      "case": "Using Inline for vertical content flow",
+      "because": "Inline is always a row. Vertical stacking belongs to Stack.",
+      "instead": "Stack"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "form-actions-row",
+      "description": "Primary + secondary button pair at the bottom of a form.",
+      "tree": "Inline(gap=sm) > [Button(variant=accent), Button(variant=neutral)]"
+    },
+    {
+      "name": "tag-group",
+      "description": "A wrapping row of label chips or filter tags.",
+      "tree": "Inline(gap=xs, wrap=true) > [Text, Text, Text, ...]"
+    },
+    {
+      "name": "nav-bar",
+      "description": "Top navigation with logo on the left and actions on the right.",
+      "tree": "Inline(justify=space-between) > [Text(logo), Inline(gap=md) > [Button, Button]]"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "useWhen": {
+        "default": "Row flex container with configurable gap, alignment, justification, and optional wrapping."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Text",
+      "Heading",
+      "Icon",
+      "Button",
+      "TextField",
+      "Select",
+      "Checkbox"
+    ],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card"
+    ],
+    "width": "fill",
+    "nests": true
+  }
+}

@@ -44,17 +44,17 @@ if (!name) {
 const dir = path.join(ROOT, "packages/components/src/components", name);
 const tsxFile = path.join(dir, "index.tsx");
 const cssFile = path.join(dir, `${name}.module.css`);
-const metaFile = path.join(dir, `${name}.metadata.json`);
+const usageFile = path.join(dir, `${name}.usage.json`);
 const specFile = path.join(dir, `${name}.spec.json`);
 const outFile = outIdx === -1 ? specFile : path.resolve(args[outIdx + 1]);
-for (const f of [tsxFile, metaFile]) {
+for (const f of [tsxFile, usageFile]) {
   if (!fs.existsSync(f)) {
     console.error(`No ${path.relative(ROOT, f)} — nothing to generate from.`);
     process.exit(2);
   }
 }
 
-const metadata = readJson(metaFile);
+const metadata = readJson(usageFile);
 const existing = !fresh && fs.existsSync(specFile) ? readJson(specFile) : null;
 const COMPONENTS = publicComponents();
 const pathByCssVar = tokenPathsByCssVar(tokenSourceTree());
@@ -510,30 +510,8 @@ if (existing) {
 
 fs.writeFileSync(outFile, JSON.stringify(spec, null, 2) + "\n");
 
-// The spec now owns states, tokens and accessibility (ADR-001 amendment 2026-10-11);
-// metadata:validate rejects them in metadata once the spec exists. Removed line by
-// line because a few metadata files are not in JSON.stringify's layout.
-const stripped = [];
-if (outFile === specFile && !existing) {
-  const lines = fs.readFileSync(metaFile, "utf8").split("\n");
-  for (const key of ["accessibility", "tokens", "states"]) {
-    const start = lines.findIndex((l) => l.startsWith(`  "${key}":`));
-    if (start === -1) continue;
-    let end = start;
-    if (!/[}\]],?$/.test(lines[start])) end = lines.findIndex((l, i) => i > start && /^ {2}[}\]],?$/.test(l));
-    lines.splice(start, end - start + 1);
-    stripped.push(key);
-  }
-  const last = lines.map((l) => l.trim()).lastIndexOf("}");
-  const prev = last - 1;
-  lines[prev] = lines[prev].replace(/,$/, "");
-  fs.writeFileSync(metaFile, lines.join("\n"));
-  JSON.parse(fs.readFileSync(metaFile, "utf8"));
-}
-
 const countTodos = (text) => (text.match(/TODO/g) ?? []).length;
 const total = countTodos(JSON.stringify(spec));
 console.log(`${path.relative(ROOT, outFile)}: ${Object.keys(props).length} props, ${anatomy.length} parts, ${Object.values(styles).flat().length} style rules, ${total} TODO(s)`);
 for (const msg of todo) console.log(`  ! ${msg}`);
-if (stripped.length) console.log(`  moved ${stripped.join(", ")} out of ${name}.metadata.json into the spec`);
 if (total) console.log("  Fill every TODO (grep the file), then run: npm run tokens:build && npm run spec:validate");

@@ -55,7 +55,7 @@
     "docs:build": "npm run spec:bundle && npm run build -w @upskill/docs",
     "claudemd:check": "node scripts/claude-md-check.js",
     "lint": "eslint packages/components/src",
-    "metadata:validate": "node scripts/validate-metadata.js",
+    "usage:validate": "node scripts/validate-usage.js",
     "spec:validate": "node scripts/validate-spec.js",
     "spec:generate": "node scripts/generate-spec.js",
     "spec:bundle": "node scripts/spec-bundle.js",

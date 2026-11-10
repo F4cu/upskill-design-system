@@ -1,0 +1,65 @@
+{
+  "component": {
+    "name": "Badge",
+    "type": "display",
+    "status": "beta",
+    "description": "Static category label pill. Outline: border only, transparent background. Filled: neutral-subtlest background. Purely presentational — no selection state and no interaction semantics. Distinct from Chip, which is an interactive selection toggle.",
+    "figmaNodeId": "28:1134"
+  },
+  "useWhen": [
+    "Labelling a course or card with a static category (e.g. Design, Development)",
+    "Showing a non-interactive level or status (e.g. Beginner, New, Certified)",
+    "Displaying a compact metadata token in a card or list row"
+  ],
+  "notFor": [
+    {
+      "case": "Using Badge as a filter the user can toggle",
+      "because": "Badge is display-only with no selection state or click semantics.",
+      "instead": "Chip",
+      "note": "Use Chip, which renders a button with aria-pressed for selection."
+    },
+    {
+      "case": "Using Badge as a clickable action",
+      "because": "Badge renders a <span> and carries no action weight.",
+      "instead": "Button"
+    },
+    {
+      "case": "Putting long sentences inside a Badge",
+      "because": "Badge is a compact pill with nowrap text; long content breaks the layout.",
+      "instead": "Text"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "card-category-row",
+      "description": "A row of static category badges in a card's metadata area.",
+      "tree": "Card > Stack > [Heading, Inline(gap=xs) > [Badge(outline), Badge(filled)]]"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "outline",
+        "filled"
+      ],
+      "default": "outline",
+      "useWhen": {
+        "outline": "Bordered pill on transparent background. Use on plain surfaces where a fill would compete with surrounding content.",
+        "filled": "Neutral-subtlest background, no visible border. Use on elevated or busy surfaces where a fill reads more clearly than a thin border."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Inline",
+      "Stack",
+      "Card",
+      "CardHorizontal",
+      "CardVertical"
+    ],
+    "width": "hug",
+    "nests": false
+  }
+}

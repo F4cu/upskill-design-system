@@ -1,0 +1,57 @@
+{
+  "component": {
+    "name": "ProgressBar",
+    "type": "display",
+    "status": "beta",
+    "description": "A 4px-tall track with a coloured fill representing a completion percentage (0–100). Used to show course progress on cards and profile sections.",
+    "figmaNodeId": "54:1259"
+  },
+  "useWhen": [
+    "Showing how far a learner has progressed through a course on a CardHorizontal or CardVertical",
+    "Displaying completion percentage on a profile or dashboard summary"
+  ],
+  "notFor": [
+    {
+      "case": "Using ProgressBar for loading spinners or indeterminate states",
+      "because": "ProgressBar requires a known 0–100 value. Indeterminate loading needs a different pattern.",
+      "instead": null,
+      "note": "Use a spinner or skeleton component (not in scope for this library)."
+    }
+  ],
+  "patterns": [
+    {
+      "name": "course-progress",
+      "description": "ProgressBar placed beneath a course title inside a CardHorizontal to show completion.",
+      "tree": "CardHorizontal > content > Stack(gap=xs) > [Heading, ProgressBar]"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "useWhen": {
+        "default": "Accent-coloured fill on a neutral track."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "CardHorizontal",
+      "CardVertical",
+      "Box",
+      "Stack"
+    ],
+    "width": "fill",
+    "nests": false,
+    "rules": [
+      {
+        "case": "Omitting the label prop when more than one ProgressBar can appear on a page (e.g. a list of course cards)",
+        "because": "role=\"progressbar\" defaults aria-label to the generic \"Progress\", so screen reader users can't tell which item a given bar belongs to without also relying on nearby text.",
+        "do": "Pass label describing what is progressing, e.g. `${title} progress` (see CardHorizontal), or pass aria-labelledby pointing at the visible title's id when the title is already rendered nearby (CardVertical.Progress)."
+      }
+    ]
+  }
+}

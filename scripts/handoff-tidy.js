@@ -8,7 +8,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { isInteractive, normalizeReviewPath, readComponentMetadata } from "./lib.js";
+import { isInteractive, normalizeReviewPath, readComponentUsage } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -62,10 +62,10 @@ function mtimeIso(filePath) {
 //
 // `path` and `risk` let a readout compare reviewer vs no-reviewer runs per risk
 // tier (ADR-029). Records that predate them are back-filled: every earlier run
-// came from /review-component (`full`), and risk is derived from current metadata.
+// came from /review-component (`full`), and risk is derived from current usage.json.
 
 function riskOf(component) {
-  const meta = readComponentMetadata(component);
+  const meta = readComponentUsage(component);
   if (!meta) return null;
   return isInteractive(meta) ? "interactive" : "display";
 }

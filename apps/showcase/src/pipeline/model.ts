@@ -106,7 +106,7 @@ export const pipelineNodes: PipelineNode[] = [
     label: 'Components (@upskill/components)',
     kind: 'consumer',
     description:
-      'A fixed, deliberately small component set — layout primitives, typography, form inputs, Card variants and a handful of page-specific molecules — each shipping index.tsx, a CSS Module referencing only built token custom properties, stories, and a schema-validated metadata.json that agents read to compose correctly. This is the most agent-operated node in the pipeline: components are scaffolded from schema plus Figma context, built through the verified add-component loop (sense, scaffold, deterministic gate, adversarial review), reviewed by a fresh subagent that opens a component/* PR, and mined for learnings that land back in metadata rather than rotting in code. Lifecycle has two axes (ADR-010): maturity is pushed code-to-Airtable, implementation sign-off is human-set in Airtable and pulled back.',
+      'A fixed, deliberately small component set — layout primitives, typography, form inputs, Card variants and a handful of page-specific molecules — each shipping index.tsx, a CSS Module referencing only built token custom properties, stories, a schema-validated usage.json that agents read to compose correctly, and a spec.json for building it. This is the most agent-operated node in the pipeline: components are scaffolded from schema plus Figma context, built through the verified add-component loop (sense, scaffold, deterministic gate, adversarial review), reviewed by a fresh subagent that opens a component/* PR, and mined for learnings that land back in usage.json and the spec rather than rotting in code. Lifecycle has two axes (ADR-010): maturity is pushed code-to-Airtable, implementation sign-off is human-set in Airtable and pulled back.',
     links: {
       doc: 'docs/02-component-lifecycle.md',
       adr: 'docs/decisions/010-component-lifecycle-two-axes.md',
@@ -166,7 +166,7 @@ export const pipelineNodes: PipelineNode[] = [
     label: 'CI gate: components',
     kind: 'gate',
     description:
-      'The component quality gate on every push and PR touching packages/components: token build, metadata validation against component.schema.json, typecheck, package build, the a11y coverage gate (every interactive component, derived from its metadata, must ship a behavioral a11y test — Vitest, Testing Library and vitest-axe asserting the dynamic ARIA contract), the behavioral tests themselves, and an ADR-013 staleness check that regenerates the cross-component pattern schema and diffs it against the committed copy. Agent-generated component code must clear this gate and an adversarial review before a human-reviewed PR can land it on main.',
+      'The component quality gate on every push and PR touching packages/components: token build, usage.json validation against component.usage.schema.json, typecheck, package build, the a11y coverage gate (every interactive component, derived from its usage.json and spec, must ship a behavioral a11y test — Vitest, Testing Library and vitest-axe asserting the dynamic ARIA contract), the behavioral tests themselves, and an ADR-013 staleness check that regenerates the cross-component pattern schema and diffs it against the committed copy. Agent-generated component code must clear this gate and an adversarial review before a human-reviewed PR can land it on main.',
     links: {
       workflow: '.github/workflows/components-check.yml',
       doc: 'docs/03-accessibility.md',
@@ -181,7 +181,7 @@ export const pipelineNodes: PipelineNode[] = [
     label: 'Airtable sync (code → Airtable)',
     kind: 'governance',
     description:
-      'On every merge to main touching token source or component metadata, scripts/airtable-sync.js upserts primitives, semantic and device tokens into three Airtable tables and pushes component metadata (including the sense-derived pipeline stage) into a fourth — one-directional, direct REST, no MCP anywhere near CI. Airtable is the governance layer: humans annotate tokens there with status, owner, successor and notes. A "don’t downgrade done" guard ensures a pushed pipeline stage never overwrites a human’s Implementation sign-off, which is why the two lifecycle axes live in separate columns.',
+      'On every merge to main touching token source or component usage files, scripts/airtable-sync.js upserts primitives, semantic and device tokens into three Airtable tables and pushes component metadata (including the sense-derived pipeline stage) into a fourth — one-directional, direct REST, no MCP anywhere near CI. Airtable is the governance layer: humans annotate tokens there with status, owner, successor and notes. A "don’t downgrade done" guard ensures a pushed pipeline stage never overwrites a human’s Implementation sign-off, which is why the two lifecycle axes live in separate columns.',
     links: {
       script: 'scripts/airtable-sync.js',
       workflow: '.github/workflows/sync-tokens.yml',

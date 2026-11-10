@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 import { DropdownMenu } from './index'
 
 // Tier-2 behavioral a11y (ADR-008). Asserts the dynamic ARIA contract from
-// DropdownMenu.metadata.json that static jsx-a11y lint can't see: the panel
+// DropdownMenu.spec.json that static jsx-a11y lint can't see: the panel
 // exposes role=menu|listbox via listRole; items get menuitem|option; option
 // items carry aria-selected reflecting value; items use a single
 // roving focus target (tabIndex=-1, moved via Arrow keys, not one Tab stop

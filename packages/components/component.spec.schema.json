@@ -144,7 +144,7 @@
     },
 
     "constraints": {
-      "description": "Prop combinations the component requires or forbids. Contextual misuse (where a component is placed) stays in metadata usage.antiPatterns.",
+      "description": "Prop combinations the component requires or forbids. Contextual misuse (where a component is placed) goes in <Name>.usage.json composition.rules. Content-format rules on a single prop are documented-only constraints (empty enforcedBy).",
       "type": "array",
       "items": {
         "type": "object",

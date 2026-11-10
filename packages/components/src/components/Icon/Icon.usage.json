@@ -1,0 +1,76 @@
+{
+  "component": {
+    "name": "Icon",
+    "type": "display",
+    "status": "beta",
+    "description": "Renders one of 22 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
+    "figmaNodeId": "none"
+  },
+  "useWhen": [
+    "Providing a visual cue alongside a label (Button leading icon, form field prefix)",
+    "Indicating direction or action in a compact space (chevrons, plus, minus)",
+    "Communicating theme state (sun/moon-star for light/dark toggle)",
+    "Opening an overflow menu of secondary actions (more-vertical, the vertical-ellipsis 'kebab'); always inside an icon-only Button with an aria-label and aria-haspopup=\"menu\", never as a bare clickable glyph"
+  ],
+  "notFor": [
+    {
+      "case": "Adding icons outside the fixed set",
+      "because": "The set is intentionally small. Adding arbitrary icons bloats the bundle and fragments the visual language.",
+      "instead": null,
+      "note": "Choose the closest existing icon, or propose expanding the fixed set deliberately."
+    }
+  ],
+  "patterns": [
+    {
+      "name": "icon-label-pair",
+      "description": "An Icon followed by a Text label inside an Inline, used for navigation items and feature callouts.",
+      "tree": "Inline(gap=xs, align=center) > [Icon(size=md), Text(size=body-default)]"
+    }
+  ],
+  "variants": {
+    "size": {
+      "options": [
+        "sm",
+        "md"
+      ],
+      "default": "md",
+      "useWhen": {
+        "sm": "16px — use inside dense UI elements such as tags, badges, or inline metadata.",
+        "md": "24px — default; use alongside body text, in buttons, and as standalone affordances."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Button",
+      "Card",
+      "ButtonArrow",
+      "Accordion",
+      "TextField",
+      "CardHorizontal",
+      "CardVertical",
+      "Image",
+      "AppHeader",
+      "Select",
+      "Breadcrumb"
+    ],
+    "width": "fixed",
+    "nests": false,
+    "rules": [
+      {
+        "case": "Using Icon as the sole accessible label for an interactive control",
+        "because": "aria-hidden=true by default; a visually icon-only button has no accessible name.",
+        "do": "Pass the label prop to set aria-label, or wrap in a Button with a visually-hidden text label."
+      },
+      {
+        "case": "Setting a color prop or inline style directly on the Icon element",
+        "because": "Icon uses currentColor — color must be set on the ancestor element that owns the color context, using a semantic token. IconProps currently only omits 'children' from the spread SVGAttributes type, so color, fill, stroke, strokeWidth, role, aria-hidden, and aria-label can all be passed through and silently override Icon's intended behavior with no type error.",
+        "do": "Apply the token via style or CSS on the ancestor span/element, never on <Icon> itself. Token choice depends on context: use color.icon.default for standalone or button-adjacent icons; use color.icon.subtle when the icon appears inline alongside color.text.subtle or metadata-scale text, so the icon sits in the same visual register as its label."
+      }
+    ]
+  }
+}

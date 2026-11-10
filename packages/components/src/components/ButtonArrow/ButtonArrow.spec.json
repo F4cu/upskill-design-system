@@ -73,7 +73,7 @@
         "action": "Moves focus to the next focusable element"
       }
     ],
-    "notes": "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS."
+    "notes": "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS. aria-label defaults to 'Previous' or 'Next' from direction. Pass a more specific one through rest props when the context needs it (e.g. 'Previous course'), never an empty string."
   },
   "styles": {
     "Root": [

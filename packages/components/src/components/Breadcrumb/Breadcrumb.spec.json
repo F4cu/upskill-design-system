@@ -51,7 +51,16 @@
       }
     }
   },
-  "constraints": [],
+  "constraints": [
+    {
+      "id": "last-item-no-href",
+      "if": {
+        "items": "*"
+      },
+      "reason": "Omit href on the last item: it is the current page, which the component renders as plain text with aria-current=page.",
+      "enforcedBy": []
+    }
+  ],
   "states": [
     {
       "name": "default",

@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 import { TextField } from './index'
 
 // Tier-2 behavioral a11y (ADR-008). Asserts the dynamic ARIA contract from the
-// metadata (role: textbox; aria-invalid + aria-describedby on error) that the
+// spec (role: textbox; aria-invalid + aria-describedby on error) that the
 // static jsx-a11y lint can't see: the label-to-input association (including when
 // hidden), typing updates the value, and the error state wires aria-invalid and
 // aria-describedby to a role=alert message.

@@ -107,5 +107,11 @@
   "figma": {
     "sets": [],
     "divergences": []
-  }
+  },
+  "decisions": [
+    {
+      "decision": "Presentational only: no playback state or media controls. A parent handles clicks and playback.",
+      "reason": "Media state would couple VideoFrame to one player implementation."
+    }
+  ]
 }

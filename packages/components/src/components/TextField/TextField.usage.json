@@ -1,0 +1,84 @@
+{
+  "component": {
+    "name": "TextField",
+    "type": "input",
+    "status": "beta",
+    "description": "A labelled text input for collecting single-line user data. Includes a visible label, an optional error message with ARIA association, and interaction states. Use for any freeform text entry: names, emails, passwords, search terms.",
+    "figmaNodeId": "2879:8549"
+  },
+  "useWhen": [
+    "Collecting freeform single-line text from the user (name, email, password, search query)",
+    "A form field needs a visible label and optional error feedback",
+    "The value is typed, not selected — use Select for predefined option sets"
+  ],
+  "notFor": [
+    {
+      "case": "Using TextField for multi-line text",
+      "because": "Renders a single-line <input>; tall freeform content (bio, comments) needs a <textarea>.",
+      "instead": null,
+      "note": "Use a native <textarea> styled with design tokens until a TextArea component is added."
+    },
+    {
+      "case": "Using TextField for choosing from a fixed list",
+      "because": "Freeform text provides no validation or keyboard-navigable option list.",
+      "instead": "Select"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "inline-name-row",
+      "description": "Two TextFields side by side for first/last name — each wrapped in a Box with flex:1 so they share the available width equally.",
+      "tree": "Inline(gap=md, align=start) > [Box(style={flex:1}) > TextField(label='First name'), Box(style={flex:1}) > TextField(label='Last name')]"
+    },
+    {
+      "name": "form-field-stack",
+      "description": "A vertical series of labelled fields inside a Card, grouped by topic.",
+      "tree": "Card > Stack(gap=lg) > [Heading, TextField, TextField, Select]"
+    }
+  ],
+  "variants": {
+    "icon": {
+      "options": [
+        "none",
+        "any IconName"
+      ],
+      "default": "none",
+      "useWhen": {
+        "none": "No icon. Standard text input.",
+        "any IconName": "Renders a decorative icon on the leading (left) side. Use 'search' for search inputs. Icon is aria-hidden."
+      }
+    },
+    "size": {
+      "options": [
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "useWhen": {
+        "md": "40px tall. Standard form fields and inline inputs.",
+        "lg": "48px tall. Hero search bars, prominent single-field forms."
+      }
+    },
+    "shape": {
+      "options": [
+        "square",
+        "round"
+      ],
+      "default": "square",
+      "useWhen": {
+        "square": "Rounded-corner rectangle (border-radius-sm). Default for form fields.",
+        "round": "Pill shape (border-radius-full). Use for search inputs or brand-forward contexts."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
+    ],
+    "width": "fill",
+    "nests": false
+  }
+}

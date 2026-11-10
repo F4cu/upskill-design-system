@@ -1,0 +1,43 @@
+{
+  "component": {
+    "name": "AppHeader",
+    "type": "container",
+    "status": "beta",
+    "description": "Full-width top navigation bar. Fixed height (90px per Figma spec). Contains three slots: left logo, centred search field, and right area (nav links + user dropdown). No routing logic — pass nav items and callbacks as props.",
+    "figmaNodeId": "82:2242"
+  },
+  "useWhen": [
+    "Every page that requires global navigation and search"
+  ],
+  "patterns": [
+    {
+      "name": "full-page-layout",
+      "description": "AppHeader at the top, followed by a page content Stack, composing the full-width application shell.",
+      "tree": "Stack(gap=none) > [AppHeader, main > Stack(gap=xl) > [...pageContent]]"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "useWhen": {
+        "default": "Elevated background bar with logo, search, nav links, and user dropdown."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [],
+    "width": "fill",
+    "nests": false,
+    "rules": [
+      {
+        "case": "Using AppHeader inside a page section or Card",
+        "because": "AppHeader is a full-width page-level organism; nesting it breaks its width and positioning semantics.",
+        "do": "Place AppHeader at the root layout level, above the page content container."
+      }
+    ]
+  }
+}

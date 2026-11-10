@@ -1,8 +1,8 @@
 ---
 title: "Component lifecycle"
 sources:
-  - packages/components/component.schema.json
-  - scripts/validate-metadata.js
+  - packages/components/component.usage.schema.json
+  - scripts/validate-usage.js
   - scripts/sense.js
   - scripts/lib.js
   - docs/decisions/001-component-metadata-schema.md
@@ -27,12 +27,13 @@ sources:
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); this page describes lifecycle stages, not Figma property mappings, still accurate
 # clock reset 2026-11-10: ADR-027 amendment adds optional spec sections (anatomyExamples, decisions, ruledOut); this page describes the metadata schema and the gate, not spec sections, still accurate
 # 2026-11-10: gate list gains anatomy:test (ADR-030 amendment); ADR-027 amendment adds anatomy builtOnPart/notRendered, which this page doesn't describe
+# rewritten 2026-11-10: metadata.json renamed usage.json and relabelled (ADR-001 amendment 2026-11-10); schema paragraph, variants example and gate command updated
 ---
 # Component lifecycle
 
 ## What it is
 
-Every component in `packages/components/src/` ships four co-located files — `index.tsx`, a CSS Module (a stylesheet scoped to just that component), a stories file (its Storybook examples), and `ComponentName.metadata.json` — and moves through a lifecycle tracked on **two independent axes**: maturity (is it production-ready?) and implementation (where is it in the build-review-learn pipeline?). The metadata file is the machine-readable contract that the agentic tooling reads; the two-axis lifecycle is how code-derived state and human sign-off coexist without overwriting each other.
+Every component in `packages/components/src/` ships four co-located files — `index.tsx`, a CSS Module (a stylesheet scoped to just that component), a stories file (its Storybook examples), `ComponentName.usage.json` and `ComponentName.spec.json` — and moves through a lifecycle tracked on **two independent axes**: maturity (is it production-ready?) and implementation (where is it in the build-review-learn pipeline?). The usage and spec files are the machine-readable contract that the agentic tooling reads; the two-axis lifecycle is how code-derived state and human sign-off coexist without overwriting each other.
 
 ## Why it's built this way
 
@@ -42,7 +43,7 @@ Every component in `packages/components/src/` ships four co-located files — `i
 
 The schema was synthesized from three sources (giorris.dev's `usage`/`variants`/`antiPatterns` base, hvpandya.com's `tokens` list, the LLM Component Schema Standard's `generativeRules`) and deliberately *excludes* some of what those sources include: `anatomy` lives in Storybook instead; `aiHints`/`generativeRules` were distributed into `usage.keywords`, `usage.when`, and composition/layout fields rather than kept as a monolithic block.
 
-The 2026-06-17 amendment tightened it after a foundation review found 7 of 11 metadata files failed the schema: `variants` became a map of **named axes** (each axis holding `{ options, default, purpose }`), one taxonomy was enforced (`component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`), and validation moved into CI (`scripts/validate-metadata.js`, ajv — the JSON-schema validator library — draft 2020-12, run in `components-check.yml`).
+The 2026-06-17 amendment tightened it after a foundation review found 7 of 11 metadata files (as they were then called) failed the schema: `variants` became a map of **named axes** (each axis holding `{ options, default, purpose }`), one taxonomy was enforced (`component.category` ∈ `atom|molecule|organism|layout`, `component.type` ∈ `interactive|display|container|input`), and validation moved into CI (now `scripts/validate-usage.js`, ajv — the JSON-schema validator library — draft 2020-12, run in `components-check.yml`).
 
 ### Two axes, because one field kept lying
 
@@ -50,13 +51,13 @@ The 2026-06-17 amendment tightened it after a foundation review found 7 of 11 me
 
 | Value | Axis | Owner | Set where |
 |---|---|---|---|
-| `beta` / `ready` / `deprecated` | Maturity | Code | `component.status` in metadata → pushed to Airtable's `Maturity` column |
+| `beta` / `ready` / `deprecated` | Maturity | Code | `component.status` in usage.json → pushed to Airtable's `Maturity` column |
 | `in progress` / `in review` | Implementation | Code (derived) | `sense.js` derives from handoff artifacts → pushed to `Implementation` |
 | `done` / `todo` | Implementation | **Human** | Set directly in Airtable, pulled into `.claude/component-signoff.json`, never overwritten |
 
 The Implementation axis holds exactly four broad stages (the only values that ever reach Airtable — issue #64, [ADR-010](decisions/010-component-lifecycle-two-axes.md) amendment), and the derivation rules are machine-checkable. `in progress` = code exists but the review pipeline hasn't begun; a `substate` field in `.claude/component-pipeline.json` distinguishes `unreviewed` (no loop artifacts at all — a lone `.snapshot.json` is just a context cache; this replaces the old `established` label) from `scaffold-underway` (a `.run.json` open with no render checkpoint yet). `in review` = generation is complete and renderable, so the **review checklist** has begun — the component stays here, as committable work-in-progress, until human sign-off.
 
-The checklist has four items, rendered per component in `STATUS_QUO.md` and derived at render time by `sense.js` (no stored checklist state): (1) the automated gate — lint, typecheck, build, metadata, a11y scripts as one pass/fail item; (2) visual review — a human y/n/other(comments) answer recorded as `visualReview: { status, comments, at }` in `.claude/component-review-state.json` by `/add-component` or `/layout-generation` right after the render checkpoint; (3) code review — labelled "Code and behavioural a11y review — adversarial subagent" for Tier-2 interactive components ([ADR-008](decisions/008-behavioral-a11y-tier.md)), plain "Code review" otherwise; (4) learnings back-fill via `/extract-learnings`. Items a path doesn't require render as explicit `n/a — reason` lines, never silently omitted.
+The checklist has four items, rendered per component in `STATUS_QUO.md` and derived at render time by `sense.js` (no stored checklist state): (1) the automated gate — lint, typecheck, build, usage, a11y scripts as one pass/fail item; (2) visual review — a human y/n/other(comments) answer recorded as `visualReview: { status, comments, at }` in `.claude/component-review-state.json` by `/add-component` or `/layout-generation` right after the render checkpoint; (3) code review — labelled "Code and behavioural a11y review — adversarial subagent" for Tier-2 interactive components ([ADR-008](decisions/008-behavioral-a11y-tier.md)), plain "Code review" otherwise; (4) learnings back-fill via `/extract-learnings`. Items a path doesn't require render as explicit `n/a — reason` lines, never silently omitted.
 
 Which review route a component took is recorded in a `reviewPath` field: `full` (`/review-component` — a fresh adversarial reviewer [subagent](08-glossary.md) plus the learnings loop) or `standard` (`/code-review` run inside the working session, no subagent and no separate learnings step, so item 4 is `n/a`). Human `done`/`todo` values win over the derived stage, and the push **never overwrites them** — the "don't downgrade done" guard, covered in [Governance](05-governance.md). Because the two axes never share a column, a pushed value and a human value can never collide: `Accordion` reads `Maturity: beta` + `Implementation: done` simultaneously.
 
@@ -74,7 +75,7 @@ Visual similarity alone is never a reason to create a new component or to merge 
 
 [ADR-023](decisions/023-subcomponents-compound-components.md) adds one more outcome to the test above. Sometimes a requirement passes question 1 (same role, so extend the existing component), yet covering it with props would need several props that are only valid in certain combinations. `CardVertical` was the trigger: a favorite toggle and an overflow menu that must never appear together, plus consumer-specific content such as an instructor row. In that case the component gains **parts** instead of more props: named subcomponents reachable as `CardVertical.Media`, `CardVertical.Body` and so on.
 
-The existing prop API stays as a **preset**, rebuilt from the parts, so nothing breaks. Parts never enter the fixed component set and have no folder of their own. They are declared only in the parent's metadata (`composition.parts`), and the gate checks them like any other metadata field. "Make the common configurable, make the uncommon composable": the preset covers the common case, and the parts cover the rest.
+The existing prop API stays as a **preset**, rebuilt from the parts, so nothing breaks. Parts never enter the fixed component set and have no folder of their own. They are declared only in the parent's usage file (`composition.parts`), and the gate checks them like any other usage field. "Make the common configurable, make the uncommon composable": the preset covers the common case, and the parts cover the rest.
 
 ### The carousel precedent: sometimes the answer is a hook
 
@@ -82,18 +83,21 @@ The existing prop API stays as a **preset**, rebuilt from the parts, so nothing 
 
 ## How it works, concretely
 
-The metadata schema (`packages/components/component.schema.json`) requires four top-level properties: `component`, `usage`, `variants`, `composition` (originally named `relationships` — see the ADR-001 2026-07-23 amendment). `states`, `tokens` and `accessibility` moved to each component's `<Name>.spec.json`, its [component spec](08-glossary.md), on 2026-10-11 (ADR-001 amendments, [ADR-027](decisions/027-component-spec-file.md)). Metadata that still carries them fails the schema. The token list is now whatever the spec's `styles` reference. Scripts that need metadata and spec combined in one object read it through `readComponentMetadata` in `scripts/lib.js`. What each section holds, why, and who consumes it is the subject of [10 — Machine-readable metadata](10-machine-readable-metadata.md); this page keeps only the lifecycle-relevant shape. `composition` may also carry an optional `parts` list for components with subcomponents (ADR-023); `scripts/validate-metadata.js` cross-checks each part's references against real components and sibling parts. A `variants` block modelled as named axes looks like:
+On 2026-11-10 the file was renamed `<Name>.usage.json` and relabelled around composition (ADR-001 amendment of that date). The usage schema (`packages/components/component.usage.schema.json`) requires four top-level properties: `component`, `useWhen`, `variants`, `composition`, with optional `notFor` (wrong picks, each naming the component to use instead) and `patterns` (named component trees). `composition` holds `accepts`, `containedBy`, `width`, `nests`, and the rules for combining the component: `limits` (counts that `validate-layout` checks) and `rules` (prose). `states`, `tokens`, `accessibility` and rules about prop combinations live in each component's `<Name>.spec.json`, its [component spec](08-glossary.md) (ADR-001 amendments, [ADR-027](decisions/027-component-spec-file.md)); a usage file that carries them fails the schema. The token list is whatever the spec's `styles` reference. Scripts that need usage and spec combined in one object read it through `readComponentUsage` in `scripts/lib.js`. What each section holds, why, and who consumes it is the subject of [10 — Machine-readable metadata](10-machine-readable-metadata.md); this page keeps only the lifecycle-relevant shape. `composition` may also carry an optional `parts` list for components with subcomponents (ADR-023); `scripts/validate-usage.js` cross-checks each part's references against real components and sibling parts. A `variants` block modelled as named axes looks like:
 
 ```json
 "variants": {
-  "variant": { "options": ["primary", "secondary", "ghost"], "default": "primary", "purpose": "visual emphasis of the action" },
-  "size":    { "options": ["sm", "md", "lg"], "default": "md", "purpose": "control height and label size" }
+  "variant": { "options": ["accent", "neutral"], "default": "neutral",
+               "useWhen": { "accent": "The one action a decision region exists for. Brand fill.",
+                            "neutral": "Everyday and supporting actions. Bordered." } },
+  "size":    { "options": ["sm", "md", "lg"], "default": "md",
+               "useWhen": { "sm": "Dense UI: table rows, toolbars.", "md": "Most page contexts.", "lg": "Hero sections." } }
 }
 ```
 
 The fixed component scope grows only by explicit phase decision (see `AGENTS.md` "Components"): the Phase 4–5 core (`Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`), then 5b (`Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`), 5c (`CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`), and 5d (`Accordion`, `Badge`, the Button `ghost` variant — renamed `transparent` in ADR-024 — the `useSlider` hook). New components enter through the verified `/add-component` loop or the `/component-scaffold` moment — see [Agentic moments](06-agentic-moments.md).
 
-After any scaffold or edit, the deterministic gate must pass with no manual fixes: `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test`, plus a render check in both themes in Storybook. `components-check.yml` runs the same gate on every PR.
+After any scaffold or edit, the deterministic gate must pass with no manual fixes: `npm run usage:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test`, plus a render check in both themes in Storybook. `components-check.yml` runs the same gate on every PR.
 
 ## Diagram
 
@@ -115,7 +119,7 @@ flowchart TB
             done
         end
     end
-    meta[component.status<br/>in metadata] --> M
+    meta[component.status<br/>in usage.json] --> M
     artifacts[.review.json / .run.json / visualReview<br/>handoff artifacts + review state] --> derived
     M -->|pushed| A[(Airtable<br/>Maturity column)]
     derived -->|pushed, skips cell<br/>if human value present| B[(Airtable<br/>Implementation column)]
@@ -126,4 +130,4 @@ flowchart TB
 
 - ADRs: [001 — Metadata schema](decisions/001-component-metadata-schema.md) (+ amendment), [006 — Carousel as hook](decisions/006-carousel-hook-not-component.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [010 — Two-axis lifecycle](decisions/010-component-lifecycle-two-axes.md), [023 — Subcomponents](decisions/023-subcomponents-compound-components.md)
 - Commands: `/component-scaffold`, `/add-component` (in `.claude/commands/`)
-- Scripts: `npm run metadata:validate`, `npm run sense`, `npm run typecheck`, `npm run build` — see the [CLI reference](07-cli-reference.md)
+- Scripts: `npm run usage:validate`, `npm run sense`, `npm run typecheck`, `npm run build` — see the [CLI reference](07-cli-reference.md)

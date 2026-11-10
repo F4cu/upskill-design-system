@@ -1,11 +1,11 @@
 ---
-description: Generate a page or section layout as a React tree using only library components and tokens, with each structural choice justified by component metadata relationships. Use when starting a new page or section from a one-paragraph brief, a Figma file URL, or both.
+description: Generate a page or section layout as a React tree using only library components and tokens, with each structural choice justified by component usage.json rules. Use when starting a new page or section from a one-paragraph brief, a Figma file URL, or both.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion, mcp__claude_ai_Figma__get_design_context, mcp__claude_ai_Figma__get_metadata, mcp__claude_ai_Figma__get_screenshot
 ---
 
 # Layout generation
 
-**Invariant that must survive:** Only fixed-set components and tokens; every structural choice cites a metadata rule.
+**Invariant that must survive:** Only fixed-set components and tokens; every structural choice cites a usage.json rule.
 
 **Trigger:** Developer, when starting a new page or section layout.
 
@@ -13,7 +13,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion, mcp__claude
 
 ## First step — clarify inputs before doing any work
 
-Before reading metadata or drafting any structure, determine which inputs are available:
+Before reading the usage files or drafting any structure, determine which inputs are available:
 
 1. **If a Figma URL or node ID was provided** — call `get_design_context` immediately and use the resulting layout, spacing values, and sub-element details as the primary source. The brief (if also provided) sets intent and fills gaps the Figma output leaves ambiguous.
 
@@ -27,7 +27,8 @@ Before reading metadata or drafting any structure, determine which inputs are av
 
 ## Inputs (read all before starting)
 
-- All component metadata files in `packages/components/src/` (`*.metadata.json`) — focus on `composition.accepts`, `composition.containedBy`, `usage.patterns`, `composition.layoutBehavior`
+- All component usage files in `packages/components/src/` (`*.usage.json`) — focus on `composition` (`accepts`, `containedBy`, `width`, `nests`, `limits`, `rules`), `patterns`, `notFor` and each option's `variants.<axis>.useWhen`
+- Each component's spec `constraints` (`*.spec.json` → `constraints` only): prop combinations, required props and value formats for the props you set (ADR-001 amendment 2026-11-10). Read nothing else from the specs
 - `.claude/component-patterns.json` — the cross-component pattern aggregate (ADR-013). Read it whole; it fits in context. Use `patterns.*.implementedBy` to pick between components that implement the same interaction pattern, `state.props` for each pattern's canonical state/callback prop names, and the `drift` array to avoid guessing a prop name by analogy — when two components name the same axis differently (e.g. Accordion `onOpenChange` vs Select `onValueChange`), always use the prop name listed for the component you are composing. This file is a consumer input for layout/composition work only — do not inject it into component scaffolding (ADR-013 records why).
 - Device grid tokens and `packages/components/src/styles/grid.css` utilities — these are part of the layout vocabulary
 - Layout brief — provided by the developer in the prompt (intent, key content areas, constraints)
@@ -45,7 +46,7 @@ Every generated page must follow this fixed hierarchy. One abstraction level per
 | **Container** | `.container` global class applied via `className` | presentational | centers content; max-width + grid margin; never a landmark |
 | **Column (N-column card grid)** | `.grid` global class (CSS Grid, column count auto-reflows via `--ds-grid-columns`) | presentational | use for equal-width card grids (3–4+ items) |
 | **Column (two-column wrapping)** | `Inline wrap` with `grow`/`minWidth` props on each child `Box` or `Stack` | presentational | use for two-panel layouts that stack on mobile; `minWidth` sets the breakpoint |
-| **Component** | library component from the fixed 26 set | per component | leaf — cite the metadata rule that placed it |
+| **Component** | library component from the fixed 26 set | per component | leaf — cite the usage.json rule that placed it |
 | **Footer** | `<Box as="footer">` | `contentinfo` | one per page |
 
 **Inline-style reconciliation** (replaces the blanket "no inline styles"):
@@ -61,11 +62,13 @@ Every generated page must follow this fixed hierarchy. One abstraction level per
 ## Constraints (enforce strictly)
 
 - Only use components exported by `@upskill/components` (see AGENTS.md "Components"); `npm run layout:validate` enforces the same list.
-- Every structural choice must cite the metadata rule that justifies it:
-  - `accepts` — a component can only contain what its metadata says it accepts
-  - `containedBy` — a component can only appear inside what its metadata says allows it
-  - `usage.patterns` — prefer named patterns over ad-hoc composition when one fits
-  - `layoutBehavior.widthBehavior` — determines whether a component fills its container or hugs its content
+- Every structural choice must cite the usage.json rule that justifies it:
+  - `accepts` — a component can only contain what its usage file says it accepts
+  - `containedBy` — a component can only appear inside what its usage file allows
+  - `patterns` — prefer named patterns over ad-hoc composition when one fits
+  - `composition.width` — whether a component fills its container or hugs its content
+  - `composition.limits` and `nests` — counts per region, repeated item or parent, and self-nesting; `npm run layout:validate` enforces both
+  - `composition.rules` — weight and placement in context (e.g. a card's lead action is `neutral`, never `accent`)
 - **Responsive rule:** rely on device tokens for spacing/typography (device CSS auto-applies media queries). Use `.grid` or `Inline wrap` for column→stack reflow. Never write `@media` queries by hand.
 
 ## Steps
@@ -87,7 +90,7 @@ Output the structure skeleton before proceeding to Pass 2.
 
 For each content area identified in Pass 1, select the appropriate library component. For every leaf node:
 
-- Cite the `when` or `usage.patterns` field from that component's metadata that justifies the choice.
+- Cite the `useWhen` (component or variant option) or `patterns` entry from that component's usage file that justifies the choice, and check its `notFor` for a better pick.
 - Check `accepts`/`containedBy` — the parent must accept the child, the child must allow being contained by the parent.
 - Apply the CLAUDE.md typography rules: any visible text must go through `<Text>` or `<Heading>`, never a raw string, `<span>`, or `<p>`.
 - **Map every visible Figma sub-element to a prop** — do not only read the text labels. Images, icons, badges, chevrons, and avatar circles each correspond to a prop. A missing prop silently omits the element with no error at build or runtime. For composite components (AppHeader, CardHorizontal, Breadcrumb), cross-check the emitted props against the component's Storybook `Default` story to confirm all required props are present.
@@ -208,7 +211,7 @@ import { useState } from 'react'
 import { Box, AppHeader, useCarousel } from '@upskill/components'
 
 // Pass 1 skeleton annotated with grammar level
-// Pass 2 components annotated with metadata justification
+// Pass 2 components annotated with usage.json justification
 // Pass 3 spacing tokens applied
 
 export default function CoursePage() {
@@ -235,7 +238,7 @@ export default function CoursePage() {
 }
 ```
 
-Annotate every structural node with the grammar level and every leaf node with the metadata rule that placed it. A reader should be able to audit the tree without opening any metadata file.
+Annotate every structural node with the grammar level and every leaf node with the usage.json rule that placed it. A reader should be able to audit the tree without opening any usage file.
 
 ### Optional: `--story` mode
 
@@ -276,5 +279,5 @@ Do not commit layout output directly to `main`.
 
 - `npm run layout:validate` exits 0.
 - The JSX builds without errors (`npm run typecheck`).
-- The page renders in `apps/showcase` via `npm run dev -w @upskill/showcase` at desktop (≥1440px), tablet (≥768px), and mobile (<768px) in both light and dark themes with **zero manual restructuring** after generation. If restructuring was needed, fix the grammar or metadata before scaling up — the skill's success signal is no-touch generation.
+- The page renders in `apps/showcase` via `npm run dev -w @upskill/showcase` at desktop (≥1440px), tablet (≥768px), and mobile (<768px) in both light and dark themes with **zero manual restructuring** after generation. If restructuring was needed, fix the grammar or usage files before scaling up — the skill's success signal is no-touch generation.
 - The output is committed to a feature branch with a PR open against `main` (ADR-016).

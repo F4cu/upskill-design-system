@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 import { Chip } from './index'
 
 // Tier-2 behavioral a11y (ADR-008). Asserts the dynamic contract the static
-// jsx-a11y lint can't see (Chip.metadata.json accessibility block): button
+// jsx-a11y lint can't see (Chip.spec.json accessibility block): button
 // semantics with the label as accessible name, aria-pressed reflecting the
 // caller-controlled pressed state, and Enter/Space activation firing onClick
 // so the caller can flip the pressed state.

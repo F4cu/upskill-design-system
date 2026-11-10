@@ -1,7 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [],
-  "generatedFrom": "97023b2beb6cd134e0d03c44542e7a202608433d",
+  "generatedFrom": "deb5b6d4e5101d1400e19a8d5073ec9b5df08b3b",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -34,7 +34,7 @@
           "maturity": "beta",
           "stage": "in review",
           "systemSpecificNotes": [
-            "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS.",
+            "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS. aria-label defaults to 'Previous' or 'Next' from direction. Pass a more specific one through rest props when the context needs it (e.g. 'Previous course'), never an empty string.",
             "aria-label — automatically set to 'Previous' or 'Next' from the direction prop; override via rest props for more specific context"
           ]
         },

@@ -28,7 +28,7 @@ Four layers, resolved in this order (later overrides earlier), W3C DTCG format i
 
 ## Components
 
-Code lives in `packages/components/src/components/<Name>/` (`index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.metadata.json`, `<Name>.spec.json`). Per-component knowledge lives **only** in `metadata.json` / `spec.json`, validated by `packages/components/component.schema.json` and `component.spec.schema.json` (ADR-001). Never add a per-component rules file (ADR-029). Implementation conventions: `packages/components/AGENTS.md`.
+Code lives in `packages/components/src/components/<Name>/` (`index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.usage.json`, `<Name>.spec.json`). Per-component knowledge lives **only** in `usage.json` (how to use and compose it) / `spec.json` (how it's built), validated by `packages/components/component.usage.schema.json` and `component.spec.schema.json` (ADR-001, ADR-027). Never add a per-component rules file (ADR-029). Implementation conventions: `packages/components/AGENTS.md`.
 
 **Fixed set.** Never add a component outside it unless the scope is explicitly expanded; compose existing ones instead.
 - Core: `Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`.
@@ -56,5 +56,5 @@ Every page maps Figma structure to HTML landmarks (ADR-011). Validate with `npm 
 
 - **Decisions:** `docs/decisions/NNN-*.md`. Read the ADR that governs a thing before changing it.
 - **Current state:** `.claude/STATUS_QUO.md`, `.claude/component-pipeline.json`, and `packages/tokens/{airtable-governance,token-usage,figma-variables}.json`. Read the committed files, never the live APIs. Regenerate with `npm run sense`.
-- **Gates:** `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test`; `npm run lint`. CI (`components-check.yml`) runs them on every PR.
+- **Gates:** `npm run usage:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test`; `npm run lint`. CI (`components-check.yml`) runs them on every PR.
 - **Human docs:** `docs/` (Starlight site) and Storybook.

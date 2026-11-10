@@ -487,7 +487,7 @@
         "when": {},
         "set": {
           "gap": "space.stack.sm",
-          "width": { "literal": "100%", "reason": "Fills its grid or carousel cell (layoutBehavior fill)." }
+          "width": { "literal": "100%", "reason": "Fills its grid or carousel cell (usage.json width: fill)." }
         }
       },
       { "when": { "size": "lg" }, "set": { "min-width": "size.card.min.lg" } },
@@ -560,7 +560,7 @@
     "sets": [
       { "name": "CardVertical", "nodeId": "52:4270", "covers": "The preset: Size × Status × State" },
       { "name": "CardVertical.Root", "nodeId": "2871:7567", "covers": "Composed parts, with Body and Meta as native slots" },
-      { "name": "CardVertical examples", "nodeId": "2871:8034", "covers": "Section with one example frame per usage.patterns id (not a component)" }
+      { "name": "CardVertical examples", "nodeId": "2871:8034", "covers": "Section with one example frame per usage.json patterns id (not a component)" }
     ],
     "divergences": [
       { "what": "Menu has an Expanded property in Figma; in code the open state is internal.", "decision": "Design-only preview property (ADR-026)." },

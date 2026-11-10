@@ -8,7 +8,7 @@ coded components, served by Vite on port 6006. There is no end-user app; you
 "run" the system by building tokens → components, launching the Storybook dev
 server, then driving its story iframes headlessly with Playwright via
 `.claude/skills/run-storybook/driver.mjs` (screenshots, console-error
-checks). The token build and `metadata:validate`/`typecheck`/`build` are the
+checks). The token build and `usage:validate`/`typecheck`/`build` are the
 non-visual checks every component change must pass.
 
 **What's installed** (in `packages/components/`): React + Vite framework;
@@ -58,7 +58,7 @@ npm run build          # tokens:build + tsc + vite build of @upskill/components
 Non-visual checks a component change must pass (all run clean on a healthy tree):
 
 ```bash
-npm run metadata:validate   # validates *.metadata.json against component.schema.json
+npm run usage:validate      # validates *.usage.json against component.usage.schema.json
 npm run typecheck           # tsc --noEmit in @upskill/components
 ```
 

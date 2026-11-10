@@ -1,5 +1,5 @@
 ---
-description: Scaffold a new component from the fixed set — generate its spec.json, index.tsx, CSS module, stories, and metadata.json from the schemas, an existing component as template, and Figma design context. Use when starting a component that does not yet exist in packages/components/src/.
+description: Scaffold a new component from the fixed set — generate its spec.json, index.tsx, CSS module, stories, and usage.json from the schemas, an existing component as template, and Figma design context. Use when starting a component that does not yet exist in packages/components/src/.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_design_context, mcp__claude_ai_Figma__get_metadata, mcp__claude_ai_Figma__get_screenshot, mcp__claude_ai_Figma__get_variable_defs
 ---
 
@@ -15,7 +15,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 
 ## Inputs (read all before starting)
 
-- Metadata schema — `packages/components/component.schema.json` (selection and composition guidance only)
+- Usage schema — `packages/components/component.usage.schema.json` (how to use and compose the component only)
 - Spec schema — `packages/components/component.spec.schema.json` (ADR-027): the build contract you write before any code
 - Existing component as structural template — pick the closest one in `packages/components/src/` (e.g. for Button use an interactive component; for Card use a container component)
 - Spec template — read the `<Template>.spec.json` of the closest component (every component has one since the ADR-027 backfill): one with the same role and structure, and for a compound component one with parts (ADR-023), e.g. `CardVertical`. The template shows the shape and level of detail, not content to copy
@@ -25,7 +25,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 ## Steps
 
 1. Read the Figma node to extract:
-   - Variant names and their visual purpose
+   - Variant names, when each is used, and how each looks
    - Interactive states (hover, focus, disabled, loading, etc.)
    - Which semantic tokens map to which visual properties (background, text, border, radius, spacing)
    - Layout behavior (fixed/hug width, inline vs block, can nest)
@@ -51,15 +51,15 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
 
    Inside `/add-component` this checkpoint is part of Stage 1. The approved names are final for steps 4–6. Under `/add-component --eval` it is auto-approved: write the proposal to `api-proposal.md` and continue (see that command's "Eval mode").
 4. **Write `<Name>.spec.json` now, from the approved proposal, before any code** (ADR-027). Create the component folder `packages/components/src/components/<Name>/` and write the spec against `component.spec.schema.json`: `anatomy` and `props` from the proposal tables (prop `kind` per the schema enum; Figma surface, property and set per prop), `constraints`, `states`, `accessibility`, `figma` (sets and recorded divergences), and `styles` from the Figma token mapping of step 1: part → rules of `when` (prop values and `state`) → CSS property → token path. A raw value needs `{ literal, reason }`. The spec states what the component must be; it is not a description of code you have not written. Do not list tokens separately: the spec's `styles` are the component's token list.
-5. Fill the metadata schema fields from the approved API proposal and what you observe in Figma: `component`, `usage`, `variants`, `composition` only. Leave out `states`, `tokens` and `accessibility`: the spec owns them and `metadata:validate` fails if metadata repeats them. Anti-patterns must reference only components in the fixed set. Variant and prop names match the approved table; Figma differs only by casing or a recorded mapping. Fill `composition.accepts`/`containedBy` and `usage.patterns`: `/layout-generation` depends on them.
+5. Write `<Name>.usage.json` from the approved API proposal and what you observe in Figma: `component`, `useWhen`, `notFor`, `patterns`, `variants`, `composition` only. Leave out `states`, `tokens` and `accessibility`: the spec owns them and `usage:validate` fails if the usage file repeats them. `notFor.instead` names a component in the fixed set (or null + `note`). Prop rules go in the spec's `constraints`, not here. Variant and prop names match the approved table; Figma differs only by casing or a recorded mapping. Fill `composition.accepts`/`containedBy`/`width`/`nests` and `patterns`: `/layout-generation` depends on them.
 6. Produce the rest of the component folder:
-   - `index.tsx` — typed props matching the spec's `props` (a variant axis is typed to the same `options` as `variants.<axis>` in metadata) and `states`; no hard-coded design values; import CSS module for class names
+   - `index.tsx` — typed props matching the spec's `props` (a variant axis is typed to the same `options` as `variants.<axis>` in usage.json) and `states`; no hard-coded design values; import CSS module for class names
    - `ComponentName.module.css` — one rule per variant + state combination in the spec's `styles`; only `var(--ds-*)` custom properties, never raw values
-   - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls. **Storybook title rule:** layout primitives (`category: layout` in metadata) use `title: 'Layout/ComponentName'`; everything else uses `title: 'Components/ComponentName'`.
-   - `ComponentName.metadata.json` — written in step 5.
+   - `ComponentName.stories.tsx` — `Default` story plus one named story per meaningful visual state; `args` + `argTypes` for controls. **Storybook title rule:** layout primitives (`component.type: layout` in usage.json) use `title: 'Layout/ComponentName'`; everything else uses `title: 'Components/ComponentName'`.
+   - `ComponentName.usage.json` — written in step 5.
    - `ComponentName.a11y.test.tsx` — interactive components only; the rule and how to write it are in `/add-component` → Stage 2.
    - Then reconcile: run `npm run tokens:build && npm run spec:validate`. It checks the spec against the code (props, defaults, variant options, the `--ds-*` properties the CSS reads, cross-references). Fix the code when the spec is right. When building showed the spec is wrong, amend the spec first, say so in your summary, and re-run. Never edit the spec only to make a failure go away. For a component that already exists without a spec (backfill, not a new component), do not write one by hand: run `npm run spec:generate -- <Name>`, which drafts `props`, anatomy, states and `styles` from the code and leaves `TODO`s for what code cannot say.
-7. Record the Figma node ID in the metadata file's `figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
+7. Record the Figma node ID in the usage file's `component.figmaNodeId` field. Code Connect is out of scope — it requires a Figma Organization or Enterprise plan (see ADR on this). Do not generate Code Connect files.
 
 ## Output
 
@@ -70,7 +70,7 @@ The five files above (spec first), ready to write to disk. No placeholder values
 For a standalone run (outside `/add-component`), the standard deterministic gate passes:
 
 ```bash
-npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test
+npm run usage:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test
 ```
 
 `npm run storybook` renders the component with no manual restructuring, in both light and dark themes.

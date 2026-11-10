@@ -193,7 +193,27 @@
       }
     }
   },
-  "constraints": [],
+  "constraints": [
+    {
+      "id": "subtitle-as-text",
+      "if": {
+        "Item.subtitle": "*"
+      },
+      "reason": "Pass <Text as=\"span\" size=\"metadata\" color=\"subtle\">, never a raw string or element: raw elements bypass the typography scale and color tokens.",
+      "enforcedBy": []
+    },
+    {
+      "id": "controlled-open-wins",
+      "if": {
+        "Item.open": "*"
+      },
+      "ignore": [
+        "Item.defaultOpen"
+      ],
+      "reason": "Never pass both. The controlled open prop wins over defaultOpen (a DEV-only warning fires). Use open + onOpenChange for controlled, or defaultOpen alone for uncontrolled.",
+      "enforcedBy": []
+    }
+  ],
   "states": [
     {
       "name": "default",
@@ -423,5 +443,15 @@
   "figma": {
     "sets": [],
     "divergences": []
-  }
+  },
+  "decisions": [
+    {
+      "decision": "The chevron Icon takes its color from the trigger (color.icon.default through currentColor). No color or style is set on the Icon itself.",
+      "reason": "Setting color on the Icon bypasses the token system."
+    },
+    {
+      "decision": "The panel is always mounted. A collapsed panel is aria-hidden and inert (set through a ref), never conditionally rendered or hidden with the hidden attribute.",
+      "reason": "aria-controls must point at an element that exists while collapsed, or the association breaks for screen readers (NVDA + Firefox). hidden forces display:none and breaks the height transition. inert keeps focusable descendants unreachable while the panel collapses; @types/react 18 has no inert JSX prop."
+    }
+  ]
 }

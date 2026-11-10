@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-10-12T06:56:12.704Z**
+Generated: **2026-11-10T13:17:29.828Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -24,9 +24,9 @@ None. No deprecated token has a live reference. ✅
 ## Components
 
 - **27 total** — Maturity: 27 beta
-- By type: container (6) · display (11) · input (3) · interactive (7)
+- By type: container (2) · display (11) · input (3) · interactive (7) · layout (4)
 - Implementation: 0 done · 25 in review · 2 in progress (2 unreviewed) · 0 todo
-- Source: `packages/components/src/components/*/*.metadata.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
+- Source: `packages/components/src/components/*/*.usage.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
 
 ### In review — checklist open, awaiting human sign-off
 
@@ -34,7 +34,7 @@ Generation is complete and renderable; each component works through its
 review checklist (committable WIP). Promote to `done` in Airtable
 (Implementation column) once every required item is checked.
 
-The automated gate (lint · typecheck · build · metadata · a11y scripts) has
+The automated gate (lint · typecheck · build · usage · a11y scripts) has
 passed for every row — it is a precondition of reaching review. On the
 full path (adversarial subagent), code review of `interactive`/`input`
 components also covers behavioural a11y; learnings back-fill is n/a on the
@@ -46,7 +46,7 @@ standard path (in-session /code-review).
 | `AppHeader` (container) | standard | ☐ | ✅ | n/a |
 | `Avatar` (display) | standard | ☐ | ✅ | n/a |
 | `Badge` (display) | standard | ☐ | ✅ | n/a |
-| `Box` (container) | full | ☐ | ✅ | ✅ |
+| `Box` (layout) | full | ☐ | ✅ | ✅ |
 | `Breadcrumb` (display) | standard | ☐ | ✅ | n/a |
 | `ButtonArrow` (interactive) | full | ☐ | ✅ | ✅ |
 | `Card` (container) | standard | ☐ | ✅ | n/a |
@@ -59,10 +59,10 @@ standard path (in-session /code-review).
 | `Heading` (display) | full | ☐ | ✅ | ✅ |
 | `Icon` (display) | standard | ☐ | ✅ | n/a |
 | `Image` (display) | standard | ☐ | ✅ | n/a |
-| `Inline` (container) | full | ☐ | ✅ | ✅ |
+| `Inline` (layout) | full | ☐ | ✅ | ✅ |
 | `ProgressBar` (display) | standard | ☐ | ✅ | n/a |
-| `ScrollArea` (container) | standard | ☐ | ✅ | n/a |
-| `Stack` (container) | full | ☐ | ✅ | ✅ |
+| `ScrollArea` (layout) | standard | ☐ | ✅ | n/a |
+| `Stack` (layout) | full | ☐ | ✅ | ✅ |
 | `Text` (display) | full | ☐ | ✅ | ✅ |
 | `TextField` (input) | full | ☐ | ✅ | ✅ |
 | `TextLink` (interactive) | full | ☐ | ✅ | ✅ |
@@ -95,7 +95,7 @@ None. All review findings have been back-filled. ✅
 ## Figma drift
 
 - Snapshot captured: **2026-10-11** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **1 day(s)**
+- Age: **30 day(s)**
 - Variables mirrored: **474** (Primitives 292 · Theme 116 · Device 66)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 

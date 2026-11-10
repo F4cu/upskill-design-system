@@ -4,14 +4,14 @@
 // spec cannot drift from the code:
 //   - props: every prop the component and its parts declare (<Name>Props,
 //     <Name><Part>Props) is in the spec and vice versa; variant-axis options
-//     match the TypeScript union and the metadata axis; destructuring defaults
+//     match the TypeScript union and the usage.json axis; destructuring defaults
 //     match.
 //   - styles: the token paths in the spec equal the --ds-* custom properties
 //     the CSS Module reads (plus any index.tsx reads, e.g. a size template), and each one is defined in the built token CSS.
 //   - states, constraints, anatomy: internal cross-references resolve; every
 //     composition.parts entry appears in the spec.
 //   - anatomyExamples, decisions (ADR-030): example props are root spec props
-//     with valid options, example patterns are metadata usage.patterns names,
+//     with valid options, example patterns are usage.json patterns names,
 //     every builtOnPart is an anatomy part of the parent's builtOn component,
 //     and every decision's adr has a file in docs/decisions/.
 //   - vocabulary (ADR-025, ADR-026): prop names, boolean defaults, the
@@ -87,10 +87,10 @@ const backlog = [];
 for (const { name, file } of specs) {
   const spec = JSON.parse(fs.readFileSync(file, "utf8"));
   const errors = [];
-  const metadataFile = path.join(SPEC_DIR, name, `${name}.metadata.json`);
+  const metadataFile = path.join(SPEC_DIR, name, `${name}.usage.json`);
   let metadata = {};
   if (fs.existsSync(metadataFile)) metadata = JSON.parse(fs.readFileSync(metadataFile, "utf8"));
-  else errors.push(`${name}.metadata.json not found`);
+  else errors.push(`${name}.usage.json not found`);
   if (!fs.existsSync(path.join(SPEC_DIR, name, "index.tsx"))) errors.push("index.tsx not found");
 
   if (!validate(spec)) {
@@ -109,7 +109,7 @@ for (const { name, file } of specs) {
 
   if (spec.component !== name) errors.push(`component "${spec.component}" does not match folder "${name}"`);
 
-  // Anatomy, and the ADR-023 parts declared in metadata
+  // Anatomy, and the ADR-023 parts declared in usage.json
   const partNames = spec.anatomy.map((p) => p.name);
   for (const dup of partNames.filter((n, i) => partNames.indexOf(n) !== i)) errors.push(`anatomy: duplicate part "${dup}"`);
   for (const part of spec.anatomy) {
@@ -127,13 +127,13 @@ for (const { name, file } of specs) {
   }
   for (const part of metadata.composition?.parts ?? []) {
     const entry = spec.anatomy.find((p) => p.name === part.name);
-    if (!entry) errors.push(`anatomy: metadata part "${part.name}" missing from the spec`);
+    if (!entry) errors.push(`anatomy: usage.json part "${part.name}" missing from the spec`);
     else if (part.builtOn && entry.builtOn !== part.builtOn) {
-      errors.push(`anatomy["${part.name}"].builtOn "${entry.builtOn}" ≠ metadata "${part.builtOn}"`);
+      errors.push(`anatomy["${part.name}"].builtOn "${entry.builtOn}" ≠ usage.json "${part.builtOn}"`);
     }
   }
 
-  // Props against the TypeScript props types and the metadata axes
+  // Props against the TypeScript props types and the usage.json axes
   const propsTypes = readPropsTypes(name);
   if (!propsTypes.has("")) errors.push(`index.tsx declares no ${name}Props type alias`);
   for (const [prefix, { part, own }] of propsTypes) {
@@ -163,10 +163,10 @@ for (const { name, file } of specs) {
     }
     if (def.kind === "variantAxis") {
       const axis = metadata.variants?.[prop];
-      if (!axis) errors.push(`${at}: variant axis "${prop}" missing from metadata variants`);
+      if (!axis) errors.push(`${at}: variant axis "${prop}" missing from usage.json variants`);
       else {
-        if (!sameSet(def.options ?? [], axis.options)) errors.push(`${at}.options ≠ metadata variants.${prop}.options`);
-        if ((def.default ?? null) !== axis.default) errors.push(`${at}.default ≠ metadata variants.${prop}.default`);
+        if (!sameSet(def.options ?? [], axis.options)) errors.push(`${at}.options ≠ usage.json variants.${prop}.options`);
+        if ((def.default ?? null) !== axis.default) errors.push(`${at}.default ≠ usage.json variants.${prop}.default`);
       }
     }
   }
@@ -181,10 +181,10 @@ for (const { name, file } of specs) {
   }
 
   // Anatomy examples and decisions (ADR-030)
-  const patternNames = new Set((metadata.usage?.patterns ?? []).map((p) => p.name));
+  const patternNames = new Set((metadata.patterns ?? []).map((p) => p.name));
   spec.anatomyExamples?.forEach((example, i) => {
     const at = `anatomyExamples[${i}]`;
-    if (example.pattern && !patternNames.has(example.pattern)) errors.push(`${at}.pattern: "${example.pattern}" is not a metadata usage.patterns name`);
+    if (example.pattern && !patternNames.has(example.pattern)) errors.push(`${at}.pattern: "${example.pattern}" is not a usage.json patterns name`);
     for (const [prop, value] of Object.entries(example.props ?? {})) {
       const def = spec.props[prop];
       if (!def || prop.includes(".") || def.figma.surface === "figma-only") errors.push(`${at}.props: "${prop}" is not a root code prop in the spec`);

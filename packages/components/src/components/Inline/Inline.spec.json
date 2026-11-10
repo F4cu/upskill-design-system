@@ -120,7 +120,16 @@
       }
     }
   },
-  "constraints": [],
+  "constraints": [
+    {
+      "id": "nowrap-needs-known-width",
+      "if": {
+        "wrap": false
+      },
+      "reason": "Only when the container has a fixed or known minimum width and overflow is intended (e.g. a horizontal scroll region): no-wrap content overflows a variable-width container.",
+      "enforcedBy": []
+    }
+  ],
   "states": [
     {
       "name": "default",

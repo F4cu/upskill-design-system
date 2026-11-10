@@ -4,7 +4,7 @@
 // frozen context the component loop's scaffold stage reads instead of calling
 // Airtable or Figma live (ADR-007, Phase 9 stage 0).
 //
-// Works greenfield (no metadata file yet — the loop's first job is to author it)
+// Works greenfield (no usage file yet — the loop's first job is to author it)
 // and on an existing component (narrows to its declared tokens). The snapshot's
 // value over the raw token source is governance status: chiefly the deprecation
 // guardrail (tokens the scaffold must NOT use), plus the frozen Figma node/drift
@@ -15,7 +15,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { readJson, readComponentMetadata, rel, usagesFor, daysBetween } from "./lib.js";
+import { readJson, readComponentUsage, rel, usagesFor, daysBetween } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -24,7 +24,7 @@ const GOVERNANCE_PATH = path.resolve(ROOT, "packages/tokens/airtable-governance.
 const USAGE_PATH      = path.resolve(ROOT, "packages/tokens/token-usage.json");
 const FIGMA_PATH      = path.resolve(ROOT, "packages/tokens/figma-variables.json");
 const COMPONENTS_DIR  = path.resolve(ROOT, "packages/components/src/components");
-const SCHEMA_PATH     = path.resolve(ROOT, "packages/components/component.schema.json");
+const SCHEMA_PATH     = path.resolve(ROOT, "packages/components/component.usage.schema.json");
 const HANDOFF_DIR     = path.resolve(ROOT, ".claude/handoff/runs");
 
 const STALE_AFTER_DAYS = 30;
@@ -114,7 +114,7 @@ function main() {
   const now = new Date();
   const governance = readJson(GOVERNANCE_PATH);
   const usage = readJson(USAGE_PATH);
-  const metadata = readComponentMetadata(name);
+  const metadata = readComponentUsage(name);
 
   const snapshot = {
     component: name,
@@ -122,8 +122,8 @@ function main() {
     exists: metadata !== null,
     note: metadata
       ? "Existing component — narrowed to its declared tokens for re-scaffold/refinement."
-      : "Greenfield component — no metadata yet. The scaffold stage authors it from the schema; pick active tokens and avoid the deprecation guardrail below.",
-    metadata,
+      : "Greenfield component — no usage.json yet. The scaffold stage authors it from the schema; pick active tokens and avoid the deprecation guardrail below.",
+    usage: metadata,
     figma: figmaContext(metadata, now),
     tokens: {
       declared: declaredTokenContext(metadata, governance, usage),

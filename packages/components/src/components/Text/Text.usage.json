@@ -1,0 +1,88 @@
+{
+  "component": {
+    "name": "Text",
+    "type": "display",
+    "status": "beta",
+    "description": "Renders body-level text using semantic size tokens. Covers body copy, small text, metadata, and label sizes. Polymorphic via the as prop. Does not add margin.",
+    "figmaNodeId": "none"
+  },
+  "useWhen": [
+    "Rendering body copy, descriptions, or explanatory prose",
+    "Rendering UI labels that are not interactive (use Button for clickable labels)",
+    "Rendering supporting metadata such as timestamps, counts, or secondary context"
+  ],
+  "notFor": [
+    {
+      "case": "Using Text for page headings or section titles",
+      "because": "Text is sized for body content. Heading sizes start at title-small.",
+      "instead": "Heading",
+      "note": "Use Heading with size title-small, subheader, headline, headline-serif, or display"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "body-section",
+      "description": "A Heading followed by Text inside a Stack to form a titled content block.",
+      "tree": "Stack(gap=sm) > [Heading(size=headline), Text(size=body-default)]"
+    }
+  ],
+  "variants": {
+    "size": {
+      "options": [
+        "body-default",
+        "body-small",
+        "metadata",
+        "label",
+        "inherit"
+      ],
+      "default": "body-default",
+      "useWhen": {
+        "body-default": "Standard body copy. 1rem, regular weight, 1.5 line-height.",
+        "body-small": "Secondary body text or sidebar content. 0.875rem, 1.4 line-height.",
+        "metadata": "Supporting details such as timestamps, counts, tags. 0.875rem.",
+        "label": "UI labels for form fields and controls. 1rem, bold weight, single line-height.",
+        "inherit": "No typography of its own — font-family/size/weight/line-height inherit from the parent. Use only when nesting Text as=\"span\" inside a Heading (or other typographic ancestor) purely to change color."
+      }
+    },
+    "color": {
+      "options": [
+        "default",
+        "subtle",
+        "brand",
+        "disabled",
+        "inverted",
+        "inverted-subtle",
+        "accent-inverted"
+      ],
+      "default": "default",
+      "useWhen": {
+        "default": "Primary reading colour on the page surface.",
+        "subtle": "De-emphasised secondary text and supporting metadata.",
+        "brand": "Brand-coloured emphasis; use sparingly for accent text.",
+        "disabled": "Text in a disabled or inactive context.",
+        "inverted": "Primary text colour on an inverted (dark) surface, e.g. a CTA banner or footer.",
+        "inverted-subtle": "De-emphasised text on an inverted (dark) surface.",
+        "accent-inverted": "Accent-coloured emphasis on an inverted (dark) surface."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Inline",
+      "Card",
+      "Heading"
+    ],
+    "width": "fill",
+    "nests": false,
+    "rules": [
+      {
+        "case": "Nesting Text as=\"span\" inside a Heading to recolor part of the heading text",
+        "because": "Every Text size option other than inherit sets its own font-family/font-size/font-weight/line-height, which overrides the Heading's typography instead of just changing color.",
+        "do": "Pass size=\"inherit\" so the span only changes color and inherits typography from the Heading."
+      }
+    ]
+  }
+}

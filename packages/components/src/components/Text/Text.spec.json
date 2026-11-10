@@ -92,7 +92,19 @@
       }
     }
   },
-  "constraints": [],
+  "constraints": [
+    {
+      "id": "htmlfor-only-on-label",
+      "if": {
+        "htmlFor": "*"
+      },
+      "require": [
+        "as"
+      ],
+      "reason": "as must be \"label\": htmlFor is spread onto whatever element as renders.",
+      "enforcedBy": []
+    }
+  ],
   "states": [
     {
       "name": "default",

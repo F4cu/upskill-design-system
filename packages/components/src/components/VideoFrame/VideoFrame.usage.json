@@ -1,0 +1,48 @@
+{
+  "component": {
+    "name": "VideoFrame",
+    "type": "display",
+    "status": "beta",
+    "description": "Rounded thumbnail container with a fixed 16:9 aspect ratio and a centred semi-transparent play-button overlay. Purely presentational — no playback logic. Props: src (thumbnail URL) and alt.",
+    "figmaNodeId": "none"
+  },
+  "useWhen": [
+    "Displaying a video course preview with a recognisable play affordance",
+    "The content is a non-interactive thumbnail that represents a video — clicking is handled by the parent"
+  ],
+  "notFor": [
+    {
+      "case": "Using VideoFrame for non-video image content",
+      "because": "The play overlay signals video content; using it for static images misleads users.",
+      "instead": "Image"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "video-preview-card",
+      "description": "A VideoFrame above a title and description, used to preview a course video.",
+      "tree": "Stack(gap=md) > [VideoFrame, Heading(size=subheader), Text(size=body-default)]"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "useWhen": {
+        "default": "16:9 thumbnail with centred play overlay."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
+    ],
+    "width": "fill",
+    "nests": false
+  }
+}

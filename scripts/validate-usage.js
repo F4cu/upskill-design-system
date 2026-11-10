@@ -1,10 +1,9 @@
 #!/usr/bin/env node
-// Validates every component metadata file against component.schema.json.
-// Also checks each metadata file's component.name matches its folder name,
-// resolves composition.parts cross-references, validates the
-// canonical example file, and checks every <Name>.spec.json parses. States,
-// accessibility and the token list live in the spec (ADR-001 amendment
-// 2026-10-11), so metadata that still carries them fails the schema. Exits
+// Validates every <Name>.usage.json against component.usage.schema.json
+// (ADR-001 amendment 2026-11-10). Also checks that component.name matches the
+// folder, that notFor.instead names a component, that composition.limits name
+// real variant options, resolves composition.parts cross-references, validates
+// the canonical example file, and checks every <Name>.spec.json parses. Exits
 // non-zero on any failure so it can gate CI. This is the contract the
 // component-scaffold and layout-generation agentic moments consume — keep it
 // green.
@@ -18,10 +17,13 @@ import { publicComponents } from "./lib.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const COMPONENTS_DIR = path.resolve(ROOT, "packages/components/src/components");
-const SCHEMA_PATH = path.resolve(ROOT, "packages/components/component.schema.json");
-const EXAMPLE_PATH = path.resolve(ROOT, "packages/components/component.metadata.example.json");
+const SCHEMA_PATH = path.resolve(ROOT, "packages/components/component.usage.schema.json");
+const EXAMPLE_PATH = path.resolve(ROOT, "packages/components/component.usage.example.json");
 
 const SPEC_SECTIONS = ["states", "tokens", "accessibility"];
+const RENAMED = {
+  usage: "its fields moved to the top level (useWhen, notFor, patterns) and composition (rules, limits)",
+};
 
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
 const ajv = new Ajv({ allErrors: true });
@@ -31,11 +33,17 @@ function schemaError(e) {
   const at = e.instancePath || "/";
   if (e.keyword === "enum") return `${at} must be one of: ${e.params.allowedValues.map((v) => JSON.stringify(v)).join(", ")}`;
   if (e.keyword === "minProperties" && at === "/variants") {
-    return `${at} must have at least one axis — model a binary state as an axis, e.g. { "checked": { "options": [false, true], "default": false, "purpose": "…" } } (Chip)`;
+    return `${at} must have at least one axis — model a binary state as an axis, e.g. { "checked": { "options": [false, true], "default": false, "useWhen": { … } } } (Chip)`;
   }
   if (e.keyword === "additionalProperties") {
-    const moved = SPEC_SECTIONS.includes(e.params.additionalProperty) && at === "/";
-    return `${at} has unknown property "${e.params.additionalProperty}"${moved ? " — states, tokens and accessibility live in <Name>.spec.json (ADR-001 amendment 2026-10-11)" : ""}`;
+    const prop = e.params.additionalProperty;
+    if (at === "/" && SPEC_SECTIONS.includes(prop)) {
+      return `/ has unknown property "${prop}" — states, tokens and accessibility live in <Name>.spec.json (ADR-001 amendment 2026-10-11)`;
+    }
+    if (at === "/" && RENAMED[prop]) {
+      return `/ has unknown property "${prop}" — ${RENAMED[prop]} (ADR-001 amendment 2026-11-10)`;
+    }
+    return `${at} has unknown property "${prop}"`;
   }
   return `${at} ${e.message}`;
 }
@@ -79,24 +87,71 @@ function checkParts(parts) {
   return errors;
 }
 
+// notFor.instead must name a component; null is allowed when the alternative
+// is outside the library, and then a note has to say what it is.
+function checkNotFor(data) {
+  const errors = [];
+  (data.notFor ?? []).forEach((n, i) => {
+    if (n.instead === null && !n.note) {
+      errors.push(`notFor[${i}]: instead is null, so note must say what to use`);
+    } else if (n.instead !== null && !COMPONENT_NAMES.has(n.instead)) {
+      errors.push(`notFor[${i}].instead: "${n.instead}" is not a component`);
+    }
+    if (n.instead === data.component?.name) {
+      errors.push(`notFor[${i}].instead: points at the component itself`);
+    }
+  });
+  return errors;
+}
+
+// composition.limits[].if must name a variant axis and one of its options.
+function checkLimits(data) {
+  const errors = [];
+  (data.composition?.limits ?? []).forEach((l, i) => {
+    for (const [axis, option] of Object.entries(l.if)) {
+      const v = data.variants?.[axis];
+      if (!v) errors.push(`composition.limits[${i}].if: "${axis}" is not a variant axis`);
+      else if (!v.options.includes(option)) errors.push(`composition.limits[${i}].if.${axis}: "${option}" is not an option`);
+    }
+  });
+  return errors;
+}
+
+// variants.<axis>.useWhen keys must be options of that axis.
+function checkVariantUseWhen(data) {
+  const errors = [];
+  for (const [axis, v] of Object.entries(data.variants ?? {})) {
+    for (const key of Object.keys(v.useWhen ?? {})) {
+      if (!v.options.map(String).includes(key)) errors.push(`variants.${axis}.useWhen: "${key}" is not an option`);
+    }
+  }
+  return errors;
+}
+
 const targets = [];
 for (const dir of fs.readdirSync(COMPONENTS_DIR)) {
-  const file = path.join(COMPONENTS_DIR, dir, `${dir}.metadata.json`);
+  const file = path.join(COMPONENTS_DIR, dir, `${dir}.usage.json`);
   const stray = !fs.existsSync(file) && !fs.existsSync(path.join(COMPONENTS_DIR, dir, "index.tsx"));
-  targets.push({ file, expectedName: dir, stray });
+  const legacy = path.join(COMPONENTS_DIR, dir, `${dir}.metadata.json`);
+  targets.push({ file, expectedName: dir, stray, legacy: fs.existsSync(legacy) ? legacy : null });
 }
 targets.push({ file: EXAMPLE_PATH, expectedName: null });
 
 let failures = 0;
-for (const { file, expectedName, stray } of targets) {
+for (const { file, expectedName, stray, legacy } of targets) {
   const rel = path.relative(ROOT, file);
   if (stray) {
-    console.error(`✗ ${path.relative(ROOT, path.dirname(file))}/ — not a component (no index.tsx, no metadata); stray directory, likely a mkdir from the wrong cwd — remove it`);
+    console.error(`✗ ${path.relative(ROOT, path.dirname(file))}/ — not a component (no index.tsx, no usage file); stray directory, likely a mkdir from the wrong cwd — remove it`);
+    failures++;
+    continue;
+  }
+  if (legacy) {
+    console.error(`✗ ${path.relative(ROOT, legacy)} — renamed to <Name>.usage.json (ADR-001 amendment 2026-11-10)`);
     failures++;
     continue;
   }
   if (!fs.existsSync(file)) {
-    console.error(`✗ ${rel} — missing metadata file`);
+    console.error(`✗ ${rel} — missing usage file`);
     failures++;
     continue;
   }
@@ -115,6 +170,7 @@ for (const { file, expectedName, stray } of targets) {
   }
 
   if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
+  errors.push(...checkNotFor(data), ...checkLimits(data), ...checkVariantUseWhen(data));
 
   if (errors.length) {
     console.error(`✗ ${rel}`);
@@ -143,4 +199,4 @@ if (failures) {
   console.error(`\n${failures} file(s) failed validation.`);
   process.exit(1);
 }
-console.log(`\n✓ All ${targets.length} metadata files valid.`);
+console.log(`\n✓ All ${targets.length} usage files valid.`);

@@ -23,6 +23,7 @@ sources:
 # clock reset 2026-10-09: lib.js gained token-tree helpers for metadata validation (ADR-029 Step 5); the Airtable helpers this page describes are unchanged
 # rewritten 2026-10-12: component token columns now derive from the spec (ADR-027 rollout); token-deprecation-pass reads spec styles, governance flow unchanged
 # clock reset 2026-11-10: command files gain an invariant line at their top (ADR-029 amendment 2026-11-10); governance flow unchanged, still accurate
+# rewritten 2026-11-10: Airtable component columns mirror usage.json via readComponentUsage (ADR-001 amendment 2026-11-10)
 ---
 # Governance
 
@@ -92,7 +93,7 @@ These four are never pushed by `airtable-sync.js` — only `push:primitives`/`pu
 | Column | Owner | Direction | Notes |
 |---|---|---|---|
 | `Name` | Code | Code → Airtable | Merge key for the upsert. |
-| `Type`, `Variants`, `Color tokens`, `Spacing tokens`, `Typography tokens`, `Border radius tokens`, `Other tokens`, `Figma node ID`, `Version` | Code | Code → Airtable | Mirrored from each component's `metadata.json`; the token columns come from its `spec.json` `styles`, merged in by `readComponentMetadata` (`scripts/lib.js`). |
+| `Type`, `Variants`, `Color tokens`, `Spacing tokens`, `Typography tokens`, `Border radius tokens`, `Other tokens`, `Figma node ID`, `Version` | Code | Code → Airtable | Mirrored from each component's `usage.json`; the token columns come from its `spec.json` `styles`, merged in by `readComponentUsage` (`scripts/lib.js`). |
 | `Maturity` | Code | Code → Airtable | `component.status` (`beta`/`ready`/`deprecated`) from metadata. |
 | `Implementation` | **Split** | Both, guarded | Code writes the derived stage (`in progress`/`in review`, from `sense.js` via `component-pipeline.json`) — but only if the cell doesn't already hold `done` or `todo`. A human sets `done`/`todo` directly in Airtable; `airtable-pull.js` reads those two values back into `.claude/component-signoff.json` and never pulls the derived stages (that would be circular). See the guard in `pushComponents()` (`HUMAN_OWNED_IMPL = new Set(["done", "todo"])`) and [ADR-010](decisions/010-component-lifecycle-two-axes.md). |
 

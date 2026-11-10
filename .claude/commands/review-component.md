@@ -62,7 +62,7 @@ The subagent's final message back to the main session is the findings JSON plus 
 
 Read `.claude/handoff/runs/<Name>.review.json`. Apply every `high`/`medium` finding and any lint error; for `low` findings, apply or record why not. Re-run the gate:
 ```
-npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
+npm run usage:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
 ```
 If the gate fails after applying fixes, fix the failure and re-run before opening the PR.
 
@@ -111,8 +111,8 @@ Only reached from `/add-component <Name> --eval` inside an ablation workspace (s
 
 Gate passes, review verdict is `clean` or all findings applied, PR is open, and `.review.json` + `.run.json` are written. The PR contains only gate-cleared, reviewed code.
 
-Running `/extract-learnings <Name>` after the PR merges back-fills the findings into the component's metadata — the learning loop that prevents the same mistakes in future scaffolds.
+Running `/extract-learnings <Name>` after the PR merges back-fills the findings into the component's usage and spec files — the learning loop that prevents the same mistakes in future scaffolds.
 
 ---
 
-> **After you merge the PR above**, run `/extract-learnings <Name>` to back-fill these findings into the component's metadata. Skipping this leaves the system with no memory of what went wrong — the same mistakes can reappear in future scaffolds.
+> **After you merge the PR above**, run `/extract-learnings <Name>` to back-fill these findings into the component's usage and spec files. Skipping this leaves the system with no memory of what went wrong — the same mistakes can reappear in future scaffolds.

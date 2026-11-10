@@ -30,15 +30,15 @@ Run `npm run sense:component <Name>`. This writes `.claude/handoff/runs/<Name>.s
 If the Figma snapshot is reported absent or stale (`figma.snapshot.stale: true`) and the component has a Figma node, tell the developer and offer to refresh via `/figma-variable-audit` before continuing. Do not silently rely on stale drift state.
 
 ### Stage 1 · Scaffold (main session)
-Read **only** the snapshot from stage 0 plus the metadata and spec schemas (`packages/components/component.schema.json`, `component.spec.schema.json`), the closest existing component as a structural template, and the closest existing `spec.json` (ADR-027). Then follow `/component-scaffold`: first its API proposal checkpoint (props table checked against the "Prop vocabulary" in `packages/components/AGENTS.md`, approved by the developer before any file is written, ADR-026), then the spec and the four files at `packages/components/src/components/<Name>/`, in that order:
-- `<Name>.spec.json` first, from the approved proposal and before any code (ADR-027); then `index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.metadata.json`
+Read **only** the snapshot from stage 0 plus the usage and spec schemas (`packages/components/component.usage.schema.json`, `component.spec.schema.json`), the closest existing component as a structural template, and the closest existing `spec.json` (ADR-027). Then follow `/component-scaffold`: first its API proposal checkpoint (props table checked against the "Prop vocabulary" in `packages/components/AGENTS.md`, approved by the developer before any file is written, ADR-026), then the spec and the four files at `packages/components/src/components/<Name>/`, in that order:
+- `<Name>.spec.json` first, from the approved proposal and before any code (ADR-027); then `index.tsx`, `<Name>.module.css`, `<Name>.stories.tsx`, `<Name>.usage.json`
 
 Match the conventions in CLAUDE.md (CSS Modules referencing only `var(--ds-*)`, noun-first naming, story title rule). Pick active tokens — never one listed under `tokens.deprecatedAvoid` in the snapshot. Add the component to `packages/components/src/index.ts`. Metadata carries no `states`, `tokens` or `accessibility`: the spec owns them, and its `styles` are the token list. Reconcile spec and code with `npm run tokens:build && npm run spec:validate` before leaving this stage.
 
 ### Stage 2 · Gate (script — fail-fast)
 Run, in order:
 ```
-npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
+npm run usage:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
 ```
 
 `spec:validate` (ADR-027) fails when the spec and the code disagree: a prop, default or variant option missing on either side, a `--ds-*` property the CSS reads that the spec's `styles` omit (or the reverse). Fix the code when the spec is right; amend the spec first, and say so in the PR body, when building showed the spec was wrong.
@@ -73,7 +73,7 @@ A `changes-requested` answer records the state but does **not** block committing
 
 ### Stage 3+ · Review + PR
 
-Run `npm run component:risk -- <Name>`. It prints `interactive` or `display` from the component's metadata, using the same derivation as the `a11y:coverage` gate (`component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab). A component that owes a Tier-2 a11y test also gets the reviewer. Flags override the tier: `--review` → full path, `--no-review` → standard path.
+Run `npm run component:risk -- <Name>`. It prints `interactive` or `display` from the component's usage file and spec, using the same derivation as the `a11y:coverage` gate (`component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab). A component that owes a Tier-2 a11y test also gets the reviewer. Flags override the tier: `--review` → full path, `--no-review` → standard path.
 
 **`interactive` (or `--review`): full path.** Delegate to `/review-component <Name>` (`path: "full"` in review-state). That command owns the adversarial review, fix, branch creation, PR, and per-run log. Pass context: the snapshot path, the risk tier, and the fact that this is a new component (so it will create branch `component/<kebab-name>` before committing).
 
@@ -97,7 +97,7 @@ Arm 2 of the harness-ablation eval (`.claude/handoff/archive/2026-10-07-harness-
 | Stage | Eval behaviour |
 |---|---|
 | 0 · Sense | Run as normal. Skip the stale-Figma offer; note it in `.run.json` `notes` instead. |
-| 1 · Scaffold | No Figma MCP. The design input is the brief plus the `reference.png` it names — read the image instead of a Figma node. **API proposal checkpoint is auto-approved:** write the full proposal (anatomy, props table, constraints, states, accessibility, divergences) to `api-proposal.md` at the repo root, write `<Name>.spec.json` from it, then proceed exactly as written — no second pass. Omit `figmaNodeId` from the metadata. |
+| 1 · Scaffold | No Figma MCP. The design input is the brief plus the `reference.png` it names — read the image instead of a Figma node. **API proposal checkpoint is auto-approved:** write the full proposal (anatomy, props table, constraints, states, accessibility, divergences) to `api-proposal.md` at the repo root, write `<Name>.spec.json` from it, then proceed exactly as written — no second pass. Omit `figmaNodeId` from the usage file. |
 | 2 · Gate | Run as normal, fail-fast. **Cap: 5 gate runs.** If the 5th still fails, stop: write `.run.json` with the failures and `"outcome": "gate-failed"`, skip Stage 3. |
 | 2b · Visual checkpoint | Skipped. |
 | 2c · Record visual review | Skipped. Don't write `visualReview` to `component-review-state.json`; record `"visualReview": "skipped-eval"` in `.run.json`. |

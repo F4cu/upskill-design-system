@@ -8,7 +8,7 @@
 
 import fs from "fs";
 import path from "path";
-import { ROOT, readComponentMetadata, isInteractive } from "./lib.js";
+import { ROOT, readComponentUsage, isInteractive } from "./lib.js";
 
 const name = process.argv[2];
 if (!name) {
@@ -16,10 +16,10 @@ if (!name) {
   process.exit(2);
 }
 
-const metaFile = path.join(ROOT, "packages/components/src/components", name, `${name}.metadata.json`);
+const metaFile = path.join(ROOT, "packages/components/src/components", name, `${name}.usage.json`);
 if (!fs.existsSync(metaFile)) {
-  console.error(`No metadata at ${path.relative(ROOT, metaFile)} — scaffold the component first.`);
+  console.error(`No usage file at ${path.relative(ROOT, metaFile)} — scaffold the component first.`);
   process.exit(2);
 }
 
-console.log(isInteractive(readComponentMetadata(name)) ? "interactive" : "display");
+console.log(isInteractive(readComponentUsage(name)) ? "interactive" : "display");

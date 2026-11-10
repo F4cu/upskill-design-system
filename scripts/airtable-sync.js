@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { AIRTABLE_BASE_ID, AIRTABLE_TABLE_IDS, airtableTableUrl } from "./airtable-ids.js";
-import { flattenDTCG, airtableListAllPages, readComponentMetadata } from "./lib.js";
+import { flattenDTCG, airtableListAllPages, readComponentUsage } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -264,7 +264,7 @@ function readComponents() {
     .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
     .filter((d) => d.isDirectory())
     .flatMap((d) => {
-      const meta = readComponentMetadata(d.name);
+      const meta = readComponentUsage(d.name);
       if (!meta) return [];
       const c = meta.component;
       return [{

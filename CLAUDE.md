@@ -39,8 +39,8 @@ Moments and loops read the system's status quo from **committed files, never liv
 | `figma-variables.json` | Figma variables (REST API is Enterprise-gated, so captured interactively, not by script) | `/figma-variable-audit` via figma-cli |
 | `.claude/component-signoff.json` | Airtable (`Implementation` = human `done`/`todo`) | `scripts/airtable-pull.js` (REST) |
 | `.claude/component-review-state.json` | Per-component review completion + `visualReview` records (local `runs/` artifacts merged over the committed baseline — never regressed by CI, ADR-015 amendment) | `scripts/sense.js` (`npm run sense`) |
-| `.claude/component-pipeline.json` | Component metadata + review state + sign-off | `scripts/sense.js` (`npm run sense`) |
-| `.claude/component-patterns.json` | Cross-component pattern aggregate (deterministic AST + metadata scan) | `scripts/generate-pattern-schema.js` |
+| `.claude/component-pipeline.json` | Component usage + review state + sign-off | `scripts/sense.js` (`npm run sense`) |
+| `.claude/component-patterns.json` | Cross-component pattern aggregate (deterministic AST + usage.json scan) | `scripts/generate-pattern-schema.js` |
 | `.claude/STATUS_QUO.md` | Aggregate of the above | `scripts/sense.js` (`npm run sense`) |
 | `.claude/pipeline-status.json` | GitHub (CI workflow conclusions on `main` + open issues) | `scripts/pipeline-status.js` (`npm run pipeline:status`, `gh` REST) |
 

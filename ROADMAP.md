@@ -150,7 +150,7 @@ Remaining:
 
 ## Phase 9 — The Verified Component Loop (pilot) *(done)*
 
-- `/add-component <Name>` wires sense → scaffold → gate (`metadata:validate && typecheck && build`) → visual checkpoint (human sign-off in Storybook) → `/review-component`.
+- `/add-component <Name>` wires sense → scaffold → gate (`usage:validate && typecheck && build`) → visual checkpoint (human sign-off in Storybook) → `/review-component`.
 - Three a11y tiers gate every component: static lint (`jsx-a11y`), behavioral (`<Name>.a11y.test.tsx` via Vitest + `vitest-axe`, required only for interactive components, shrinking `a11y-backlog.json` for pre-existing gaps), and deterministic token contrast (`token-contrast-check.js` against **built** theme CSS — found and fixed 12 failing pairs in light / 6 in dark, issue #20).
 - Per-run logs promote into the committed run-ledger via `handoff:tidy` (Phase 8).
 - **Pilot result:** Badge shipped cleanly; Accordion confirmed the adversarial reviewer earns its cost — caught a silent `aria-controls` dead-reference bug the gate and axe scanner both missed. ADR-007 promoted `proposed` → `accepted`.

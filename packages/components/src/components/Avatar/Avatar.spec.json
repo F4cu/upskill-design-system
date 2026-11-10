@@ -46,7 +46,21 @@
       }
     }
   },
-  "constraints": [],
+  "constraints": [
+    {
+      "id": "meaningful-alt",
+      "if": {
+        "src": "*"
+      },
+      "require": [
+        "alt"
+      ],
+      "reason": "Pass the person's full name. Use alt=\"\" only when the avatar is decorative and adjacent text already names the person: screen readers announce Avatar as an image.",
+      "enforcedBy": [
+        "type"
+      ]
+    }
+  ],
   "states": [
     {
       "name": "default",

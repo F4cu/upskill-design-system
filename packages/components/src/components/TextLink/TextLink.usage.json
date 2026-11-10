@@ -1,0 +1,64 @@
+{
+  "component": {
+    "name": "TextLink",
+    "type": "interactive",
+    "status": "beta",
+    "description": "Inline hyperlink with permanent underline and brand interactive color. Semibold weight distinguishes it from surrounding body text. Color shifts to a darker brand tone on hover. Always renders as an <a> element — use only for navigation (URL changes), never for in-page actions.",
+    "figmaNodeId": "none"
+  },
+  "useWhen": [
+    "Linking an author name, entity, or term inline within a paragraph or metadata line",
+    "Any inline navigational link embedded in body copy",
+    "When the link destination is a URL and browser navigation semantics (<a href>) are required"
+  ],
+  "notFor": [
+    {
+      "case": "Using TextLink for an in-page action (e.g. 'Show more', 'Delete')",
+      "because": "TextLink renders an <a> element. In-page actions that do not change the URL must be <button> elements for correct keyboard and screen-reader semantics.",
+      "instead": "Button",
+      "note": "Use Button variant='transparent' for low-emphasis in-page text actions."
+    }
+  ],
+  "patterns": [
+    {
+      "name": "author-credit",
+      "description": "An author or contributor name linked inline before a role or affiliation label.",
+      "tree": "Text(size=body-default, color=subtle) > [TextLink(href=...), ', Author and educator, MICA']"
+    }
+  ],
+  "variants": {
+    "size": {
+      "options": [
+        "body-default",
+        "body-small",
+        "metadata",
+        "label"
+      ],
+      "default": "body-default",
+      "useWhen": {
+        "body-default": "Standard inline link within body copy.",
+        "body-small": "Link within smaller supporting text (e.g. captions, footnotes).",
+        "metadata": "Link in metadata lines (e.g. lesson count, duration rows).",
+        "label": "Link in label-sized UI text (e.g. form helper text)."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Text",
+      "Box",
+      "Inline",
+      "Stack"
+    ],
+    "width": "hug",
+    "nests": false,
+    "rules": [
+      {
+        "case": "Wrapping block-level content (Heading, Card, Stack) inside TextLink",
+        "because": "Interactive content must not contain other interactive content; block elements inside an <a> create invalid HTML.",
+        "do": "Place the TextLink adjacent to the content, or use a card-level overlay link pattern with a separate invisible <a> spanning the card."
+      }
+    ]
+  }
+}

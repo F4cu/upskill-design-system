@@ -9,7 +9,7 @@ import { Checkbox } from './index'
 // the input via id/htmlFor (accessible name), Space toggling checked state and
 // firing onChange, the checked prop reflected in the control, and disabled
 // removing the control from the interaction model. Contract per
-// Checkbox.metadata.json (role: checkbox; keyboard: Tab focuses, Space toggles).
+// Checkbox.spec.json (role: checkbox; keyboard: Tab focuses, Space toggles).
 
 describe('Checkbox — a11y behavior', () => {
   it('exposes the checkbox role with its label as the accessible name', () => {

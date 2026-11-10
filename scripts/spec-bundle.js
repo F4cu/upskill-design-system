@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Builds specs.bundle.json, the one input both spec renderers read (ADR-030,
 // Phase 0): the docs-site component pages and the Figma parity plugin. Per
-// component: its spec, its metadata, a hash over both and its ADR-008 a11y
+// component: its spec, its usage, a hash over both and its ADR-008 a11y
 // tier (with the behavioral test that covers it). Per token path any
 // spec's styles reference: the CSS custom property, the resolved value in the
 // default context (default brand, light theme, desktop) plus the contexts where
@@ -9,7 +9,7 @@
 // mirror (figma-variables.json), or null when Figma has none.
 //
 // Derived and not committed (ADR-030 decision 4). Output is deterministic: no
-// timestamps, components and tokens sorted, spec and metadata in source order,
+// timestamps, components and tokens sorted, spec and usage in source order,
 // so two runs give byte-identical files.
 // Fails when a token path does not resolve in the built CSS. Requires built
 // tokens (npm run tokens:build).
@@ -99,8 +99,8 @@ function figmaVariable(dotPath) {
 // ADR-008 tier, derived the way a11y-coverage.js derives it, so the docs page
 // states the tier the gate enforces rather than restating the rule.
 const a11yBacklog = readJson(path.join(ROOT, "scripts/a11y-backlog.json"));
-function a11yTier(name, spec, metadata) {
-  if (!isInteractive({ ...metadata, accessibility: spec.accessibility })) return { tier: 1, test: null, backlog: false };
+function a11yTier(name, spec, usage) {
+  if (!isInteractive({ ...usage, accessibility: spec.accessibility })) return { tier: 1, test: null, backlog: false };
   const test = `packages/components/src/components/${name}/${name}.a11y.test.tsx`;
   return { tier: 2, test: fs.existsSync(path.join(ROOT, test)) ? test : null, backlog: a11yBacklog.includes(name) };
 }
@@ -115,11 +115,11 @@ const components = {};
 const tokenPaths = new Set();
 for (const name of names) {
   const specRaw = fs.readFileSync(path.join(COMPONENTS_DIR, name, `${name}.spec.json`), "utf8");
-  const metadataRaw = fs.readFileSync(path.join(COMPONENTS_DIR, name, `${name}.metadata.json`), "utf8");
-  const hash = crypto.createHash("sha256").update(specRaw).update("\0").update(metadataRaw).digest("hex");
+  const usageRaw = fs.readFileSync(path.join(COMPONENTS_DIR, name, `${name}.usage.json`), "utf8");
+  const hash = crypto.createHash("sha256").update(specRaw).update("\0").update(usageRaw).digest("hex");
   const spec = JSON.parse(specRaw);
-  const metadata = JSON.parse(metadataRaw);
-  components[name] = { hash, spec, metadata, a11y: a11yTier(name, spec, metadata) };
+  const usage = JSON.parse(usageRaw);
+  components[name] = { hash, spec, usage, a11y: a11yTier(name, spec, usage) };
   for (const rules of Object.values(spec.styles)) {
     for (const rule of rules) for (const value of Object.values(rule.set)) for (const t of styleValueTokenPaths(value)) tokenPaths.add(t);
   }

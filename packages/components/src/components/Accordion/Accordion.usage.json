@@ -1,0 +1,63 @@
+{
+  "component": {
+    "name": "Accordion",
+    "type": "interactive",
+    "status": "beta",
+    "description": "A vertically stacked set of disclosure panels. Each item has a trigger (title + optional subtitle) and a collapsible content panel. Multiple items can be open simultaneously. Follows the WAI-ARIA Accordion pattern.",
+    "figmaNodeId": "29:1153"
+  },
+  "useWhen": [
+    "Presenting a list of content sections where users may only need to read a subset (e.g. course curriculum, FAQ, settings groups)",
+    "Reducing vertical space by hiding detail until requested",
+    "The content within each panel is self-contained and does not need to be visible simultaneously"
+  ],
+  "notFor": [
+    {
+      "case": "Using Accordion for primary navigation or tabbed content",
+      "because": "Accordion is a disclosure pattern, not navigation. Tabs or a nav component are the correct choice when content is mutually exclusive or linked to URLs.",
+      "instead": null,
+      "note": "Use a Tabs component or page-level navigation"
+    },
+    {
+      "case": "Placing an Accordion where all items are always open",
+      "because": "If the content is always visible, the disclosure mechanism adds interaction cost without benefit.",
+      "instead": "Stack",
+      "note": "Use Stack with Heading and Text for always-visible sections"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "course-curriculum",
+      "description": "A list of course modules, each expandable to reveal a description.",
+      "tree": "Accordion > [AccordionItem(title, subtitle), AccordionItem(title, subtitle), ...]"
+    },
+    {
+      "name": "faq-list",
+      "description": "A set of frequently asked questions where each answer is hidden by default.",
+      "tree": "Accordion > [AccordionItem(title='Question?') > Text(answer), ...]"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "useWhen": {
+        "default": "Single variant. Visual style is always the same: transparent trigger, elevated background when expanded."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [
+      "AccordionItem"
+    ],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "Card"
+    ],
+    "width": "fill",
+    "nests": false
+  }
+}

@@ -260,7 +260,7 @@ function reviewChecklist(c) {
     : "Code review — in-session /code-review (standard path)";
   const visual = c.visualReview;
   return [
-    { label: "Automated gate — lint · typecheck · build · metadata · a11y scripts", done: true },
+    { label: "Automated gate — lint · typecheck · build · usage · a11y scripts", done: true },
     {
       label: "Visual review — human y/n/other(comments)",
       done: visual?.status === "approved",
@@ -282,7 +282,7 @@ function buildComponentPipeline(reviewState) {
     .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
     .filter((d) => d.isDirectory())
     .flatMap((d) => {
-      const p = path.join(COMPONENTS_DIR, d.name, `${d.name}.metadata.json`);
+      const p = path.join(COMPONENTS_DIR, d.name, `${d.name}.usage.json`);
       if (!fs.existsSync(p)) return [];
       const c = JSON.parse(fs.readFileSync(p, "utf8")).component;
       const rec = reviewState[c.name];
@@ -344,7 +344,7 @@ function componentSection(pipeline) {
     `- **${pipeline.length} total** — Maturity: ${statusLine}`,
     `- By type: ${typeLine}`,
     `- Implementation: ${implLine}`,
-    `- Source: \`packages/components/src/components/*/\*.metadata.json\` + \`.claude/handoff/runs/\` + \`.claude/component-signoff.json\` (human \`done\`/\`todo\` from Airtable)`,
+    `- Source: \`packages/components/src/components/*/\*.usage.json\` + \`.claude/handoff/runs/\` + \`.claude/component-signoff.json\` (human \`done\`/\`todo\` from Airtable)`,
     "",
   ];
 
@@ -362,7 +362,7 @@ function componentSection(pipeline) {
       "review checklist (committable WIP). Promote to `done` in Airtable",
       "(Implementation column) once every required item is checked.",
       "",
-      "The automated gate (lint · typecheck · build · metadata · a11y scripts) has",
+      "The automated gate (lint · typecheck · build · usage · a11y scripts) has",
       "passed for every row — it is a precondition of reaching review. On the",
       "full path (adversarial subagent), code review of `interactive`/`input`",
       "components also covers behavioural a11y; learnings back-fill is n/a on the",
@@ -439,7 +439,7 @@ function pendingLearningsSection(reviewState) {
     out.push("None. All review findings have been back-filled. ✅", "");
   } else {
     out.push(
-      `**${pending.length}** component(s) reviewed but learnings not yet back-filled into metadata.`,
+      `**${pending.length}** component(s) reviewed but learnings not yet back-filled into usage.json or the spec.`,
       "Run `/extract-learnings --all` to process all at once, or `/extract-learnings <Name>` individually.",
       "",
     );

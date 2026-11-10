@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Deterministic AST + metadata scan of packages/components/src → .claude/component-patterns.json,
+// Deterministic AST + usage.json scan of packages/components/src → .claude/component-patterns.json,
 // the single cross-component pattern aggregate (read in-context, never re-scanned downstream).
 // Uses the TypeScript compiler API (already a workspace dependency via packages/components) —
 // per-file syntax walks suffice since the library has no cross-file symbol resolution to do.
 //
 // Bucketing rules — first structural match wins, in this order; the last two fall back to a
-// metadata hint (component.category / component.type) because structure alone can't separate
+// usage hint (component.type) because structure alone can't separate
 // a layout primitive from a display atom:
 //   1. controlled-selection  role/option wiring (combobox|listbox|menu|option|menuitem) or aria-selected
 //   2. disclosure            aria-expanded + aria-controls + a boolean open state
@@ -13,15 +13,15 @@
 //   4. status-indicator      role="progressbar" or aria-valuenow
 //   5. toggle-button         aria-pressed
 //   6. form-field            <label htmlFor> paired with a native input/select/textarea
-//   7. action-trigger        renders <button> or <a>, metadata component.type === "interactive"
-//   8. layout-primitive      metadata hint: component.category === "layout"
+//   7. action-trigger        renders <button> or <a>, usage component.type === "interactive"
+//   8. layout-primitive      usage hint: component.type === "layout"
 //   9. static-display        everything else
 // Hook-based patterns (src/hooks/) form the content-stepper bucket, keyed by hook not component.
 // Bucket-level architecturalStyle is "flat-props"; a component that attaches parts (ADR-023)
-// carries its own architecturalStyle: "compound" plus its metadata part names.
+// carries its own architecturalStyle: "compound" plus its usage.json part names.
 //
 // ariaContract is derived only from JSX attributes actually present (role / aria-* / id);
-// metadata accessibility strings are quoted verbatim into systemSpecificNotes, never restructured.
+// spec accessibility strings are quoted verbatim into systemSpecificNotes, never restructured.
 // idsFromUseId lists variables reachable from a useId() call (one fixpoint pass over variable
 // initializers), so {panelId}-style attribute values are traceable to useId pairing.
 
@@ -30,7 +30,7 @@ import path from "path";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 import ts from "typescript";
-import { readComponentMetadata } from "./lib.js";
+import { readComponentUsage } from "./lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -218,7 +218,7 @@ function bucketComponent(c) {
     return "form-field";
   if ((c.renderedTags.has("button") || c.renderedTags.has("a")) && c.metadata.component.type === "interactive")
     return "action-trigger";
-  if (c.metadata.component.category === "layout") return "layout-primitive";
+  if (c.metadata.component.type === "layout") return "layout-primitive";
   return "static-display";
 }
 
@@ -226,7 +226,7 @@ function scanComponent(name) {
   const dir = path.join(COMPONENTS_DIR, name);
   const sf = parseFile(path.join(dir, "index.tsx"));
   const src = sf.getFullText();
-  const metadata = readComponentMetadata(name);
+  const metadata = readComponentUsage(name);
 
   const { props, nativeSpreads } = collectProps(sf);
   const imported = collectImportedComponents(sf);
@@ -258,7 +258,7 @@ function scanComponent(name) {
   }
 
   // Preset + parts (ADR-023): parts attached to the exported preset via
-  // Object.assign(Preset, { … }). Part names come from metadata, not the AST.
+  // Object.assign(Preset, { … }). Part names come from usage.json, not the AST.
   const compound = /\bObject\.assign\(\s*[A-Z]\w*\s*,\s*\{/.test(src);
   const parts = (metadata.composition?.parts ?? []).map((p) => p.name);
 
@@ -348,17 +348,6 @@ function detectDrift(components) {
     });
   }
 
-  for (const c of components) {
-    const declared = (c.metadata.composition?.composedOf ?? []).slice().sort();
-    if (JSON.stringify(declared) !== JSON.stringify(c.composition)) {
-      drift.push({
-        pattern: c.bucket,
-        issue: "composition-metadata-mismatch",
-        detail: `${c.name} JSX uses [${c.composition.join(", ")}] but metadata composition.composedOf declares [${declared.join(", ")}].`,
-        components: [c.name],
-      });
-    }
-  }
 
   return drift;
 }

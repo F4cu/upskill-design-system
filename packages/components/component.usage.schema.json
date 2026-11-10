@@ -1,0 +1,319 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "upskill-design-system/component.usage.schema.json",
+  "title": "Component Usage",
+  "description": "How to use a component: when to use it, what not to use it for, its named patterns, when to use each variant option, and how it composes (ADR-001 amendment 2026-11-10). The builder sections live in <Name>.spec.json (ADR-027).",
+  "type": "object",
+  "required": [
+    "component",
+    "useWhen",
+    "variants",
+    "composition"
+  ],
+  "properties": {
+    "component": {
+      "type": "object",
+      "required": [
+        "name",
+        "type",
+        "status",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "interactive",
+            "display",
+            "container",
+            "input",
+            "layout"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "beta",
+            "ready",
+            "deprecated"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "Opens on one category noun (\"A <noun> that …\"). No counts, ADR references or accessibility claims."
+        },
+        "figmaNodeId": {
+          "type": "string",
+          "pattern": "^([0-9]+:[0-9]+|none)$",
+          "description": "The Figma component set node id, or \"none\" when the component has no set (layout, text styles, single components)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "useWhen": {
+      "description": "Situations where this component is the right choice at all. Which variant option to use goes in variants.<axis>.useWhen.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notFor": {
+      "description": "Wrong picks: situations that look like this component but need another one.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case",
+          "because",
+          "instead"
+        ],
+        "properties": {
+          "case": {
+            "type": "string"
+          },
+          "because": {
+            "type": "string"
+          },
+          "instead": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The fixed-set component to use instead, or null when the alternative is outside the library (say what in note)."
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "patterns": {
+      "description": "Named, proven compositions using this component. Prefer a named pattern over ad-hoc composition when one fits.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "tree"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tree": {
+            "type": "string",
+            "description": "Component tree as a readable expression, e.g. 'Card > Stack > [Heading, Text, Button(primary)]'"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "variants": {
+      "description": "Named variant axes. Each key is an independent axis (e.g. variant, size, shape). A single-axis component declares one axis named `variant`; a component with no visual variation declares `variant` with a single `default` option.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "options",
+          "default",
+          "useWhen"
+        ],
+        "properties": {
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "default": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Default option for this axis, or null when the axis is off by default (e.g. an icon-only shape applied only when set)."
+          },
+          "useWhen": {
+            "description": "Per option: the situation first, then at most one clause on how it looks. Sizes in px and required props belong in the spec.",
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "composition": {
+      "description": "How this component composes: what it accepts, where it belongs, its parts, how it sizes, and the rules and counts for combining it.",
+      "type": "object",
+      "properties": {
+        "accepts": {
+          "description": "Component names valid as direct children in this component's content slot. Empty array means leaf node. [\"*\"] means any library component is valid.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "containedBy": {
+          "description": "Component names that are valid direct parents of this component.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parts": {
+          "description": "Subcomponents reachable as <Name>.<Part> (ADR-023). Parts are not components: they have no folder and are declared only here. Cross-references (accepts/containedBy/builtOn) are checked by scripts/validate-usage.js.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "kind",
+              "description",
+              "builtOn"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Za-z0-9]*$",
+                "description": "PascalCase part name; also the Figma layer name (naming contract, ADR-023)."
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "fixed",
+                  "slot",
+                  "open"
+                ],
+                "description": "fixed = content/state props only, layout owned by the parent's CSS Module; slot = exactly one child from accepts; open = any children from accepts, laid out by a primitive with fixed props."
+              },
+              "description": {
+                "type": "string"
+              },
+              "builtOn": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Library component this part renders (e.g. Stack for an open part), or null when it renders plain elements."
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether every instance of each containedBy part must include this part as a direct child."
+              },
+              "accepts": {
+                "description": "Component or sibling-part names valid as direct children. slot and open parts only.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "containedBy": {
+                "description": "Sibling-part names valid as this part's direct parent. Omit when the part may appear anywhere (e.g. Root).",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "width": {
+          "type": "string",
+          "enum": [
+            "fill",
+            "hug",
+            "fixed"
+          ],
+          "description": "fill = stretches to parent width; hug = sizes to content; fixed = component sets its own width."
+        },
+        "nests": {
+          "type": "boolean",
+          "description": "Whether an instance can sit inside another instance of the same component. Checked by validate-layout."
+        },
+        "limits": {
+          "description": "Counts as data, checked by validate-layout. per: region = the nearest <section>; repeated = inside a repeated item (CardVertical, CardHorizontal or a .map()); parent = the direct parent.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "if",
+              "max",
+              "per",
+              "because"
+            ],
+            "properties": {
+              "if": {
+                "description": "Variant axis → option the limit applies to.",
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              },
+              "max": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "per": {
+                "type": "string",
+                "enum": [
+                  "region",
+                  "repeated",
+                  "parent"
+                ]
+              },
+              "because": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "rules": {
+          "description": "Composition rules that can't be stated as data: placement, grouping, weight in context. Each says what to do instead.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "case",
+              "because",
+              "do"
+            ],
+            "properties": {
+              "case": {
+                "type": "string"
+              },
+              "because": {
+                "type": "string"
+              },
+              "do": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

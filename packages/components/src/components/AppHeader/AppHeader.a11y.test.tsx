@@ -7,7 +7,7 @@ import { AppHeader } from './index'
 // Tier-2 behavioral a11y (ADR-008). AppHeader composes DropdownMenu
 // (listRole=menu) for its user menu, and DropdownMenu deliberately doesn't
 // own trigger focus management (it doesn't render its own trigger) — so the
-// composing component is responsible for it (AppHeader.metadata.json →
+// composing component is responsible for it (AppHeader.spec.json →
 // accessibility.keyboardInteractions). These tests assert that contract:
 // the APG menu-button pattern via useMenuButton — aria-haspopup/expanded/
 // controls on the user button, a menu named by it, focus to the first item on

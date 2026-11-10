@@ -3,7 +3,8 @@
 // Checks: one <main> per route, named <section> landmarks, labelled <nav>
 // elements when duplicated, fixed-set component names only (plus declared
 // <Parent.Part> subcomponents and their composition rules, ADR-023), no raw container
-// divs, Button emphasis by context (ADR-024), and the inline-style
+// divs, composition limits and nesting from usage.json (ADR-024's Button
+// emphasis is one limit), and the inline-style
 // reconciliation rule (AGENTS.md "Layout grammar").
 // Exits non-zero on any violation so it can gate the layout-generation skill.
 // Accepts a file path or a directory (scans *.tsx recursively).
@@ -35,19 +36,22 @@ const WAIVED_FILES = new Set(
     : []
 )
 
-// The package's public components (shared with validate-metadata.js, issue #98)
+// The package's public components (shared with validate-usage.js, issue #98)
 // plus React built-ins used as wrappers, which aren't user components
 const FIXED_SET = new Set([...publicComponents(), 'Fragment', 'StrictMode', 'Suspense'])
 
-// Subcomponents (ADR-023): Parent → Map(partName → part), from each fixed-set
-// component's metadata composition.parts. <Parent.Part> is valid only when the
-// part is declared here.
+// Each fixed-set component's usage.json (ADR-001 amendment 2026-11-10).
+// Subcomponents (ADR-023): Parent → Map(partName → part), from
+// composition.parts. <Parent.Part> is valid only when the part is declared here.
 const COMPONENTS_DIR = path.join(ROOT, 'packages/components/src/components')
+const USAGE = new Map()
 const PARTS = new Map()
 for (const name of FIXED_SET) {
-  const file = path.join(COMPONENTS_DIR, name, `${name}.metadata.json`)
+  const file = path.join(COMPONENTS_DIR, name, `${name}.usage.json`)
   if (!fs.existsSync(file)) continue
-  const parts = JSON.parse(fs.readFileSync(file, 'utf8')).composition?.parts
+  const usage = JSON.parse(fs.readFileSync(file, 'utf8'))
+  USAGE.set(name, usage)
+  const parts = usage.composition?.parts
   if (parts) PARTS.set(name, new Map(parts.map(p => [p.name, p])))
 }
 
@@ -234,14 +238,28 @@ function checkPartElement(node, name, { parent, part }, jsxParent, errors) {
   }
 }
 
-// Button emphasis by context (ADR-024): variant names an absolute weight, so
-// rank has to come from the container. accent is the one action a decision
-// region exists for — never inside a repeated item (CardVertical/CardHorizontal or a .map()
-// callback, where N items would render N primaries), and at most one per
-// <section>. Only literal variant="accent" is checked; a computed variant
-// can't be judged statically.
-function checkButtonEmphasis(ast, errors) {
-  const accentsBySection = new Map()
+// Composition limits and nesting from each component's usage.json (ADR-001
+// amendment 2026-11-10). A limit counts the elements whose literal props match
+// `if`, per region (the nearest <section>), per repeated item (inside
+// CardVertical/CardHorizontal or a .map() callback, where N items would render
+// N copies) or per direct parent. ADR-024's accent Button rule is one such
+// limit. A computed prop value can't be judged statically and never matches.
+// nests: false forbids an instance anywhere inside another of the same name.
+function attrMatches(opening, prop, want) {
+  const attr = getAttr(opening, prop)
+  if (!attr) return false
+  if (typeof want === 'boolean') {
+    if (attr.value === null) return want === true
+    const expr = attr.value?.type === 'JSXExpressionContainer' ? attr.value.expression : null
+    return expr?.type === 'BooleanLiteral' && expr.value === want
+  }
+  return getAttrStringValue(attr) === want
+}
+
+const SCOPE_LABEL = { region: 'the <section> at line', repeated: 'the repeated item at line', parent: 'the parent at line' }
+
+function checkComposition(ast, errors) {
+  const counts = new Map()
   function visit(node, ctx) {
     if (!node || typeof node !== 'object') return
     if (Array.isArray(node)) {
@@ -254,29 +272,42 @@ function checkButtonEmphasis(ast, errors) {
       node.callee.property?.name === 'map'
     ) {
       visit(node.callee, ctx)
-      visit(node.arguments, { ...ctx, repeated: 'a .map() callback' })
+      visit(node.arguments, { ...ctx, repeated: { label: 'a .map() callback', line: node.loc?.start.line } })
       return
     }
     if (node.type === 'JSXElement') {
       const opening = node.openingElement
       const name = jsxName(opening.name)
       const line = opening.loc?.start.line
-      let next = ctx
+      const usage = name ? USAGE.get(name) : null
+
+      if (usage?.composition?.nests === false && ctx.ancestors.includes(name)) {
+        errors.push(`Line ${line}: <${name}> inside another <${name}> — ${name} doesn't nest (usage.json composition.nests)`)
+      }
+      for (const [i, limit] of (usage?.composition?.limits ?? []).entries()) {
+        if (!Object.entries(limit.if).every(([prop, want]) => attrMatches(opening, prop, want))) continue
+        const scope = limit.per === 'region' ? ctx.section : limit.per === 'repeated' ? ctx.repeated?.line : ctx.parent
+        if (scope == null) continue
+        const what = `<${name} ${Object.entries(limit.if).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(' ')}>`
+        if (limit.max === 0) {
+          errors.push(`Line ${line}: ${what} inside ${limit.per === 'repeated' ? ctx.repeated.label : `${SCOPE_LABEL[limit.per]} ${scope}`} — ${limit.because}`)
+          continue
+        }
+        const key = `${name}#${i}@${scope}`
+        const entry = counts.get(key) ?? { what, limit, scope, lines: [] }
+        entry.lines.push(line)
+        counts.set(key, entry)
+      }
+
+      let next = { ...ctx, parent: line }
+      if (name && !name.includes('.') && FIXED_SET.has(name)) next.ancestors = [...ctx.ancestors, name]
       if (name && /^Card(Vertical|Horizontal)(\.|$)/.test(name)) {
-        next = { ...next, repeated: `<${name.split('.')[0]}>` }
+        next.repeated = { label: `<${name.split('.')[0]}>`, line }
       }
       if (name === 'section' || (name === 'Box' && getAttrStringValue(getAttr(opening, 'as')) === 'section')) {
-        next = { ...next, section: line }
+        next.section = line
       }
-      if (name === 'Button' && getAttrStringValue(getAttr(opening, 'variant')) === 'accent') {
-        if (ctx.repeated) {
-          errors.push(`Line ${line}: <Button variant="accent"> inside ${ctx.repeated} — repeated items use neutral/transparent; accent is reserved for the region's one decision (ADR-024)`)
-        }
-        const lines = accentsBySection.get(ctx.section) ?? []
-        lines.push(line)
-        accentsBySection.set(ctx.section, lines)
-      }
-      visit(opening, next)
+      visit(opening, { ...ctx, parent: ctx.parent })
       visit(node.children, next)
       return
     }
@@ -286,10 +317,10 @@ function checkButtonEmphasis(ast, errors) {
       if (child && typeof child === 'object') visit(child, ctx)
     }
   }
-  visit(ast, { repeated: null, section: null })
-  for (const [section, lines] of accentsBySection) {
-    if (section !== null && lines.length > 1) {
-      errors.push(`Lines ${lines.join(', ')}: ${lines.length} <Button variant="accent"> in the <section> at line ${section} — at most one per decision region (ADR-024)`)
+  visit(ast, { repeated: null, section: null, parent: null, ancestors: [] })
+  for (const { what, limit, scope, lines } of counts.values()) {
+    if (lines.length > limit.max) {
+      errors.push(`Lines ${lines.join(', ')}: ${lines.length} ${what} in ${SCOPE_LABEL[limit.per]} ${scope} — at most ${limit.max}. ${limit.because}`)
     }
   }
 }
@@ -433,7 +464,7 @@ function validateFile(filePath, { styleOnly = false } = {}) {
 
   if (!styleOnly) {
     checkParts(ast, errors)
-    checkButtonEmphasis(ast, errors)
+    checkComposition(ast, errors)
 
     // ── Main landmark rule ───────────────────────────────────────────────────
     if (mainCount === 0) {

@@ -171,7 +171,7 @@ export default function Homepage() {
             {/* Two-panel — grammar: Inline wrap; each child grow=1 + minWidth sets stack breakpoint */}
             <Inline wrap align="start" gap="lg">
 
-              {/* ── Left column: video ── VideoFrame usage.when: "displaying a video course preview" */}
+              {/* ── Left column: video ── VideoFrame usage.json useWhen: "displaying a video course preview" */}
               <Stack grow={1} minWidth="34.5rem">
                 <VideoFrame src={VIDEO_SRC} alt="The Ten Faces of Innovation — course preview" />
               </Stack>
@@ -191,7 +191,7 @@ export default function Homepage() {
                     <Text>{currentChapter.body}</Text>
                   </Stack>
 
-                  {/* ButtonArrow usage.when: "stepping through chapters or slides in a sequence" */}
+                  {/* ButtonArrow usage.json useWhen: "stepping through chapters or slides in a sequence" */}
                   <Inline fullWidth gap="md" align="center" justify="end">
                     <Text size="metadata" color="subtle">{`Chapter ${chapter + 1} of ${CHAPTERS.length}`}</Text>
                     <ButtonArrow
@@ -215,7 +215,7 @@ export default function Homepage() {
         </Box>
       </Box>
 
-      {/* ── Section 2: Saved courses ── CardVertical usage.patterns "saved-courses-carousel": size=sm + progress */}
+      {/* ── Section 2: Saved courses ── CardVertical usage.json pattern "saved-courses-carousel": size=sm + progress */}
       <Box as="section" aria-labelledby="saved-heading" paddingY="lg">
         <Box className="container">
           <Stack gap="md">
@@ -258,7 +258,7 @@ export default function Homepage() {
         </Box>
       </Box>
 
-      {/* ── Section 3: Discover new courses ── Chip usage.patterns "filter-bar-single" + CardVertical size=lg carousel */}
+      {/* ── Section 3: Discover new courses ── Chip usage.json pattern "filter-bar-single" + CardVertical size=lg carousel */}
       <Box as="section" aria-labelledby="discover-heading" paddingY="lg">
         <Box className="container">
           <Stack gap="md">

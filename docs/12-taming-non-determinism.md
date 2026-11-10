@@ -1,8 +1,8 @@
 ---
 title: "Taming non-determinism"
 sources:
-  - packages/components/component.schema.json
-  - scripts/validate-metadata.js
+  - packages/components/component.usage.schema.json
+  - scripts/validate-usage.js
   - docs/decisions/001-component-metadata-schema.md
   - docs/decisions/007-verified-component-loop.md
   - docs/decisions/008-behavioral-a11y-tier.md
@@ -21,6 +21,7 @@ sources:
 # clock reset 2026-11-10: validate-spec.js checks anatomyExamples and decision ADR refs (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
 # 2026-11-10: gate list gains anatomy:test; validate-spec.js checks builtOnPart (ADR-027/030 amendments)
 # clock reset 2026-11-10: spec:validate also blocks prop-vocabulary violations (ADR-026 amendment 2026-11-10); the gate list on this page is unchanged, still accurate
+# rewritten 2026-11-10: citations and parts name usage.json fields; gate command uses usage:validate (ADR-001 amendment 2026-11-10)
 ---
 # Taming non-determinism
 
@@ -55,13 +56,13 @@ The stabilizer even guards against manufacturing false variance in its *own* out
 The generation moments cannot invent freely; each is boxed by a machine-checkable contract.
 
 - **Values are referenced, not authored.** Components consume built token output, never raw values, and the tokens a component's [spec](08-glossary.md) `styles` reference are *checked against the build and the code* by `spec:validate`. Each token must be defined in the built token CSS, so a token that was renamed or never existed fails the same PR that would ship it. The set must also equal what the component's CSS Module and `index.tsx` read, so the spec can't claim tokens the component doesn't read or leave out ones it does. There is no separate hand-written token list to drift ([Machine-readable metadata](10-machine-readable-metadata.md)). The model cannot reach for a value outside the system.
-- **Structure is locked before selection.** `/layout-generation`'s mandatory first pass is the [landmark grammar](04-layout-grammar.md) — a fixed Page → Header → Section → Container → Column → Component → Footer mapping, settled "before any component selection or spacing happens" ([ADR-011](decisions/011-layout-landmark-grammar.md)) and enforced by `npm run layout:validate`. Every structural choice must then *cite* a `composition.accepts`/`containedBy` or `usage.patterns` field — a graph the agent walks, not prose it interprets ([Machine-readable metadata](10-machine-readable-metadata.md)).
-- **The component set is fixed, and expansion is gated.** New components come only from a canonical list ([CLAUDE.md](../CLAUDE.md)); [ADR-009](decisions/009-extend-vs-new-vs-internal.md)'s three-question test decides prop-vs-new-component-vs-internal-element, so "I'll just make a new one" is not a move the model gets to make unprompted. The same holds one level down: a component's subcomponents (`CardVertical.Body`, `CardVertical.Action`) are declared in its metadata `composition.parts`, each with the children it accepts and the parent it must sit in, so `metadata:validate` and `layout:validate` can reject a composed card that invents a part or nests one in the wrong place ([ADR-023](decisions/023-subcomponents-compound-components.md)).
+- **Structure is locked before selection.** `/layout-generation`'s mandatory first pass is the [landmark grammar](04-layout-grammar.md) — a fixed Page → Header → Section → Container → Column → Component → Footer mapping, settled "before any component selection or spacing happens" ([ADR-011](decisions/011-layout-landmark-grammar.md)) and enforced by `npm run layout:validate`. Every structural choice must then *cite* a `composition.accepts`/`containedBy`, `composition.limits`/`rules` or `patterns` field in a usage file — a graph the agent walks, not prose it interprets ([Machine-readable metadata](10-machine-readable-metadata.md)).
+- **The component set is fixed, and expansion is gated.** New components come only from a canonical list ([CLAUDE.md](../CLAUDE.md)); [ADR-009](decisions/009-extend-vs-new-vs-internal.md)'s three-question test decides prop-vs-new-component-vs-internal-element, so "I'll just make a new one" is not a move the model gets to make unprompted. The same holds one level down: a component's subcomponents (`CardVertical.Body`, `CardVertical.Action`) are declared in its usage file's `composition.parts`, each with the children it accepts and the parent it must sit in, so `usage:validate` and `layout:validate` can reject a composed card that invents a part or nests one in the wrong place ([ADR-023](decisions/023-subcomponents-compound-components.md)).
 - **The model is asked for its least creative behavior.** Every agentic moment wants low-temperature output — "writing a component or migrating a token usage should be as repeatable as possible, not creative" ([Temperature](08-glossary.md)).
 
 ### Move 3 — Verify the output
 
-Whatever variance survives moves 1 and 2 is caught before it reaches human review. The [deterministic gate](08-glossary.md) — `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test`, plus `patterns:generate` staleness — is built entirely from *deterministic assertions*: exact, mechanical pass/fail checks with no judgment involved, run identically in the loop and in `components-check.yml` on every PR ([Component lifecycle](02-component-lifecycle.md)). If it fails, the loop bounces back to the scaffold stage rather than pushing the output forward ([ADR-007](decisions/007-verified-component-loop.md)). `layout:validate` plays the same role for layout files, and screenshot baselines ([ADR-019](decisions/019-screenshot-baseline-visual-regression.md)) add a perceptual diff so an unintended pixel shift is caught mechanically too.
+Whatever variance survives moves 1 and 2 is caught before it reaches human review. The [deterministic gate](08-glossary.md) — `npm run usage:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test`, plus `patterns:generate` staleness — is built entirely from *deterministic assertions*: exact, mechanical pass/fail checks with no judgment involved, run identically in the loop and in `components-check.yml` on every PR ([Component lifecycle](02-component-lifecycle.md)). If it fails, the loop bounces back to the scaffold stage rather than pushing the output forward ([ADR-007](decisions/007-verified-component-loop.md)). `layout:validate` plays the same role for layout files, and screenshot baselines ([ADR-019](decisions/019-screenshot-baseline-visual-regression.md)) add a perceptual diff so an unintended pixel shift is caught mechanically too.
 
 ## Where determinism ends — and why that's the point
 
@@ -97,5 +98,5 @@ flowchart LR
 
 - Docs: [Context engineering](09-context-engineering.md), [Machine-readable metadata](10-machine-readable-metadata.md), [Layout grammar](04-layout-grammar.md), [Component lifecycle](02-component-lifecycle.md), [Self-improving loops](11-self-improving-loops.md), [Agentic moments](06-agentic-moments.md), [Glossary](08-glossary.md)
 - ADRs: [001 — Component metadata schema](decisions/001-component-metadata-schema.md), [007 — Verified component loop](decisions/007-verified-component-loop.md), [008 — Behavioral a11y tier](decisions/008-behavioral-a11y-tier.md), [009 — Extend vs new vs internal](decisions/009-extend-vs-new-vs-internal.md), [011 — Layout landmark grammar](decisions/011-layout-landmark-grammar.md), [013 — Cross-component pattern schema](decisions/013-cross-component-pattern-schema.md), [023 — Subcomponents](decisions/023-subcomponents-compound-components.md)
-- Scripts: `npm run sense`, `npm run metadata:validate`, `npm run layout:validate` — see the [CLI reference](07-cli-reference.md)
+- Scripts: `npm run sense`, `npm run usage:validate`, `npm run layout:validate` — see the [CLI reference](07-cli-reference.md)
 - Case study: [Automation vs. agents](case-study-source/03-automation-vs-agents.md), [The metadata contract](case-study-source/06-machine-readable-contract.md), [The numbers](case-study-source/08-measured-impact.md)

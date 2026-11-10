@@ -25,6 +25,7 @@ sources:
 # 2026-10-09: run-ledger entries gain path + risk (risk-triggered reviewer, ADR-029)
 # rewritten 2026-10-12: accessibility.* targets live in the spec (ADR-027); handoff-tidy.js reads metadata through readComponentMetadata, behaviour unchanged
 # rewritten 2026-10-12: pattern-accuracy harness frozen at 044d28f after the ADR-027 spec rollout (scripts/frozen-eval.js guard)
+# rewritten 2026-11-10: /extract-learnings targets name usage.json and spec constraints (ADR-001 amendment 2026-11-10)
 ---
 # Self-improving loops
 
@@ -53,7 +54,7 @@ It matters that these are documented as one family rather than four unrelated fa
 
 ### Learning loops
 
-[`/extract-learnings`](06-agentic-moments.md) is the engine: it reads a component's `.review.json` after an adversarial review and routes each finding to the narrowest durable home — ARIA and keyboard findings into the component's spec (`accessibility.ariaAttributes`, `accessibility.keyboardInteractions`; see [Machine-readable metadata](10-machine-readable-metadata.md)), consumer misuse into metadata `usage.antiPatterns`, token-convention violations into `/tokens-author`'s Conventions section, contrast misses into the curated `PAIRS` array in `scripts/token-contrast-check.js` (never a silent [waiver](08-glossary.md)). Running `--all` widens the scope one notch further: a pattern repeating across two or more components may be *proposed* as a `CLAUDE.md` addition — never auto-applied, always confirmed by the developer. A `.learnings.json` file marks a run as processed; `scripts/sense.js` reads its absence to populate the pending-learnings backlog in `.claude/STATUS_QUO.md`, so unprocessed findings stay visible rather than quietly forgotten.
+[`/extract-learnings`](06-agentic-moments.md) is the engine: it reads a component's `.review.json` after an adversarial review and routes each finding to the narrowest durable home — ARIA and keyboard findings into the component's spec (`accessibility.ariaAttributes`, `accessibility.keyboardInteractions`; see [Machine-readable metadata](10-machine-readable-metadata.md)), wrong picks and composition rules into its `usage.json` (`notFor`, `composition.rules`), prop rules into the spec's `constraints`, token-convention violations into `/tokens-author`'s Conventions section, contrast misses into the curated `PAIRS` array in `scripts/token-contrast-check.js` (never a silent [waiver](08-glossary.md)). Running `--all` widens the scope one notch further: a pattern repeating across two or more components may be *proposed* as a `CLAUDE.md` addition — never auto-applied, always confirmed by the developer. A `.learnings.json` file marks a run as processed; `scripts/sense.js` reads its absence to populate the pending-learnings backlog in `.claude/STATUS_QUO.md`, so unprocessed findings stay visible rather than quietly forgotten.
 
 The docs-scribe critic ([ADR-018](decisions/018-docs-scribe-critic-stage.md)) is the same shape applied to prose instead of code. It is a read-only subagent (`.claude/agents/docs-scribe.md`) spawned once per real-drift `/docs-sync` run, judging the rewritten sections for three audiences — product manager, product designer, software engineer — against `docs/08-glossary.md` as the term canon. Its finding types are a closed set (`undefined-term`, `undefined-prerequisite`, `glossary-gap`, `buried-lead`, `sentence-density`, `missing-example`, `audience-mismatch`) — it cannot invent a new kind of complaint. A `glossary-gap` finding is a proposal only: a human confirms before the glossary actually grows, the same "propose, don't auto-apply" discipline `--all` uses. The prerequisite-chain rule (recurse one level into a definition's own vocabulary, no deeper) exists because of a real failure: a glossary fix for "Glob pattern" once passed review while quietly leaning on an undefined "wildcard," which itself leaned on an undefined "file path." See [Agentic moments](06-agentic-moments.md) for the full moment-9 procedure.
 
@@ -93,13 +94,13 @@ Screenshot baselines ([ADR-019](decisions/019-screenshot-baseline-visual-regress
 
 ## Pure gates, for contrast
 
-Not everything that runs automatically is a learning loop. `npm run metadata:validate`, `npm run layout:validate`, and the `docs:check` staleness *detection* itself are pure gates: they check a fixed rule against the current state and pass or fail, but they never route a finding anywhere, never accumulate evidence, and never change what they check for next time. They are backstops the loops above depend on, not instances of the pattern this page describes.
+Not everything that runs automatically is a learning loop. `npm run usage:validate`, `npm run layout:validate`, and the `docs:check` staleness *detection* itself are pure gates: they check a fixed rule against the current state and pass or fail, but they never route a finding anywhere, never accumulate evidence, and never change what they check for next time. They are backstops the loops above depend on, not instances of the pattern this page describes.
 
 ## Summary table
 
 | Mechanism | Feedback signal | Durable home it updates | ADR |
 |---|---|---|---|
-| `/extract-learnings` | Adversarial-review findings (`.review.json`) | Component metadata, `/tokens-author` conventions, contrast `PAIRS` | [007](decisions/007-verified-component-loop.md) |
+| `/extract-learnings` | Adversarial-review findings (`.review.json`) | Component usage and spec files, `/tokens-author` conventions, contrast `PAIRS` | [007](decisions/007-verified-component-loop.md) |
 | Docs-scribe critic | First-read comprehension findings on rewritten doc sections | Rewritten prose, proposed glossary entries | [018](decisions/018-docs-scribe-critic-stage.md) |
 | `run-ledger.json` | Per-run gate + reviewer telemetry (`reviewerFindingsBeyondGateCount`) | Append-only ledger, judges the adversarial stage's ROI | [015](decisions/015-handoff-artifact-lifecycle.md), [018](decisions/018-docs-scribe-critic-stage.md) |
 | Pattern-accuracy harness | Pre-registered 7-task × 2-arm A/B scored against real gates | `component-patterns.json`'s consumption rule (`/layout-generation` only) | [013](decisions/013-cross-component-pattern-schema.md) |

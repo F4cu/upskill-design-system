@@ -3,7 +3,7 @@
     "allow": [
       "Bash(npm run typecheck)",
       "Bash(npm run a11y:coverage)",
-      "Bash(npm run metadata:validate)",
+      "Bash(npm run usage:validate)",
       "Bash(npm run a11y:test)",
       "Bash(npm run test:a11y)",
       "Bash(npx tsc --noEmit)",

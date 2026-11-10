@@ -1,7 +1,7 @@
 ---
 // Component pages (ADR-030, Phase A1): Usage, Spec and Accessibility per
 // component, rendered from specs.bundle.json. Every row traces to a field in
-// the spec or the metadata; a section with no data shows "None recorded".
+// the spec or <Name>.usage.json; a section with no data shows "None recorded".
 import { getCollection } from "astro:content";
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 import ComponentTabs from "../../../components/ComponentTabs.astro";
@@ -27,7 +27,7 @@ export function getStaticPaths() {
 }
 
 const { name, tabId } = Astro.props;
-const { spec, metadata, hash, a11y } = bundle.components[name];
+const { spec, usage, hash, a11y } = bundle.components[name];
 const published = new Set(publishedComponents());
 
 // "ADR-024" → its page on this site, or null when no published ADR has that number.
@@ -104,6 +104,9 @@ const formatProps = (props) =>
 const codeOnlyVariant = (axis) => spec.props[axis]?.figma?.surface === "code-only";
 const focusState = spec.states.find((s) => s.name === "focus-visible");
 
+const LIMIT_SCOPE = { region: "region (section)", repeated: "repeated item", parent: "parent" };
+const builtFrom = [...new Set((spec.anatomy ?? []).map((part) => part.builtOn).filter((n) => n && n !== name))].sort();
+
 const storybookId = `components-${name.toLowerCase()}`;
 const links = [
   { label: "Storybook", href: `${STORYBOOK}?path=/docs/${storybookId}--docs` },
@@ -112,7 +115,7 @@ const links = [
     href: `${FIGMA_FILE}?node-id=${set.nodeId.replace(":", "-")}`,
   })),
   { label: "Spec source", href: `${REPO_BLOB}/packages/components/src/components/${name}/${name}.spec.json` },
-  { label: "Metadata source", href: `${REPO_BLOB}/packages/components/src/components/${name}/${name}.metadata.json` },
+  { label: "Usage source", href: `${REPO_BLOB}/packages/components/src/components/${name}/${name}.usage.json` },
 ];
 
 const HEADINGS = {
@@ -120,8 +123,9 @@ const HEADINGS = {
     ["when-to-use", "When to use it"],
     ["variants", "Variants"],
     ["patterns", "Patterns"],
-    ["donts", "Don'ts"],
-    ["rules", "Rules"],
+    ["not-for", "Not for"],
+    ["composition", "Composition"],
+    ["rules", "Prop rules"],
     ["related", "Related components"],
   ],
   spec: [
@@ -150,7 +154,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
 <StarlightPage
   frontmatter={{
     title: name,
-    description: metadata.component.description,
+    description: usage.component.description,
     ...(tabId !== "usage" && { prev: false, next: false }),
     // The brand fonts the rendered examples use, as in Storybook's preview-head.html
     head: [
@@ -161,10 +165,10 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   headings={headings}
 >
   <div class="component-header">
-    <p>{metadata.component.description}</p>
+    <p>{usage.component.description}</p>
     <dl class="component-meta">
       <dt>Maturity</dt>
-      <dd><code>{metadata.component.status}</code></dd>
+      <dd><code>{usage.component.status}</code></dd>
       <dt>Links</dt>
       <dd>{links.map((l, i) => <>{i > 0 && " · "}<a href={l.href}>{l.label}</a></>)}</dd>
       <dt>Generated from</dt>
@@ -178,21 +182,21 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
     tabId === "usage" && (
       <>
         <h2 id="when-to-use">{h["when-to-use"]}</h2>
-        {metadata.usage.when?.length ? <ul>{metadata.usage.when.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
+        {usage.useWhen?.length ? <ul>{usage.useWhen.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
 
         <h2 id="variants">{h.variants}</h2>
-        {Object.keys(metadata.variants ?? {}).length ? (
-          Object.entries(metadata.variants).map(([axis, v]) => (
+        {Object.keys(usage.variants ?? {}).length ? (
+          Object.entries(usage.variants).map(([axis, v]) => (
             <>
               <h3><code>{axis}</code></h3>
               {codeOnlyVariant(axis) && <p class="note">Only available in code.</p>}
               <table>
-                <thead><tr><th scope="col">Option</th><th scope="col">Purpose</th></tr></thead>
+                <thead><tr><th scope="col">Option</th><th scope="col">Use when</th></tr></thead>
                 <tbody>
                   {v.options.map((opt) => (
                     <tr>
                       <td><code>{opt}</code>{opt === v.default && " (default)"}</td>
-                      <td>{v.purpose?.[opt] ?? NONE}</td>
+                      <td>{v.useWhen?.[opt] ?? NONE}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -204,9 +208,9 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
         )}
 
         <h2 id="patterns">{h.patterns}</h2>
-        {metadata.usage.patterns?.length ? (
+        {usage.patterns?.length ? (
           <dl class="patterns">
-            {metadata.usage.patterns.map((p) => (
+            {usage.patterns.map((p) => (
               <>
                 <dt><code>{p.name}</code></dt>
                 <dd>
@@ -220,16 +224,55 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           <p>{NONE}</p>
         )}
 
-        <h2 id="donts">{h.donts}</h2>
-        {metadata.usage.antiPatterns?.length ? (
+        <h2 id="not-for">{h["not-for"]}</h2>
+        {usage.notFor?.length ? (
           <table>
-            <thead><tr><th scope="col">Don't</th><th scope="col">Why</th><th scope="col">Instead</th></tr></thead>
+            <thead><tr><th scope="col">Not for</th><th scope="col">Why</th><th scope="col">Use instead</th></tr></thead>
             <tbody>
-              {metadata.usage.antiPatterns.map((a) => (
-                <tr><td>{a.scenario}</td><td>{a.reason}</td><td>{a.alternative}</td></tr>
+              {usage.notFor.map((n) => (
+                <tr>
+                  <td>{n.case}</td>
+                  <td>{n.because}</td>
+                  <td>
+                    {n.instead && (componentHref(n.instead) ? <a href={componentHref(n.instead)}>{n.instead}</a> : n.instead)}
+                    {n.instead && n.note && <br />}
+                    {n.note}
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="composition">{h.composition}</h2>
+        {usage.composition?.limits?.length || usage.composition?.rules?.length ? (
+          <>
+            {usage.composition.limits?.length > 0 && (
+              <table>
+                <thead><tr><th scope="col">Limit</th><th scope="col">Why</th></tr></thead>
+                <tbody>
+                  {usage.composition.limits.map((l) => (
+                    <tr>
+                      <td>{formatWhen(l.if)}: {l.max === 0 ? `never inside a ${LIMIT_SCOPE[l.per]}` : `at most ${l.max} per ${LIMIT_SCOPE[l.per]}`}</td>
+                      <td>{l.because}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            {usage.composition.rules?.length > 0 && (
+              <table>
+                <thead><tr><th scope="col">Don't</th><th scope="col">Why</th><th scope="col">Do</th></tr></thead>
+                <tbody>
+                  {usage.composition.rules.map((r) => (
+                    <tr><td>{r.case}</td><td>{r.because}</td><td>{r.do}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </>
         ) : (
           <p>{NONE}</p>
         )}
@@ -260,7 +303,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
 
         <h2 id="related">{h.related}</h2>
         <dl class="related">
-          {[["Built from", metadata.composition?.composedOf], ["Placed inside", metadata.composition?.containedBy]].map(([label, list]) => (
+          {[["Built from", builtFrom], ["Placed inside", usage.composition?.containedBy]].map(([label, list]) => (
             <>
               <dt>{label}</dt>
               <dd>
@@ -326,7 +369,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           <thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Options</th></tr></thead>
           <tbody>
             {Object.entries(spec.props).map(([prop, p]) => {
-              const purpose = metadata.variants?.[prop]?.purpose;
+              const useWhen = usage.variants?.[prop]?.useWhen;
               return (
                 <tr>
                   <th scope="row"><code>{prop}</code></th>
@@ -335,7 +378,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
                   <td>
                     {p.options ? (
                       <ul class="options">
-                        {p.options.map((o) => <li><code>{o}</code>{purpose?.[o] && `: ${purpose[o]}`}</li>)}
+                        {p.options.map((o) => <li><code>{o}</code>{useWhen?.[o] && `: ${useWhen[o]}`}</li>)}
                       </ul>
                     ) : "—"}
                   </td>

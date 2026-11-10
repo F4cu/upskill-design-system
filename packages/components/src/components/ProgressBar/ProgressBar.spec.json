@@ -45,7 +45,16 @@
       }
     }
   },
-  "constraints": [],
+  "constraints": [
+    {
+      "id": "value-is-a-percentage",
+      "if": {
+        "value": "*"
+      },
+      "reason": "Normalise to 0–100 before passing. Out-of-range values are clamped, which hides the caller's intent.",
+      "enforcedBy": []
+    }
+  ],
   "states": [
     {
       "name": "default",

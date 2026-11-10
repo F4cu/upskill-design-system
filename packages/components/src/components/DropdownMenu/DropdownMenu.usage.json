@@ -1,0 +1,61 @@
+{
+  "component": {
+    "name": "DropdownMenu",
+    "type": "interactive",
+    "status": "beta",
+    "description": "A floating panel of selectable items. Shared dropdown primitive used by AppHeader (user menu) and Select (custom listbox). Supports both menu and listbox ARIA roles.",
+    "figmaNodeId": "155:6261"
+  },
+  "useWhen": [
+    "Displaying a list of selectable items anchored to a trigger element"
+  ],
+  "notFor": [
+    {
+      "case": "Using DropdownMenu for navigation with URLs",
+      "because": "Items are <div role='menuitem'>, not anchors. Navigation links need <a> elements for correct semantics.",
+      "instead": "TextLink",
+      "note": "Use a nav element with anchor links for navigation."
+    }
+  ],
+  "patterns": [
+    {
+      "name": "user-context-menu",
+      "description": "AppHeader renders DropdownMenu anchored below the user button trigger using absolute positioning.",
+      "tree": "AppHeader > div.userWrapper(position:relative) > [button.userButton, DropdownMenu(listRole=menu)]"
+    },
+    {
+      "name": "custom-select",
+      "description": "Select renders DropdownMenu as a custom listbox anchored below its trigger button.",
+      "tree": "Select > div.wrapper(position:relative) > [button.trigger, DropdownMenu(listRole=listbox)]"
+    }
+  ],
+  "variants": {
+    "listRole": {
+      "options": [
+        "menu",
+        "listbox"
+      ],
+      "default": "menu",
+      "useWhen": {
+        "menu": "A contextual action menu, such as the AppHeader user menu. Items get role=menuitem.",
+        "listbox": "The options list of a custom Select. Items get role=option with aria-selected."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "AppHeader",
+      "Select"
+    ],
+    "width": "fixed",
+    "nests": false,
+    "rules": [
+      {
+        "case": "Rendering DropdownMenu outside a position:relative container",
+        "because": "The panel is absolutely positioned and will be offset incorrectly without a positioned ancestor.",
+        "do": "Always wrap the trigger and DropdownMenu in a position:relative container."
+      }
+    ]
+  }
+}

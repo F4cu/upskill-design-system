@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 import { Select } from './index'
 
 // Tier-2 behavioral a11y (ADR-008). Select is a custom combobox, so the static
-// jsx-a11y lint can't see its dynamic contract (Select.metadata.json →
+// jsx-a11y lint can't see its dynamic contract (Select.spec.json →
 // accessibility.role "combobox", aria-describedby/aria-invalid on error,
 // Space/Enter to open, Escape to close). These tests assert that contract:
 // the trigger exposes role=combobox named by its label, aria-expanded toggles

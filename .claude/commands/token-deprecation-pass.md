@@ -33,7 +33,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 3. After all replacements, run `npm run tokens:build` and confirm no alias errors.
 4. Run `npm run tokens:usage` and confirm the deprecated token paths no longer appear in either map.
 5. This pass edits component CSS, so run the full deterministic gate before opening the migration PR:
-   `npm run tokens:contrast-check && npm run metadata:validate && npm run typecheck && npm run build -w @upskill/components`.
+   `npm run tokens:contrast-check && npm run usage:validate && npm run typecheck && npm run build -w @upskill/components`.
 
 ## Output
 
@@ -54,4 +54,4 @@ rebuild, and re-run airtable:pull:governance to confirm clean state.
 
 ## Success signal
 
-`npm run tokens:usage` shows zero references to any deprecated token path. The step-5 gate (contrast, metadata, typecheck, component build) passes. PR is ready to merge.
+`npm run tokens:usage` shows zero references to any deprecated token path. The step-5 gate (contrast, usage, typecheck, component build) passes. PR is ready to merge.

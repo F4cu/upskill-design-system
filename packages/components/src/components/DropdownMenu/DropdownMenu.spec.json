@@ -218,5 +218,11 @@
   "figma": {
     "sets": [],
     "divergences": []
-  }
+  },
+  "decisions": [
+    {
+      "decision": "DropdownMenu doesn't render or own its trigger, so the composing component manages focus: focus the first or selected item on open, return focus to the trigger on close, close on focusout leaving trigger and panel, and name the panel with aria-labelledby (plus aria-controls on the trigger). CardVertical.Menu is the reference composition; Select/index.tsx uses the same effects.",
+      "reason": "Items are tabIndex=-1 (one roving focus target), so without this keyboard and screen-reader users can't reach the menu, lose their place when it closes, or Tab out of a menu that stays open; an unnamed role=menu is announced without context (APG menu button)."
+    }
+  ]
 }

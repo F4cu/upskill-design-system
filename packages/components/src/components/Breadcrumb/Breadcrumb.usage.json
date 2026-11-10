@@ -1,0 +1,48 @@
+{
+  "component": {
+    "name": "Breadcrumb",
+    "type": "display",
+    "status": "beta",
+    "description": "An ordered list of navigation links separated by chevron-right icons. The last item is the current page (non-linked, default text colour). Accepts items as an array of { label, href? }.",
+    "figmaNodeId": "86:3211"
+  },
+  "useWhen": [
+    "Showing the user's location within the page hierarchy below the AppHeader",
+    "Any page more than one level deep from the root that benefits from a back-navigation trail"
+  ],
+  "patterns": [
+    {
+      "name": "page-header-trail",
+      "description": "Breadcrumb placed below AppHeader and above the page title in a Stack.",
+      "tree": "Stack(gap=sm) > [Breadcrumb, Heading(as=h1)]"
+    }
+  ],
+  "variants": {
+    "variant": {
+      "options": [
+        "default"
+      ],
+      "default": "default",
+      "useWhen": {
+        "default": "Ordered trail of linked items with a non-linked current page label."
+      }
+    }
+  },
+  "composition": {
+    "accepts": [],
+    "containedBy": [
+      "Box",
+      "Stack",
+      "AppHeader"
+    ],
+    "width": "fill",
+    "nests": false,
+    "rules": [
+      {
+        "case": "Using Breadcrumb on root-level pages",
+        "because": "A one-item breadcrumb (just the current page) adds no wayfinding value and clutters the layout.",
+        "do": "Omit Breadcrumb when the page is at the top of the hierarchy."
+      }
+    ]
+  }
+}
