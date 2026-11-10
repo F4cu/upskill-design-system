@@ -26,11 +26,11 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 - [x] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test (`npm run anatomy:test`, in CI); their `anatomyExamples` filled; `builtOnPart` for parts inside a nested component, `notRendered` for parts no example renders (`MenuPanel`; TextField `Placeholder` in A3); pattern examples render the PascalCase-named story (2026-11-10, ADR-030 amendment "data-part markers")
 
 **Shared input**
-- [x] Phase 0: `npm run spec:bundle`, byte-identical across two runs, fails on an unresolved token path (2026-11-10, `scripts/spec-bundle.js`; not yet wired into CI, A1 adds it to `docs-build.yml`)
+- [x] Phase 0: `npm run spec:bundle`, byte-identical across two runs, fails on an unresolved token path (2026-11-10, `scripts/spec-bundle.js`; wired into `docs:build` in A1)
 
 **Part A: docs site**
-- [ ] Measurement: time documenting Button by hand on the three sub-pages, *before* A1 generates them
-- [ ] Phase A1: Button and CardVertical, three sub-pages as tables; sidebar highlight works on all three routes; `docs-build.yml` triggers on spec changes
+- [x] ~~Measurement: time documenting Button by hand~~ Not timed: the developer chose to use the written prediction (~4.5 h, range 3–6 h) in place of a timing (2026-11-10). It stays a forecast, so the case study can't cite a measured hand-vs-generated comparison
+- [x] Phase A1: Button and CardVertical, three sub-pages as tables; sidebar highlight works on all three routes; `docs-build.yml` triggers on spec changes (2026-11-10; route `[...tab].astro`, highlight via Starlight route middleware, ADR-030 amendment "Phase A1 pages as built")
 - [ ] Measurement: traceability count on the Button and CardVertical pages
 - [ ] Phase A2 spike: `@astrojs/react` in Starlight, SVG anatomy overlay; record whether the overlay or the Mermaid fallback ships
 - [ ] Phase A2: live default example, patterns, rendered states

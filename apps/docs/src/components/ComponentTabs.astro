@@ -1,0 +1,51 @@
+---
+import { TABS, pageHref } from "../../components.mjs";
+
+interface Props {
+  name: string;
+  current: string;
+}
+const { name, current } = Astro.props;
+---
+
+<nav class="component-tabs not-content" aria-label={`${name} documentation`}>
+  <ul>
+    {
+      TABS.map((tab) => (
+        <li>
+          <a href={pageHref(name, tab)} aria-current={tab.id === current ? "page" : undefined}>
+            {tab.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .component-tabs ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--sl-color-hairline);
+  }
+  .component-tabs a {
+    display: block;
+    padding: 0.5rem 0.875rem;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .component-tabs a:hover {
+    color: var(--sl-color-white);
+  }
+  .component-tabs a[aria-current="page"] {
+    color: var(--sl-color-white);
+    font-weight: 600;
+    border-bottom-color: var(--sl-color-accent);
+  }
+</style>

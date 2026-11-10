@@ -1,0 +1,479 @@
+---
+// Component pages (ADR-030, Phase A1): Usage, Spec and Accessibility per
+// component, rendered from specs.bundle.json. Every row traces to a field in
+// the spec or the metadata; a section with no data shows "None recorded".
+import { getCollection } from "astro:content";
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import ComponentTabs from "../../../components/ComponentTabs.astro";
+import {
+  FIGMA_FILE,
+  REPO_BLOB,
+  STORYBOOK,
+  TABS,
+  bundle,
+  pageHref,
+  publishedComponents,
+  slugOf,
+} from "../../../../components.mjs";
+
+export function getStaticPaths() {
+  return publishedComponents().flatMap((name) =>
+    TABS.map((tab) => ({
+      params: { name: slugOf(name), tab: tab.path ? tab.path.replace(/\/$/, "") : undefined },
+      props: { name, tabId: tab.id },
+    })),
+  );
+}
+
+const { name, tabId } = Astro.props;
+const { spec, metadata, hash, a11y } = bundle.components[name];
+const published = new Set(publishedComponents());
+
+// "ADR-024" → its page on this site, or null when no published ADR has that number.
+const adrIds = (await getCollection("docs")).map((e) => e.id).filter((id) => id.startsWith("decisions/"));
+const adrHref = (ref) => {
+  const num = /^ADR-(\d{3})$/.exec(ref)?.[1];
+  const id = num && adrIds.find((i) => i.startsWith(`decisions/${num}-`));
+  return id ? `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${id}/` : null;
+};
+const componentHref = (n) => (published.has(n) ? pageHref(n) : null);
+
+const NONE = "None recorded.";
+
+// --- formatting ---------------------------------------------------------
+const pxLabel = (value) => {
+  const m = /^(-?[\d.]+)rem$/.exec(value);
+  return m ? `${value} (${+m[1] * 16}px)` : value;
+};
+const formatWhen = (when) => {
+  const entries = Object.entries(when);
+  if (!entries.length) return "Default";
+  return entries.map(([k, v]) => (v === "*" ? `${k} set` : `${k}=${v}`)).join(", ");
+};
+const tokenValue = (path) => {
+  const token = bundle.tokens[path];
+  const contexts = Object.entries(token.contexts ?? {}).map(([ctx, v]) => `${ctx}: ${pxLabel(v)}`);
+  return { value: pxLabel(token.value), contexts };
+};
+// One row per CSS property in a style rule (ADR-027 style value shapes).
+const styleRow = (property, value) => {
+  if (typeof value === "string") return { property, token: value, ...tokenValue(value) };
+  if (value.literal !== undefined) return { property, literal: value.literal, reason: value.reason };
+  if (value.sameAs) return { property, sameAs: value.sameAs };
+  const resolved = value.template.replace(/\{([a-z0-9.-]+)\}/g, (_, p) => bundle.tokens[p].value);
+  return { property, template: value.template, value: resolved, contexts: [] };
+};
+
+// Anatomy in depth-first order with each part's nesting depth.
+const anatomy = (() => {
+  const children = new Map();
+  for (const part of spec.anatomy) {
+    const key = part.parent ?? null;
+    children.set(key, [...(children.get(key) ?? []), part]);
+  }
+  const out = [];
+  const walk = (parent, depth) => {
+    for (const part of children.get(parent) ?? []) {
+      out.push({ ...part, depth });
+      walk(part.name, depth + 1);
+    }
+  };
+  walk(null, 0);
+  return out;
+})();
+
+const formatProps = (props) =>
+  Object.entries(props ?? {})
+    .map(([k, v]) => `${k}=${typeof v === "string" ? `"${v}"` : JSON.stringify(v)}`)
+    .join(" ");
+
+const codeOnlyVariant = (axis) => spec.props[axis]?.figma?.surface === "code-only";
+const focusState = spec.states.find((s) => s.name === "focus-visible");
+
+const storybookId = `components-${name.toLowerCase()}`;
+const links = [
+  { label: "Storybook", href: `${STORYBOOK}?path=/docs/${storybookId}--docs` },
+  ...spec.figma.sets.map((set) => ({
+    label: spec.figma.sets.length > 1 ? `Figma: ${set.name}` : "Figma",
+    href: `${FIGMA_FILE}?node-id=${set.nodeId.replace(":", "-")}`,
+  })),
+  { label: "Spec source", href: `${REPO_BLOB}/packages/components/src/components/${name}/${name}.spec.json` },
+  { label: "Metadata source", href: `${REPO_BLOB}/packages/components/src/components/${name}/${name}.metadata.json` },
+];
+
+const HEADINGS = {
+  usage: [
+    ["when-to-use", "When to use it"],
+    ["variants", "Variants"],
+    ["patterns", "Patterns"],
+    ["donts", "Don'ts"],
+    ["rules", "Rules"],
+    ["related", "Related components"],
+  ],
+  spec: [
+    ["anatomy", "Anatomy"],
+    ["props", "Props"],
+    ["states", "States"],
+    ["styles", "Styles and tokens"],
+    ["why", "Why it's built this way"],
+    ["parity", "Design–code parity"],
+  ],
+  accessibility: [
+    ["role", "Role and ARIA"],
+    ["keyboard", "Keyboard"],
+    ["focus", "Focus"],
+    ["testing", "Testing"],
+  ],
+};
+const headings = HEADINGS[tabId].map(([slug, text]) => ({ depth: 2, slug, text }));
+const h = Object.fromEntries(HEADINGS[tabId]);
+
+const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
+---
+
+<StarlightPage
+  frontmatter={{
+    title: name,
+    description: metadata.component.description,
+    ...(tabId !== "usage" && { prev: false, next: false }),
+  }}
+  headings={headings}
+>
+  <div class="component-header">
+    <p>{metadata.component.description}</p>
+    <dl class="component-meta">
+      <dt>Maturity</dt>
+      <dd><code>{metadata.component.status}</code></dd>
+      <dt>Links</dt>
+      <dd>{links.map((l, i) => <>{i > 0 && " · "}<a href={l.href}>{l.label}</a></>)}</dd>
+      <dt>Generated from</dt>
+      <dd><code title={hash}>{hash.slice(0, 12)}</code></dd>
+    </dl>
+  </div>
+
+  <ComponentTabs name={name} current={tabId} />
+
+  {
+    tabId === "usage" && (
+      <>
+        <h2 id="when-to-use">{h["when-to-use"]}</h2>
+        {metadata.usage.when?.length ? <ul>{metadata.usage.when.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
+
+        <h2 id="variants">{h.variants}</h2>
+        {Object.keys(metadata.variants ?? {}).length ? (
+          Object.entries(metadata.variants).map(([axis, v]) => (
+            <>
+              <h3><code>{axis}</code></h3>
+              {codeOnlyVariant(axis) && <p class="note">Only available in code.</p>}
+              <table>
+                <thead><tr><th scope="col">Option</th><th scope="col">Purpose</th></tr></thead>
+                <tbody>
+                  {v.options.map((opt) => (
+                    <tr>
+                      <td><code>{opt}</code>{opt === v.default && " (default)"}</td>
+                      <td>{v.purpose?.[opt] ?? NONE}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          ))
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="patterns">{h.patterns}</h2>
+        {metadata.usage.patterns?.length ? (
+          <dl class="patterns">
+            {metadata.usage.patterns.map((p) => (
+              <>
+                <dt><code>{p.name}</code></dt>
+                <dd>
+                  <p>{p.description}</p>
+                  {p.tree && <pre><code>{p.tree}</code></pre>}
+                </dd>
+              </>
+            ))}
+          </dl>
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="donts">{h.donts}</h2>
+        {metadata.usage.antiPatterns?.length ? (
+          <table>
+            <thead><tr><th scope="col">Don't</th><th scope="col">Why</th><th scope="col">Instead</th></tr></thead>
+            <tbody>
+              {metadata.usage.antiPatterns.map((a) => (
+                <tr><td>{a.scenario}</td><td>{a.reason}</td><td>{a.alternative}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="rules">{h.rules}</h2>
+        {spec.constraints?.length ? (
+          <table>
+            <thead><tr><th scope="col">Rule</th><th scope="col">When</th><th scope="col">Why</th><th scope="col">Enforced by</th></tr></thead>
+            <tbody>
+              {spec.constraints.map((c) => (
+                <tr>
+                  <td><code>{c.id}</code></td>
+                  <td>
+                    {formatWhen(c.if)}
+                    {[["requires", c.require], ["ignores", c.ignore]].filter(([, list]) => list?.length).map(([verb, list]) => (
+                      <><br />{verb} {list.map((r, i) => <>{i > 0 && ", "}<code>{r}</code></>)}</>
+                    ))}
+                  </td>
+                  <td>{c.reason}</td>
+                  <td>{c.enforcedBy?.join(", ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="related">{h.related}</h2>
+        <dl class="related">
+          {[["Built from", metadata.composition?.composedOf], ["Placed inside", metadata.composition?.containedBy]].map(([label, list]) => (
+            <>
+              <dt>{label}</dt>
+              <dd>
+                {list?.length
+                  ? list.map((n, i) => <>{i > 0 && ", "}{componentHref(n) ? <a href={componentHref(n)}>{n}</a> : n}</>)
+                  : NONE}
+              </dd>
+            </>
+          ))}
+        </dl>
+      </>
+    )
+  }
+
+  {
+    tabId === "spec" && (
+      <>
+        <h2 id="anatomy">{h.anatomy}</h2>
+        <table>
+          <thead>
+            <tr><th scope="col">Part</th><th scope="col">Element</th><th scope="col">Role</th><th scope="col">Present</th><th scope="col">Built on</th><th scope="col">Notes</th></tr>
+          </thead>
+          <tbody>
+            {anatomy.map((part) => (
+              <tr>
+                <th scope="row" class="part" style={`--depth: ${part.depth}`}>
+                  {part.depth > 0 && <span aria-hidden="true" class="nest">└ </span>}
+                  <code>{part.name}</code>
+                  {part.parent && <span class="sr-only"> (inside {part.parent})</span>}
+                </th>
+                <td><code>{part.element}</code></td>
+                <td>{part.role}</td>
+                <td>{part.required ? "Always" : part.when ? `When ${part.when}` : "Optional"}{part.notRendered && <><br /><em>Not rendered by any example: {part.notRendered}</em></>}</td>
+                <td>
+                  {part.builtOn ? (componentHref(part.builtOn) ? <a href={componentHref(part.builtOn)}>{part.builtOn}</a> : part.builtOn) : "—"}
+                  {part.builtOnPart && <> (part <code>{part.builtOnPart}</code>)</>}
+                  {part.builtOnProps && <><br /><code>{formatProps(part.builtOnProps)}</code></>}
+                </td>
+                <td>{[part.action, part.notes].filter(Boolean).join(" ")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h2 id="props">{h.props}</h2>
+        <table>
+          <thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Options</th></tr></thead>
+          <tbody>
+            {Object.entries(spec.props).map(([prop, p]) => {
+              const purpose = metadata.variants?.[prop]?.purpose;
+              return (
+                <tr>
+                  <th scope="row"><code>{prop}</code></th>
+                  <td><code>{p.type}</code></td>
+                  <td>{p.default === null || p.default === undefined ? "—" : <code>{JSON.stringify(p.default)}</code>}</td>
+                  <td>
+                    {p.options ? (
+                      <ul class="options">
+                        {p.options.map((o) => <li><code>{o}</code>{purpose?.[o] && `: ${purpose[o]}`}</li>)}
+                      </ul>
+                    ) : "—"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        <h2 id="states">{h.states}</h2>
+        {spec.states?.length ? (
+          <table>
+            <thead><tr><th scope="col">State</th><th scope="col">Kind</th><th scope="col">Trigger</th><th scope="col">Notes</th></tr></thead>
+            <tbody>
+              {spec.states.map((s) => (
+                <tr><th scope="row"><code>{s.name}</code></th><td>{s.kind}</td><td><code>{s.trigger}</code></td><td>{s.notes ?? ""}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="styles">{h.styles}</h2>
+        <p>Grouped by part. Only the default condition is open; values resolve in the default context ({bundle.defaultContext.brand}, {bundle.defaultContext.theme}, {bundle.defaultContext.device}).</p>
+        {Object.entries(spec.styles).map(([part, rules]) => (
+          <>
+            <h3><code>{part}</code></h3>
+            {rules.map((rule) => (
+              <details open={Object.keys(rule.when).length === 0}>
+                <summary>{formatWhen(rule.when)}</summary>
+                <table>
+                  <thead><tr><th scope="col">Property</th><th scope="col">Token</th><th scope="col">Value</th></tr></thead>
+                  <tbody>
+                    {Object.entries(rule.set).map(([prop, value]) => {
+                      const row = styleRow(prop, value);
+                      return (
+                        <tr>
+                          <th scope="row"><code>{row.property}</code></th>
+                          {row.token && <><td><code>{row.token}</code></td><td>{row.value}{row.contexts.map((c) => <><br /><span class="context">{c}</span></>)}</td></>}
+                          {row.literal !== undefined && <><td>Literal</td><td><code>{row.literal}</code><br /><span class="context">{row.reason}</span></td></>}
+                          {row.sameAs && <><td>—</td><td>Same as <code>{row.sameAs}</code></td></>}
+                          {row.template && <><td><code>{row.template}</code></td><td>{row.value}</td></>}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </details>
+            ))}
+          </>
+        ))}
+
+        <h2 id="why">{h.why}</h2>
+        <h3>Decisions</h3>
+        {spec.decisions?.length ? (
+          <ul>
+            {spec.decisions.map((d) => (
+              <li>
+                {d.decision}
+                {d.reason && <> <em>{d.reason}</em></>}
+                {d.adr && <> ({adrHref(d.adr) ? <a href={adrHref(d.adr)}>{d.adr}</a> : d.adr})</>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>{NONE}</p>
+        )}
+        <h3>Ruled out</h3>
+        {spec.ruledOut?.length ? (
+          <table>
+            <thead><tr><th scope="col">Option</th><th scope="col">Why not</th><th scope="col">Seen in</th></tr></thead>
+            <tbody>
+              {spec.ruledOut.map((r) => <tr><td>{r.option}</td><td>{r.reason}</td><td>{r.source ?? ""}</td></tr>)}
+            </tbody>
+          </table>
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="parity">{h.parity}</h2>
+        {spec.figma.divergences?.length ? (
+          <ul>{spec.figma.divergences.map((d) => <li>{d.what} <em>{d.decision}</em></li>)}</ul>
+        ) : (
+          <p>{NONE}</p>
+        )}
+      </>
+    )
+  }
+
+  {
+    tabId === "accessibility" && (
+      <>
+        <h2 id="role">{h.role}</h2>
+        <p>Role: <code>{spec.accessibility.role}</code></p>
+        {spec.accessibility.ariaAttributes?.length ? (
+          <ul>{spec.accessibility.ariaAttributes.map((a) => <li>{a}</li>)}</ul>
+        ) : (
+          <p>{NONE}</p>
+        )}
+        {spec.accessibility.notes && <p>{spec.accessibility.notes}</p>}
+
+        <h2 id="keyboard">{h.keyboard}</h2>
+        {spec.accessibility.keyboardInteractions?.length ? (
+          <table>
+            <thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead>
+            <tbody>
+              {spec.accessibility.keyboardInteractions.map((k) => <tr><th scope="row"><kbd>{k.key}</kbd></th><td>{k.action}</td></tr>)}
+            </tbody>
+          </table>
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="focus">{h.focus}</h2>
+        <p>{focusState?.notes ?? NONE}</p>
+
+        <h2 id="testing">{h.testing}</h2>
+        <p>
+          {a11y.tier === 2 ? (
+            a11y.test ? (
+              <>Tier 2 (<a href={adrHref("ADR-008")}>ADR-008</a>): interactive, covered by the behavioral test <a href={`${REPO_BLOB}/${a11y.test}`}><code>{a11y.test.split("/").pop()}</code></a> plus the Tier 1 lint.</>
+            ) : (
+              <>Tier 2 (<a href={adrHref("ADR-008")}>ADR-008</a>): interactive, but no behavioral test yet{a11y.backlog && " (waived in the a11y backlog)"}.</>
+            )
+          ) : (
+            <>Tier 1 (<a href={adrHref("ADR-008")}>ADR-008</a>): not interactive, covered by the <code>jsx-a11y</code> lint only.</>
+          )}{" "}
+          Every story is also swept by axe.
+        </p>
+      </>
+    )
+  }
+
+  <p class="site-wide">
+    Every component follows {SITE_WIDE_ADRS.map((ref, i) => <>{i > 0 && (i === SITE_WIDE_ADRS.length - 1 ? " and " : ", ")}<a href={adrHref(ref)}>{ref}</a></>)}
+    (states, prop vocabulary, focus indicator); they are not repeated per component.
+  </p>
+</StarlightPage>
+
+<style>
+  .component-meta {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.25rem 1rem;
+    font-size: var(--sl-text-sm);
+  }
+  .component-meta dd {
+    margin: 0;
+  }
+  .part {
+    padding-inline-start: calc(0.75rem + var(--depth) * 1rem);
+    white-space: nowrap;
+    font-weight: normal;
+  }
+  .nest,
+  .context,
+  .note {
+    color: var(--sl-color-gray-3);
+  }
+  .context {
+    font-size: var(--sl-text-xs);
+  }
+  .options {
+    margin: 0;
+    padding-inline-start: 1rem;
+  }
+  details summary {
+    cursor: pointer;
+  }
+  .site-wide {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sl-color-hairline);
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-3);
+  }
+</style>

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Builds specs.bundle.json, the one input both spec renderers read (ADR-030,
 // Phase 0): the docs-site component pages and the Figma parity plugin. Per
-// component: its spec, its metadata and a hash over both. Per token path any
+// component: its spec, its metadata, a hash over both and its ADR-008 a11y
+// tier (with the behavioral test that covers it). Per token path any
 // spec's styles reference: the CSS custom property, the resolved value in the
 // default context (default brand, light theme, desktop) plus the contexts where
 // it differs (dark, tablet, mobile), and its Figma variable from the committed
@@ -18,7 +19,7 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
-import { ROOT, readJson, rel, styleValueTokenPaths, dotPathToCssVar } from "./lib.js";
+import { ROOT, readJson, rel, styleValueTokenPaths, dotPathToCssVar, isInteractive } from "./lib.js";
 
 const COMPONENTS_DIR = path.join(ROOT, "packages/components/src/components");
 const TOKENS_CSS_DIR = path.join(ROOT, "packages/tokens/dist/css");
@@ -95,6 +96,15 @@ function figmaVariable(dotPath) {
   return { name, collection, ...(divergence.has(name) && { divergence: divergence.get(name) }) };
 }
 
+// ADR-008 tier, derived the way a11y-coverage.js derives it, so the docs page
+// states the tier the gate enforces rather than restating the rule.
+const a11yBacklog = readJson(path.join(ROOT, "scripts/a11y-backlog.json"));
+function a11yTier(name, spec, metadata) {
+  if (!isInteractive({ ...metadata, accessibility: spec.accessibility })) return { tier: 1, test: null, backlog: false };
+  const test = `packages/components/src/components/${name}/${name}.a11y.test.tsx`;
+  return { tier: 2, test: fs.existsSync(path.join(ROOT, test)) ? test : null, backlog: a11yBacklog.includes(name) };
+}
+
 const names = fs
   .readdirSync(COMPONENTS_DIR, { withFileTypes: true })
   .filter((e) => e.isDirectory() && fs.existsSync(path.join(COMPONENTS_DIR, e.name, `${e.name}.spec.json`)))
@@ -109,7 +119,7 @@ for (const name of names) {
   const hash = crypto.createHash("sha256").update(specRaw).update("\0").update(metadataRaw).digest("hex");
   const spec = JSON.parse(specRaw);
   const metadata = JSON.parse(metadataRaw);
-  components[name] = { hash, spec, metadata };
+  components[name] = { hash, spec, metadata, a11y: a11yTier(name, spec, metadata) };
   for (const rules of Object.values(spec.styles)) {
     for (const rule of rules) for (const value of Object.values(rule.set)) for (const t of styleValueTokenPaths(value)) tokenPaths.add(t);
   }
