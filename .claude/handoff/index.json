@@ -1,13 +1,5 @@
 [
   {
-    "name": "2026-10-12-spec-rollout-followups",
-    "kind": "handoff",
-    "status": "active",
-    "created": "2026-10-12",
-    "updated": "2026-10-12",
-    "path": ".claude/handoff/2026-10-12-spec-rollout-followups.handoff.md"
-  },
-  {
     "name": "2026-10-13-figma-fidelity-follow-ups",
     "kind": "handoff",
     "status": "active",
@@ -214,6 +206,14 @@
     "created": "2026-10-12",
     "updated": "2026-10-13",
     "path": ".claude/handoff/archive/2026-10-12-figma-fidelity-measurements.handoff.md"
+  },
+  {
+    "name": "2026-10-12-spec-rollout-followups",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-10-12",
+    "updated": "2026-11-10",
+    "path": ".claude/handoff/archive/2026-10-12-spec-rollout-followups.handoff.md"
   },
   {
     "name": "docsify-docs-site",
