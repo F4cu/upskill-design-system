@@ -32,6 +32,29 @@ Since ADR-027 split the builder data (anatomy, props, states, styles, a11y) into
 
 Suggested audit set: Polaris, Carbon, Atlassian, Primer, Spectrum, GOV.UK, plus any agent-facing manifests (Custom Elements Manifest, design-system MCP servers) for machine-readable labelling.
 
+## Prior art: `design-session/toolkit-research` (read 2026-11-10)
+
+That project has already run this audit for its own pattern library: `usage-docs-benchmark.md` (GOV.UK, Carbon, Atlassian, Polaris, Primer, 11-02), `judgment-recheck.md` (Figma guidelines, Southleft, Storybook, Carbon, 10-31) and `archive/component-contracts.md` §4 and §12 (contract fields, naming rules). Start from those notes and only fill in the gaps (Spectrum, Material 3). Takeaways for this schema, checked against `Button` and `Badge`:
+
+| # | Takeaway | Seen here | Candidate change |
+|---|---|---|---|
+| T1 | **Split by reader, picking vs building**: their contract has the same two blocks as ADR-027. This backs the rename: `usage.json` *is* the picking block. | Some of Button's `antiPatterns` are build rules ("passing raw design values via style", "defaulting the type attribute" on *new* components). Badge's "not type-enforced" is a spec gap. | Move build rules to `spec.json` (`constraints` / `ruledOut`). `usage.json` keeps only wrong *picks*. |
+| T2 | **Write `pick_when` as a situation, not a description.** 57 of 195 of their entries described the component, so only someone who already knew the answer matched them (D-246). | Button `when`: "Triggering a form submit, modal open, or in-page state change" describes the component. Most others are good situations. | Rename `when` → `pickWhen` (or `useWhen`), with a writing rule: a situation the reader is in. |
+| T3 | **`avoid_when`: `case` · `because` · `instead`, with `instead` as an id.** Every "don't" names its replacement and why. Others list related components with no reason. | `antiPatterns` already has `scenario`/`reason`/`alternative`, but `alternative` is prose ("Use Chip, which renders…"). | `alternative` → `instead: "<Component>"` (validated against the fixed set) plus an optional note. Lookalikes are then *derived*, not written. |
+| T4 | **Lookalikes as data.** Overlapping descriptions cause wrong picks; naming the difference raised accuracy 8–38% (ToolScope, their R6). | "Distinct from Chip" is buried in Badge's `description`. | Derived from T3's `instead`. No new field. |
+| T5 | **Other systems' names in keywords.** "badge" means a count in Atlassian and a status word in Polaris; aliases make lookup find the right entry (U6, D-244). | Button keywords include noise ("click", "interactive"). Badge lacks "lozenge"/"tag" disambiguation versus Chip. | Keywords become aliases plus need phrases, with a cap. Rename to `aliases` if that's all they hold. |
+| T6 | **Description opens on one category noun:** "A <noun> that/with …" (Primer, Atlassian, U7). No rules or limits in it. | Button's description carries counts, ADR-024 and a11y claims. | Writing rule plus a lint on the first words. |
+| T7 | **Variants say "when · what".** Prohibited combinations become data, not prose. | `purpose` mixes when, what and px sizes. "Requires the icon prop and an aria-label" is prose (already flagged in ADR-027). | `purpose` → `when` per option. Sizes and requirements go to `spec.json`. |
+| T8 | **Content and overflow** (GOV.UK copy templates per state, Carbon overflow, U1/U3): the strongest missing section in their benchmark. | Badge's "long sentences" anti-pattern is really an overflow rule. Nothing about label copy for Button. | Optional `content` (copy rules, `long:` what wraps or truncates). Weigh against the 27-files-every-run cost. |
+| T9 | **Known problems kept apart from rules** (GOV.UK "research on this component", their `Known:` strength, U4). | Badge's anti-pattern `reason` holds a known gap. | Probably not a field here: known gaps → GitHub issues or `spec.json`. Decide during the audit. |
+| T10 | **Field-name grammar** (AIP-140): lists and maps plural, scalars singular, relations as predicates. | `when` (list, singular). `composedOf`/`containedBy`/`accepts` are fine predicates. | Apply as a rule across all renamed fields. |
+| T11 | **Group by purpose, not atomic level** (Material 3: action · selection · input · navigation · containment · communication, their T4). | `category` atom/molecule/organism/layout doesn't help a picker. `type` partly does. | Replace or add a purpose `group`. Check what `/layout-generation` and `sense.js` read `category` for first. |
+| T12 | **Not borrowed by them, nor here**: changelog (git + ADRs), props table (`spec.json`), live demos (Storybook), a separate Related section (derived from T3). | — | — |
+
+Placement candidates (not picking info): `component.status` (lifecycle, ADR-010) and `figmaNodeId` (`spec.json` already has `figma`). Moving them affects `airtable-sync` and `sense.js`.
+
+Caveat: their library has 195 entries read through a CLI shortlist. Here `/layout-generation` reads all 27 files whole, so every added field (T8 especially) costs 27× per run. Measure with the pattern-accuracy harness before and after.
+
 ## Rename blast radius (measured 2026-11-10)
 
 27 data files plus about 50 live references outside `.claude/handoff/archive/`:
