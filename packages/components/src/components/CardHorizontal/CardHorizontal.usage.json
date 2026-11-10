@@ -3,7 +3,7 @@
     "name": "CardHorizontal",
     "type": "display",
     "status": "beta",
-    "description": "A horizontal course card (thumbnail-left layout) with an 80×80px square thumbnail and a content column: the title and optional ProgressBar (stack xs), then a metadata row (Inline gap sm) at stack sm. The metadata row renders author · duration (a 4px separator dot only between those two, drawn by the component) and the certified badge (no separator; its icon already sets it apart). Two usages: started courses (default variant, progress, duration, optional certified) and footer promotion (inverted variant, author, duration). For vertical image-top course cards use CardVertical; for generic surface containers use Card.",
+    "description": "A course card with a square thumbnail on the left and the title, progress and metadata beside it.",
     "figmaNodeId": "130:7289"
   },
   "useWhen": [

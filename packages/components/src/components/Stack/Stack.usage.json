@@ -3,7 +3,7 @@
     "name": "Stack",
     "type": "layout",
     "status": "beta",
-    "description": "Vertical flex container. Stacks children top-to-bottom with consistent spacing from the space.stack token scale. The primary building block for content hierarchy within a page section.",
+    "description": "A layout primitive that stacks children top to bottom with token spacing.",
     "figmaNodeId": "none"
   },
   "useWhen": [

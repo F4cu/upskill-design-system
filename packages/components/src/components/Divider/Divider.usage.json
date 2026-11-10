@@ -3,7 +3,7 @@
     "name": "Divider",
     "type": "display",
     "status": "beta",
-    "description": "A horizontal rule that visually separates sections of content. Styled with the default border token. No props beyond className.",
+    "description": "A horizontal line that separates groups of content inside one container.",
     "figmaNodeId": "none"
   },
   "useWhen": [

@@ -3,7 +3,7 @@
     "name": "Button",
     "type": "interactive",
     "status": "beta",
-    "description": "Triggers an action. Four variants that name an absolute visual weight, not a rank (accent brand-fill, neutral bordered, transparent ghost, danger error-fill) — the container decides which weight an action gets (ADR-024). Three sizes, optional leading and/or trailing icon, icon-only shapes. Fully keyboard-accessible via the native button element.",
+    "description": "A control that performs an action in place, such as submitting a form or opening a dialog, without changing the URL.",
     "figmaNodeId": "57:1265"
   },
   "useWhen": [

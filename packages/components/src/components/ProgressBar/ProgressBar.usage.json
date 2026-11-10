@@ -3,7 +3,7 @@
     "name": "ProgressBar",
     "type": "display",
     "status": "beta",
-    "description": "A 4px-tall track with a coloured fill representing a completion percentage (0–100). Used to show course progress on cards and profile sections.",
+    "description": "A horizontal bar that shows how much of a course the learner has completed.",
     "figmaNodeId": "54:1259"
   },
   "useWhen": [

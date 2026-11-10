@@ -3,7 +3,7 @@
     "name": "Accordion",
     "type": "interactive",
     "status": "beta",
-    "description": "A vertically stacked set of disclosure panels. Each item has a trigger (title + optional subtitle) and a collapsible content panel. Multiple items can be open simultaneously. Follows the WAI-ARIA Accordion pattern.",
+    "description": "A vertical list of collapsible sections, each a trigger with a title and a panel that opens independently of the others.",
     "figmaNodeId": "29:1153"
   },
   "useWhen": [

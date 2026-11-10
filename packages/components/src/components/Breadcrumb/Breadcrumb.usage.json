@@ -3,7 +3,7 @@
     "name": "Breadcrumb",
     "type": "display",
     "status": "beta",
-    "description": "An ordered list of navigation links separated by chevron-right icons. The last item is the current page (non-linked, default text colour). Accepts items as an array of { label, href? }.",
+    "description": "A trail of links from the root to the current page, which ends on the unlinked current page.",
     "figmaNodeId": "86:3211"
   },
   "useWhen": [

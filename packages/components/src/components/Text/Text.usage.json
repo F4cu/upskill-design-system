@@ -3,7 +3,7 @@
     "name": "Text",
     "type": "display",
     "status": "beta",
-    "description": "Renders body-level text using semantic size tokens. Covers body copy, small text, metadata, and label sizes. Polymorphic via the as prop. Does not add margin.",
+    "description": "A text element for body copy, supporting metadata and non-interactive labels.",
     "figmaNodeId": "none"
   },
   "useWhen": [

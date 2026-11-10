@@ -3,7 +3,7 @@
     "name": "Select",
     "type": "input",
     "status": "beta",
-    "description": "A labelled dropdown selector for choosing one option from a predefined list. Includes a visible label, a custom chevron indicator, optional placeholder, and an optional error message. Wraps a native <select> element for built-in accessibility and mobile keyboard support.",
+    "description": "A labelled dropdown for choosing exactly one option from a fixed list.",
     "figmaNodeId": "2879:8375"
   },
   "useWhen": [

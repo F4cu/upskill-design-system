@@ -3,7 +3,7 @@
     "name": "TextLink",
     "type": "interactive",
     "status": "beta",
-    "description": "Inline hyperlink with permanent underline and brand interactive color. Semibold weight distinguishes it from surrounding body text. Color shifts to a darker brand tone on hover. Always renders as an <a> element — use only for navigation (URL changes), never for in-page actions.",
+    "description": "An underlined inline link that navigates to a URL from within body text or a metadata line.",
     "figmaNodeId": "none"
   },
   "useWhen": [

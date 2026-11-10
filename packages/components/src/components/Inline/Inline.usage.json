@@ -3,7 +3,7 @@
     "name": "Inline",
     "type": "layout",
     "status": "beta",
-    "description": "Horizontal flex container. Arranges children side-by-side with consistent spacing from the space.inline token scale. Wraps by default when children exceed the container width.",
+    "description": "A layout primitive that places children side by side with token spacing, wrapping to a new line when they don't fit.",
     "figmaNodeId": "none"
   },
   "useWhen": [

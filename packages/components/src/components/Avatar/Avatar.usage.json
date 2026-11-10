@@ -3,7 +3,7 @@
     "name": "Avatar",
     "type": "display",
     "status": "beta",
-    "description": "A circular user photo displayed at a fixed size. Use to represent a person in navigation bars (sm) or profile sections (lg). Accepts an image src and alt text; no letter or icon fallback is in scope.",
+    "description": "A circular photo that represents a person, such as the signed-in user.",
     "figmaNodeId": "95:16289"
   },
   "useWhen": [

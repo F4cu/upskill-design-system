@@ -3,7 +3,7 @@
     "name": "Icon",
     "type": "display",
     "status": "beta",
-    "description": "Renders one of 22 inline SVGs from the fixed icon set. Uses currentColor so it inherits the surrounding text color. Size is controlled via size.icon.* tokens.",
+    "description": "A glyph from the fixed icon set that takes the color of the surrounding text.",
     "figmaNodeId": "none"
   },
   "useWhen": [

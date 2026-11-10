@@ -3,7 +3,7 @@
     "name": "Image",
     "type": "display",
     "status": "beta",
-    "description": "A self-contained image slot that renders a real image when src is provided, or a neutral grey placeholder with a centred icon when it is not. Fills its container width and maintains the given aspect ratio. Used for course thumbnails, card images, hero banners, and any layout slot that holds visual media.",
+    "description": "An image slot that keeps a set aspect ratio and shows a neutral placeholder while there is no source.",
     "figmaNodeId": "92:16895"
   },
   "useWhen": [

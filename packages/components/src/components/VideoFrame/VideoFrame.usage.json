@@ -3,7 +3,7 @@
     "name": "VideoFrame",
     "type": "display",
     "status": "beta",
-    "description": "Rounded thumbnail container with a fixed 16:9 aspect ratio and a centred semi-transparent play-button overlay. Purely presentational — no playback logic. Props: src (thumbnail URL) and alt.",
+    "description": "A video thumbnail with a play overlay that represents a video; playback and clicks belong to the parent.",
     "figmaNodeId": "none"
   },
   "useWhen": [

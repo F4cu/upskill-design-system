@@ -3,7 +3,7 @@
     "name": "AppHeader",
     "type": "container",
     "status": "beta",
-    "description": "Full-width top navigation bar. Fixed height (90px per Figma spec). Contains three slots: left logo, centred search field, and right area (nav links + user dropdown). No routing logic — pass nav items and callbacks as props.",
+    "description": "A full-width top navigation bar with the logo, a search field, navigation links and the user menu.",
     "figmaNodeId": "82:2242"
   },
   "useWhen": [

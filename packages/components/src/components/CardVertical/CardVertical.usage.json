@@ -3,7 +3,7 @@
     "name": "CardVertical",
     "type": "interactive",
     "status": "beta",
-    "description": "A vertical course card with an image thumbnail, an optional overlay action (favorite toggle or overflow menu), optional progress bar, serif title, and metadata row (duration, certified badge, and a 'Completed' check marker when progress reaches 100). Two image proportions via the size prop: lg uses a portrait 4/5 thumbnail (tall), sm uses a landscape 3/2 thumbnail (short). Used in Saved Courses and Discover carousels. Ships as a preset (`<CardVertical …props />`) built from named parts (`CardVertical.Root`, `.Media`, `.Action`, …) that consumers compose directly for uncommon content (ADR-023). No dark variant — appears on light and elevated backgrounds only.",
+    "description": "A course card with the image on top and the title, progress and metadata below, optionally with a favorite or overflow action.",
     "figmaNodeId": "52:4270"
   },
   "useWhen": [
@@ -19,6 +19,12 @@
       "because": "The serif title and course metadata row are designed for course items specifically.",
       "instead": "Card",
       "note": "Use Card with a custom inner layout for other content types."
+    },
+    {
+      "case": "A course card on an inverted (dark) section, such as the footer",
+      "because": "CardVertical has no inverted variant; its text colors assume a light or elevated surface.",
+      "instead": "CardHorizontal",
+      "note": "Use variant inverted."
     }
   ],
   "variants": {

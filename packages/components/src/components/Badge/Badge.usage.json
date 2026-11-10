@@ -3,7 +3,7 @@
     "name": "Badge",
     "type": "display",
     "status": "beta",
-    "description": "Static category label pill. Outline: border only, transparent background. Filled: neutral-subtlest background. Purely presentational — no selection state and no interaction semantics. Distinct from Chip, which is an interactive selection toggle.",
+    "description": "A static, non-interactive label for a category, level or status on a card or list row.",
     "figmaNodeId": "28:1134"
   },
   "useWhen": [

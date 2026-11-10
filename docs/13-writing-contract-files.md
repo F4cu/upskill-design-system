@@ -83,6 +83,14 @@ The audit placed all 106 old anti-patterns this way: 34 to `notFor`, 27 to compo
 
 The situation comes first; the one clause after it ("Brand fill.") is there so an agent can map a Figma instance back to an option. "Never inside a repeated item" moved to `composition.limits`, where `layout:validate` checks it.
 
+**Descriptions** (rewritten 2026-11-10). Each kept its category noun and what sets it apart; everything else already lived in the spec, a token or `notFor`. Two facts lived nowhere else and moved: CardVertical's "no dark variant" became a `notFor` pointing to CardHorizontal's inverted variant, and Avatar's "no letter fallback" became a spec `ruledOut` entry.
+
+| Before | After |
+|---|---|
+| "Triggers an action. Four variants that name an absolute visual weight, not a rank (…) — the container decides which weight an action gets (ADR-024). Three sizes, …" (48 words) | "A control that performs an action in place, such as submitting a form or opening a dialog, without changing the URL." |
+| "32px circular prev/next navigation button. Uses an Icon chevron internally. direction prop selects left or right. Disabled state: …" | "A circular previous or next control that steps through a carousel or sequence." |
+| "Renders one of 22 inline SVGs from the fixed icon set. Uses currentColor …" | "A glyph from the fixed icon set that takes the color of the surrounding text." |
+
 **Lines still waiting for the rewrite** (each flagged by the lint):
 
 | Field | Current text | Problem |
@@ -90,7 +98,6 @@ The situation comes first; the one clause after it ("Brand fill.") is there so a
 | Text `size.body-default` | "Standard body copy. 1rem, regular weight, 1.5 line-height." | Sizes belong in the spec |
 | ScrollArea `orientation.horizontal` | "overflow-x: auto; overflow-y: hidden. Use with Inline(wrap=false) …" | CSS, not a situation |
 | ButtonArrow `direction.left` | "Chevron-left icon. Navigates to the previous item." | Describes the component |
-| Heading description | "Renders heading-level text using title and display size tokens …" | Opens on a verb, not a noun |
 | CardVertical `useWhen` | "Pass progress when the user has started the course …" | A prop instruction (spec `constraints` or prop description) |
 | TextField `useWhen` | "The value is typed, not selected — use Select for predefined option sets" | A wrong pick (`notFor`, `instead: "Select"`) |
 

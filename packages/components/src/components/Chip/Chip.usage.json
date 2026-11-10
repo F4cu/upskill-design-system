@@ -3,7 +3,7 @@
     "name": "Chip",
     "type": "interactive",
     "status": "beta",
-    "description": "Pill-shaped filter toggle. Each chip is an independent toggle button (aria-pressed); the page owns which chips are pressed. Default: neutral border and subtle text. Pressed: brand border and brand text. Pure filter indicator — not a navigation element. Label-only; no dropdown arrow.",
+    "description": "A pill-shaped filter toggle that the user switches on or off to narrow a list or carousel.",
     "figmaNodeId": "29:1257"
   },
   "useWhen": [
