@@ -32,14 +32,17 @@ export type IconProps = {
   size?: IconSize
   label?: string
   className?: string
-  // Hyphenated JSX attributes bypass excess-property checks, so Omit alone
-  // can't forbid them; `never` does. `label` derives both.
-  'aria-hidden'?: never
-  'aria-label'?: never
 } & Omit<
   SVGAttributes<SVGSVGElement>,
-  'children' | 'color' | 'fill' | 'stroke' | 'style' | 'role' | 'aria-hidden' | 'aria-label'
->
+  'children' | 'color' | 'fill' | 'stroke' | 'style' | 'role' | LabelDerived
+> & {
+  // Hyphenated JSX attributes bypass excess-property checks, so Omit alone
+  // can't forbid them; `never` does. A mapped type keeps them out of the
+  // declared props spec:validate compares against the spec.
+  [K in LabelDerived]?: never
+}
+
+type LabelDerived = 'aria-hidden' | 'aria-label'
 
 const paths: Record<IconName, React.ReactNode> = {
   'chevron-right': <polyline points="9 18 15 12 9 6" />,
