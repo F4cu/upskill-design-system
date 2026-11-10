@@ -50,7 +50,7 @@ What they share: pages are split by question ("should I use this, and which vari
 
 ### Part A: three sub-pages per component
 
-Separate routes, M3-style (`/components/button/`, `/components/button/spec/`, `/components/button/accessibility/`), so each one has its own URL and table of contents and stays short (Open decision 10).
+Separate routes behind a tab bar whose tabs are links, M3-style (`/components/button/`, `/components/button/spec/`, `/components/button/accessibility/`), so each one has its own URL and table of contents and stays short (Open decision 10).
 
 - **Header (on all three):** name, `component.description`, maturity `status`, links to the Storybook story, the Figma node and the spec source on GitHub, and "Generated from `<hash>`".
 - **Usage** (designers first, from metadata):
@@ -86,8 +86,11 @@ The plugin checks first and draws second; its sheet sections are listed in Phase
 
 ### Phase A1: Button and CardVertical, three sub-pages as tables
 
+- **Routes:** one file, `apps/docs/src/pages/components/[name]/[[tab]].astro`. `getStaticPaths()` returns three entries per component from the bundle: Usage at the bare URL, then `spec` and `accessibility`. Each renders through `StarlightPage`, so the site chrome and nav stay, and passes its own `headings` for the table of contents.
+- **Tab bar:** one small Astro component shared by all three pages, with each tab a link and `aria-current="page"` on the active one (Open decision 10).
+- **Sidebar:** a "Components" group with one entry per component, pointing at Usage; the tab bar handles the other two pages. **Check:** whether Starlight's sidebar still highlights the component on `/components/<name>/spec/` and `/accessibility/`. If it doesn't by default, fix it with a small sidebar override and record which.
 - Live examples, rendered states and the anatomy overlay wait for A2. A1 uses tables and text only.
-- **Done when:** all six pages build on the PR check, every row traces to a field in the spec or the metadata, and pages pass the site's existing light/dark and keyboard checks.
+- **Done when:** all six pages build on the PR check, each tab has a URL you can link to directly, the sidebar highlight works on all three routes, every row traces to a field in the spec or the metadata, and pages pass the site's existing light/dark and keyboard checks.
 
 ### Phase A2: anatomy diagram and live examples
 
@@ -191,7 +194,7 @@ The readable output, drawn after the check exists. One auto-layout frame per com
 ## Open decisions
 
 1. **ADR-030 scope:** one ADR for the bundle plus both renderers, or one for the bundle and docs pages now and an amendment when the plugin starts. Leaning one ADR, amended per part.
-2. **Docs pages:** custom collection loader or dynamic `StarlightPage` routes (see Part A); dynamic routes fit the three sub-pages naturally (`[name]/index`, `[name]/spec`, `[name]/accessibility`). Either way, no generated markdown committed.
+2. **Docs pages:** custom collection loader or dynamic `StarlightPage` routes (see Part A); dynamic routes fit the three sub-pages naturally (one `[name]/[[tab]].astro`, see Phase A1). Either way, no generated markdown committed.
 3. **Anatomy diagram on the web:** live component with an SVG overlay (leaning), screenshot at build time, or Mermaid tree only (Phase A2). Depends on decision 9.
 4. **Bundle committed or built:** built in CI (recommended; it's derived) or committed as a frozen file. Committed would let `sense.js` read it, but it's one more file to keep in sync.
 5. **Plugin workspace location:** `apps/figma-parity` (a consumer, like `apps/showcase`) or `packages/figma-plugin`. Leaning `apps/`, since nothing imports it.
@@ -203,7 +206,10 @@ The readable output, drawn after the check exists. One auto-layout frame per com
    - **Bare-text parts** like Button's `Label`: wrap them in an element, or let the overlay measure the text node.
    - **Optional parts:** add an optional spec field listing props that render every part, or use a Storybook story.
    - **Where it's recorded:** other code and tooling will depend on this convention, so it needs an ADR (part of ADR-030, or its own) plus a line in `packages/components/AGENTS.md`. The spec schema doesn't change unless the optional-props field is added.
-10. **Page layout:** three sub-routes per component (leaning; each has its own URL and table of contents), Starlight `<Tabs>` on one page (everything back on one long page), or one page with no split (GOV.UK-style; long). Decided either way: Usage before Spec, accessibility on its own, no Figma columns on the web.
+10. **Page layout:** decided either way: Usage before Spec, accessibility on its own, no Figma columns on the web. Options (checked 2026-11-10; no well-known design system docs site on Astro uses this pattern, but M3, Carbon and Primer do on other stacks):
+    - **Link tabs over three routes (leaning).** A tab bar whose tabs are links to three real routes, as M3 does. Each page gets its own URL, its own table of contents and its own search result, and you can link straight to Button's Spec. Because the tabs are links, they need `aria-current="page"`, not the ARIA tab pattern's keyboard handling.
+    - **Starlight [`<Tabs>`](https://starlight.astro.build/components/tabs/) on one page.** Built for interchangeable content (npm vs pnpm). No URL per tab (`syncKey` remembers a reader's choice but can't be shared). The table of contents would list headings from hidden tabs or leave them out, since `StarlightPage` routes pass their headings in by hand. Search and page weight still treat it as one long page. Keep `<Tabs>` for content that really is interchangeable inside a page, such as light/dark or brand on rendered states.
+    - **One page, no split** (GOV.UK-style). Simplest, but long.
 11. **Where `figma-parity.json` lives and who reads it:** `.claude/figma-parity.json` next to the other frozen snapshots (leaning) or `packages/tokens/` next to `figma-variables.json`. Add it to the frozen-snapshot table in `CLAUDE.md` when it lands, and decide whether a stale capture (older than the last spec change) shows as a warning in `npm run status`.
 
 ## Measurement (for the case study; decide before Phase A1)
