@@ -158,11 +158,12 @@ composition.layoutBehavior.canNest       → composition.nests  (enforced by val
 
 Expected effect: drop keywords, `composedOf`, `displayType`, `category`, `figmaNodeId`, about 40 relocated or deleted anti-patterns and the duplicates. That should cut roughly 30–35% of the bytes `/layout-generation` reads on every run, while composition (patterns, rules, accepts, counts) becomes most of the file. To be checked with the harness (step 6), not taken on trust.
 
-### Decisions needed before step 2
+### Decisions (2026-11-10)
 
-1. **Call-site prop rules (~26):** move to `spec.json` and have `/layout-generation` also read `spec.constraints` (default), or keep them in usage as `rules`?
-2. **`composition.limits`:** include it in this migration, with `validate-layout` driven by it, or defer?
-3. **`figmaNodeId` removal:** in scope for this migration (it touches `airtable-sync`), or a follow-up?
+1. **Call-site prop rules (~26):** move to `spec.json`; `/layout-generation` also reads `spec.constraints`. ✅
+2. **`composition.limits`:** in this migration, and the hard-coded accent check in `validate-layout` is replaced by checking against the `limits` data. ✅
+3. **`figmaNodeId`:** stays in `component` for now. The field map line above that drops it is void.
+4. **`variants.*.purpose` label:** open. Candidates: `when` (matches top-level `when`), `pickWhen`, or keep `purpose` with a writing rule. Whatever the label, each option's value says the situation first, then at most one clause on how it looks (that clause helps map Figma instances to options). Sizes in px and required props move to `spec.json`.
 
 ## Rename blast radius (measured 2026-11-10)
 
