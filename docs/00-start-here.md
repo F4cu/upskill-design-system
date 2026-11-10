@@ -73,6 +73,7 @@ sources:
 # 2026-11-10: ADR count 29 -> 30 (ADR-030 spec renderers); ADR-027 amendment adds optional spec sections, this page lists no schema detail
 # clock reset 2026-11-10: ADR-030 amendment (backfill without TODO placeholders); this page lists no ADR detail, still accurate
 # clock reset 2026-11-10: ADR-027/030 amendments (data-part markers); ADR count unchanged, this page lists no ADR detail, still accurate
+# clock reset 2026-11-10: ADR-030 Phase A1 amendment (component pages for Button and CardVertical); this page gets its Components link in A3, still accurate
 ---
 # Start here
 
