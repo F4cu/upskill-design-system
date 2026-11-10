@@ -560,5 +560,21 @@
       { "what": "Status is an explicit variant in Figma; code derives it from progress.", "decision": "Recorded mapping (ADR-026)." },
       { "what": "On CardVertical.Root, Completed is consumer-placed slot content, not derived.", "decision": "Same as the code parts API: derivation lives only in the preset (ADR-023 amendment 2026-10-06)." }
     ]
-  }
+  },
+  "decisions": [
+    { "decision": "Preset + parts: the plain <CardVertical …props /> stays and is rebuilt from named parts that consumers compose for uncommon layouts.", "reason": "Overlay actions and consumer content as flat props would create invalid combinations; parts keep the common case simple and the uncommon one possible.", "adr": "ADR-023" },
+    { "decision": "The preset gained exactly one new prop, action. Requests for a metaSlot, hideX or renderX prop are answered with parts.", "reason": "Make the common configurable, the uncommon composable.", "adr": "ADR-023" },
+    { "decision": "Action is a slot holding exactly one Favorite or one Menu, never both.", "adr": "ADR-023" },
+    { "decision": "Body and Meta lay out their children with fixed primitives and accept children only; no layout props and no margins on parts.", "reason": "Every card keeps the same vertical rhythm. Custom spacing nests a Stack or Inline inside the part.", "adr": "ADR-023" },
+    { "decision": "Completed is derived from progress >= 100; there is no completed prop.", "reason": "A separate flag can disagree with the bar (completed with progress 40).", "adr": "ADR-025" },
+    { "decision": "Favorite and Menu are transparent Buttons whose glyph carries an icon halo, owned by CardVertical.", "reason": "The glyph keeps its contrast at rest on any image, with no change to Button's API.", "adr": "ADR-024" },
+    { "decision": "In Figma, CardVertical mirrors the preset: Body and Meta are fixed layers, and a separate CardVertical.Root carries the open parts as native slots.", "reason": "Figma allows no component properties inside a native slot, so a slotted preset would lose its Title, Duration and Certified properties.", "adr": "ADR-023" }
+  ],
+  "ruledOut": [
+    { "option": "Flat props for the overlay actions (favorite, favorited, onFavoriteChange, menuItems, onMenuSelect…)", "reason": "Mutually exclusive props, documented only as anti-patterns; the type can't stop a card with both actions.", "source": "CardVertical's original API" },
+    { "option": "An empty styled container that consumers fill and lay out themselves", "reason": "Drops the preset that serves the common case and breaks the existing prop API; preset + parts keeps both.", "source": "Chakra, Radix Themes Card" },
+    { "option": "Body and Meta as native slots on the preset in Figma", "reason": "Gives up the preset's text and boolean properties that cover the common case. Revisit when a designer needs a composed layout and would otherwise detach.", "source": "A literal mirror of the code parts" },
+    { "option": "A scrim gradient on the thumbnail to make overlay actions readable", "reason": "Viable, but changes the image treatment and needs a Figma pass; the icon halo solves contrast without either." },
+    { "option": "A completed boolean prop", "reason": "Completion is lifecycle state derived from progress; a flag can contradict the bar." }
+  ]
 }

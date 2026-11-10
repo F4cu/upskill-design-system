@@ -22,7 +22,7 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 
 **Contract prerequisites** (decisions 9 and 12)
 - [x] Spec schema: optional `anatomyExamples` (a list of props-or-pattern examples, see decision 9), `decisions[]`, `ruledOut[]`; `spec:validate` checks example props/patterns and that `adr` refs resolve; ADR-027 amendment and a line in `packages/components/AGENTS.md` (2026-11-10)
-- [ ] Backfill `decisions[]` / `ruledOut[]` for Button and CardVertical (the rest as `TODO`s)
+- [x] Backfill `decisions[]` / `ruledOut[]` for Button and CardVertical; the other 25 stay without the fields (a `TODO` string fails `spec:validate`) and show "none recorded" until backfilled (2026-11-10)
 - [ ] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test; fill their `anatomyExamples`; decide the exemption for parts no example can render (CardVertical `MenuPanel` opens on interaction, TextField `Placeholder` is a pseudo-element)
 
 **Shared input**
@@ -257,7 +257,7 @@ Full reasoning and rejected options are in `docs/decisions/030-spec-renderers.md
 12. **Per-component decisions:** adopted as proposed.
     - Two optional spec fields: `decisions[]` (`{ decision, reason?, adr? }`) and `ruledOut[]` (`{ option, reason, source? }`).
     - `spec:validate` checks that every `adr` resolves.
-    - Backfilled by hand with `TODO`s.
+    - Backfilled by hand, Button and CardVertical first; no `TODO` placeholders, since they fail `spec:validate`.
     - Kept out of `/component-scaffold`'s context.
     - Amends ADR-027 when the schema changes.
 

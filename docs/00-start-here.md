@@ -71,6 +71,7 @@ sources:
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value) and /component-scaffold spec-template wording (every component has a spec since the ADR-027 backfill); this page lists no individual ADRs, mappings or template rules, still accurate
 # clock reset 2026-10-12: ADR-029 amendment records Figma fidelity study B as a separate pre-registered eval; this page lists no ADRs or evals, still accurate
 # 2026-11-10: ADR count 29 -> 30 (ADR-030 spec renderers); ADR-027 amendment adds optional spec sections, this page lists no schema detail
+# clock reset 2026-11-10: ADR-030 amendment (backfill without TODO placeholders); this page lists no ADR detail, still accurate
 ---
 # Start here
 

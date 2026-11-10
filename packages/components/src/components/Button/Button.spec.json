@@ -229,5 +229,21 @@
     "divergences": [
       { "what": "The Button icon set has no Danger style.", "decision": "Accepted 2026-10-02: no icon-only danger button is used anywhere." }
     ]
-  }
+  },
+  "decisions": [
+    { "decision": "Variants name an absolute visual weight (accent, neutral, transparent, danger), not a rank. The container decides which weight an action gets.", "reason": "Rank belongs to the group of buttons, not one button: a card's lead action is secondary on a page that already has a primary, and twelve cards would otherwise render twelve primaries.", "adr": "ADR-024" },
+    { "decision": "The default variant is neutral, not accent.", "reason": "A forgotten variant prop should not add a competing call to action.", "adr": "ADR-024" },
+    { "decision": "transparent is a ghost button: interactive text color, the size's standard padding and a hover fill. Its label sits inset from the content edge, with no bleed.", "reason": "A hover fill needs padding; the inset is accepted, as in Material 3 text buttons.", "adr": "ADR-024" },
+    { "decision": "Icon-only is a shape (square or round), not a variant. With shape set, icon and aria-label are required and children and trailingIcon are not allowed, enforced by the props type.", "reason": "The glyph is the only visible content, so the button needs an icon to show and an aria-label for its accessible name." },
+    { "decision": "type defaults to button, not submit.", "reason": "A button inside a form only submits it when the consumer asks for that." },
+    { "decision": "The label is not wrapped in Text.", "reason": "Root sets the type styles for every size." }
+  ],
+  "ruledOut": [
+    { "option": "Rank names: primary / secondary / tertiary", "reason": "Rank changes with the container, so the name hides that dependency and needs a prose rule (one primary per view) to compensate.", "source": "Carbon, Polaris, Primer" },
+    { "option": "An elevated variant (opaque surface) for buttons over images", "reason": "One consumer (CardVertical), it describes the background rather than emphasis, and the name collides with Material 3's Elevated level. CardVertical owns the over-media treatment instead.", "source": "Former UpSkill variant, Material 3" },
+    { "option": "An onMedia / staticColor modifier prop", "reason": "Deferred: the right shape once a second consumer needs buttons over media; premature for one.", "source": "Spectrum" },
+    { "option": "A transparent button with only a hover tint over images", "reason": "Hover doesn't fix resting contrast: WCAG 1.4.11 is judged at rest and touch has no hover.", "source": "Braid" },
+    { "option": "A separate link variant styled like a text link", "reason": "Deferred: only justified by flush alignment. Add it when a real layout shows the transparent inset looks wrong.", "source": "Polaris plain, Primer link, Chakra v2 link" },
+    { "option": "A negative-margin bleed prop to align the label with the content edge", "reason": "Deferred for the same reason as a link variant. If ever needed it lives on Button, never in layout files.", "source": "Braid" }
+  ]
 }

@@ -47,3 +47,5 @@ The plan (`.claude/handoff/2026-11-05-spec-renderers.handoff.md`) proposes two d
 ## Amendment (2026-11-10) — The examples field is a list of props or patterns
 
 The schema step renamed the working field `anatomyProps` to `anatomyExamples` and changed its shape: a list of entries, each either root props or a metadata `usage.patterns` name. A single set of props can't render CardVertical's parts, because they are written in JSX, and it can't show parts that exclude each other (`Favorite` or `Menu` in one `Action` slot). The field is specified in the ADR-027 amendment of the same date. Two parts no example can render are left to the render-test step: CardVertical's `MenuPanel` (opens on interaction) and TextField's `Placeholder` (a pseudo-element).
+
+The backfill doesn't use `TODO` placeholders, as the Decision section implies: a `TODO` string fails `spec:validate`. Button and CardVertical were backfilled first; the other specs carry no `decisions` or `ruledOut` until someone writes them, and their docs pages show "none recorded".
