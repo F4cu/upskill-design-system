@@ -25,7 +25,7 @@ Part A comes first. It's cheaper, it's public (one URL anyone can open, no Figma
 
 | Input | Path | Used for |
 |---|---|---|
-| Spec files (27 components) | `packages/components/src/components/*/*.spec.json`, schema `packages/components/component.spec.schema.json` | `anatomy` (with `parent`, `builtOn`, `builtOnProps`, `when`), `props` (with `figma.surface/property/set`), `constraints`, `states`, `accessibility`, `styles` (per part, `when` conditions, token paths, `literal` + `reason`, `template`, `sameAs`), `figma.sets[].nodeId` and `figma.divergences` |
+| Spec files (27 components) | `packages/components/src/components/*/*.spec.json`, schema `packages/components/component.spec.schema.json` | `anatomy` (with `parent`, `builtOn`, `builtOnProps`, `when`), `props` (with `figma.surface/property/set`), `constraints`, `states`, `accessibility`, `styles` (per part, `when` conditions, token paths, `literal` + `reason`, `template`, `sameAs`), `figma.sets[].nodeId` and `figma.divergences`; once Open decision 12 lands, `decisions[]` and `ruledOut[]` |
 | Component metadata (Part A only: Usage page, plus `variants.*.purpose` in Spec props) | `packages/components/src/components/*/*.metadata.json`, schema `packages/components/component.schema.json` | `component.description` and `status`, `usage.when`, `usage.patterns` (name, description, `tree`), `usage.antiPatterns` (scenario, reason, alternative), `variants.*.purpose`, `composition` (`composedOf`, `containedBy`) |
 | Built tokens | `packages/tokens/dist/js` (or `dist/css`) | Resolving a token path to its value for labels (e.g. `space.inline.sm = 8px`) |
 | Figma variable mirror | `packages/tokens/figma-variables.json` | Mapping a token path to its Figma variable name (`space.inline.sm` → `space/inline/sm`) and skipping recorded representational divergences |
@@ -66,7 +66,9 @@ Separate routes behind a tab bar whose tabs are links, M3-style (`/components/bu
   2. **Props:** prop, type, options, default, and each option's `variants.*.purpose`. **No Figma property column** (decided 2026-11-10: this page is for engineers).
   3. **States:** a rendered row of states (default, hover, focus, disabled…) with their ADR-025 `kind` and trigger.
   4. **Styles and tokens:** grouped by part, collapsed by default, with only the default condition open. Per part and condition: CSS property → token path → resolved value; literals show their `reason`.
-  5. **Design–code parity:** a short block at the end listing `figma.divergences[]` with the decision on each. Keep it brief.
+  5. **Why it's built this way:** `decisions[]`, each linked to its ADR page on the same site when it has an `adr`, then `ruledOut[]` with the reason and source for each option (Open decision 12). Specs without the fields show a one-line "none recorded".
+  6. **Design–code parity:** a short block at the end listing `figma.divergences[]` with the decision on each. Keep it brief.
+- **Site-wide footer line:** ADRs that apply to every component (ADR-025 states, ADR-026 prop vocabulary, ADR-028 focus) are linked once here, not repeated in each component's `decisions`.
 - **Accessibility** (both audiences): role, ARIA attributes, keyboard interactions table, focus note (ADR-028), the a11y tier and which test covers it.
 
 ### Part B
@@ -118,6 +120,7 @@ Target look: numbered markers on the rendered component plus a numbered legend, 
 ### Phase A3: all 27 components
 
 - Generate every page, link each one to its Storybook story and its spec file on GitHub, and add one line to `00-start-here.md` pointing to the Components section.
+- **Reverse links on ADR pages:** each ADR page gets a "Components shaped by this decision" list, worked out from the `decisions[].adr` values in the bundle. Nothing is hand-maintained on the ADR side. Depends on Open decision 12.
 
 ## Part B: Figma parity plugin
 
@@ -211,6 +214,16 @@ The readable output, drawn after the check exists. One auto-layout frame per com
     - **Starlight [`<Tabs>`](https://starlight.astro.build/components/tabs/) on one page.** Built for interchangeable content (npm vs pnpm). No URL per tab (`syncKey` remembers a reader's choice but can't be shared). The table of contents would list headings from hidden tabs or leave them out, since `StarlightPage` routes pass their headings in by hand. Search and page weight still treat it as one long page. Keep `<Tabs>` for content that really is interchangeable inside a page, such as light/dark or brand on rendered states.
     - **One page, no split** (GOV.UK-style). Simplest, but long.
 11. **Where `figma-parity.json` lives and who reads it:** `.claude/figma-parity.json` next to the other frozen snapshots (leaning) or `packages/tokens/` next to `figma-variables.json`. Add it to the frozen-snapshot table in `CLAUDE.md` when it lands, and decide whether a stale capture (older than the last spec change) shows as a warning in `npm run status`.
+12. **Per-component decisions in the spec** (added 2026-11-10, after reading the CRD template in [design-system-workflow-kit](https://github.com/masofon/design-system-workflow-kit/blob/main/docs/crd/crd-template.md)). The CRD keeps dated design and implementation decisions plus a "Ruled out" list (each rejected option, where it came from and why) per component. People and agents read the same file.
+    - **Gap here:** system-wide decisions have ADRs (29, already on the docs site), but small per-component choices have no home, and the ADR set is meant to stay small. ADR references in specs are loose prose: on 2026-11-10 Button mentioned 5 ADRs across `spec.json` and `metadata.json`, and 11 of 27 components mentioned none. Nothing records "we considered X and rejected it", which is what stops an agent from proposing X again.
+    - **Proposal:** two optional fields in `spec.json` (they're about how the component is built, so spec, not metadata):
+      - `decisions[]`: `{ decision, reason?, adr? }`. `adr` is optional on purpose: most component decisions don't deserve an ADR. No dates; git history has them.
+      - `ruledOut[]`: `{ option, reason, source? }`, where `source` names the system the option came from (e.g. "Carbon, M3").
+      - `spec:validate` checks that every `adr` resolves to a file in `docs/decisions/`.
+    - **Contract change:** amend ADR-027 and add a line to `packages/components/AGENTS.md`.
+    - **Backfill by hand,** with `TODO`s like `spec:generate`. The existing prose ADR mentions are drafts to check, not data to parse.
+    - **Keep the fields out of `/component-scaffold`'s context.** ADR-013 measured a regression from injecting extra context there; the readers are the reviewer and the docs.
+    - **Not adopted:** the CRD's open questions; GitHub issues already track those.
 
 ## Measurement (for the case study; decide before Phase A1)
 
@@ -218,6 +231,14 @@ The readable output, drawn after the check exists. One auto-layout frame per com
 - Traceability: the share of rendered rows on the Button and CardVertical pages that trace to a spec or metadata field (target: all of them). Count it; don't assume it.
 - Phase B2 known-answer result: how many of the traced fidelity items the plugin flags, and how many new ones.
 - Until measured, the portfolio and CV say "built", never a number.
+
+## Follow-up outside Parts A and B: decisions as agent memory
+
+After Open decision 12 lands, close the loop with the agentic moments:
+
+- `/review-component`: the adversarial reviewer reads `ruledOut[]` and doesn't raise a rejected option as a finding unless it brings new evidence.
+- `/extract-learnings`: a new routing target. A review suggestion the developer rejects becomes a `ruledOut[]` entry instead of being lost.
+- **Measure it:** count, in `.claude/handoff/run-ledger.json`, how many review findings re-propose an option already in `ruledOut[]`, before and after the reviewer reads it. That's case-study evidence, not a claim.
 
 ## Portfolio follow-up (outside this repo)
 
