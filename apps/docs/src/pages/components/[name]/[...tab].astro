@@ -5,6 +5,7 @@
 import { getCollection } from "astro:content";
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 import ComponentTabs from "../../../components/ComponentTabs.astro";
+import AnatomyOverlay from "../../../components/AnatomyOverlay.tsx";
 import {
   FIGMA_FILE,
   REPO_BLOB,
@@ -82,6 +83,19 @@ const anatomy = (() => {
   return out;
 })();
 
+// Deep anatomies (three or more levels) mark only the top two levels on the
+// first example and show the full nesting as a tree: 21 markers on
+// CardVertical covered its own text (ADR-030 Phase A2 spike).
+const deepAnatomy = anatomy.some((p) => p.depth >= 2);
+const markedParts = anatomy.filter((p) => !deepAnatomy || p.depth <= 1).map((p) => p.name);
+const overlayExamples = deepAnatomy ? spec.anatomyExamples?.slice(0, 1) : spec.anatomyExamples;
+const partNumber = (n) => anatomy.findIndex((p) => p.name === n) + 1;
+const anatomyTree = [
+  "flowchart LR",
+  ...anatomy.map((p) => `  p${partNumber(p.name)}["${partNumber(p.name)} ${p.name}"]`),
+  ...anatomy.filter((p) => p.parent).map((p) => `  p${partNumber(p.parent)} --> p${partNumber(p.name)}`),
+].join("\n");
+
 const formatProps = (props) =>
   Object.entries(props ?? {})
     .map(([k, v]) => `${k}=${typeof v === "string" ? `"${v}"` : JSON.stringify(v)}`)
@@ -128,6 +142,8 @@ const HEADINGS = {
 const headings = HEADINGS[tabId].map(([slug, text]) => ({ depth: 2, slug, text }));
 const h = Object.fromEntries(HEADINGS[tabId]);
 
+const FONTS =
+  "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400&display=swap";
 const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
 ---
 
@@ -136,6 +152,11 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
     title: name,
     description: metadata.component.description,
     ...(tabId !== "usage" && { prev: false, next: false }),
+    // The brand fonts the rendered examples use, as in Storybook's preview-head.html
+    head: [
+      { tag: "link", attrs: { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" } },
+      { tag: "link", attrs: { rel: "stylesheet", href: FONTS } },
+    ],
   }}
   headings={headings}
 >
@@ -258,13 +279,29 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
     tabId === "spec" && (
       <>
         <h2 id="anatomy">{h.anatomy}</h2>
+        {spec.anatomyExamples?.length ? (
+          <>
+          <div class="not-content">
+            <AnatomyOverlay client:visible name={name} parts={anatomy.map(({ depth, ...p }) => p)} marked={markedParts} examples={overlayExamples} />
+          </div>
+          {deepAnatomy && (
+            <>
+              <p>The diagram numbers the top two levels only. The tree shows every part; numbers match the table.</p>
+              <pre class="mermaid">{anatomyTree}</pre>
+            </>
+          )}
+          </>
+        ) : (
+          <p>No anatomy examples recorded, so no diagram.</p>
+        )}
         <table>
           <thead>
-            <tr><th scope="col">Part</th><th scope="col">Element</th><th scope="col">Role</th><th scope="col">Present</th><th scope="col">Built on</th><th scope="col">Notes</th></tr>
+            <tr><th scope="col">#</th><th scope="col">Part</th><th scope="col">Element</th><th scope="col">Role</th><th scope="col">Present</th><th scope="col">Built on</th><th scope="col">Notes</th></tr>
           </thead>
           <tbody>
             {anatomy.map((part) => (
               <tr>
+                <td>{anatomy.indexOf(part) + 1}</td>
                 <th scope="row" class="part" style={`--depth: ${part.depth}`}>
                   {part.depth > 0 && <span aria-hidden="true" class="nest">└ </span>}
                   <code>{part.name}</code>

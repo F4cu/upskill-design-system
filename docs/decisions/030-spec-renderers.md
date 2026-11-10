@@ -73,3 +73,12 @@ Button and CardVertical have Usage, Spec and Accessibility pages, as tables and 
 - **Builds.** `docs:build` and `docs:serve` run `spec:bundle` first. `docs-build.yml` builds tokens and also triggers on spec, metadata, token source and bundle-script changes.
 - **Which components.** A list of two in `apps/docs/components.mjs`; Phase A3 removes the filter.
 
+## Amendment (2026-11-10) — Phase A2 spike: the overlay ships, with a depth fallback
+
+The live overlay from decision 3 ships. `@astrojs/react` renders each `anatomyExamples` entry from component source inside Starlight, and a script measures every `data-part` element (the lookup `anatomy.test.tsx` uses) and draws numbered markers in an SVG over it. The examples pick up Starlight's `data-theme`, which is the attribute the token CSS keys on, so they follow the site's light/dark switch with no extra wiring.
+
+- **Depth fallback.** All 21 markers on CardVertical did not read: the Meta row badges covered "12 Hours", "Certified" and "Completed", and colliding badges were pushed off their parts. An anatomy three or more levels deep now marks only its top two levels (CardVertical: Root, Media, Progress, Body) on the first example, and a Mermaid tree (`astro-mermaid`, already installed) shows every part. Shallower anatomies keep the full overlay on every example (Button: 4 parts). Marker numbers are the anatomy table's row numbers, so the table is the legend. Gutter markers with leader lines were considered and not built: more layout code for a case the tree already covers.
+- **Library CSS.** The package's built `index.css` carries a global reset (`* { margin: 0; padding: 0 }`, `body` styles) that would restyle the site. The pages import component source (CSS Modules) and `tokens.css` only; the reset is re-applied inside `.ds-example`.
+- **Pattern examples.** Rendered from the story's args on `meta.component`, without Storybook's runtime; story decorators are skipped.
+- **Fonts.** Component pages load the brand fonts through frontmatter `head`, as Storybook's `preview-head.html` does; other pages don't.
+

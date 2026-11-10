@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import react from "@astrojs/react";
 import mermaid from "astro-mermaid";
 import { satteri } from "@astrojs/markdown-satteri";
 import { BASE, DOCS_ROOT, docsMarkdownPlugin } from "./docs-markdown.mjs";
@@ -30,6 +31,7 @@ export default defineConfig({
     processor: satteri({ mdastPlugins: [docsMarkdownPlugin] }),
   },
   integrations: [
+    react(),
     mermaid({ theme: "neutral", autoTheme: true }),
     starlight({
       title: "UpSkill Design System",
