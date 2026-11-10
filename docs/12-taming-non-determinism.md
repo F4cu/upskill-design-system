@@ -20,6 +20,7 @@ sources:
 # sources 2026-10-12: declares scripts/validate-spec.js and ADR-027, since the token check this page describes moved to spec:validate
 # clock reset 2026-11-10: validate-spec.js checks anatomyExamples and decision ADR refs (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
 # 2026-11-10: gate list gains anatomy:test; validate-spec.js checks builtOnPart (ADR-027/030 amendments)
+# clock reset 2026-11-10: spec:validate also blocks prop-vocabulary violations (ADR-026 amendment 2026-11-10); the gate list on this page is unchanged, still accurate
 ---
 # Taming non-determinism
 

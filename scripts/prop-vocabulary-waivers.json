@@ -1,0 +1,19 @@
+{
+  "waivers": [
+    {
+      "id": "CardVertical:progress:figma-name",
+      "reason": "Recorded mapping: code derives the lifecycle from `progress`; Figma previews it as a `Status` variant.",
+      "adr": "ADR-026"
+    },
+    {
+      "id": "AppHeader:logoSrc:figma-name",
+      "reason": "Open drift found when this check shipped: the Figma property is `Logo`, not `Logo src`. Not yet recorded in ADR-026; fix in Figma or record the mapping, then delete this waiver.",
+      "adr": "ADR-026"
+    },
+    {
+      "id": "Inline:wrap:boolean-default",
+      "reason": "Inline wraps unless told not to, so `wrap` defaults to `true`. Predates the vocabulary; flipping it to a `false`-default flag is a breaking rename.",
+      "adr": "ADR-026"
+    }
+  ]
+}

@@ -48,6 +48,8 @@ const STRIP_ARM_0 = [
   'scripts/sense-component.js',
   'scripts/validate-metadata.js',
   'scripts/validate-spec.js',
+  'scripts/prop-vocabulary.js',
+  'scripts/prop-vocabulary-waivers.json',
   'scripts/validate-layout.js',
   'scripts/generate-pattern-schema.js',
   'scripts/status.js',

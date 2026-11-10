@@ -14,6 +14,9 @@
 //     with valid options, example patterns are metadata usage.patterns names,
 //     every builtOnPart is an anatomy part of the parent's builtOn component,
 //     and every decision's adr has a file in docs/decisions/.
+//   - vocabulary (ADR-025, ADR-026): prop names, boolean defaults, the
+//     controlled triple and Figma names, via scripts/prop-vocabulary.js; a
+//     waiver that no longer matches a violation fails too.
 // A string or key starting with TODO (left by spec:generate) fails the check.
 // Every component in the repo must have a spec (ADR-027); --components-dir checks only
 // the specs it finds. Requires built tokens (npm run tokens:build).
@@ -28,6 +31,7 @@ import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
 import { publicComponents, styleValueTokenPaths, componentTokenReads } from "./lib.js";
 import { createPropsReader } from "./spec-props.js";
+import { vocabularyErrors, staleWaivers } from "./prop-vocabulary.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -224,6 +228,7 @@ for (const { name, file } of specs) {
     if (!definedVars.has(v)) errors.push(`styles: ${v} is not defined in the built token CSS`);
   }
 
+  errors.push(...vocabularyErrors(name, spec));
   report(file, errors);
 }
 
@@ -241,6 +246,13 @@ function report(file, errors) {
 if (backlog.length) {
   console.log("\nUnenforced constraints (backlog, not failures):");
   for (const line of backlog) console.log(`  · ${line}`);
+}
+
+if (!EXTERNAL_DIR) {
+  for (const id of staleWaivers()) {
+    console.error(`✗ scripts/prop-vocabulary-waivers.json — "${id}" no longer matches a violation; delete it`);
+    failures++;
+  }
 }
 
 if (failures) {

@@ -46,6 +46,7 @@ sources:
 # 2026-11-10: Component spec entry mentions the optional decisions and ruledOut sections (ADR-027 amendment); packages/components AGENTS.md ruledOut line + contrast aside shortened
 # 2026-11-10: gate list gains anatomy:test (data-part markers, ADR-030 amendment); packages/components AGENTS.md part-marker rule
 # clock reset 2026-11-10: CLAUDE.md moment table becomes a one-line index; packages/components/AGENTS.md stories/metadata/a11y sections condensed to rules (ADR-029 amendment 2026-11-10); no glossary entry describes those sections, still accurate
+# clock reset 2026-11-10: spec:validate gains the blocking prop-vocabulary check (ADR-026 amendment 2026-11-10); the Spec and Deterministic gate entries don't enumerate its checks, still accurate
 ---
 # Glossary
 

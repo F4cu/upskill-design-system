@@ -8,6 +8,8 @@ on:
       - 'scripts/validate-metadata.js'
       - 'scripts/validate-spec.js'
       - 'scripts/spec-props.js'
+      - 'scripts/prop-vocabulary.js'
+      - 'scripts/prop-vocabulary-waivers.json'
       - 'scripts/generate-spec.js'
       - 'scripts/validate-layout.js'
       - 'scripts/a11y-coverage.js'

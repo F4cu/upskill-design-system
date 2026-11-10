@@ -49,6 +49,7 @@ sources:
 # clock reset 2026-11-10: packages/components AGENTS.md gains a ruledOut line and a shortened contrast aside; this page describes tiers and budgets, not per-rule content, still accurate
 # clock reset 2026-11-10: AGENTS.md/CLAUDE.md gate lists gain anatomy:test, packages/components AGENTS.md gains the part-marker rule; this page describes tiers and budgets, not rule content, still accurate
 # clock reset 2026-11-10: CLAUDE.md drops duplicated routing and packages/components/AGENTS.md moves procedures to commands (ADR-029 amendment 2026-11-10); the layering, routing table and budget gate described here are unchanged, still accurate
+# clock reset 2026-11-10: packages/components/AGENTS.md drops prose that spec:validate now enforces (ADR-026 amendment 2026-11-10), the routing rule's "a script or CI gate, never prose" case; layering and budgets unchanged, still accurate
 ---
 # Context engineering
 

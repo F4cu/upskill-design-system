@@ -5,7 +5,7 @@ title: "ADR-026 — Component prop vocabulary and API proposal step"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-12
+**Amended:** 2026-11-10
 
 ## Context
 
@@ -268,3 +268,27 @@ The metadata `composedOf` lists of AppHeader, Badge and Breadcrumb now match the
 ## Amendment (2026-10-12) — `Has <x>` covers optional parts
 
 The `Has <x>` recorded mapping was worded for an optional prop. On a `Parent.Root`, what a consumer leaves out is an optional part, not a prop: `CardVertical.Root` previews `<CardVertical.Progress>` with `Has progress`. That is the same mapping, so the row now reads "optional prop or optional part omitted". It isn't a Figma-only property with no code counterpart: the counterpart is rendering the part or not. Surfaced by the answer-key read-back for the Figma fidelity measurement (`.claude/handoff/2026-10-12-figma-fidelity-measurements.handoff.md`); see ADR-023 amendment 2026-10-12 for the fixed-part rule.
+
+## Amendment (2026-11-10) — The blocking vocabulary check ships
+
+**Context.** The "No new gate yet" consequence above left a blocking check as a follow-up. Meanwhile the vocabulary and the ADR-025 state model were enforced only as prose in `packages/components/AGENTS.md`, and that file had reached its context budget (ADR-029 amendment 2026-11-10).
+
+**Decision.** `spec:validate` now runs `scripts/prop-vocabulary.js` on every spec's props. Because `spec:validate` already proves the spec props equal the code props, this checks the code. Rules:
+
+- **Banned names:** `type`/`kind`/`mode`/`style`/`tone`/`appearance` (except native attributes), `state`, `hover`/`focus`/`focused`/`hovered`/`active`, `expanded`/`visible`, a bare `onClose`, `selected`/`selected*`, `invalid`. **Banned prefixes:** `is`/`has`/`show`/`handle`.
+- **Booleans** that aren't native or controlled default to `false`.
+- **Callbacks** are `on<Verb>`.
+- **The controlled triple:** `default<X>` needs `<x>` and `on<X>Change`; `on<X>Change` needs `<x>`.
+- **Value checks:** array props are `items`/`<part>Items`/`options`; `error` is a string; `shape` and `orientation` take their two values; `size` is `sm`/`md`/`lg` or type-scale names, never a mix.
+- **Figma:** a `both`-surface property equals the prop name up to casing, after dropping `Has <x>` and with `children` exempt. `State` is never a configured prop's property.
+
+Exceptions are waived by id in `scripts/prop-vocabulary-waivers.json`, a shrinking ledger: a waiver that stops matching fails the gate, so it must be deleted.
+
+**Seeded waivers (all three hits across 27 specs).**
+
+- CardVertical `progress` ↔ `Status`: the recorded mapping.
+- Inline `wrap` defaults to `true`: it predates the vocabulary, and flipping it is a breaking rename.
+- AppHeader `logoSrc` ↔ Figma `Logo`: **new drift**, unrecorded until now. Rename the Figma property to `Logo src` or record the mapping, then delete the waiver.
+
+**Consequences.** The prose in `packages/components/AGENTS.md` keeps what needs judgement: which concept a prop is, the state groups, and the Figma mappings. It drops what the check enforces. `generate-pattern-schema.js` still reports `drift` for `/layout-generation`; the blocking check is separate. The harness-ablation Arm 0 strips the new script and its waivers along with `validate-spec.js`.
+

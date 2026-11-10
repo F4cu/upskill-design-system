@@ -43,7 +43,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__claude_ai_Figma__get_de
      | `size` | Size | variant axis | `'sm' \| 'md'` | `'md'` | `Size` | both |
      | `onValueChange` | Controlled state | event | `(value: string) => void` | — | — | code-only |
 
-     *Concept* is a row of `packages/components/AGENTS.md` → "Prop vocabulary", or **new term** with a one-line reason. *Kind* ∈ variant axis · lifecycle · content · controlled state · event · native. *Surface* ∈ both · code-only · Figma-only (`State`, `Has <x>`).
+     *Concept* is a row name from ADR-026's vocabulary table (summarised in `packages/components/AGENTS.md` → "Prop vocabulary"), or **new term** with a one-line reason. `spec:validate` rejects the mechanical violations. *Kind* ∈ variant axis · lifecycle · content · controlled state · event · native. *Surface* ∈ both · code-only · Figma-only (`State`, `Has <x>`).
    - **Constraints:** prop combinations the component requires or forbids (icon-only needs an accessible name), each with what will enforce it (type, test, lint) or none yet.
    - **States:** every state grouped by who sets it (ADR-025: interaction, appData, lifecycle, content) with its trigger.
    - **Accessibility:** role, ARIA attributes, keyboard interactions.

@@ -21,40 +21,29 @@ Tier 1 conventions for `packages/components/` (ADR-029). Agents that read nested
 
 ## State model (ADR-025)
 
-A "state" belongs to one of three groups, named by who sets it; each has a different home. Never collapse them into one `state` prop.
+States are grouped by who sets them, each with its own home; never one `state` prop.
 
-| Group | Set by | Examples | Code | Figma |
-|---|---|---|---|---|
-| Interactive | User, at runtime | hover, focus, active | CSS pseudo-classes only, never a prop | `State` variant (preview only); nothing else goes in `State` |
-| Configured | App, via props | controlled (`pressed`, `checked`, `open`, `value`); flag (`disabled`, `current`, `loading`); data-derived (`progress` → completed, else a `status` enum); content (omitted prop → fallback, no `showX`/`empty`) | Controlled: `<x>` / `default<X>` / `on<X>Change`. Flag: bare boolean, default `false` | One property per prop, named like it (`Disabled` first, `Pressed`, `Status`), never a `State` value |
-| Derived | Component | `aria-*`, `data-*` | Computed from props, never a prop. `aria-pressed` ← `pressed`, `aria-invalid` ← `error`, `aria-busy` ← `loading` | None (code-only) |
-
-- **`disabled` is a flag, not interaction**: Figma `Disabled` boolean, built only at `State=Default`. **`loading` is a flag, orthogonal to `status`**: sets `aria-busy`; a skeleton is internal to the component, no `Skeleton` component. Full rules and the state mapping table: ADR-025 amendment 2026-10-11.
-- **Controlled state detail** (`pressed`, `open`, a container's `value`): a controlled prop with `on*Change`, plus `default*` when uncontrolled use makes sense (see `CardVertical.Favorite`; `Chip` is controlled only).
-- **One enum, not several booleans** for mutually exclusive states (`status: 'notStarted' | 'inProgress' | 'completed'`, never `isStarted` + `isCompleted`).
-- **Naming:** see "Prop vocabulary" below. `State` is reserved for the interaction axis in Figma.
-- **`active` ≠ `pressed`:** `active` is the momentary press (`:active:not(:disabled)`, `*.active` tokens, Figma `State=Active`) on every interactive component except `TextField`/`Select` (no press meaning on a text input or native select); `pressed` is only the persistent `aria-pressed` toggle prop. Orthogonal: a toggle has both (ADR-025 amendment).
+- **Interactive** (hover, focus, `active`): CSS pseudo-classes only. Figma `State` variant, preview only; nothing else goes in `State`. `active` is the momentary press (`:active:not(:disabled)`, `*.active` tokens) on every interactive component except `TextField`/`Select`; `pressed` is only the persistent `aria-pressed` toggle. A toggle has both.
+- **Configured** (props): controlled (`<x>` / `default<X>` / `on<X>Change`, with `default*` only when uncontrolled use makes sense; `Chip` is controlled only), flags (`disabled`, `current`, `loading`), data-derived (`progress` → completed, else a `status` enum), content (an omitted prop shows the fallback; no `showX`/`empty`). Mutually exclusive states are one enum, never several booleans. Figma: one property per prop, named like it (`Disabled` first); `Disabled` is built only at `State=Default`. `loading` is orthogonal to `status` and sets `aria-busy`; a skeleton is internal (no `Skeleton` component).
+- **Derived** (`aria-*`, `data-*`): computed from props, never a prop (`aria-pressed` ← `pressed`, `aria-invalid` ← `error`, `aria-busy` ← `loading`). Code-only.
 - Every lifecycle, async and content state appears in the spec's `states` and has a story.
 
 ## Prop vocabulary (ADR-026)
 
-One concept, one name across the fixed set. Enum props are axis nouns with camelCase values. Reuse these names; any other prop name is a **new term** and needs a reason in the `/component-scaffold` API proposal.
+One concept, one name; the full row list, with a concept name per row, is ADR-026's table. Reuse these; any other name is a **new term** with a reason in the `/component-scaffold` API proposal. `spec:validate` enforces the mechanical rules (banned names and prefixes, `false`-default booleans, `on<Verb>` callbacks, the controlled triple, collection names, `size`/`shape`/`orientation` values, Figma names equal up to casing); its exceptions are in `scripts/prop-vocabulary-waivers.json`. Enum values are camelCase.
 
 | Concept | Name |
 |---|---|
-| Visual weight/style | `variant`: values name the look, not a rank (ADR-024). Never `type`/`kind`/`mode`/`style`/`tone`/`appearance`. `default` only as the baseline of a surface/context axis, never on an emphasis axis |
-| Size | `size`: `sm`/`md`/`lg` (only the steps it has). Typography components take type-scale names |
-| Corners · layout axis · glyph direction | `shape` (`square`/`round`) · `orientation` (`horizontal`/`vertical`) · `direction` (glyph only) |
-| Lifecycle | `status` enum, derived from data when possible (ADR-025) |
-| Controlled state | `<x>` / `default<X>` / `on<X>Change`, with the callback named after the prop. Canonical `<x>`: `value` (custom widget), `open` (disclosure, popover, menu; never `expanded`/`visible`/a bare `onClose`), `pressed` (`aria-pressed`, filter chips included). `selected` is never an item prop: a group that owns the choice holds `value` on the container. A link item marking the current page or step takes `current` (`aria-current`). Omit `default*` when the caller must always own the state. Native-input wrappers keep native names (`value`/`checked` + `onChange`) |
-| Discrete event | `on<Verb>` / `on<Part><Verb>` (`onSelect`, `onUserMenuSelect`). Never `handle*` |
-| Boolean | Bare adjective or participle, default `false` (`disabled`, `certified`, `fullWidth`). Never `is*`/`has*`/`show*`. Exception: `hideLabel` (label stays for assistive technology) |
-| Accessible name · error | `label` (visible label, else the `aria-label`) · `error` (message string; presence means invalid, no `invalid` flag) |
-| Content | `children` for wrappers or single free-form content; one named prop per datum otherwise (`title`, `author`) |
-| Image · collection · icon | `src`/`alt`, prefixed by part on composites (`thumbnailSrc`) · `items` (`<part>Items` when there are several; form inputs keep `options`) · `icon` (leading) / `trailingIcon` |
-| Element · inner heading · link | `as` (root element) · `headingLevel` (a heading rendered inside the component) · `href` |
+| Visual weight/style | `variant`: values name the look, not a rank (ADR-024); `default` only as the baseline of a surface/context axis, never on an emphasis axis |
+| Size · corners · layout axis · glyph | `size` (`sm`/`md`/`lg`, only the steps it has; typography takes type-scale names) · `shape` · `orientation` · `direction` (glyph only) |
+| Lifecycle | `status` enum, derived from data when possible |
+| Controlled state | `value` (custom widget; a group that owns the choice holds it on the container), `open` (disclosure, popover, menu), `pressed` (`aria-pressed`, filter chips included), `current` (`aria-current` on a link item). Native-input wrappers keep native names (`value`/`checked` + `onChange`) |
+| Discrete event | `on<Verb>` / `on<Part><Verb>` (`onSelect`, `onUserMenuSelect`) |
+| Boolean | Bare adjective or participle (`disabled`, `certified`, `fullWidth`); exception `hideLabel` (the label stays for assistive technology) |
+| Accessible name · error | `label` (visible label, else the `aria-label`) · `error` (message string) |
+| Content · image · collection · icon · element | `children` for wrappers or single free-form content, otherwise one named prop per datum · `src`/`alt`, part-prefixed on composites (`thumbnailSrc`) · `items` (`<part>Items` when several; form inputs keep `options`) · `icon`/`trailingIcon` · `as` · `headingLevel` · `href` |
 
-**Figma:** same names, values and defaults; only casing differs (`trailingIcon` ↔ `Trailing icon`, `variant` ↔ `Variant`). A slot property is named after its code prop: the one default slot is `Children`, other slots take their part's name (`Body`, `Meta`). Recorded mappings only: optional prop or part omitted ↔ `Has <x>` (default `false`); pseudo-classes ↔ `State` (preview); label `children` ↔ `Text`; CardVertical `progress` ↔ `Status` (preview). Figma-only properties are listed in ADR-026. A state that changes both the parent and a nested part is a parent variant whose variants differ only in that state, with the nested instance not bound to a swap property (ADR-026). Event handlers, `default*`, `className` and `id` are code-only. Known drift awaiting migration is listed in ADR-026; don't copy it into new components.
+**Figma** mappings beyond casing: an omitted optional prop or part ↔ `Has <x>` (default `false`); label `children` ↔ `Text`; the default slot is `Children`, other slots take their part's name; CardVertical `progress` ↔ `Status` (preview). Figma-only properties, and the parent-variant rule for a state that also changes a nested part: ADR-026. Event handlers, `default*`, `className` and `id` are code-only.
 
 ## Subcomponents (ADR-023)
 
