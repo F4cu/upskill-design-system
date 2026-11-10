@@ -56,6 +56,36 @@
       }
     },
 
+    "anatomyExamples": {
+      "description": "Examples that together render every anatomy part (ADR-030), read by the render test, the docs anatomy overlay and the Figma parity plugin. One entry per example: root props, or a metadata usage.patterns name for compound compositions. Use several when parts exclude each other (a slot holding one of two parts).",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["props"],
+            "properties": {
+              "props": {
+                "description": "Spec prop → value. Root props only; part props need a pattern.",
+                "type": "object",
+                "minProperties": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": ["pattern"],
+            "properties": {
+              "pattern": { "description": "A usage.patterns name in this component's metadata.", "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+
     "props": {
       "description": "The approved API proposal (ADR-026), kept. Keys are prop names; a part's props are keyed '<Part>.<prop>'. Every prop the component and its parts declare must appear; native attributes appear only when the contract depends on them.",
       "type": "object",
@@ -243,6 +273,36 @@
         }
       },
       "additionalProperties": false
+    },
+
+    "decisions": {
+      "description": "Per-component choices about how it is built, too small for an ADR. System-wide decisions stay in ADRs; cite one with adr when it applies. Read by the docs Spec page and /review-component, never by /component-scaffold (ADR-013).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["decision"],
+        "properties": {
+          "decision": { "type": "string" },
+          "reason": { "type": "string" },
+          "adr": { "description": "ADR id, e.g. ADR-023. Must resolve to a file in docs/decisions/.", "type": "string", "pattern": "^ADR-[0-9]{3}$" }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "ruledOut": {
+      "description": "Options considered and rejected for this component, so neither people nor agents propose them again without new evidence.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["option", "reason"],
+        "properties": {
+          "option": { "type": "string" },
+          "reason": { "type": "string" },
+          "source": { "description": "Where the option came from, e.g. a design system (Carbon, M3) or a review.", "type": "string" }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "additionalProperties": false,

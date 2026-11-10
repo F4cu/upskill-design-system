@@ -21,9 +21,9 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 - [x] ADR-030 accepted: all twelve open decisions closed (2026-11-10, `f9a029a`)
 
 **Contract prerequisites** (decisions 9 and 12)
-- [ ] Spec schema: optional `anatomyProps` (a list of props-or-pattern examples, see decision 9), `decisions[]`, `ruledOut[]`; `spec:validate` checks that `adr` refs resolve; ADR-027 amendment and a line in `packages/components/AGENTS.md`
+- [x] Spec schema: optional `anatomyExamples` (a list of props-or-pattern examples, see decision 9), `decisions[]`, `ruledOut[]`; `spec:validate` checks example props/patterns and that `adr` refs resolve; ADR-027 amendment and a line in `packages/components/AGENTS.md` (2026-11-10)
 - [ ] Backfill `decisions[]` / `ruledOut[]` for Button and CardVertical (the rest as `TODO`s)
-- [ ] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test
+- [ ] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test; fill their `anatomyExamples`; decide the exemption for parts no example can render (CardVertical `MenuPanel` opens on interaction, TextField `Placeholder` is a pseudo-element)
 
 **Shared input**
 - [ ] Phase 0: `npm run spec:bundle`, byte-identical across two runs, fails on an unresolved token path
@@ -62,7 +62,7 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 
 | Input | Path | Used for |
 |---|---|---|
-| Spec files (27 components) | `packages/components/src/components/*/*.spec.json`, schema `packages/components/component.spec.schema.json` | `anatomy` (with `parent`, `builtOn`, `builtOnProps`, `when`), `props` (with `figma.surface/property/set`), `constraints`, `states`, `accessibility`, `styles` (per part, `when` conditions, token paths, `literal` + `reason`, `template`, `sameAs`), `figma.sets[].nodeId` and `figma.divergences`; once decision 12 lands (schema change), `decisions[]` and `ruledOut[]` |
+| Spec files (27 components) | `packages/components/src/components/*/*.spec.json`, schema `packages/components/component.spec.schema.json` | `anatomy` (with `parent`, `builtOn`, `builtOnProps`, `when`), `props` (with `figma.surface/property/set`), `constraints`, `states`, `accessibility`, `styles` (per part, `when` conditions, token paths, `literal` + `reason`, `template`, `sameAs`), `figma.sets[].nodeId` and `figma.divergences`, and the optional `anatomyExamples`, `decisions[]` and `ruledOut[]` (ADR-027 amendment 2026-11-10) |
 | Component metadata (Part A only: Usage page, plus `variants.*.purpose` in Spec props) | `packages/components/src/components/*/*.metadata.json`, schema `packages/components/component.schema.json` | `component.description` and `status`, `usage.when`, `usage.patterns` (name, description, `tree`), `usage.antiPatterns` (scenario, reason, alternative), `variants.*.purpose`, `composition` (`composedOf`, `containedBy`) |
 | Built tokens | `packages/tokens/dist/js` (or `dist/css`) | Resolving a token path to its value for labels (e.g. `space.inline.sm = 8px`) |
 | Figma variable mirror | `packages/tokens/figma-variables.json` | Mapping a token path to its Figma variable name (`space.inline.sm` → `space/inline/sm`) and skipping recorded representational divergences |
@@ -247,10 +247,10 @@ Full reasoning and rejected options are in `docs/decisions/030-spec-renderers.md
    - **Value:** the exact `anatomy[].name`, PascalCase (`data-part="TrailingIcon"`), not Ark's kebab-case (`item-trigger`). The same string then matches in spec, code and Figma layer names, and the test is a plain string comparison. The attribute itself stays `data-part` because HTML only treats `data-*` attributes as custom data; React passes them through unchanged.
    - **Enforcement:** a render test that fails when a declared part doesn't render.
    - **Bare-text parts** (Button's `Label`) are wrapped in an element.
-   - **Optional parts** are turned on by a new optional spec field (working name `anatomyProps`).
+   - **Optional parts** are turned on by a new optional spec field, `anatomyExamples` (named at the schema step, 2026-11-10; ADR-027 and ADR-030 amendments).
      - **Props alone don't cover compound components** (ADR-023). Button's parts appear through props, but CardVertical's parts appear because someone writes them in JSX, like Ark/Chakra, where the anatomy is a composition snippet. So the field holds either example props or a reference to an existing metadata pattern (e.g. `{ "pattern": "instructor-row" }`), never a second copy of a tree.
      - **Make it a list.** Some parts can't appear together: CardVertical's `Action` holds `Favorite` *or* `Menu`, never both. Each entry is one example; the overlay and the render test cover the union, and a part missing from every entry fails the test. Scan all 27 specs' `when` conditions and `slot` parts before locking the schema.
-     - **Final name** is decided at the schema step (`anatomyExamples` fits a list of props-or-pattern entries better than `anatomyProps`).
+     - **Not renderable by any example** (found in the 27-spec scan, left to the render-test step): CardVertical's `MenuPanel` (only after the menu opens; `Menu` has no `open` prop) and TextField's `Placeholder` (`::placeholder`, no element to mark).
    - **Recording:** the ADR-027 amendment and the `packages/components/AGENTS.md` line ship with the schema change.
 10. **Page layout:** link tabs over three routes, `aria-current="page"`; Usage before Spec, accessibility on its own, no Figma columns on the web.
 11. **`figma-parity.json`:** `.claude/figma-parity.json`, added to the frozen-snapshot table in `CLAUDE.md` when it lands; `npm run status` warns when the capture is older than the last spec change.

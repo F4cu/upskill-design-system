@@ -5,6 +5,7 @@ title: "ADR-030 — Spec renderers: generated component pages and a Figma parity
 
 **Date:** 2026-11-10
 **Status:** `accepted`
+**Amended:** 2026-11-10
 
 ## Context
 
@@ -42,3 +43,7 @@ The plan (`.claude/handoff/2026-11-05-spec-renderers.handoff.md`) proposes two d
 - Figma drift becomes visible in `npm run status` and agent context without CI ever calling Figma. The cost is that the snapshot is only as fresh as the last manual plugin run, hence the staleness warning.
 - The plugin is loaded by hand in Figma desktop; no agent or CI can run it. Plugin API access on the current plan (local variables, `boundVariables`, `componentPropertyDefinitions`) is verified in Phase B0 before plugin code merges. If it isn't available, Part B is amended or dropped here.
 - This ADR is amended when Part B starts, rather than superseded by a separate ADR.
+
+## Amendment (2026-11-10) — The examples field is a list of props or patterns
+
+The schema step renamed the working field `anatomyProps` to `anatomyExamples` and changed its shape: a list of entries, each either root props or a metadata `usage.patterns` name. A single set of props can't render CardVertical's parts, because they are written in JSX, and it can't show parts that exclude each other (`Favorite` or `Menu` in one `Action` slot). The field is specified in the ADR-027 amendment of the same date. Two parts no example can render are left to the render-test step: CardVertical's `MenuPanel` (opens on interaction) and TextField's `Placeholder` (a pseudo-element).

@@ -5,7 +5,7 @@ title: "ADR-027 — Component spec file, split from metadata by reader"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-10-12
+**Amended:** 2026-11-10
 
 ## Context
 
@@ -243,3 +243,21 @@ The acceptance list ended with correcting ADR-026 and deciding the findings the 
 ## Amendment (2026-10-12) — The Arm C exit test is frozen
 
 The pattern-accuracy harness's Arm C (the target's spec added to the prompt), which this ADR used as its exit test, is frozen with the rest of the harness at `044d28f`. It scored a model's emitted metadata against a schema that still had `tokens`, so it can't be re-run on the current schema. Rationale and the guard: ADR-029 amendment 2026-10-12. The accept bar for the spec rollout (scaffolding does not regress with the smaller metadata) is now checked by the first real spec-first scaffold, not by re-running Arm C.
+
+## Amendment (2026-11-10) — Anatomy examples, decisions and ruled-out options
+
+ADR-030 renders specs as docs pages and checks them against Figma. Three optional sections join the spec for that. None is required, so the 27 existing specs stay valid unchanged.
+
+- **`anatomyExamples`**: a list of examples that together render every anatomy part. An entry is either `{ "props": { … } }` (root props, as for Button, whose parts appear through `icon`, `trailingIcon` and `shape`) or `{ "pattern": "<name>" }`, a `usage.patterns` entry in the metadata (as for CardVertical, whose parts appear because they are written in JSX). It's a list because some parts exclude each other: CardVertical's `Action` slot holds `Favorite` or `Menu`, never both. Readers: the `data-part` render test, the docs anatomy overlay and the Figma parity plugin. A pattern reference avoids a second copy of a tree the metadata already holds. Parts that no example can render are not covered yet: CardVertical's `MenuPanel` appears only after the menu is opened, and TextField's `Placeholder` is a pseudo-element. The render-test step decides how those are exempted.
+- **`decisions[]`** (`{ decision, reason?, adr? }`): per-component choices about how it is built, too small for an ADR. `adr` is optional on purpose; most component decisions don't warrant one. No dates: git history has them.
+- **`ruledOut[]`** (`{ option, reason, source? }`): options considered and rejected, with the system or review they came from. This is what stops an agent from proposing a rejected option again. `/review-component` reads it once the follow-up in the spec renderers handoff lands.
+
+`decisions` and `ruledOut` belong in the spec, not the metadata, because they are about how the component is built, and the spec's readers are the builder moments. They stay out of `/component-scaffold`'s context: ADR-013 measured a regression from extra context there.
+
+`spec:validate` checks the new sections against the rest of the repo:
+- Example props must be root code props in the spec.
+- Example prop values must be among a prop's `options`, when it has them.
+- Example patterns must exist in the metadata.
+- Every `adr` must have a file in `docs/decisions/`.
+
+It doesn't check that the examples cover every part. Rendering is the render test's job.

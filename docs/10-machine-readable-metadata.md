@@ -103,6 +103,13 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 
 `scripts/validate-spec.js` (`npm run spec:validate`) checks each spec against `component.spec.schema.json` and then against the code: every prop in the props types is in the spec and vice versa, variant options match the TypeScript union and the metadata axis, the `styles` tokens match the code's reads (above), and internal references between states, constraints, anatomy and `composition.parts` resolve. Every component must have a spec, and a `TODO` left by `spec:generate` fails the check.
 
+Three optional spec sections serve the generated docs pages and the Figma parity check ([ADR-030](decisions/030-spec-renderers.md)):
+- `anatomyExamples` lists the examples that together render every part. Each entry is root props, or the name of a metadata `usage.patterns` entry for compositions written in JSX.
+- `decisions` records per-component choices too small for an ADR.
+- `ruledOut` records options considered and rejected, so nobody proposes them again without new evidence.
+
+`spec:validate` checks that example props and patterns exist, and that every `adr` a decision cites has a file in `docs/decisions/` ([ADR-027](decisions/027-component-spec-file.md) amendment 2026-11-10).
+
 `scripts/validate-layout.js` then uses the same block to check layouts that compose a component from its parts.
 
 `.claude/component-patterns.json`'s top level is `{ generatedFrom, architecturalStyle, patterns, drift }` — `patterns` keyed by the 10 buckets (`controlled-selection`, `disclosure`, `navigation`, `status-indicator`, `toggle-button`, `form-field`, `action-trigger`, `layout-primitive`, `static-display`, `content-stepper`), each holding a `description` and an `implementedBy` list. `architecturalStyle` is `flat-props` everywhere except components that attach parts (ADR-023): their own entry carries `architecturalStyle: "compound"` and their part names, and the top-level string lists them. The scanner reads `<CardVertical.Body>` as a use of `CardVertical`, never as a component of its own. One real `drift[]` entry:

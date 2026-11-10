@@ -70,6 +70,7 @@ sources:
 # rewritten 2026-10-12: reading-order blurbs for 09 (rung 2 is nested package AGENTS.md since ADR-029, not rules) and 10 (the contract is metadata plus its spec, ADR-027 rollout)
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value) and /component-scaffold spec-template wording (every component has a spec since the ADR-027 backfill); this page lists no individual ADRs, mappings or template rules, still accurate
 # clock reset 2026-10-12: ADR-029 amendment records Figma fidelity study B as a separate pre-registered eval; this page lists no ADRs or evals, still accurate
+# 2026-11-10: ADR count 29 -> 30 (ADR-030 spec renderers); ADR-027 amendment adds optional spec sections, this page lists no schema detail
 ---
 # Start here
 
@@ -135,4 +136,4 @@ The suggested reading order is the page order — tokens first, because everythi
 - [11 — Self-improving loops](11-self-improving-loops.md) — the mechanisms that change their own behavior from evidence: learning loops, measurement ledgers, and the line between a loop that learns and a gate that only checks
 - [12 — Taming non-determinism](12-taming-non-determinism.md) — how deterministic structure wraps the model before, during and after generation, so only genuinely ambiguous judgment reaches a human
 
-The twenty-nine architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
+The thirty architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.

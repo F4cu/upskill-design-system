@@ -10,6 +10,9 @@
 //     the CSS Module reads (plus any index.tsx reads, e.g. a size template), and each one is defined in the built token CSS.
 //   - states, constraints, anatomy: internal cross-references resolve; every
 //     composition.parts entry appears in the spec.
+//   - anatomyExamples, decisions (ADR-030): example props are root spec props
+//     with valid options, example patterns are metadata usage.patterns names,
+//     and every decision's adr has a file in docs/decisions/.
 // A string or key starting with TODO (left by spec:generate) fails the check.
 // Every component in the repo must have a spec (ADR-027); --components-dir checks only
 // the specs it finds. Requires built tokens (npm run tokens:build).
@@ -31,6 +34,9 @@ const PKG = path.resolve(ROOT, "packages/components");
 const COMPONENTS_DIR = path.join(PKG, "src/components");
 const SCHEMA_PATH = path.join(PKG, "component.spec.schema.json");
 const TOKENS_CSS_DIR = path.resolve(ROOT, "packages/tokens/dist/css");
+const ADR_IDS = new Set(
+  fs.readdirSync(path.resolve(ROOT, "docs/decisions")).flatMap((f) => (/^(\d{3})-.+\.md$/.exec(f) ? [`ADR-${f.slice(0, 3)}`] : [])),
+);
 
 const validate = new Ajv({ allErrors: true, allowUnionTypes: true }).compile(JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8")));
 
@@ -159,6 +165,21 @@ for (const { name, file } of specs) {
       if (!spec.props[ref]) errors.push(`constraints["${c.id}"]: "${ref}" is not a spec prop`);
     }
     if (!c.enforcedBy.length) backlog.push(`${name}: constraint "${c.id}" is documented only (enforcedBy is empty)`);
+  }
+
+  // Anatomy examples and decisions (ADR-030)
+  const patternNames = new Set((metadata.usage?.patterns ?? []).map((p) => p.name));
+  spec.anatomyExamples?.forEach((example, i) => {
+    const at = `anatomyExamples[${i}]`;
+    if (example.pattern && !patternNames.has(example.pattern)) errors.push(`${at}.pattern: "${example.pattern}" is not a metadata usage.patterns name`);
+    for (const [prop, value] of Object.entries(example.props ?? {})) {
+      const def = spec.props[prop];
+      if (!def || prop.includes(".") || def.figma.surface === "figma-only") errors.push(`${at}.props: "${prop}" is not a root code prop in the spec`);
+      else if (def.options && !def.options.includes(value)) errors.push(`${at}.props.${prop}: "${value}" is not an option`);
+    }
+  });
+  for (const d of spec.decisions ?? []) {
+    if (d.adr && !ADR_IDS.has(d.adr)) errors.push(`decisions: ${d.adr} has no file in docs/decisions/`);
   }
 
   // States
