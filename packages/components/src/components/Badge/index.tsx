@@ -7,7 +7,10 @@ export type BadgeVariant = 'outline' | 'filled'
 export type BadgeProps = {
   variant?: BadgeVariant
   children: ReactNode
-} & Omit<HTMLAttributes<HTMLSpanElement>, 'children'>
+} & Omit<
+  HTMLAttributes<HTMLSpanElement>,
+  'children' | 'onClick' | 'onKeyDown' | 'onKeyUp' | 'tabIndex' | 'role'
+>
 
 export function Badge({ variant = 'outline', className, children, ...rest }: BadgeProps) {
   return (

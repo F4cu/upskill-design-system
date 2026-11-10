@@ -19,7 +19,7 @@ export function Breadcrumb({ items, className, ...rest }: BreadcrumbProps) {
           const isLast = i === items.length - 1
           return (
             <li key={i} className={styles.item}>
-              {i > 0 && <Icon name="chevron-right" size="sm" className={styles.separator} aria-hidden />}
+              {i > 0 && <Icon name="chevron-right" size="sm" className={styles.separator} />}
               {isLast || !item.href ? (
                 <span
                   className={[styles.label, isLast ? styles.labelCurrent : styles.labelSubtle].join(' ')}
