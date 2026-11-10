@@ -20,8 +20,16 @@
     "kind": "handoff",
     "status": "active",
     "created": "2026-11-05",
-    "updated": "2026-11-05",
+    "updated": "2026-11-10",
     "path": ".claude/handoff/2026-11-05-spec-renderers.handoff.md"
+  },
+  {
+    "name": "2026-11-10-metadata-to-usage-rename",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-11-10",
+    "updated": "2026-11-10",
+    "path": ".claude/handoff/2026-11-10-metadata-to-usage-rename.handoff.md"
   },
   {
     "name": "2026-07-03-multi-brand-refactor",
