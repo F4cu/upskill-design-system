@@ -138,12 +138,12 @@ component.status                → component.status (unchanged, ADR-010)
 component.description           → component.description (rule: opens "A <noun> that …", no counts/ADRs/a11y claims — T6)
 component.figmaNodeId           → (dropped; readers use spec.figma.sets[0].nodeId)
 usage.keywords                  → (dropped)
-usage.when                      → when            (flattened; self-describing lines removed — T2)
+usage.when                      → useWhen         (flattened; component-level situations only — per-variant lines move down a level; self-describing lines removed — T2)
 usage.patterns                  → patterns        (flattened; unchanged shape; 2 duplicates deduped)
 usage.antiPatterns (35 picks)   → notFor[]: { case, because, instead }   instead = fixed-set name | null + optional note
 usage.antiPatterns (30 comp.)   → composition.rules[]: { case, because, do }
 usage.antiPatterns (37 + 4)     → spec.json constraints / prop descriptions / decisions; AGENTS.md; or deleted as restatements
-variants.<axis>.purpose         → variants.<axis>.when   (per option; px sizes and requirements moved to spec — T7)
+variants.<axis>.purpose         → variants.<axis>.useWhen   (per option; px sizes and requirements moved to spec — T7)
 composition.composedOf          → (dropped; derived from JSX by generate-pattern-schema)
 composition.accepts             → composition.accepts
 composition.containedBy         → composition.containedBy
@@ -163,7 +163,47 @@ Expected effect: drop keywords, `composedOf`, `displayType`, `category`, `figmaN
 1. **Call-site prop rules (~26):** move to `spec.json`; `/layout-generation` also reads `spec.constraints`. ✅
 2. **`composition.limits`:** in this migration, and the hard-coded accent check in `validate-layout` is replaced by checking against the `limits` data. ✅
 3. **`figmaNodeId`:** stays in `component` for now. The field map line above that drops it is void.
-4. **`variants.*.purpose` label:** open. Candidates: `when` (matches top-level `when`), `pickWhen`, or keep `purpose` with a writing rule. Whatever the label, each option's value says the situation first, then at most one clause on how it looks (that clause helps map Figma instances to options). Sizes in px and required props move to `spec.json`.
+4. **`useWhen` at both levels.** ✅ Top-level `useWhen` (list) answers *when this component*. `variants.<axis>.useWhen` (map, option → string) answers *which option*. Top-level lines that name a variant move down a level, so the two never say the same thing. Option value: the situation first, then at most one clause on how it looks (to map Figma instances). Sizes in px, required props, and "never in X" go to `spec.json` / `composition.limits`.
+
+   Button, worked example:
+
+   ```jsonc
+   "useWhen": [
+     "An action happens in place and the URL doesn't change: a form submits, a dialog opens, a panel expands",
+     "An icon-only control in a toolbar, table row or inline action group (set shape)"
+   ],
+   "variants": {
+     "variant": {
+       "options": ["accent", "neutral", "transparent", "danger"],
+       "default": "neutral",
+       "useWhen": {
+         "accent": "The one action a decision region exists for: form or dialog footer, hero. Brand fill.",
+         "neutral": "Everyday and supporting actions, and the lead action in a card or other repeated item. Bordered.",
+         "transparent": "Low-weight actions inline with content ('Show more', Close) and a card's second action. No fill at rest.",
+         "danger": "Destructive or irreversible actions (delete, deactivate), next to a neutral Cancel. Error fill."
+       }
+     },
+     "size": {
+       "options": ["sm", "md", "lg"],
+       "default": "md",
+       "useWhen": {
+         "sm": "Dense UI: table rows, inline actions, toolbars.",
+         "md": "Most page contexts.",
+         "lg": "Hero sections, prominent calls to action, touch-first flows."
+       }
+     },
+     "shape": {
+       "options": ["square", "round"],
+       "default": null,
+       "useWhen": {
+         "square": "Icon-only actions in toolbars, table rows and inline groups. Small rounded corners.",
+         "round": "Floating actions or controls next to an avatar. Circular."
+       }
+     }
+   }
+   ```
+
+   Moved out: "never inside a repeated item" → `composition.limits` (`{if:{variant:"accent"}, max:0, per:"repeated"}`, `max:1, per:"region"`); px heights and the transparent inset note (ADR-024 amendment) → `spec.json`; "requires icon and aria-label" is already `spec.constraints` `icon-only-needs-icon-and-name`.
 
 ## Rename blast radius (measured 2026-11-10)
 
