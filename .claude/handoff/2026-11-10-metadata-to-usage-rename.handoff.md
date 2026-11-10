@@ -25,7 +25,7 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 - [x] Editorial pass, descriptions: 27 + example rewritten to "A <noun> …" ≤25 words; CardVertical gains a notFor (inverted section → CardHorizontal), Avatar spec a ruledOut (letter fallback); warnings 78 → 32 (2026-11-10)
 - [x] Editorial pass, variant lines: every `variants.<axis>.useWhen` situation-first in 15 components, sizes/CSS cut (already in spec styles/CSS); TextField icon note → spec a11y notes, CardHorizontal dark-parent rule → donts; warnings 32 → 8 (2026-11-10)
 - [x] Editorial pass, last batch: Accordion/CardVertical/Chip/Icon/TextField `useWhen` and 3 pattern lines; CardVertical parts-Completed and Icon bare-kebab rules → `donts`; warnings 8 → 0, `PROSE_FAILS = true` (negative-tested) (2026-11-10)
-- [ ] GitHub issue: narrow `BadgeProps` to omit `onClick`/`onKeyDown`, and `IconProps` to omit `color`/`fill`/`stroke`/`role`/`aria-*` (Icon's old rule text noted only `children` is omitted)
+- [x] GitHub issue #152 filed (2026-11-10): narrow `BadgeProps` to omit `onClick`/`onKeyDown`, and `IconProps` to omit `color`/`fill`/`stroke`/`role`/`aria-*` (Icon's old rule text noted only `children` is omitted)
 - [ ] The 9 documented-only constraints enforced by `spec:validate`
 
 **Second relabel** (see "Follow-up: second relabel")
