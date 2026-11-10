@@ -50,6 +50,7 @@ sources:
 # rewritten 2026-11-10: Component metadata entry renamed Component usage file; spec entry notes layout generation reads constraints (ADR-001 amendment 2026-11-10)
 # rewritten 2026-11-10: pattern aggregate entry no longer cites the composedOf drift check (removed with the usage.json rename); usage schema dropped patterns[].tree, other entries still accurate
 # rewritten 2026-11-10: Props and variants: only real props get an axis (ADR-001 third amendment)
+# clock reset 2026-11-10: usage:validate now checks component-level composition.accepts/containedBy names (#149); this page says nothing about checking containment, still accurate
 ---
 # Glossary
 

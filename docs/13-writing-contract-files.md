@@ -5,6 +5,7 @@ sources:
   - scripts/validate-usage.js
   - packages/components/AGENTS.md
   - docs/decisions/001-component-metadata-schema.md
+# clock reset 2026-11-10: usage:validate now checks component-level composition.accepts/containedBy names (#149); this page says nothing about checking containment, still accurate
 ---
 # Writing contract files
 

@@ -26,6 +26,7 @@ sources:
 # clock reset 2026-11-10: pattern tree dropped and pattern-story export check added to usage:validate; this page's account of the deterministic gates still holds
 # clock reset 2026-11-10: ADR-001 third amendment (variants optional, prose lint as warnings in usage:validate); the gate and checks this page describes are unchanged, still accurate
 # clock reset 2026-11-10: validate-usage.js prose lint now fails the gate (PROSE_FAILS = true); this page describes the gate commands, not the lint rules, still accurate
+# clock reset 2026-11-10: usage:validate now checks component-level composition.accepts/containedBy names (#149); this page says nothing about checking containment, still accurate
 ---
 # Taming non-determinism
 

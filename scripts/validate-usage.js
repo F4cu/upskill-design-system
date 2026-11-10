@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Validates every <Name>.usage.json against component.usage.schema.json
 // (ADR-001 amendment 2026-11-10). Also checks that component.name matches the
-// folder, that notFor.instead names a component, that composition.limits name
+// folder, that notFor.instead and component-level composition.accepts/containedBy
+// name components, that composition.limits name
 // real variant options, that every variant axis is a spec prop, that pattern names are unique across the set and match
 // the exports of <Name>.patterns.stories.tsx, resolves composition.parts cross-references, validates
 // the canonical example file, and checks every <Name>.spec.json parses. Exits
@@ -91,6 +92,23 @@ function checkParts(parts) {
         errors.push(`${at}.containedBy: "${ref}" is not a sibling part`);
       }
     }
+  }
+  return errors;
+}
+
+// Component-level accepts/containedBy name exported components; "*" (any
+// component) is valid only as the sole accepts entry.
+function checkContainment(composition) {
+  const errors = [];
+  const accepts = composition?.accepts ?? [];
+  if (accepts.includes("*") && accepts.length > 1) {
+    errors.push(`composition.accepts: "*" already means any component, so it must be the only entry`);
+  }
+  for (const ref of accepts) {
+    if (ref !== "*" && !COMPONENT_NAMES.has(ref)) errors.push(`composition.accepts: "${ref}" is not a component`);
+  }
+  for (const ref of composition?.containedBy ?? []) {
+    if (!COMPONENT_NAMES.has(ref)) errors.push(`composition.containedBy: "${ref}" is not a component`);
   }
   return errors;
 }
@@ -249,7 +267,7 @@ for (const { file, expectedName, stray, legacy } of targets) {
   }
 
   if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
-  errors.push(...checkNotFor(data), ...checkLimits(data), ...checkVariantUseWhen(data));
+  errors.push(...checkContainment(data.composition), ...checkNotFor(data), ...checkLimits(data), ...checkVariantUseWhen(data));
   if (expectedName) errors.push(...checkPatterns(data, rel), ...checkPatternStories(data, path.dirname(file)), ...checkAxesAreProps(data, path.dirname(file)));
   const prose = checkProse(data);
   if (PROSE_FAILS) errors.push(...prose);

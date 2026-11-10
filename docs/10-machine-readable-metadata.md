@@ -35,6 +35,7 @@ sources:
 # rewritten 2026-11-10: deterministic-reader audit (gated/used/rendered/none per field, totals, gaps); layout:validate row corrected (part-level accepts/containedBy only)
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts {case, because, instead}; patterns → composition.patterns {name, useWhen}, code in <Name>.patterns.stories.tsx (option D); pattern-name uniqueness check
 # rewritten 2026-11-10: pattern stories shipped: usage:validate checks pattern names against <Name>.patterns.stories.tsx exports; tree dropped
+# rewritten 2026-11-10: usage:validate checks component-level accepts/containedBy names (#149 step 1); audit rows and totals updated; layout:validate enforcement still undecided
 # rewritten 2026-11-10: ADR-001 third amendment: variants optional, every axis a spec prop, prose lint (warnings); links the new 13-writing-contract-files guide
 # 2026-11-10: prop-rule row says how spec constraints are enforced (type, test, layout:validate); 7 of the 9 documented-only ones now are
 # clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups; the drift check this page describes is unchanged
@@ -127,6 +128,7 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 
 - `component.name` must equal the containing directory name.
 - Every `composition.parts` entry must be internally consistent: names are unique and don't collide with a component name, `accepts` appears only on `slot`/`open` parts (and is required there), each `accepts` entry is a component or a sibling part, each `containedBy` entry is a sibling part, and `builtOn` is a component or `null`. "Component" means one exported by `@upskill/components` (`publicComponents()` in `scripts/lib.js`), the same list `layout:validate` uses (#98).
+- Every component-level `composition.accepts` and `containedBy` entry is a component; `accepts` may instead be `["*"]` (any component), but `"*"` never sits beside names.
 - Every `notFor.instead` is a component (or `null` with a `note` naming the alternative outside the library); every `composition.limits[].if` names a real variant axis and option; every `variants.<axis>.useWhen` key is an option of that axis, and every axis is a prop in the spec (a component with no visual prop has no `variants`); every `composition.patterns[].name` is unique across the set, since the story export, the Figma example frame and `spec.anatomyExamples` share it.
 - The prose follows the mechanical writing rules: the description opens "A <noun> …" in at most 25 words, `useWhen` lines have at most 20, and no prose carries px/rem sizes, CSS or (in the description) ADR numbers. These fail the gate since 2026-11-10; [Writing contract files](13-writing-contract-files.md) has the full rules.
 - No `<Name>.metadata.json` is left behind.
@@ -159,7 +161,7 @@ The two files are split by reader. The usage file is for **picking and composing
 |---|---|---|---|---|
 | `/component-scaffold` (Stage 1 of `/add-component`) | Writer | Writes it after the spec | Writes it first, from the approved API proposal | A new component's contract, written before the code. The closest existing pair is read as a template. |
 | `/layout-generation` | Picker / composer | Every file, whole: `composition` (incl. `parts`, `limits`, `donts`, `patterns`), `notFor`, each option's `useWhen`; a `<Name>.patterns.stories.tsx` only for a pattern it picks | `constraints` only | Choosing components and citing a field for every structural choice |
-| `layout:validate` (`validate-layout.js`) | Gate | `composition.nests`, `composition.limits`, and `composition.parts` (each part's `accepts`, `containedBy`, `required`) | — | Checking a layout file against the composition graph. The component-level `accepts`/`containedBy` are not checked (see the audit below). |
+| `layout:validate` (`validate-layout.js`) | Gate | `composition.nests`, `composition.limits`, and `composition.parts` (each part's `accepts`, `containedBy`, `required`) | — | Checking a layout file against the composition graph. A layout's use of the component-level `accepts`/`containedBy` is not checked (see the audit below). |
 | `/review-component` | Builder check | — | The whole spec, as the intent the code is held to: each `anatomy` role and `action` against the markup, `constraints` against their `enforcedBy`, `states` against the CSS and handlers | Findings that `spec:validate` can't produce |
 | `spec:validate` (`validate-spec.js`) | Gate | `variants` (options must match the spec's props) | Every section, against the code and the built tokens | Keeping the spec and the code in step |
 | `usage:validate` (`validate-usage.js`) | Gate | Every section, against the schema and the fixed set | Parse check only | Keeping the usage file well-formed |
@@ -199,9 +201,9 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `variants.<axis>.useWhen` | Gated (keys) | `usage:validate` (each key is an option; the text is linted for the writing rules); the text is rendered |
 | `composition.nests`, `composition.limits` | Gated | `layout:validate`; `usage:validate` checks the axis and option each limit names |
 | `composition.parts` | Gated | `usage:validate`, `layout:validate`, `spec:validate` (must match `anatomy`), `generate-pattern-schema.js`, `spec:generate` |
-| `composition.containedBy` | Rendered | Docs page ("Placed inside"). The names aren't validated. |
+| `composition.accepts`, `composition.containedBy` | Gated | `usage:validate` (each entry is a component; `accepts` may be `["*"]`); `containedBy` is rendered ("Placed inside"). Whether a layout follows them is not checked |
 | `composition.donts` | Rendered | Docs page. Don'ts a check can't express, by design. |
-| `composition.accepts`, `composition.width` | None | Agents only |
+| `composition.width` | None | Agents only |
 
 **`spec.json`**
 
@@ -228,12 +230,12 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `decisions[].adr` | Gated | `spec:validate` (the ADR file exists) |
 | `decisions[].decision`, `reason`, `ruledOut` | Rendered | Docs page |
 
-**Totals.** Of the 40 field groups above, 18 are gated and 6 are used by a script, so 24 depend on code parsing a fixed shape. Another 13 are rendered by the docs page, which needs the same stable structure. Only 3 have no code reader. In Markdown, every one of the 24 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
+**Totals.** Of the 40 fields above, 20 are gated and 6 are used by a script, so 26 depend on code parsing a fixed shape. Another 12 are rendered by the docs page, which needs the same stable structure. Only 2 have no code reader. In Markdown, every one of the 26 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
 
 **Gaps the audit found.** None of these is fixed here; each needs its own decision:
 
 - **`patterns[].tree` was never parsed.** Its 62 trees were written in a notation agents read, and a misspelled component name in one passed every check. Resolved by option D (ADR-001 second amendment, 2026-11-10): patterns became `{ name, useWhen }` and their code moved to type-checked stories, one export per pattern.
-- **Component-level `accepts` and `containedBy` are unchecked.** `usage:validate` doesn't confirm their entries are components, and `layout:validate` checks containment only for `composition.parts`. They work only as citations for `/layout-generation`.
+- **A layout's component-level containment is unchecked.** Since 2026-11-10 `usage:validate` confirms every component-level `accepts`/`containedBy` entry is a component (#149), but `layout:validate` checks containment only for `composition.parts`, so these two fields work only as citations for `/layout-generation`. Whether to enforce them against the nearest JSX parent is undecided: Box/Stack/Inline wrappers may need a transparent-wrapper rule.
 - **`composition.width` and `props.<p>.concept` have no code reader.** By the rule above, each should either get a reader (a check, or a column on the docs page) or be dropped, as `usage.keywords` was.
 
 `component.type` is the one place the schema enforces a closed taxonomy (`interactive|display|container|input|layout`; the atomic-design `category` it used to sit beside was dropped on 2026-11-10, since only its `layout` value was ever read). Every other section is free-text within its shape. That's deliberate: the field is load-bearing for both `a11y-coverage.js`'s interactivity derivation and `generate-pattern-schema.js`'s bucketing fallback (`layout-primitive` when structural detection finds nothing else), so an unenforced vocabulary there would quietly break two downstream consumers at once.

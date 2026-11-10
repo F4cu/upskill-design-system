@@ -32,6 +32,7 @@ sources:
 # rewritten 2026-11-10: carousel reference is now the CardVertical card-carousel pattern story (ADR-006 amendment); usage:validate also checks pattern names against <Name>.patterns.stories.tsx exports
 # rewritten 2026-11-10: ADR-001 third amendment: variants optional (placeholder axes removed), prose lint in usage:validate
 # clock reset 2026-11-10: validate-usage.js prose lint now fails the gate (PROSE_FAILS = true); this page describes the gate commands, not the lint rules, still accurate
+# clock reset 2026-11-10: usage:validate now checks component-level composition.accepts/containedBy names (#149); this page says nothing about checking containment, still accurate
 ---
 # Component lifecycle
 

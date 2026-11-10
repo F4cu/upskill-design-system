@@ -131,14 +131,14 @@
       "type": "object",
       "properties": {
         "accepts": {
-          "description": "Component names valid as direct children in this component's content slot. Empty array means leaf node. [\"*\"] means any library component is valid.",
+          "description": "Component names valid as direct children in this component's content slot. Empty array means leaf node. [\"*\"] means any library component is valid, and \"*\" is then the only entry. Names are checked against the exported components by scripts/validate-usage.js.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "containedBy": {
-          "description": "Component names that are valid direct parents of this component.",
+          "description": "Component names that are valid direct parents of this component. Checked against the exported components by scripts/validate-usage.js.",
           "type": "array",
           "items": {
             "type": "string"
