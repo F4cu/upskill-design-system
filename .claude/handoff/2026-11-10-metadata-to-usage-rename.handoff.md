@@ -274,4 +274,53 @@ Expected effect: drop keywords, `composedOf`, `displayType`, `category`, `figmaN
    - **Left as history:** ADRs other than 001/027, `docs/case-study-source/*`, both harnesses and their tasks (frozen, see step 6), archived handoffs, the other active handoffs.
 5. Gate: full `AGENTS.md` gate set + `npm run lint` + `npm run claudemd:check` + `npm run docs:check` + `npm run sense`.
 6. ~~Re-run the pattern-accuracy harness~~ **Not possible:** the harness is frozen at `044d28f` and `harness:run` exits on HEAD (ADR-029 amendment 2026-10-12, `scripts/frozen-eval.js`). ADR-001's amendment now says so. Options: a new pre-registered eval on the current schema (ADR-029 says a new question gets its own eval), or treat the first real `/layout-generation` run as the check.
-7. Open follow-ups: the editorial pass (step 3), the Badge type-enforcement issue (step 3), and the 9 documented-only constraints now on the `spec:validate` backlog.
+7. Open follow-ups: the editorial pass (step 3), the Badge type-enforcement issue (step 3), the 9 documented-only constraints now on the `spec:validate` backlog, the second relabel (below, decided, not applied), and pattern trees vs stories (below, leaning D).
+
+## Follow-up: second relabel (decided 2026-11-10, not applied)
+
+A review of `Button.usage.json` after the rename found the composition labels still unclear. Decisions:
+
+| Change | Why |
+|---|---|
+| `composition.rules` → `composition.donts` | All 28 entries are don't→do pairs (Atlassian/Primer do/don't), not conditions. "rules" read like another `useWhen`. |
+| `donts[].do` → `donts[].instead` | Same shape as `notFor`: `{case, because, instead}`, one shape to learn. |
+| `notFor[].instead` stays | Rejected renaming it to `use`: readers infer a component from the value and context, and `validate-usage.js` already rejects prose there. Add to the schema description: "a fixed-set component name, not prose". In `donts`, `instead` is prose. |
+| `patterns[].description` → `patterns[].useWhen` | Most of the 62 descriptions restate the tree ("A Box wrapping a Stack…"). A situation-first line is what matches a pattern to a brief (T2). Rewriting them is editorial, not mechanical. |
+| `patterns` → `composition.patterns` | Top level answers *pick this component?* (`useWhen`, `notFor`, `variants`), `composition` answers *how to assemble it*; patterns sit next to `donts`. **Readability only:** no script gains, and no measurable agent gain (the harness is frozen). Path changes: `validate-spec.js` (pattern names for `anatomyExamples`), `validate-usage.js`, schema, docs page, commands. |
+| `patterns[].name` stays | It's an id, not prose: it ties the usage pattern, the Storybook story (PascalCase), the Figma example frame (ADR-023) and `spec.anatomyExamples[].pattern`. Rejected `case` (prose elsewhere) and `validPatterns` (claims a check nothing performs; `donts` already supplies the contrast). `id` would be acceptable if `name` ever confuses. |
+| `patterns[].tree` | Name is fine (React's "component tree"; `anatomy`/`example`/`composition` collide). Under option D below, the field is dropped. |
+
+Open, content not labels: Button's two current `rules` look misfiled. The danger one repeats `variants.variant.useWhen.danger` (move its *because* there, drop the rule); the media-overlay one is a wrong pick (`notFor`, `instead: "CardVertical"`, parts in `note`). Sweep the other 27 rules the same way: the Chip group name, ProgressBar `label` and Icon accessible name are accessibility contract (`spec.accessibility`); DropdownMenu `position:relative` and ScrollArea `max-content` are spec constraints.
+
+Do this together with option D (if chosen) in one migration and one ADR-001 amendment.
+
+## Follow-up: pattern trees vs stories (leaning D, raised 2026-11-10)
+
+**Problem.** Pattern `tree`s are hand-written shorthand that nothing parses: a tree can name a missing component, an invalid prop, or a nesting that `accepts`/`containedBy` forbid, and no gate notices. Other systems (Atlassian, Polaris, Primer, shadcn) show each example as name + short "when" line + live render + real code; none uses an abstract tree notation.
+
+**What exists.** The pattern `name` is already a reference: `anatomy:test` and the docs `AnatomyOverlay` render the story named after it (`overflow-menu` → `OverflowMenu`). Only **5 of 62** patterns have a same-named story (measured 2026-11-10); `packages/components/AGENTS.md` requires one only for parts compositions.
+
+**Rejected: replace `tree` with a link to the story.** `/layout-generation` reads all 27 usage files whole and would have to open story files (imports, meta, args, every other story) per pattern, which breaks the compact frozen-file read and costs far more tokens than a one-line tree. The name is already the link, so a URL field would duplicate a convention.
+
+**Options:**
+
+| | What | Cost | Gain |
+|---|---|---|---|
+| A. Leave as is | Trees stay hand-written and unchecked | None | None; drift stays possible |
+| B. Parse trees | `validate-usage.js` parses each tree and checks component names, prop options, `accepts`/`containedBy` | A small grammar plus parser | Trees become checked data; no new stories |
+| C. Stories as source, trees generated | Every pattern gets a same-named story; a script derives `tree` from its JSX (the approach `generate-pattern-schema.js` already uses) into `usage.json`; a staleness gate fails on drift; `usage:validate` fails when a pattern has no story | ~57 stories plus a generator | One source; docs can embed a live render plus code like other systems; tree can't disagree with code |
+
+| **D. Thin patterns, stories by name (leaning)** | `patterns` become `{ name, useWhen }`, with no `tree`. Each pattern is one export in a new `<Name>.patterns.stories.tsx` named in PascalCase. `/layout-generation` reads names + `useWhen` for all 27 components and opens a patterns story file **only for the patterns it picks**. `usage:validate` fails when the exports and the pattern names differ. | Stories for the ~57 patterns without one, or delete the patterns that don't earn one | No code in metadata; the code is real and type-checked; one source |
+
+B and C overlap: C makes B unnecessary, and B is a cheaper first step if C never happens. D drops the tree that B and C maintain.
+
+**Why D.** The trees have been in the schema since its first version (`30e769d`, 2026-06-14), but nothing ever measured whether `/layout-generation` uses them. Its other inputs already determine most trees: `accepts`/`containedBy`/`limits`/`nests` (enforced by `validate-layout`), the `useWhen` lines, `component-patterns.json` (measured 13 → 4 violations, ADR-013), its own "Recurring patterns" section, and Figma design context. What a pattern adds is a *named, approved* shape, and the name and `useWhen` carry that.
+
+**Precedent.** Systems keep examples as code and point to them from metadata. Polaris docs frontmatter: `examples: [{fileName, title, description}]`. Atlassian: an `examples/` folder, one file per example. GOV.UK Frontend: named examples as data, which serve as docs, test fixtures and previews. Primer React: `<Name>.docs.json` lists story ids, and stories are split by purpose (`.stories.tsx`, `.features.stories.tsx`, `.examples.stories.tsx`), which is the model for the separate `.patterns.stories.tsx`. The Storybook MCP manifest generates agent-facing snippets from stories. Nobody hand-writes a tree in metadata. Recalled from their public repos, not re-checked 2026-11-10. Code Connect doesn't fit: it maps one Figma component to its code, not compositions, and it's Enterprise/Org-only (ADR-002).
+
+**Why a separate `.patterns.stories.tsx`.** `<Name>.stories.tsx` holds states and options (axe sweep, screenshots). Compositions go in their own file so the layout agent opens a small file, and exports ↔ pattern names can be compared exactly. `anatomy:test` and `AnatomyOverlay` look stories up by name, so they need to read the second file too. Check that the screenshot and a11y scripts pick up the new glob.
+
+**Before committing to D:**
+1. Triage the 62 patterns: write a story, or delete the pattern. Some are likely filler.
+2. Decide what happens to `/layout-generation`'s "Recurring patterns" section (carousel, CourseModuleList). Those shapes probably become patterns with stories.
+3. Check it: the harness is frozen, so either treat the first real `/layout-generation` runs as the check, or pre-register a new layout eval (ADR-029) with and without patterns.
