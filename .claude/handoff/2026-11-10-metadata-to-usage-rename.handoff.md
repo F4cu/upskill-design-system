@@ -205,6 +205,43 @@ Expected effect: drop keywords, `composedOf`, `displayType`, `category`, `figmaN
 
    Moved out: "never inside a repeated item" → `composition.limits` (`{if:{variant:"accent"}, max:0, per:"repeated"}`, `max:1, per:"region"`); px heights and the transparent inset note (ADR-024 amendment) → `spec.json`; "requires icon and aria-label" is already `spec.constraints` `icon-only-needs-icon-and-name`.
 
+### Where each anti-pattern lands (Button worked example)
+
+```jsonc
+// usage.json — wrong picks: top level, instead = fixed-set name or null
+"notFor": [
+  { "case": "Navigation that changes the URL",
+    "because": "Renders <button>; a URL change needs an <a> for semantics and middle-click/open-in-tab.",
+    "instead": "TextLink" }
+],
+// usage.json — composition: prose rules + countable limits
+"composition": {
+  "accepts": [], "containedBy": ["Box", "Stack", "Inline", "Card"],
+  "width": "hug", "nests": false,
+  "limits": [
+    { "if": { "variant": "accent" }, "max": 1, "per": "region",
+      "because": "Variants are absolute weights; the region's one decision gets accent (ADR-024)." },
+    { "if": { "variant": "accent" }, "max": 0, "per": "repeated",
+      "because": "N cards would render N competing primaries." }
+  ],
+  "rules": [
+    { "case": "accent or neutral on a destructive action",
+      "because": "Weight alone doesn't signal consequence; delete styled as the main CTA trains users to click it.",
+      "do": "variant=danger next to a neutral Cancel (pattern destructive-confirm)." },
+    { "case": "transparent or neutral icon button over an image or video",
+      "because": "No opaque background, so glyph contrast depends on the pixels underneath.",
+      "do": "Reuse the parent's media-overlay parts (CardVertical Favorite/Menu: icon.on-media + halo)." }
+  ]
+}
+```
+
+- Button#4 (raw `style`) → deleted: `validate-layout` style check + `AGENTS.md` grammar.
+- Button#5 (new native-button wrappers default `type="button"`) → `packages/components/AGENTS.md`.
+- Prop combinations from other components → `spec.json` `constraints`, e.g. Accordion#6: `{ "id": "controlled-xor-uncontrolled", "if": { "open": "*" }, "forbid": { "defaultOpen": ["*"] }, "reason": "…", "enforcedBy": [] }`. Empty `enforcedBy` = backlog item in `spec:validate`.
+- "X inside X" (Card#0 etc.) → `composition.nests: false`, no prose.
+- `notFor.instead` validated against the fixed set by `validate-metadata`; `null` when the alternative is outside the library (native radio, spinner). Note: Button#3's current alternative ("anchor tag styled to match") predates TextLink. The migration should re-check each `instead` against the current set.
+- `/extract-learnings` routing must learn the three destinations (`notFor`, `composition.rules`/`limits`, `spec.constraints`).
+
 ## Rename blast radius (measured 2026-11-10)
 
 27 data files plus about 50 live references outside `.claude/handoff/archive/`:
