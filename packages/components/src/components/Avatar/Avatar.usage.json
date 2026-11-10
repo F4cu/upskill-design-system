@@ -26,9 +26,9 @@
       ],
       "default": "md",
       "useWhen": {
-        "sm": "24px — compact size for nav bars and inline user references.",
-        "md": "80px — mid-size for cards and secondary profile contexts.",
-        "lg": "128px — profile size for settings pages and user profile headers."
+        "sm": "The signed-in user in the AppHeader, or a person named inline in a metadata line.",
+        "md": "A person on a card or in a secondary profile block, such as a course instructor.",
+        "lg": "The profile photo at the top of a settings or profile page."
       }
     }
   },

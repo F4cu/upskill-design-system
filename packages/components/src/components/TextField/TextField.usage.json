@@ -32,8 +32,8 @@
       ],
       "default": "none",
       "useWhen": {
-        "none": "No icon. Standard text input.",
-        "any IconName": "Renders a decorative icon on the leading (left) side. Use 'search' for search inputs. Icon is aria-hidden."
+        "none": "Most form fields.",
+        "any IconName": "A search field (search) or a field an icon helps identify. Leading icon."
       }
     },
     "size": {
@@ -43,8 +43,8 @@
       ],
       "default": "md",
       "useWhen": {
-        "md": "40px tall. Standard form fields and inline inputs.",
-        "lg": "48px tall. Hero search bars, prominent single-field forms."
+        "md": "Form fields and inline inputs.",
+        "lg": "A hero search bar or a prominent single-field form."
       }
     },
     "shape": {
@@ -54,8 +54,8 @@
       ],
       "default": "square",
       "useWhen": {
-        "square": "Rounded-corner rectangle (border-radius-sm). Default for form fields.",
-        "round": "Pill shape (border-radius-full). Use for search inputs or brand-forward contexts."
+        "square": "Form fields. Small rounded corners.",
+        "round": "Search fields and brand-forward single inputs. Pill shape."
       }
     }
   },

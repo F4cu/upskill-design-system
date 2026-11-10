@@ -27,8 +27,8 @@
       ],
       "default": null,
       "useWhen": {
-        "left": "Chevron-left icon. Navigates to the previous item. Set disabled when at the start of the sequence.",
-        "right": "Chevron-right icon. Navigates to the next item. Set disabled when at the end of the sequence."
+        "left": "Stepping back through a carousel or sequence; set disabled at the start.",
+        "right": "Stepping forward through a carousel or sequence; set disabled at the end."
       }
     }
   },

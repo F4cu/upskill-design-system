@@ -91,13 +91,21 @@ The situation comes first; the one clause after it ("Brand fill.") is there so a
 | "32px circular prev/next navigation button. Uses an Icon chevron internally. direction prop selects left or right. Disabled state: …" | "A circular previous or next control that steps through a carousel or sequence." |
 | "Renders one of 22 inline SVGs from the fixed icon set. Uses currentColor …" | "A glyph from the fixed icon set that takes the color of the surrounding text." |
 
+**Variant lines** (rewritten 2026-11-10). Sizes and CSS were already in the spec's `styles` and the CSS Module, so they were cut, not moved. Two facts moved: TextField's decorative-icon note to `spec.accessibility.notes`, and CardHorizontal's "the parent supplies the dark fill, never `data-theme="dark"`" to a `composition.donts` entry, because the layout writer is the one who has to supply it.
+
+| Option | Before | After |
+|---|---|---|
+| Text `size.body-default` | "Standard body copy. 1rem, regular weight, 1.5 line-height." | "Body copy and descriptions." |
+| ScrollArea `orientation.horizontal` | "overflow-x: auto; overflow-y: hidden. Use with Inline(wrap=false) for horizontally scrollable card rows." | "A row of cards that scrolls sideways; put an Inline with wrap=false inside." |
+| Chip `pressed.false` | "Resting state. Transparent background, subtle text, default border." | "A filter that is off." |
+| Text `color.brand` | "Brand-coloured emphasis; use sparingly for accent text." | "A word or phrase that needs accent emphasis. Brand color." |
+
+The last row shows rule 3: "use sparingly" became the situation that earns the option.
+
 **Lines still waiting for the rewrite** (each flagged by the lint):
 
 | Field | Current text | Problem |
 |---|---|---|
-| Text `size.body-default` | "Standard body copy. 1rem, regular weight, 1.5 line-height." | Sizes belong in the spec |
-| ScrollArea `orientation.horizontal` | "overflow-x: auto; overflow-y: hidden. Use with Inline(wrap=false) …" | CSS, not a situation |
-| ButtonArrow `direction.left` | "Chevron-left icon. Navigates to the previous item." | Describes the component |
 | CardVertical `useWhen` | "Pass progress when the user has started the course …" | A prop instruction (spec `constraints` or prop description) |
 | TextField `useWhen` | "The value is typed, not selected — use Select for predefined option sets" | A wrong pick (`notFor`, `instead: "Select"`) |
 

@@ -27,8 +27,8 @@
       ],
       "default": "horizontal",
       "useWhen": {
-        "horizontal": "overflow-x: auto; overflow-y: hidden. Use with Inline(wrap=false) for horizontally scrollable card rows.",
-        "vertical": "overflow-y: auto; overflow-x: hidden. Use with Stack for vertically scrollable content regions."
+        "horizontal": "A row of cards that scrolls sideways; put an Inline with wrap=false inside.",
+        "vertical": "A fixed-height region whose list scrolls; put a Stack inside."
       }
     }
   },

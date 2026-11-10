@@ -233,7 +233,8 @@
         "key": "Any character",
         "action": "Enters text"
       }
-    ]
+    ],
+    "notes": "The leading icon is decorative: Icon without a label renders aria-hidden, so the label alone names the field."
   },
   "styles": {
     "Root": [

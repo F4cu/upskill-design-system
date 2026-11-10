@@ -28,8 +28,8 @@
       ],
       "default": "md",
       "useWhen": {
-        "sm": "16px — use inside dense UI elements such as tags, badges, or inline metadata.",
-        "md": "24px — default; use alongside body text, in buttons, and as standalone affordances."
+        "sm": "Dense UI: inside badges, tags and metadata lines.",
+        "md": "Next to body text, inside buttons, and on its own as an affordance."
       }
     }
   },

@@ -30,11 +30,11 @@
       ],
       "default": "headline",
       "useWhen": {
-        "title-small": "Card titles, widget headers. 1.125rem semibold.",
-        "subheader": "Section sub-labels or feature callouts. 1.375rem semibold.",
-        "headline": "Primary section headings. 1.625rem semibold.",
-        "headline-serif": "Editorial or feature headings in the serif typeface. 1.75rem medium.",
-        "display": "Hero headlines. 2rem serif, medium weight, tight leading."
+        "title-small": "Titles of cards and widgets.",
+        "subheader": "Sub-labels inside a section, and feature callouts.",
+        "headline": "The heading of a page section.",
+        "headline-serif": "Editorial or feature section headings. Serif typeface.",
+        "display": "The hero headline at the top of a landing page. Large serif."
       }
     },
     "color": {
@@ -46,10 +46,10 @@
       ],
       "default": "default",
       "useWhen": {
-        "default": "Primary heading colour on the page surface.",
-        "subtle": "De-emphasised heading, e.g. a secondary section label.",
-        "brand": "Brand-coloured heading for accent or featured sections.",
-        "inverted": "Primary heading colour on an inverted (dark) surface, e.g. a CTA banner."
+        "default": "Headings on the page's default surface.",
+        "subtle": "A secondary section label that should read below the main headings.",
+        "brand": "A heading in an accent or featured section. Brand color.",
+        "inverted": "Headings on an inverted (dark) surface, such as a CTA banner or footer."
       }
     }
   },

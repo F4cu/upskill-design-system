@@ -30,11 +30,11 @@
       ],
       "default": "body-default",
       "useWhen": {
-        "body-default": "Standard body copy. 1rem, regular weight, 1.5 line-height.",
-        "body-small": "Secondary body text or sidebar content. 0.875rem, 1.4 line-height.",
-        "metadata": "Supporting details such as timestamps, counts, tags. 0.875rem.",
-        "label": "UI labels for form fields and controls. 1rem, bold weight, single line-height.",
-        "inherit": "No typography of its own — font-family/size/weight/line-height inherit from the parent. Use only when nesting Text as=\"span\" inside a Heading (or other typographic ancestor) purely to change color."
+        "body-default": "Body copy and descriptions.",
+        "body-small": "Secondary body text and sidebar content.",
+        "metadata": "Supporting details next to content: timestamps, counts, durations.",
+        "label": "Labels for form fields and controls. Bold.",
+        "inherit": "A span inside a Heading or other styled text that only changes color; typography comes from the parent."
       }
     },
     "color": {
@@ -49,13 +49,13 @@
       ],
       "default": "default",
       "useWhen": {
-        "default": "Primary reading colour on the page surface.",
-        "subtle": "De-emphasised secondary text and supporting metadata.",
-        "brand": "Brand-coloured emphasis; use sparingly for accent text.",
-        "disabled": "Text in a disabled or inactive context.",
-        "inverted": "Primary text colour on an inverted (dark) surface, e.g. a CTA banner or footer.",
-        "inverted-subtle": "De-emphasised text on an inverted (dark) surface.",
-        "accent-inverted": "Accent-coloured emphasis on an inverted (dark) surface."
+        "default": "Body text on the page's default surface.",
+        "subtle": "Secondary text and supporting metadata.",
+        "brand": "A word or phrase that needs accent emphasis. Brand color.",
+        "disabled": "Text in a disabled or inactive control or row.",
+        "inverted": "Body text on an inverted (dark) surface, such as a CTA banner or footer.",
+        "inverted-subtle": "Secondary text and metadata on an inverted (dark) surface.",
+        "accent-inverted": "Accent emphasis on an inverted (dark) surface."
       }
     }
   },

@@ -27,9 +27,9 @@
       ],
       "default": "1/1",
       "useWhen": {
-        "1/1": "Square thumbnail — CardHorizontal and small course slots.",
-        "16/9": "Landscape — video thumbnails, wide course banners, hero images.",
-        "4/5": "Portrait — tall card images in CardVertical."
+        "1/1": "Small course slots and CardHorizontal thumbnails. Square.",
+        "16/9": "Video thumbnails, wide course banners and hero images. Landscape.",
+        "4/5": "Tall card images, as in CardVertical size lg. Portrait."
       }
     }
   },

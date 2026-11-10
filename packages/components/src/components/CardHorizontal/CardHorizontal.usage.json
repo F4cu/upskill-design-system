@@ -32,8 +32,8 @@
       ],
       "default": "default",
       "useWhen": {
-        "default": "Standard light-theme context. Text uses default and subtle color tokens.",
-        "inverted": "Inverted-background context within the light theme (e.g. the dark footer section). Switches the title to Heading color=inverted, metadata to Text color=inverted-subtle, and the badge icon to color.icon.inverted.default. The parent container must supply the dark background via color.background.container.inverted — do NOT use data-theme='dark'. Figma: Variant=inverted."
+        "default": "Cards on the page's default or elevated surface.",
+        "inverted": "Cards in a dark footer or other inverted band. Inverted text; the parent supplies the dark fill."
       }
     }
   },
@@ -51,6 +51,11 @@
         "case": "Placing CardHorizontal in a section whose heading is not an h2 (e.g. directly under the page h1, or inside an h3 subsection)",
         "because": "The title always renders as an h3 (there is no heading-level prop), so any parent heading other than h2 skips or inverts a level in the document outline.",
         "instead": "Put CardHorizontal lists inside a section headed by an h2. If a layout needs another level, raise it as a component change (a titleAs prop) instead of wrapping or restyling the card."
+      },
+      {
+        "case": "variant inverted without a dark parent, or inside data-theme=\"dark\"",
+        "because": "The card draws no background; its inverted text assumes the parent's inverted fill, and data-theme=\"dark\" switches every token in the subtree instead.",
+        "instead": "Place it in a Box with background=\"inverted\", as in the footer-recommendations pattern."
       }
     ],
     "patterns": [

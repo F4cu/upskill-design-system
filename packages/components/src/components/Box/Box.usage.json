@@ -29,10 +29,10 @@
       ],
       "default": null,
       "useWhen": {
-        "canvas": "Flat surface matching the page background — same fill as Card's default variant, for a Box standing in as a plain surface or as the page's own wrapper.",
-        "inverted": "Dark surface for CTA banners, footers, or other sections that invert against the page's default theme.",
-        "transparent": "Explicitly no fill — lets the parent surface show through.",
-        "elevated": "Raised surface with a token-backed radius, for a Box standing in as a card-like region (e.g. Storybook demo chrome) before Card is warranted."
+        "canvas": "A Box standing in as a plain surface or as the page's own wrapper. Same fill as Card default.",
+        "inverted": "A CTA banner, footer or other section set against the page theme. Dark fill.",
+        "transparent": "A Box that only adds padding or a landmark, so the parent surface shows through.",
+        "elevated": "A card-like region where Card doesn't fit, such as Storybook demo chrome. Raised fill, rounded corners."
       }
     },
     "borderTop": {
@@ -42,8 +42,8 @@
       ],
       "default": null,
       "useWhen": {
-        "default": "A subtle top border for separating a Box from the content above it on the page's default theme.",
-        "inverted": "A top border for separating an inverted-background Box (e.g. a dark footer) from the section above it."
+        "default": "A section that needs a line between it and the content above it.",
+        "inverted": "An inverted section, such as a dark footer, that needs a line above it."
       }
     }
   },

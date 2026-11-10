@@ -36,8 +36,8 @@
       ],
       "default": "false",
       "useWhen": {
-        "false": "Resting state. Transparent background, subtle text, default border.",
-        "true": "Active selection. Brand border and brand text to signal the active filter."
+        "false": "A filter that is off.",
+        "true": "A filter that is on. Brand border and text."
       }
     }
   },

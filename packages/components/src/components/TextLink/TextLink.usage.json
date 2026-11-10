@@ -29,10 +29,10 @@
       ],
       "default": "body-default",
       "useWhen": {
-        "body-default": "Standard inline link within body copy.",
-        "body-small": "Link within smaller supporting text (e.g. captions, footnotes).",
-        "metadata": "Link in metadata lines (e.g. lesson count, duration rows).",
-        "label": "Link in label-sized UI text (e.g. form helper text)."
+        "body-default": "A link inside body copy.",
+        "body-small": "A link inside small supporting text, such as captions or footnotes.",
+        "metadata": "A link inside a metadata line, such as an author name.",
+        "label": "A link inside label-sized UI text, such as form helper text."
       }
     }
   },

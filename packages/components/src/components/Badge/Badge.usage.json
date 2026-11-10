@@ -37,8 +37,8 @@
       ],
       "default": "outline",
       "useWhen": {
-        "outline": "Bordered pill on transparent background. Use on plain surfaces where a fill would compete with surrounding content.",
-        "filled": "Neutral-subtlest background, no visible border. Use on elevated or busy surfaces where a fill reads more clearly than a thin border."
+        "outline": "Plain surfaces, where a fill would compete with the content around it. Border only.",
+        "filled": "Elevated or busy surfaces, where a thin border would get lost. Subtle fill, no border."
       }
     }
   },

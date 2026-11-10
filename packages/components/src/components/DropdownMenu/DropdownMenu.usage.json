@@ -25,8 +25,8 @@
       ],
       "default": "menu",
       "useWhen": {
-        "menu": "A contextual action menu, such as the AppHeader user menu. Items get role=menuitem.",
-        "listbox": "The options list of a custom Select. Items get role=option with aria-selected."
+        "menu": "A menu of actions, such as the AppHeader user menu.",
+        "listbox": "The options of a custom Select."
       }
     }
   },
