@@ -1,7 +1,7 @@
 {
   "component": {
     "name": "Breadcrumb",
-    "type": "display",
+    "type": "interactive",
     "status": "beta",
     "description": "A trail of links from the root to the current page, which ends on the unlinked current page.",
     "figmaNodeId": "86:3211"

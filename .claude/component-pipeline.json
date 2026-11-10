@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-10T13:17:29.828Z",
+  "generatedAt": "2026-11-10T17:41:08.201Z",
   "components": [
     {
       "name": "Accordion",
@@ -162,7 +162,7 @@
     },
     {
       "name": "Breadcrumb",
-      "type": "display",
+      "type": "interactive",
       "maturity": "beta",
       "implementation": "in review",
       "substate": null,
