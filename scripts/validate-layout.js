@@ -13,6 +13,7 @@
 // landmark/main/section/nav checks, which assume a full route page) — used to
 // gate component .stories.tsx files, which share the same inline-style ban
 // (AGENTS.md "Components" / packages/components/AGENTS.md) but aren't pages.
+// A directory scan skips *.test.tsx files: they hold deliberate violations.
 
 import fs from 'fs'
 import path from 'path'
@@ -516,6 +517,8 @@ function collectTsxFiles(target) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name)
       if (entry.isDirectory()) recurse(full)
+      // Test files hold deliberate violations (@ts-expect-error cases), not layouts or stories.
+      else if (/\.test\.[jt]sx$/.test(entry.name)) continue
       else if (entry.name.endsWith('.tsx') || entry.name.endsWith('.jsx')) results.push(full)
     }
   }
