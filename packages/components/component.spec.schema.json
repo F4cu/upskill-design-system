@@ -50,7 +50,17 @@
             "description": "Condition under which an optional part renders, in prop terms.",
             "type": "string"
           },
-          "notes": { "type": "string" }
+          "notes": { "type": "string" },
+          "builtOnPart": {
+            "description": "For a part rendered inside its parent's builtOn component (not by this component): that component's own anatomy name for it, e.g. Icon. Located as [data-part=<parent>] [data-part=<builtOnPart>] (ADR-030).",
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z0-9]*$"
+          },
+          "notRendered": {
+            "description": "Why no anatomyExamples entry can render this part (it appears only after interaction, or has no element). The render test skips it; the docs overlay lists it as not shown.",
+            "type": "string",
+            "minLength": 1
+          }
         },
         "additionalProperties": false
       }

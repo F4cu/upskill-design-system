@@ -19,6 +19,7 @@ sources:
 # rewritten 2026-10-12: token checking moved from metadata tokens.* to spec styles via spec:validate (ADR-001/027 amendments 2026-10-11)
 # sources 2026-10-12: declares scripts/validate-spec.js and ADR-027, since the token check this page describes moved to spec:validate
 # clock reset 2026-11-10: validate-spec.js checks anatomyExamples and decision ADR refs (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
+# 2026-11-10: gate list gains anatomy:test; validate-spec.js checks builtOnPart (ADR-027/030 amendments)
 ---
 # Taming non-determinism
 
@@ -59,7 +60,7 @@ The generation moments cannot invent freely; each is boxed by a machine-checkabl
 
 ### Move 3 — Verify the output
 
-Whatever variance survives moves 1 and 2 is caught before it reaches human review. The [deterministic gate](08-glossary.md) — `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test`, plus `patterns:generate` staleness — is built entirely from *deterministic assertions*: exact, mechanical pass/fail checks with no judgment involved, run identically in the loop and in `components-check.yml` on every PR ([Component lifecycle](02-component-lifecycle.md)). If it fails, the loop bounces back to the scaffold stage rather than pushing the output forward ([ADR-007](decisions/007-verified-component-loop.md)). `layout:validate` plays the same role for layout files, and screenshot baselines ([ADR-019](decisions/019-screenshot-baseline-visual-regression.md)) add a perceptual diff so an unintended pixel shift is caught mechanically too.
+Whatever variance survives moves 1 and 2 is caught before it reaches human review. The [deterministic gate](08-glossary.md) — `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test`, plus `patterns:generate` staleness — is built entirely from *deterministic assertions*: exact, mechanical pass/fail checks with no judgment involved, run identically in the loop and in `components-check.yml` on every PR ([Component lifecycle](02-component-lifecycle.md)). If it fails, the loop bounces back to the scaffold stage rather than pushing the output forward ([ADR-007](decisions/007-verified-component-loop.md)). `layout:validate` plays the same role for layout files, and screenshot baselines ([ADR-019](decisions/019-screenshot-baseline-visual-regression.md)) add a perceptual diff so an unintended pixel shift is caught mechanically too.
 
 ## Where determinism ends — and why that's the point
 

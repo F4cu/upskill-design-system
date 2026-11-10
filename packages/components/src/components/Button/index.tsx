@@ -1,3 +1,4 @@
+import { Children } from 'react'
 import type { ButtonHTMLAttributes } from 'react'
 import { Icon } from '../Icon'
 import type { IconName } from '../Icon'
@@ -53,12 +54,13 @@ export function Button({
   return (
     <button
       type="button"
+      data-part="Root"
       className={[styles.button, styles[variant], styles[size], shape && styles[shape], className].filter(Boolean).join(' ')}
       {...rest}
     >
-      {icon && <Icon name={icon} size={iconSize} />}
-      {!shape && children}
-      {!shape && trailingIcon && <Icon name={trailingIcon} size={iconSize} />}
+      {icon && <Icon name={icon} size={iconSize} data-part="Icon" />}
+      {!shape && Children.toArray(children).length > 0 && <span data-part="Label">{children}</span>}
+      {!shape && trailingIcon && <Icon name={trailingIcon} size={iconSize} data-part="TrailingIcon" />}
     </button>
   )
 }

@@ -261,3 +261,7 @@ ADR-030 renders specs as docs pages and checks them against Figma. Three optiona
 - Every `adr` must have a file in `docs/decisions/`.
 
 It doesn't check that the examples cover every part. Rendering is the render test's job.
+
+Two optional anatomy fields followed the same day with the `data-part` markers (ADR-030 amendment "data-part markers"):
+- `builtOnPart` names the inner component's own part, for a part rendered inside its parent's `builtOn` component. For example, CardVertical's `FavoriteGlyph` is Button's `Icon`. `spec:validate` checks that the name exists in that component's anatomy.
+- `notRendered` gives the reason no example can render a part, such as CardVertical's `MenuPanel`.

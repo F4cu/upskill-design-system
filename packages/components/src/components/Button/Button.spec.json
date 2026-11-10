@@ -19,11 +19,11 @@
     },
     {
       "name": "Label",
-      "element": "text",
+      "element": "span",
       "role": "Accessible name of the Root",
       "required": false,
       "when": "shape is unset",
-      "notes": "Bare children inside the button; not wrapped in Text, since the Root sets the type styles. In icon-only mode the accessible name comes from aria-label instead."
+      "notes": "Children wrapped in a plain span that carries the part marker; not wrapped in Text, since the Root sets the type styles. Rendered only when children are present. In icon-only mode the accessible name comes from aria-label instead."
     },
     {
       "name": "TrailingIcon",
@@ -34,6 +34,9 @@
       "when": "trailingIcon is set and shape is unset",
       "notes": "Same size and color rules as Icon."
     }
+  ],
+  "anatomyExamples": [
+    { "props": { "icon": "plus", "trailingIcon": "chevron-down", "children": "Add item" } }
   ],
   "props": {
     "variant": {

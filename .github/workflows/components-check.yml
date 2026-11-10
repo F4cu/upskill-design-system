@@ -71,6 +71,9 @@ jobs:
       - name: Story axe sweep (every story, issue #72)
         run: npm run a11y:stories
 
+      - name: Anatomy render test (data-part, ADR-030)
+        run: npm run anatomy:test
+
       - name: Screenshot baseline check (ADR-019 — advisory while baselines are macOS-generated)
         continue-on-error: true
         env:

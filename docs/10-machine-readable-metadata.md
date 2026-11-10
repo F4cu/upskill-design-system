@@ -110,6 +110,10 @@ Three optional spec sections serve the generated docs pages and the Figma parity
 
 `spec:validate` checks that example props and patterns exist, and that every `adr` a decision cites has a file in `docs/decisions/` ([ADR-027](decisions/027-component-spec-file.md) amendment 2026-11-10).
 
+Each anatomy part is marked in the rendered HTML with `data-part="<name>"`, and `npm run anatomy:test` renders the examples to check that every part is marked. Two optional anatomy fields cover the exceptions:
+- `builtOnPart` handles a part rendered inside a nested library component. CardVertical's `FavoriteGlyph` is Button's own `Icon` part.
+- `notRendered` gives the reason no example can render a part. CardVertical's `MenuPanel` only appears after the menu opens.
+
 `scripts/validate-layout.js` then uses the same block to check layouts that compose a component from its parts.
 
 `.claude/component-patterns.json`'s top level is `{ generatedFrom, architecturalStyle, patterns, drift }` — `patterns` keyed by the 10 buckets (`controlled-selection`, `disclosure`, `navigation`, `status-indicator`, `toggle-button`, `form-field`, `action-trigger`, `layout-primitive`, `static-display`, `content-stepper`), each holding a `description` and an `implementedBy` list. `architecturalStyle` is `flat-props` everywhere except components that attach parts (ADR-023): their own entry carries `architecturalStyle: "compound"` and their part names, and the top-level string lists them. The scanner reads `<CardVertical.Body>` as a use of `CardVertical`, never as a component of its own. One real `drift[]` entry:

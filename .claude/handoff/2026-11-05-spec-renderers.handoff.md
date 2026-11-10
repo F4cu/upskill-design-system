@@ -23,7 +23,7 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 **Contract prerequisites** (decisions 9 and 12)
 - [x] Spec schema: optional `anatomyExamples` (a list of props-or-pattern examples, see decision 9), `decisions[]`, `ruledOut[]`; `spec:validate` checks example props/patterns and that `adr` refs resolve; ADR-027 amendment and a line in `packages/components/AGENTS.md` (2026-11-10)
 - [x] Backfill `decisions[]` / `ruledOut[]` for Button and CardVertical; the other 25 stay without the fields (a `TODO` string fails `spec:validate`) and show "none recorded" until backfilled (2026-11-10)
-- [ ] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test; fill their `anatomyExamples`; decide the exemption for parts no example can render (CardVertical `MenuPanel` opens on interaction, TextField `Placeholder` is a pseudo-element)
+- [x] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test (`npm run anatomy:test`, in CI); their `anatomyExamples` filled; `builtOnPart` for parts inside a nested component, `notRendered` for parts no example renders (`MenuPanel`; TextField `Placeholder` in A3); pattern examples render the PascalCase-named story (2026-11-10, ADR-030 amendment "data-part markers")
 
 **Shared input**
 - [ ] Phase 0: `npm run spec:bundle`, byte-identical across two runs, fails on an unresolved token path
@@ -34,7 +34,7 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 - [ ] Measurement: traceability count on the Button and CardVertical pages
 - [ ] Phase A2 spike: `@astrojs/react` in Starlight, SVG anatomy overlay; record whether the overlay or the Mermaid fallback ships
 - [ ] Phase A2: live default example, patterns, rendered states
-- [ ] Phase A3: all 27 components (`data-part` + render test on all), `00-start-here.md` link, reverse links on ADR pages
+- [ ] Phase A3: all 27 components (`data-part` + `anatomyExamples` on all; `packages/components/AGENTS.md` is at 15990/16000 bytes, so trim or raise the budget first), `00-start-here.md` link, reverse links on ADR pages
 
 **Part B: Figma parity plugin**
 - [ ] Phase B0 spike: dev plugin loads in Figma desktop (manual); Plugin API access confirmed on the current plan; Button/CardVertical layer names checked against `anatomy[]`

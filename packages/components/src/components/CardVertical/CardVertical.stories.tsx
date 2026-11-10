@@ -102,7 +102,7 @@ export const Placeholder: Story = {
   },
 }
 
-export const WithFavorite: Story = {
+export const FavoriteSaved: Story = {
   args: {
     title: 'Designing Calm Interfaces',
     duration: '9 Hours',
@@ -112,7 +112,7 @@ export const WithFavorite: Story = {
   },
 }
 
-export const WithMenu: Story = {
+export const OverflowMenu: Story = {
   args: {
     title: 'Storytelling with Data',
     duration: '4 Hours',

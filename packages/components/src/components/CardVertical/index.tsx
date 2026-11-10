@@ -40,6 +40,7 @@ function Root({ size = 'lg', className, children, ...rest }: CardVerticalRootPro
     <CardVerticalContext.Provider value={{ size, titleId }}>
       <div
         role="article"
+        data-part="Root"
         aria-labelledby={titleId}
         className={[styles.card, styles[size], className].filter(Boolean).join(' ')}
         {...rest}
@@ -63,12 +64,13 @@ function Media({ src, alt = '', children }: CardVerticalMediaProps) {
     throw new Error('CardVertical.Media accepts at most one CardVertical.Action')
   }
   return (
-    <div className={styles.media}>
+    <div data-part="Media" className={styles.media}>
       <Image
         src={src}
         alt={alt}
         aspectRatio={size === 'lg' ? '4/5' : '3/2'}
         className={styles.thumbnail}
+        data-part="Thumbnail"
       />
       {children}
     </div>
@@ -86,7 +88,7 @@ function Action({ children }: CardVerticalActionProps) {
   if (items.length !== 1 || !isValidElement(only) || (only.type !== Favorite && only.type !== Menu)) {
     throw new Error('CardVertical.Action accepts exactly one CardVertical.Favorite or CardVertical.Menu')
   }
-  return <div className={styles.action}>{children}</div>
+  return <div data-part="Action" className={styles.action}>{children}</div>
 }
 
 export type CardVerticalFavoriteProps = {
@@ -118,6 +120,7 @@ function Favorite({ pressed, defaultPressed = false, onPressedChange }: CardVert
       aria-labelledby={`${id} ${titleId}`}
       aria-pressed={isPressed}
       className={[styles.onMedia, styles.favorite].join(' ')}
+      data-part="Favorite"
       onClick={handleClick}
     />
   )
@@ -140,7 +143,7 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
   }
 
   return (
-    <div ref={wrapperRef} className={styles.menu} onBlur={onBlur}>
+    <div ref={wrapperRef} data-part="Menu" className={styles.menu} onBlur={onBlur}>
       <Button
         id={id}
         variant="transparent"
@@ -148,6 +151,7 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
         shape="round"
         icon="more-vertical"
         className={styles.onMedia}
+        data-part="MenuTrigger"
         aria-label="More options"
         aria-labelledby={`${id} ${titleId}`}
         aria-haspopup="menu"
@@ -163,6 +167,7 @@ function Menu({ items, onSelect }: CardVerticalMenuProps) {
         aria-labelledby={`${id} ${titleId}`}
         onSelect={handleSelect}
         className={styles.menuPanel}
+        data-part="MenuPanel"
       />
     </div>
   )
@@ -174,7 +179,7 @@ export type CardVerticalProgressProps = {
 
 function Progress({ value }: CardVerticalProgressProps) {
   const { titleId } = useCardVertical('Progress')
-  return <ProgressBar value={value} aria-labelledby={titleId} />
+  return <ProgressBar value={value} aria-labelledby={titleId} data-part="Progress" />
 }
 
 export type CardVerticalBodyProps = {
@@ -183,7 +188,7 @@ export type CardVerticalBodyProps = {
 
 function Body({ children }: CardVerticalBodyProps) {
   useCardVertical('Body')
-  return <Stack gap="sm">{children}</Stack>
+  return <Stack gap="sm" data-part="Body">{children}</Stack>
 }
 
 export type CardVerticalTitleProps = {
@@ -194,7 +199,7 @@ export type CardVerticalTitleProps = {
 function Title({ as = 'h3', children }: CardVerticalTitleProps) {
   const { titleId } = useCardVertical('Title')
   return (
-    <Heading as={as} id={titleId} size="headline-serif" className={styles.title}>
+    <Heading as={as} id={titleId} size="headline-serif" className={styles.title} data-part="Title">
       {children}
     </Heading>
   )
@@ -206,7 +211,7 @@ export type CardVerticalMetaProps = {
 
 function Meta({ children }: CardVerticalMetaProps) {
   useCardVertical('Meta')
-  return <Inline gap="sm" wrap align="center">{children}</Inline>
+  return <Inline gap="sm" wrap align="center" data-part="Meta">{children}</Inline>
 }
 
 export type CardVerticalDurationProps = {
@@ -215,15 +220,15 @@ export type CardVerticalDurationProps = {
 
 function Duration({ children }: CardVerticalDurationProps) {
   useCardVertical('Duration')
-  return <Text as="span" size="metadata" color="subtle">{children}</Text>
+  return <Text as="span" size="metadata" color="subtle" data-part="Duration">{children}</Text>
 }
 
 function Certified() {
   useCardVertical('Certified')
   return (
-    <span className={styles.badge}>
-      <Icon name="badge-check" size="sm" />
-      <Text as="span" size="metadata" color="subtle">Certified</Text>
+    <span data-part="Certified" className={styles.badge}>
+      <Icon name="badge-check" size="sm" data-part="CertifiedIcon" />
+      <Text as="span" size="metadata" color="subtle" data-part="CertifiedLabel">Certified</Text>
     </span>
   )
 }
@@ -231,9 +236,9 @@ function Certified() {
 function Completed() {
   useCardVertical('Completed')
   return (
-    <span className={styles.badge}>
-      <Icon name="check" size="sm" />
-      <Text as="span" size="metadata" color="subtle">Completed</Text>
+    <span data-part="Completed" className={styles.badge}>
+      <Icon name="check" size="sm" data-part="CompletedIcon" />
+      <Text as="span" size="metadata" color="subtle" data-part="CompletedLabel">Completed</Text>
     </span>
   )
 }

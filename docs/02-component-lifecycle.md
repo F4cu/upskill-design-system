@@ -26,6 +26,7 @@ sources:
 # sources 2026-10-12: declares ADR-027, which the spec-rollout rewrite of the schema section now describes
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); this page describes lifecycle stages, not Figma property mappings, still accurate
 # clock reset 2026-11-10: ADR-027 amendment adds optional spec sections (anatomyExamples, decisions, ruledOut); this page describes the metadata schema and the gate, not spec sections, still accurate
+# 2026-11-10: gate list gains anatomy:test (ADR-030 amendment); ADR-027 amendment adds anatomy builtOnPart/notRendered, which this page doesn't describe
 ---
 # Component lifecycle
 
@@ -92,7 +93,7 @@ The metadata schema (`packages/components/component.schema.json`) requires four 
 
 The fixed component scope grows only by explicit phase decision (see `AGENTS.md` "Components"): the Phase 4–5 core (`Box`, `Stack`, `Inline`, `Text`, `Heading`, `Icon`, `Button`, `TextField`, `Select`, `Checkbox`, `Card`), then 5b (`Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`), 5c (`CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`), and 5d (`Accordion`, `Badge`, the Button `ghost` variant — renamed `transparent` in ADR-024 — the `useSlider` hook). New components enter through the verified `/add-component` loop or the `/component-scaffold` moment — see [Agentic moments](06-agentic-moments.md).
 
-After any scaffold or edit, the deterministic gate must pass with no manual fixes: `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test`, plus a render check in both themes in Storybook. `components-check.yml` runs the same gate on every PR.
+After any scaffold or edit, the deterministic gate must pass with no manual fixes: `npm run metadata:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run anatomy:test`, plus a render check in both themes in Storybook. `components-check.yml` runs the same gate on every PR.
 
 ## Diagram
 

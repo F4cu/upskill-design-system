@@ -6,11 +6,12 @@ import react from '@vitejs/plugin-react'
 // coverage that grows with each new story, no per-component test file. Kept in
 // jsdom deliberately: ADR-008 rejected a real-browser runner, so layout-
 // dependent rules (color-contrast) stay with tokens:contrast-check.
+// Also runs the anatomy render test (ADR-030), which renders stories too.
 export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts', './vitest.stories.setup.ts'],
-    include: ['src/a11y-stories.sweep.test.tsx'],
+    include: ['src/a11y-stories.sweep.test.tsx', 'src/anatomy.test.tsx'],
   },
 })

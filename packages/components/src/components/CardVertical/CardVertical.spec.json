@@ -52,6 +52,7 @@
       "builtOn": "Icon",
       "role": "presentation",
       "required": true,
+      "builtOnPart": "Icon",
       "notes": "Button's Icon part. Carries the on-media halo."
     },
     {
@@ -81,6 +82,7 @@
       "builtOn": "Icon",
       "role": "presentation",
       "required": true,
+      "builtOnPart": "Icon",
       "notes": "Button's Icon part. Carries the on-media halo."
     },
     {
@@ -92,7 +94,8 @@
       "action": "Selecting an item calls onSelect, closes the menu and returns focus to MenuTrigger.",
       "required": false,
       "when": "the menu is open",
-      "notes": "Opens below the trigger, right-aligned."
+      "notes": "Opens below the trigger, right-aligned.",
+      "notRendered": "DropdownMenu renders nothing until the trigger opens it, and Menu has no open prop. Covered by CardVertical.a11y.test.tsx."
     },
     {
       "name": "Progress",
@@ -196,6 +199,11 @@
       "required": true,
       "notes": "Fixed text 'Completed'."
     }
+  ],
+  "anatomyExamples": [
+    { "props": { "title": "Creative Acts for Curious People", "duration": "12 Hours", "certified": true, "progress": 100 } },
+    { "pattern": "favorite-saved" },
+    { "pattern": "overflow-menu" }
   ],
   "props": {
     "thumbnailSrc": {

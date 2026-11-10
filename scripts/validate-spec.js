@@ -12,6 +12,7 @@
 //     composition.parts entry appears in the spec.
 //   - anatomyExamples, decisions (ADR-030): example props are root spec props
 //     with valid options, example patterns are metadata usage.patterns names,
+//     every builtOnPart is an anatomy part of the parent's builtOn component,
 //     and every decision's adr has a file in docs/decisions/.
 // A string or key starting with TODO (left by spec:generate) fails the check.
 // Every component in the repo must have a spec (ADR-027); --components-dir checks only
@@ -111,6 +112,14 @@ for (const { name, file } of specs) {
     const at = `anatomy["${part.name}"]`;
     if (part.builtOn && !COMPONENT_NAMES.has(part.builtOn)) errors.push(`${at}.builtOn: "${part.builtOn}" is not a component`);
     if (part.parent && !partNames.includes(part.parent)) errors.push(`${at}.parent: "${part.parent}" is not an anatomy part`);
+    if (part.builtOnPart) {
+      const host = spec.anatomy.find((p) => p.name === part.parent)?.builtOn;
+      const hostSpec = host && path.join(COMPONENTS_DIR, host, `${host}.spec.json`);
+      if (!host) errors.push(`${at}.builtOnPart: the parent part has no builtOn component`);
+      else if (!JSON.parse(fs.readFileSync(hostSpec, "utf8")).anatomy.some((p) => p.name === part.builtOnPart)) {
+        errors.push(`${at}.builtOnPart: "${part.builtOnPart}" is not an anatomy part of ${host}`);
+      }
+    }
   }
   for (const part of metadata.composition?.parts ?? []) {
     const entry = spec.anatomy.find((p) => p.name === part.name);

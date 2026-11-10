@@ -44,6 +44,7 @@ sources:
 # clock reset 2026-10-12: packages/components/AGENTS.md gate line adds spec:validate and its a11y-coverage parenthesis is fixed; the Deterministic gate entry already lists spec:validate, still accurate
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value) and /component-scaffold spec-template wording (every component has a spec since the ADR-027 backfill); no new term, Scaffold and Component spec entries still accurate
 # 2026-11-10: Component spec entry mentions the optional decisions and ruledOut sections (ADR-027 amendment); packages/components AGENTS.md ruledOut line + contrast aside shortened
+# 2026-11-10: gate list gains anatomy:test (data-part markers, ADR-030 amendment); packages/components AGENTS.md part-marker rule
 ---
 # Glossary
 
@@ -291,7 +292,7 @@ The builder's blueprint each component ships beside its metadata — a `<Name>.s
 The amount of information an AI can hold and reason over at once — think of it as working memory. It has a hard limit. This is why this repo uses frozen snapshots: instead of streaming raw Figma or Airtable data into an agent mid-task, the relevant information is pre-written to a small file (`STATUS_QUO.md`, `.claude/handoff/runs/<Name>.snapshot.json`) that the agent reads. Less data in context means more room for reasoning, and cheaper, faster runs.
 
 **Deterministic gate**
-A fixed set of automated checks that must pass before agent-written code is allowed to proceed to human review. In this repo the gate is: `npm run metadata:validate` + `npm run typecheck` + `npm run build` + `npm run spec:validate` + `npm run a11y:coverage` + `npm run a11y:test` + `npm run patterns:generate`. "Deterministic" means the result is always the same for the same input — no judgment involved, just pass or fail. If the gate fails, the loop bounces back to the scaffold stage rather than pushing broken code forward.
+A fixed set of automated checks that must pass before agent-written code is allowed to proceed to human review. In this repo the gate is: `npm run metadata:validate` + `npm run typecheck` + `npm run build` + `npm run spec:validate` + `npm run a11y:coverage` + `npm run a11y:test` + `npm run anatomy:test` + `npm run patterns:generate`. "Deterministic" means the result is always the same for the same input — no judgment involved, just pass or fail. If the gate fails, the loop bounces back to the scaffold stage rather than pushing broken code forward.
 
 **Frozen snapshot**
 A committed file that captures the state of an external system at a point in time, so agents can read it without making a live API call. In this repo: `airtable-governance.json` (Airtable state), `token-usage.json` (repo scan), `figma-variables.json` (Figma variables), `.claude/component-signoff.json` (human sign-off pulled from Airtable), `.claude/component-pipeline.json` (per-component pipeline stage), `.claude/component-patterns.json` (cross-component pattern aggregate), and `.claude/STATUS_QUO.md` (aggregate of the above). Regenerated manually before a loop run with `npm run sense`. Frozen snapshots keep agents fast, cheap, and immune to rate limits during a task.
