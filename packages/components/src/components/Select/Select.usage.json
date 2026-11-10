@@ -8,8 +8,7 @@
   },
   "useWhen": [
     "The user must pick exactly one value from a known, finite set of options",
-    "The option list is too long for radio buttons (more than 4–5 options)",
-    "Mobile usability is a priority — native selects open the platform picker"
+    "The option list is too long for radio buttons (more than 4–5 options)"
   ],
   "notFor": [
     {
