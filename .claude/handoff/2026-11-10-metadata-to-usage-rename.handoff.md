@@ -17,7 +17,7 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 - [x] Step 2: ADR-001 amendment, note in ADR-027 (2026-11-10, `deb5b6d`)
 - [x] Step 3: `git mv` the 27 files, migrate fields, `component.usage.schema.json` + `usage:validate` (2026-11-10, `9c7e057`)
 - [x] Step 4: live references updated: scripts, docs site, CI, agent context, docs (2026-11-10, `9c7e057`)
-- [ ] Step 5: full gate set + `lint` + `claudemd:check` + `docs:check` + `sense`. No passing run recorded: the rename went straight to `main`, and `components-check.yml` runs on PRs only
+- [x] Step 5: full gate set + `lint` + `claudemd:check` + `docs:check` + `sense`, all pass, run locally on `main` (2026-11-10, at `117271b`). The rename went straight to `main` and `components-check.yml` runs on PRs only, so this local run is the record
 - [x] ~~Step 6: re-run the pattern-accuracy harness~~ Not possible: frozen at `044d28f`
 
 **Rename follow-ups** (step 7)
