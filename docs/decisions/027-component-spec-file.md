@@ -265,3 +265,12 @@ It doesn't check that the examples cover every part. Rendering is the render tes
 Two optional anatomy fields followed the same day with the `data-part` markers (ADR-030 amendment "data-part markers"):
 - `builtOnPart` names the inner component's own part, for a part rendered inside its parent's `builtOn` component. For example, CardVertical's `FavoriteGlyph` is Button's `Icon`. `spec:validate` checks that the name exists in that component's anatomy.
 - `notRendered` gives the reason no example can render a part, such as CardVertical's `MenuPanel`.
+
+## Amendment (2026-11-10) — The metadata file becomes `usage.json`; constraints take the call-site prop rules
+
+ADR-001's amendment of this date renames `<Name>.metadata.json` to `<Name>.usage.json` and splits its anti-patterns by reader. Two effects on the spec:
+
+- **`constraints` takes the call-site prop rules** that were metadata anti-patterns: prop combinations (Accordion `open` with `defaultOpen`, CardHorizontal `progress` with `variant="inverted"`) and required props (`label` on form controls and ProgressBar). Content-format rules (CardHorizontal's "don't type `·`") go to the prop's description. Build rules (Accordion's always-mounted panel, DropdownMenu focus handling) go to `decisions` or `accessibility.notes`. The `constraints` description ("contextual misuse stays in metadata") now reads "in `usage.json` `composition.rules`".
+- **`/layout-generation` reads `spec.constraints`** as well as `usage.json`. That makes `constraints` the one spec section with a layout reader, so it stays small and checkable: an entry the validator can't enforce is reported as backlog, as before.
+
+`anatomyExamples` entries of the form `{ "pattern": "<name>" }` now refer to `patterns` at the top level of `usage.json`, not `usage.patterns` in the metadata.

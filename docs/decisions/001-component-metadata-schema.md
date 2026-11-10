@@ -4,7 +4,7 @@ title: "ADR-001 — Component Metadata Schema for Machine-Readable Design System
 # ADR-001 — Component Metadata Schema for Machine-Readable Design System
 
 **Date:** 2026-06-11
-**Amended:** 2026-10-11
+**Amended:** 2026-11-10
 **Status:** `accepted`
 
 ## Context
@@ -125,3 +125,58 @@ The earlier amendment of this date kept the three sections in metadata for compo
 - The metadata that `/layout-generation` reads for all 27 components went from 151 KB to 113 KB (−25%).
 - Of the 27 token lists, one changed when derived from the specs: Avatar had listed `size.avatar.sm` and `size.avatar.md`, which only `index.tsx` reads. Its spec now states them as `size` rules, so nothing is lost.
 - The 2026-10-07 rule that `tokens` lists only what the component itself reads holds by construction for all components now. There is nothing to hand-write and nothing to keep in step.
+
+## Amendment (2026-11-10) — `metadata.json` becomes `usage.json`, relabelled around composition
+
+Since ADR-027 moved the builder sections to `<Name>.spec.json`, the metadata file only holds what `/layout-generation` reads to choose and combine components, for all 27 components on every run. A schema audit (handoff `2026-11-10-metadata-to-usage-rename`) measured what those 112 KB hold and who reads each field:
+
+- `antiPatterns` is 32% of the bytes. Of the 106 entries, 35 are wrong picks, 30 are composition rules, 37 are rules about setting props at the call site, and 4 are about how the component is built. One list held four kinds of rule with four different readers.
+- Nothing reads `usage.keywords`, `layoutBehavior.displayType` or `layoutBehavior.canNest`. `composedOf` repeats what `generate-pattern-schema.js` already reads from the JSX. `component.category` is read only to test for `"layout"`.
+- `validate-layout` checks `accepts`/`containedBy` for parts only. Its one count rule (accent Button at most once per region, never in a repeated item) is hard-coded, and the same rule is written as prose in three places in Button's metadata.
+
+Other systems were compared on how they document composition (Carbon, GOV.UK patterns, Atlassian primitives, shadcn registry, Custom Elements Manifest, Nathan Curtis on Figma slots). None has a better vocabulary than `accepts`/`containedBy`/`parts`, and the Custom Elements Manifest has no parent/child field at all. What Carbon (one primary per region) and Curtis (`minItems`/`maxItems` per slot) add is **counts as data**.
+
+The system has 27 components with mostly distinct roles, read whole, so choosing a component is rarely the hard part. The hard part is composition: what weight an action gets in a given container, what nests where, which tree a region uses. The file is relabelled to make composition its main content, and renamed for its role. "Usage" covers how to use a component, not only when to pick it. No industry `usage.json` convention was found; the name is chosen for its meaning alone.
+
+**Decision.** One breaking change, in a single migration:
+
+1. **Rename.** `<Name>.metadata.json` → `<Name>.usage.json`, validated by `component.usage.schema.json` (`npm run usage:validate`).
+2. **Flatten `usage`.** Its fields move to the top level, so the file name and an inner key no longer collide.
+3. **Field map.**
+
+   | Old | New |
+   |---|---|
+   | `component.{name, type, status, description, figmaNodeId}` | unchanged; `type` gains `layout` |
+   | `component.category` | dropped (only `"layout"` was read; now `type: "layout"`) |
+   | `usage.keywords` | dropped (no reader) |
+   | `usage.when` | `useWhen`: when to use this component at all. Lines that name a variant move to the option level. |
+   | `usage.patterns` | `patterns`, shape unchanged |
+   | `usage.antiPatterns`, wrong picks | `notFor[]`: `{ case, because, instead }`. `instead` is a fixed-set name, checked by the validator, or `null` when the alternative is outside the library. |
+   | `usage.antiPatterns`, composition | `composition.rules[]`: `{ case, because, do }`, or `composition.limits` / `composition.nests` when the rule can be stated as data |
+   | `usage.antiPatterns`, call-site props | `spec.json` `constraints` (prop combinations, required props) or prop descriptions (content format). Restatements of the inline-style ban are deleted; `validate-layout` enforces it. |
+   | `usage.antiPatterns`, build rules | `spec.json` `decisions` / `accessibility.notes`, or `packages/components/AGENTS.md` when they apply to new components |
+   | `variants.<axis>.purpose` | `variants.<axis>.useWhen`: option → situation first, then at most one clause on how it looks (to map Figma instances). Sizes in px and required props go to the spec. |
+   | `composition.{accepts, containedBy, parts}` | unchanged |
+   | `composition.composedOf` | dropped (derived from the JSX) |
+   | `composition.layoutBehavior.widthBehavior` | `composition.width` |
+   | `composition.layoutBehavior.displayType` | dropped (no reader) |
+   | `composition.layoutBehavior.canNest` | `composition.nests`, enforced by `validate-layout`. Replaces the five "X inside X" anti-patterns. |
+   | — | `composition.limits[]`: `{ if, max, per, because }`, `per` ∈ `region` (nearest `<section>`) · `repeated` (inside a repeated item: CardVertical, CardHorizontal or a `.map()`) · `parent` (direct parent). `validate-layout` checks it, replacing the hard-coded accent rule. |
+
+4. **`/layout-generation` also reads `spec.constraints`.** The call-site prop rules are still read by whoever writes the layout, because that's who sets the props. Constraints are small (2 across all specs today, about 14 more after the move) and checkable; prose anti-patterns are not.
+5. **`/extract-learnings` routes each finding** to `notFor`, `composition.rules`/`limits`, or `spec.constraints`, using the split above.
+
+**Kept on purpose.** `component.status` stays: it is the Maturity axis that ~12 scripts and the Airtable push read (ADR-010), and moving it saves nothing in a whole-file read. `figmaNodeId` stays for now, although `spec.figma.sets[0].nodeId` duplicates it; removing it touches `airtable-sync` and is a separate change.
+
+**Not a revival of `neverPairWith`.** `notFor` names a replacement and a reason for a wrong *pick*. It is not a list of forbidden siblings. Mixing rules (one card type per section) are `composition.rules`, owned by one component and not copied to each one involved.
+
+**Alternatives considered.**
+- *Picking fields from the toolkit-research benchmark* (`pick_when`, aliases, lookalike sections, content and overflow rules). That benchmark is for a 195-entry library searched through a shortlist; here 27 files are read whole. Lookalike `instead` is kept only where real lookalike groups exist (Badge/Chip, the three cards, Button/ButtonArrow/TextLink). Keywords are dropped.
+- *A separate patterns file* (as GOV.UK patterns or shadcn blocks are separate items). A whole-file read gains nothing from that split, so patterns stay per component, with the two duplicated ones (`certified-badge`, `form-field-stack`) kept on one owner.
+- *Moving every non-pick anti-pattern to the spec* (the audit's first proposal). Rejected for call-site rules unless `/layout-generation` reads them there (point 4).
+
+**Consequences.**
+- Every reader of the old names moves in the same change: the validator, `lib.js`, `sense.js`, the docs component page, the commands and the `AGENTS.md` files. Recorded history (archived handoffs, harness results) keeps the old names.
+- The file `/layout-generation` reads shrinks. The audit estimates 30–35%, to be confirmed by measurement. The pattern-accuracy harness is re-run after the migration; a regression blocks the merge.
+- Composition rules that can be counted become checks. Rules that can't stay as prose with a `because`.
+- The "Deliberately excluded" list gains `keywords` (no reader; its intent-matching role never materialised) and `composedOf` (derived).

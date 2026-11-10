@@ -256,7 +256,7 @@ Expected effect: drop keywords, `composedOf`, `displayType`, `category`, `figmaN
 ## Steps when unblocked
 
 1. ~~Audit other design systems → proposed field map (old → new) recorded in this handoff.~~ Done 2026-11-10 (see "Audit"). Open: the three decisions listed there.
-2. Amend ADR-001 (dated amendment: rename + relabel + rationale), and note it in ADR-027.
+2. ~~Amend ADR-001 (dated amendment: rename + relabel + rationale), and note it in ADR-027.~~ Done 2026-11-10. The amendments describe the target state and land before the migration; steps 3–6 make them true.
 3. `git mv` the 27 files; migrate field names with a one-off script; rename the schema/validator if the labels change (`component.usage.schema.json`?, `usage:validate`).
 4. Update the live references above; leave history as is.
 5. Gate: full `AGENTS.md` gate set + `npm run lint` + `npm run claudemd:check` + `npm run docs:check` + `npm run sense`.
