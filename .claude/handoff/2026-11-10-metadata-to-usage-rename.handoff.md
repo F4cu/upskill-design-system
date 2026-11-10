@@ -22,12 +22,12 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 
 **Rename follow-ups** (step 7)
 - [ ] Editorial pass: variant `useWhen` situation-first, descriptions open on a category noun, prop-usage lines out of top-level `useWhen`, px sizes to spec (26 components)
-- [ ] GitHub issue: narrow `BadgeProps` to omit `onClick`/`onKeyDown`
+- [ ] GitHub issue: narrow `BadgeProps` to omit `onClick`/`onKeyDown`, and `IconProps` to omit `color`/`fill`/`stroke`/`role`/`aria-*` (Icon's old rule text noted only `children` is omitted)
 - [ ] The 9 documented-only constraints enforced by `spec:validate`
 
 **Second relabel** (see "Follow-up: second relabel")
 - [x] Naming decisions recorded (2026-11-10, `c5db130`)
-- [ ] Content sweep of the 28 `rules`: Button's two misfiled entries; a11y entries → `spec.accessibility`; build facts → `spec.constraints`
+- [x] Content sweep of the `rules` (2026-11-10, see "Content sweep result")
 - [ ] Schema + `validate-usage.js`: `composition.donts` `{case, because, instead}`, `composition.patterns` with `useWhen`, `notFor.instead` description
 - [ ] Migrate the 27 files (key moves by script) and rewrite each pattern's `useWhen` situation-first
 - [ ] Readers: `validate-spec.js`, docs site component page, `/layout-generation`, `/extract-learnings`, `/component-scaffold`, `packages/components/AGENTS.md`, `docs/10`
@@ -330,6 +330,16 @@ A review of `Button.usage.json` after the rename found the composition labels st
 Open, content not labels: Button's two current `rules` look misfiled. The danger one repeats `variants.variant.useWhen.danger` (move its *because* there, drop the rule); the media-overlay one is a wrong pick (`notFor`, `instead: "CardVertical"`, parts in `note`). Sweep the other 27 rules the same way: the Chip group name, ProgressBar `label` and Icon accessible name are accessibility contract (`spec.accessibility`); DropdownMenu `position:relative` and ScrollArea `max-content` are spec constraints.
 
 Do this together with option D (if chosen) in one migration and one ADR-001 amendment.
+
+### Content sweep result (2026-11-10)
+
+There were 26 entries, not 28. 7 changed, 19 stayed:
+
+- **To `notFor`:** Button's media-overlay rule (`instead: "CardVertical"`), Breadcrumb on root pages (`null`, omit it), Divider as a container border (`null`, use the container's border).
+- **Deleted:** Button's danger rule (`variants.variant.useWhen.danger` already says it), Divider margin and Image raw `<img>` (layout grammar restatements), Image + Avatar (duplicates Image's `notFor` → Avatar).
+- **Trimmed:** CardVertical Media (the implementor sentence moved to a `spec.decisions` entry), CardVertical completion (case narrowed to Badge, since the no-completed-prop part was already a spec decision), Icon color (dropped the type-gap prose; the IconProps narrowing goes with the Badge issue).
+- **Reversed from the plan: a11y entries stay as don'ts.** Chip group name, ProgressBar `label`, Icon accessible name and Heading `as`/`size` are caller obligations, and `/layout-generation` reads only `spec.constraints`. `spec.accessibility` is the component's own contract (builder and reviewer readers), so where the two overlap they're two sides of one fact, not duplicates.
+- **Stayed, issue filed:** DropdownMenu `position:relative` and ScrollArea `max-content` don't fit `spec.constraints` (no prop trigger; the schema routes placement to usage), and the ScrollArea fix needs an inline style the grammar bans. #151 moves both fixes inside the components.
 
 ## Follow-up: pattern trees vs stories (leaning D, raised 2026-11-10)
 

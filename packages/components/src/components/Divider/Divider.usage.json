@@ -10,6 +10,14 @@
     "Separating distinct sections within a Card or page layout",
     "Creating visual breaks between list items or content groups"
   ],
+  "notFor": [
+    {
+      "case": "A top or bottom border on a container",
+      "because": "Card and Box already carry border tokens; a Divider duplicates the boundary.",
+      "instead": null,
+      "note": "Use the container's own border. Divider separates content inside a container."
+    }
+  ],
   "patterns": [
     {
       "name": "section-break",
@@ -37,18 +45,6 @@
       "AppHeader"
     ],
     "width": "fill",
-    "nests": false,
-    "rules": [
-      {
-        "case": "Using Divider as a top or bottom border for a container",
-        "because": "Card and Box have border tokens already. Adding a Divider duplicates the visual boundary.",
-        "do": "Use the container's existing border. Reserve Divider for internal content separation."
-      },
-      {
-        "case": "Adding margin to Divider to control spacing",
-        "because": "Divider has no margin by design — spacing belongs to the parent layout primitive.",
-        "do": "Control spacing with the gap prop on the surrounding Stack."
-      }
-    ]
+    "nests": false
   }
 }

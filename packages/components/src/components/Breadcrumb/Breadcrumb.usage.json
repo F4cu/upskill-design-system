@@ -10,6 +10,14 @@
     "Showing the user's location within the page hierarchy below the AppHeader",
     "Any page more than one level deep from the root that benefits from a back-navigation trail"
   ],
+  "notFor": [
+    {
+      "case": "A page at the top of the hierarchy",
+      "because": "A one-item trail (just the current page) adds no wayfinding.",
+      "instead": null,
+      "note": "Omit the breadcrumb."
+    }
+  ],
   "patterns": [
     {
       "name": "page-header-trail",
@@ -36,13 +44,6 @@
       "AppHeader"
     ],
     "width": "fill",
-    "nests": false,
-    "rules": [
-      {
-        "case": "Using Breadcrumb on root-level pages",
-        "because": "A one-item breadcrumb (just the current page) adds no wayfinding value and clutters the layout.",
-        "do": "Omit Breadcrumb when the page is at the top of the hierarchy."
-      }
-    ]
+    "nests": false
   }
 }

@@ -260,12 +260,12 @@
       },
       {
         "case": "Putting anything other than a single CardVertical.Action inside CardVertical.Media (e.g. a Badge, text or a second overlay button)",
-        "because": "Media is a fixed part whose only optional child is the Action overlay; it throws on anything else. The overlay corner is sized and positioned for one round icon button. Implementors: a fixed part that renders children must narrow and guard them — `children?: ReactNode` silently turns it into an unchecked slot.",
+        "because": "Media is a fixed part whose only optional child is the Action overlay; it throws on anything else. The overlay corner is sized and positioned for one round icon button.",
         "do": "Put extra content in CardVertical.Body/Meta; put a second action into CardVertical.Menu's items."
       },
       {
-        "case": "Adding a completed/status prop to the preset, or using a Badge to signal completion",
-        "because": "Completion is lifecycle state derived from progress (ADR-025); a separate flag can disagree with the bar (completed with progress=40).",
+        "case": "Using a Badge to signal completion",
+        "because": "Completion is derived from progress (ADR-025); a separate badge can disagree with the bar (Completed with progress=40).",
         "do": "Pass progress={100}. Only in a parts composition render <CardVertical.Completed /> inside CardVertical.Meta."
       }
     ]

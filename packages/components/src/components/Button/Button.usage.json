@@ -15,6 +15,12 @@
       "case": "Using Button for navigation that produces a URL",
       "because": "Produces a <button> element; links that change the URL should be <a> elements for correct semantics and accessibility.",
       "instead": "TextLink"
+    },
+    {
+      "case": "An icon button over an image or video thumbnail",
+      "because": "transparent and neutral have no opaque background, so glyph contrast depends on the pixels underneath and can drop to near zero on a light or busy photo; hover tints do not help on touch.",
+      "instead": "CardVertical",
+      "note": "Its Favorite and Menu parts carry the media-overlay treatment (icon.on-media glyph plus halo). Reuse them rather than restyling Button (ADR-009 rule 3)."
     }
   ],
   "patterns": [
@@ -106,18 +112,6 @@
         "max": 0,
         "per": "repeated",
         "because": "A card's lead action isn't the page's lead action; N repeated items would render N competing primaries. Use neutral, then transparent (pattern card-actions)."
-      }
-    ],
-    "rules": [
-      {
-        "case": "Using accent or neutral for a destructive action",
-        "because": "Making delete look like the page's main call to action trains users to click it. Weight alone does not signal consequence.",
-        "do": "Use variant=danger, paired with a neutral Cancel (pattern destructive-confirm)."
-      },
-      {
-        "case": "Using a transparent or neutral icon button over an image or video thumbnail without a contrast treatment",
-        "because": "Both have no opaque background, so the glyph's contrast depends on whatever pixels are underneath and can drop to near zero on a light or busy photo. Hover tints do not fix it: there is no hover on touch, and contrast is judged at rest.",
-        "do": "The media-overlay treatment is owned by the parent molecule (ADR-009 rule 3): CardVertical's Favorite and Menu render variant=transparent with an icon.on-media glyph plus icon.on-media.halo drop-shadow. Reuse those parts rather than re-styling Button."
       }
     ]
   }
