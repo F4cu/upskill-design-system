@@ -40,9 +40,9 @@
     "nests": false,
     "donts": [
       {
-        "case": "Rendering DropdownMenu outside a position:relative container",
-        "because": "The panel is absolutely positioned and will be offset incorrectly without a positioned ancestor.",
-        "instead": "Always wrap the trigger and DropdownMenu in a position:relative container."
+        "case": "Rendering DropdownMenu directly in a page layout",
+        "because": "The panel has no placement of its own: AppHeader and Select anchor it to their trigger in their own CSS, which a layout can't do without inline styles.",
+        "instead": "Use Select for choosing a value, or AppHeader's userMenuItems for the user menu."
       }
     ]
   }

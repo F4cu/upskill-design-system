@@ -345,7 +345,7 @@ There were 26 entries, not 28. 7 changed, 19 stayed:
 - **Deleted:** Button's danger rule (`variants.variant.useWhen.danger` already says it), Divider margin and Image raw `<img>` (layout grammar restatements), Image + Avatar (duplicates Image's `notFor` → Avatar).
 - **Trimmed:** CardVertical Media (the implementor sentence moved to a `spec.decisions` entry), CardVertical completion (case narrowed to Badge, since the no-completed-prop part was already a spec decision), Icon color (dropped the type-gap prose; the IconProps narrowing goes with the Badge issue).
 - **Reversed from the plan: a11y entries stay as don'ts.** Chip group name, ProgressBar `label`, Icon accessible name and Heading `as`/`size` are caller obligations, and `/layout-generation` reads only `spec.constraints`. `spec.accessibility` is the component's own contract (builder and reviewer readers), so where the two overlap they're two sides of one fact, not duplicates.
-- **Stayed, issue filed:** DropdownMenu `position:relative` and ScrollArea `max-content` don't fit `spec.constraints` (no prop trigger; the schema routes placement to usage), and the ScrollArea fix needs an inline style the grammar bans. #151 moves both fixes inside the components.
+- **Stayed, issue filed:** DropdownMenu `position:relative` and ScrollArea `max-content` don't fit `spec.constraints` (no prop trigger; the schema routes placement to usage), and the ScrollArea fix needs an inline style the grammar bans. #151 moves both fixes inside the components. Resolved 2026-11-10: ScrollArea sizes its child and gains `maxHeight` (`90a5f2d`); DropdownMenu's rule was a misreading (the panel isn't positioned; AppHeader and Select own placement), so its `dont` now says layouts don't render it directly.
 
 ## Follow-up: pattern trees vs stories (leaning D, raised 2026-11-10)
 
@@ -392,14 +392,14 @@ Test for keeping a pattern: it records a decision the writer can't get from `acc
 | Checkbox | `notification-preferences` (takes in Card `preferences-section`) | new |
 | Chip | `filter-bar` (takes in `filter-bar-single`; same tree, single-select is page logic, said in `useWhen`) | new |
 | Divider | `section-break` | new |
-| ScrollArea | `native-scroll-carousel`, `scrollable-list` | new; both trees use inline styles (#151; `scrollable-list` → a height prop or Box `maxHeight`) |
+| ScrollArea | `native-scroll-carousel`, `scrollable-list` | new; inline styles removed by #151 (`scrollable-list` uses the new `maxHeight` prop) |
 | TextField | `form-field-stack` (takes in Card `form-section`, Stack `form-field-group`), `inline-name-row` | `form-field-stack` from `stories/SettingsForm.stories.tsx`; `inline-name-row` rewritten with Box `grow` (the tree had a banned `style={{flex:1}}`) |
 | TextLink | `author-credit` | new |
 
 **Delete: 38**
 
 - **Preset prop combinations, already state stories** (6): CardVertical `default-card`, `in-progress-card`, `completed-card`, `placeholder-favorite`, `favorite-progress`, `title-only`. Check the CardVertical Figma examples section for frames named after them.
-- **A component's internal markup, not a consumer composition** (5): Avatar `nav-user-chip` (AppHeader), DropdownMenu `user-context-menu` and `custom-select` (AppHeader, Select), Image `card-thumbnail` and ProgressBar `course-progress` (CardHorizontal). DropdownMenu gets a consumer pattern once #151 lands.
+- **A component's internal markup, not a consumer composition** (5): Avatar `nav-user-chip` (AppHeader), DropdownMenu `user-context-menu` and `custom-select` (AppHeader, Select), Image `card-thumbnail` and ProgressBar `course-progress` (CardHorizontal). ~~DropdownMenu gets a consumer pattern once #151 lands.~~ Dropped with #151 (2026-11-10): layouts don't render DropdownMenu directly, so it has no consumer pattern.
 - **Merged into a kept pattern** (14): Card `content-card` → Button `card-actions` (missed in the first draft, found by the migration script); Box `page-main`, `page-header`, `page-section`, `page-footer`, `container`; AppHeader `full-page-layout`; Heading `hero-block`; ButtonArrow `carousel-paginator`; CardVertical `saved-courses-carousel`; Card `preferences-section`, `form-section`; Stack `form-field-group`; Chip `filter-bar-single`.
 - **Trivial, no decision recorded** (11): Accordion `faq-list`, Avatar `profile-header`, Badge `card-category-row` (`grouped-meta` covers badge-in-meta), Box `padded-surface`, Heading `titled-section`, Text `body-section`, Stack `content-block`, `card-body`, Icon `icon-label-pair` (`certified-badge` covers icon + text color), Image `hero-banner`, VideoFrame `video-preview-card`.
 - **Contradict another rule** (3): Inline `form-actions-row` (accent first, the opposite of Button `form-actions`), `nav-bar` (rebuilds AppHeader), `tag-group` (Text as tags; Badge/Chip exist).
