@@ -8,6 +8,43 @@ completed:
 
 **Goal.** Rename the 27 per-component `metadata.json` files to `usage.json`. The rename is blocked on a review of the schema's structure and field labels (`packages/components/component.schema.json`), which will start with an audit of how other design systems structure and label the same information. Do the rename and the relabel together, in one breaking change and one ADR amendment, not two migrations.
 
+## Progress
+
+Tick an item when it's done, and add the date and commit or PR. Details live in the linked sections. The second relabel and option D land together, in one migration and one ADR-001 amendment.
+
+**Rename** (see "Steps when unblocked")
+- [x] Step 1: audit other systems, field map old → new (2026-11-10)
+- [x] Step 2: ADR-001 amendment, note in ADR-027 (2026-11-10, `deb5b6d`)
+- [x] Step 3: `git mv` the 27 files, migrate fields, `component.usage.schema.json` + `usage:validate` (2026-11-10, `9c7e057`)
+- [x] Step 4: live references updated: scripts, docs site, CI, agent context, docs (2026-11-10, `9c7e057`)
+- [ ] Step 5: full gate set + `lint` + `claudemd:check` + `docs:check` + `sense`. No passing run recorded: the rename went straight to `main`, and `components-check.yml` runs on PRs only
+- [x] ~~Step 6: re-run the pattern-accuracy harness~~ Not possible: frozen at `044d28f`
+
+**Rename follow-ups** (step 7)
+- [ ] Editorial pass: variant `useWhen` situation-first, descriptions open on a category noun, prop-usage lines out of top-level `useWhen`, px sizes to spec (26 components)
+- [ ] GitHub issue: narrow `BadgeProps` to omit `onClick`/`onKeyDown`
+- [ ] The 9 documented-only constraints enforced by `spec:validate`
+
+**Second relabel** (see "Follow-up: second relabel")
+- [x] Naming decisions recorded (2026-11-10, `c5db130`)
+- [ ] Content sweep of the 28 `rules`: Button's two misfiled entries; a11y entries → `spec.accessibility`; build facts → `spec.constraints`
+- [ ] Schema + `validate-usage.js`: `composition.donts` `{case, because, instead}`, `composition.patterns` with `useWhen`, `notFor.instead` description
+- [ ] Migrate the 27 files (key moves by script) and rewrite each pattern's `useWhen` situation-first
+- [ ] Readers: `validate-spec.js`, docs site component page, `/layout-generation`, `/extract-learnings`, `/component-scaffold`, `packages/components/AGENTS.md`, `docs/10`
+- [ ] ADR-001 amendment (relabel + D, if chosen)
+
+**Pattern stories** (see "Follow-up: pattern trees vs stories")
+- [ ] Choose A, B, C or D
+- [ ] Triage the 62 patterns: write a story or delete the pattern
+- [ ] Decide the fate of `/layout-generation`'s "Recurring patterns" section (carousel, CourseModuleList)
+- [ ] `<Name>.patterns.stories.tsx` per component; `usage:validate` checks exports ↔ pattern names; `anatomy:test`, `AnatomyOverlay`, screenshot and a11y scripts pick up the new files
+- [ ] Drop `patterns[].tree` from schema and files
+- [ ] Check method chosen and run: first real `/layout-generation` runs, or a pre-registered layout eval with and without patterns (ADR-029)
+
+**Close-out**
+- [ ] Gate passes on the final migration
+- [ ] Handoff `status: done`, `npm run handoff:tidy`
+
 ## Why `usage.json`
 
 Since ADR-027 split the builder data (anatomy, props, states, styles, a11y) into `<Name>.spec.json`, the metadata file only holds the information for *choosing and combining* components, which `/layout-generation` reads for all 27 components on every run. "Usage" describes that role better than the generic "metadata".
