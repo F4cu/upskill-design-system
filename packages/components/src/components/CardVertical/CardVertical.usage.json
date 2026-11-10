@@ -7,11 +7,11 @@
     "figmaNodeId": "52:4270"
   },
   "useWhen": [
-    "Displaying course cards in a horizontal carousel (Discover, Saved Courses sections)",
-    "Pass progress when the user has started the course — renders a ProgressBar between image and title",
-    "Completed is derived, not a prop: progress >= 100 adds CardVertical.Completed (check Icon + 'Completed') to the meta row after Certified; the full ProgressBar stays. In a parts composition, render <CardVertical.Completed /> inside CardVertical.Meta yourself.",
-    "Pass action={<CardVertical.Favorite …/>} when the user can save the course; action={<CardVertical.Menu …/>} for an overflow menu of course actions. Never both.",
-    "Compose the parts (CardVertical.Root > Media / Progress / Body) only when the preset can't express the content — e.g. an instructor row or custom meta. Start from a named pattern below."
+    "Course cards in a horizontal carousel, such as the Discover and Saved courses sections.",
+    "The learner has started the course: pass progress, and a ProgressBar shows under the image.",
+    "The learner has finished the course: progress of 100 or more adds a Completed marker, and the bar stays.",
+    "The learner can save the course (action Favorite) or has several course actions (action Menu).",
+    "The preset can't show the content, such as an instructor row or custom meta: compose the parts from a pattern."
   ],
   "notFor": [
     {
@@ -206,6 +206,11 @@
         "case": "Using a Badge to signal completion",
         "because": "Completion is derived from progress (ADR-025); a separate badge can disagree with the bar (Completed with progress=40).",
         "instead": "Pass progress={100}. Only in a parts composition render <CardVertical.Completed /> inside CardVertical.Meta."
+      },
+      {
+        "case": "A parts composition at progress >= 100 without CardVertical.Completed",
+        "because": "The preset adds the Completed marker from progress; a parts composition doesn't derive it.",
+        "instead": "Render <CardVertical.Completed /> inside CardVertical.Meta, after Certified."
       }
     ],
     "patterns": [
@@ -227,7 +232,7 @@
       },
       {
         "name": "grouped-meta",
-        "useWhen": "A card's meta row pairs a badge with a related value (New and a date) that should read as one item."
+        "useWhen": "A card's meta row pairs a badge with a related value that reads as one item (New and a date)."
       },
       {
         "name": "card-carousel",

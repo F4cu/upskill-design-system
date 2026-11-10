@@ -179,9 +179,9 @@ function checkAxesAreProps(data, dir) {
     .map((axis) => `variants.${axis}: not a prop in ${data.component.name}.spec.json — omit placeholder axes`);
 }
 
-// The mechanical part of the schema's writing rules. Warnings until the
-// editorial pass lands, then PROSE_FAILS flips to true.
-const PROSE_FAILS = false;
+// The mechanical part of the schema's writing rules (docs/13). PROSE_FAILS
+// was false while the editorial pass ran; it fails the gate since 2026-11-10.
+const PROSE_FAILS = true;
 const DESCRIPTION_MAX_WORDS = 25;
 const LINE_MAX_WORDS = 20;
 const UNITS = /\b\d+(\.\d+)?(px|rem|em)\b/;

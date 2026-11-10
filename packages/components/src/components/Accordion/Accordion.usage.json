@@ -7,7 +7,7 @@
     "figmaNodeId": "29:1153"
   },
   "useWhen": [
-    "Presenting a list of content sections where users may only need to read a subset (e.g. course curriculum, FAQ, settings groups)",
+    "A list of content sections where readers need only some, such as a course curriculum, FAQ or settings groups.",
     "Reducing vertical space by hiding detail until requested",
     "The content within each panel is self-contained and does not need to be visible simultaneously"
   ],
@@ -39,7 +39,7 @@
     "patterns": [
       {
         "name": "course-module-list",
-        "useWhen": "A course page lists its modules, each with a short description opened on demand, and the list is long enough to need Show more."
+        "useWhen": "A course page lists its modules, each description opened on demand, and the list needs Show more."
       }
     ]
   }

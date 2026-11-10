@@ -102,12 +102,13 @@ The situation comes first; the one clause after it ("Brand fill.") is there so a
 
 The last row shows rule 3: "use sparingly" became the situation that earns the option.
 
-**Lines still waiting for the rewrite** (each flagged by the lint):
+**Top-level `useWhen` lines** (rewritten 2026-11-10). Instructions and don'ts mixed into a situation list were split out: the situation stays, the rule moves to `donts`.
 
-| Field | Current text | Problem |
+| Field | Before | After |
 |---|---|---|
-| CardVertical `useWhen` | "Pass progress when the user has started the course …" | A prop instruction (spec `constraints` or prop description) |
-| TextField `useWhen` | "The value is typed, not selected — use Select for predefined option sets" | A wrong pick (`notFor`, `instead: "Select"`) |
+| CardVertical `useWhen` | "Completed is derived, not a prop: progress >= 100 adds … In a parts composition, render `<CardVertical.Completed />` inside CardVertical.Meta yourself." (35 words) | "The learner has finished the course: progress of 100 or more adds a Completed marker, and the bar stays." The parts instruction became a `donts` entry. |
+| Icon `useWhen` | "Opening an overflow menu …; always inside an icon-only Button with an aria-label and `aria-haspopup="menu"`, never as a bare clickable glyph" | "An overflow menu of secondary actions (more-vertical, the 'kebab'), inside an icon-only Button." The "never" became a `donts` entry. |
+| TextField `useWhen` | "The value is typed, not selected — use Select for predefined option sets" | "The value is typed, not chosen from a list." `notFor` already points to Select. |
 
 **Placeholder axes (removed).** Divider, Accordion, Checkbox and 8 others had `"variant": { "options": ["default"], … }` with no `variant` prop. The 2026-06-17 schema required at least one axis, so every component declared one. Now `variants` is optional, and `usage:validate` fails when an axis isn't a spec prop (ADR-001 third amendment of 2026-11-10).
 
@@ -120,7 +121,7 @@ The last row shows rule 3: "use sparingly" became the situation that earns the o
 - No usage prose contains a px/rem size or a CSS declaration.
 - Every variant axis is a prop in the spec.
 
-The prose checks are **warnings** while the rewrite of the 26 remaining components is in progress (78 at the start). When it's done, `PROSE_FAILS` in the script flips to `true` and they fail the gate.
+The prose checks fail the gate. They ran as warnings while the 26 other components were rewritten (78 at the start, 0 at the end, all on 2026-11-10); `PROSE_FAILS` in the script then flipped to `true`.
 
 The lint can't check rules 1, 3, 4, 5, 6 or 7: whether a line names a situation, gives a test or says why. Those need a reader. The checklist below is for that read.
 
@@ -134,7 +135,7 @@ The lint can't check rules 1, 3, 4, 5, 6 or 7: whether a line names a situation,
 6. Anything countable is a `limit` or `nests`, not prose.
 7. Sizes, CSS and prop rules are in the spec, not here.
 8. Nothing repeats what another field or a gate already says.
-9. `npm run usage:validate` shows no warnings for the file.
+9. `npm run usage:validate` passes.
 
 ## What's still open
 

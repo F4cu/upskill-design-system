@@ -8,8 +8,7 @@
   },
   "useWhen": [
     "Filtering a list or carousel by category (e.g. All Courses, Design, Development)",
-    "Multi-select filtering: each chip toggles one filter on or off independently",
-    "Showing current filter state visually — a pressed chip reads as brand-colored"
+    "Multi-select filtering: each chip toggles one filter on or off independently"
   ],
   "notFor": [
     {
@@ -64,7 +63,7 @@
     "patterns": [
       {
         "name": "filter-bar",
-        "useWhen": "Narrowing a list by categories the user toggles. Multi-select by default; single-select when the page keeps one active value (page logic, same tree)."
+        "useWhen": "Narrowing a list by toggled categories, multi-select by default; single-select is page logic on the same tree."
       }
     ]
   }

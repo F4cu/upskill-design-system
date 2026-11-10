@@ -9,7 +9,7 @@
   "useWhen": [
     "Collecting freeform single-line text from the user (name, email, password, search query)",
     "A form field needs a visible label and optional error feedback",
-    "The value is typed, not selected — use Select for predefined option sets"
+    "The value is typed, not chosen from a list."
   ],
   "notFor": [
     {

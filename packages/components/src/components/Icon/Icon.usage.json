@@ -10,7 +10,7 @@
     "Providing a visual cue alongside a label (Button leading icon, form field prefix)",
     "Indicating direction or action in a compact space (chevrons, plus, minus)",
     "Communicating theme state (sun/moon-star for light/dark toggle)",
-    "Opening an overflow menu of secondary actions (more-vertical, the vertical-ellipsis 'kebab'); always inside an icon-only Button with an aria-label and aria-haspopup=\"menu\", never as a bare clickable glyph"
+    "An overflow menu of secondary actions (more-vertical, the 'kebab'), inside an icon-only Button."
   ],
   "notFor": [
     {
@@ -63,6 +63,11 @@
         "case": "Setting a color prop or inline style directly on the Icon element",
         "because": "Icon uses currentColor, so color belongs on the ancestor that owns the color context, set with a semantic token.",
         "instead": "Apply the token via style or CSS on the ancestor span/element, never on <Icon> itself. Token choice depends on context: use color.icon.default for standalone or button-adjacent icons; use color.icon.subtle when the icon appears inline alongside color.text.subtle or metadata-scale text, so the icon sits in the same visual register as its label."
+      },
+      {
+        "case": "A bare more-vertical glyph as the overflow-menu trigger",
+        "because": "A glyph has no button role, focus or name, so nothing announces that it opens a menu.",
+        "instead": "An icon-only Button with an aria-label and aria-haspopup=\"menu\", as in CardVertical's overflow-menu pattern."
       }
     ]
   }
