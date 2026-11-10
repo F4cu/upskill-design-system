@@ -58,6 +58,7 @@
     "metadata:validate": "node scripts/validate-metadata.js",
     "spec:validate": "node scripts/validate-spec.js",
     "spec:generate": "node scripts/generate-spec.js",
+    "spec:bundle": "node scripts/spec-bundle.js",
     "layout:validate": "node scripts/validate-layout.js",
     "stories:lint-inline-style": "node scripts/validate-layout.js packages/components/src --style-only",
     "screenshot:check": "node scripts/screenshot.js check",

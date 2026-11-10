@@ -26,7 +26,7 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 - [x] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test (`npm run anatomy:test`, in CI); their `anatomyExamples` filled; `builtOnPart` for parts inside a nested component, `notRendered` for parts no example renders (`MenuPanel`; TextField `Placeholder` in A3); pattern examples render the PascalCase-named story (2026-11-10, ADR-030 amendment "data-part markers")
 
 **Shared input**
-- [ ] Phase 0: `npm run spec:bundle`, byte-identical across two runs, fails on an unresolved token path
+- [x] Phase 0: `npm run spec:bundle`, byte-identical across two runs, fails on an unresolved token path (2026-11-10, `scripts/spec-bundle.js`; not yet wired into CI, A1 adds it to `docs-build.yml`)
 
 **Part A: docs site**
 - [ ] Measurement: time documenting Button by hand on the three sub-pages, *before* A1 generates them
@@ -70,6 +70,7 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 A script (working name `npm run spec:bundle`, in `scripts/`) writes one `specs.bundle.json`: every spec with its metadata, resolved token values, Figma variable names and a hash per component (over spec + metadata). Both renderers read only this file. It's derived, so it's built in CI and not committed (decision 4).
 
 - **Done when:** the bundle builds after `tokens:build`, every token path in every spec's `styles` resolves to a value (otherwise the build fails, the same rule `spec:validate` applies), and the output is byte-identical across two runs.
+- **As built (2026-11-10):** writes `dist/specs.bundle.json` (gitignored; `--out <file>` overrides). Shape: `components.<Name> = { hash, spec, metadata }` (hash = sha256 over the raw spec + metadata bytes; spec and metadata keep source key order, so prop and part order survive), and `tokens.<dot.path> = { cssVar, value, contexts?, figma }`. `value` is the fully resolved value in the default context (`defaultContext`: upskill / light / desktop); `contexts` lists only `dark` / `tablet` / `mobile` where the value differs. `figma` is `{ name, collection, divergence? }` from the mirror, or `null`. Values stay as built (`0.5rem`), so the renderer converts them to px for labels. First run: 27 components, 115 tokens. 4 have no Figma variable, all semantic line-heights (`font.line-height.{default,none,relaxed,tight}`, unitless in code). Figma holds only px line-heights (see `figmaExtrasAwaitingDecision` in the mirror), so Part B's `token-binding` must skip these, not flag them.
 
 ## What gets rendered
 
