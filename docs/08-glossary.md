@@ -51,6 +51,7 @@ sources:
 # rewritten 2026-11-10: pattern aggregate entry no longer cites the composedOf drift check (removed with the usage.json rename); usage schema dropped patterns[].tree, other entries still accurate
 # rewritten 2026-11-10: Props and variants: only real props get an axis (ADR-001 third amendment)
 # clock reset 2026-11-10: usage:validate now checks component-level composition.accepts/containedBy names (#149); this page says nothing about checking containment, still accurate
+# clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 ---
 # Glossary
 

@@ -35,6 +35,47 @@ const BANNED_PREFIX = [
 const FIXED_OPTIONS = { shape: ["square", "round"], orientation: ["horizontal", "vertical"] };
 const SIZE_STEPS = ["sm", "md", "lg"];
 
+// Which names each vocabulary concept allows (ADR-026). The concept list itself
+// is the enum in component.spec.schema.json; every entry needs a rule here.
+const CONCEPT_NAMES = {
+  "Visual weight/style": (p) => p === "variant",
+  Size: (p) => p === "size",
+  Corners: (p) => p === "shape",
+  "Layout axis": (p) => p === "orientation",
+  "Glyph direction": (p) => p === "direction",
+  Lifecycle: (p) => p === "status" || p === "progress",
+  "Controlled state": (p) => !/^on[A-Z]/.test(p) || /^on([A-Z]\w*)?Change$/.test(p),
+  "Discrete event": (p) => /^on[A-Z]/.test(p) && !/Change$/.test(p),
+  Boolean: () => true,
+  "Accessible name": (p) => ["label", "aria-label", "aria-labelledby"].includes(p),
+  Error: (p) => p === "error",
+  Content: (p) => !/^on[A-Z]/.test(p),
+  Image: (p) => /^(src|alt)$|[a-z](Src|Alt)$/.test(p),
+  Collection: (p) => /^(items|options)$|[a-z]Items$/.test(p),
+  Icon: (p) => p === "icon" || p === "trailingIcon",
+  Element: (p) => p === "as",
+  "Inner heading": (p) => p === "headingLevel",
+  Link: (p) => p === "href",
+  native: () => true,
+};
+// A vocabulary name always carries its own concept, whatever the prop is for.
+const NAME_CONCEPT = {
+  variant: "Visual weight/style", size: "Size", shape: "Corners", orientation: "Layout axis",
+  direction: "Glyph direction", status: "Lifecycle", label: "Accessible name", error: "Error",
+  icon: "Icon", trailingIcon: "Icon", as: "Element", headingLevel: "Inner heading", href: "Link",
+  items: "Collection",
+};
+const SCHEMA_CONCEPTS = JSON.parse(fs.readFileSync(path.join(ROOT, "packages/components/component.spec.schema.json"), "utf8"))
+  .properties.props.additionalProperties.properties.concept.anyOf[0].enum;
+
+// The schema enum and CONCEPT_NAMES must list the same concepts.
+export function conceptRuleErrors() {
+  return [
+    ...SCHEMA_CONCEPTS.filter((c) => !CONCEPT_NAMES[c]).map((c) => `concept "${c}" is in the spec schema but has no name rule in prop-vocabulary.js`),
+    ...Object.keys(CONCEPT_NAMES).filter((c) => !SCHEMA_CONCEPTS.includes(c)).map((c) => `concept "${c}" has a name rule but is not in the spec schema enum`),
+  ];
+}
+
 const usedWaivers = new Set();
 const isFunction = (type) => /=>|Handler\b/.test(type);
 const figmaKey = (s) => s.toLowerCase().replace(/[\s_-]/g, "");
@@ -58,6 +99,16 @@ export function vocabularyErrors(name, spec) {
 
     if (!native && STYLE_SYNONYMS.has(prop)) fail(key, "variant-name", "visual style is `variant`, never type/kind/mode/style/tone/appearance");
     if (BANNED_NAMES[prop]) fail(key, "banned-name", BANNED_NAMES[prop]);
+
+    const concept = def.concept ?? "";
+    if (concept === "native" && !native) fail(key, "concept", "`native` is for passed-through HTML attributes (kind `native`)");
+    if (CONCEPT_NAMES[concept] && !CONCEPT_NAMES[concept](prop)) {
+      fail(key, "concept", `the name doesn't fit the concept "${concept}"; rename the prop, pick its real concept, or make it a \`new term: <reason>\``);
+    }
+    if (!native && NAME_CONCEPT[prop] && concept !== NAME_CONCEPT[prop]) {
+      fail(key, "concept", `\`${prop}\` is the vocabulary name for "${NAME_CONCEPT[prop]}", so its concept must be that (is "${concept}")`);
+    }
+    if (concept === "Boolean" && type !== "boolean") fail(key, "concept", `a "Boolean" prop has type \`boolean\` (is \`${type}\`)`);
     for (const [re, why] of BANNED_PREFIX) if (re.test(prop)) fail(key, "banned-prefix", why);
 
     if (type === "boolean" && !native && def.kind !== "controlledState" && def.default !== false) {

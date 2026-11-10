@@ -170,7 +170,7 @@
       "kind": "native",
       "type": "string",
       "default": null,
-      "concept": "Native-input wrappers keep native names (ADR-026)",
+      "concept": "Controlled state",
       "figma": {
         "surface": "code-only"
       }
@@ -179,7 +179,7 @@
       "kind": "native",
       "type": "ChangeEventHandler<HTMLInputElement>",
       "default": null,
-      "concept": "Native-input wrappers keep native names (ADR-026)",
+      "concept": "Controlled state",
       "figma": {
         "surface": "code-only"
       }

@@ -6,6 +6,7 @@ sources:
   - packages/components/AGENTS.md
   - docs/decisions/001-component-metadata-schema.md
 # clock reset 2026-11-10: usage:validate now checks component-level composition.accepts/containedBy names (#149); this page says nothing about checking containment, still accurate
+# clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 ---
 # Writing contract files
 

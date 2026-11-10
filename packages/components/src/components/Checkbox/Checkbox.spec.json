@@ -53,7 +53,7 @@
       "kind": "native",
       "type": "boolean",
       "default": null,
-      "concept": "Native-input wrappers keep native names (ADR-026)",
+      "concept": "Controlled state",
       "figma": {
         "surface": "both",
         "property": "Checked"
@@ -74,7 +74,7 @@
       "kind": "native",
       "type": "ChangeEventHandler<HTMLInputElement>",
       "default": null,
-      "concept": "Native-input wrappers keep native names (ADR-026)",
+      "concept": "Controlled state",
       "figma": {
         "surface": "code-only"
       }

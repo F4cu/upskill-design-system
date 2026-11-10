@@ -118,8 +118,18 @@
             "type": ["string", "number", "boolean", "null"]
           },
           "concept": {
-            "description": "Row of the ADR-026 prop vocabulary, 'native', or 'new term: <reason>'.",
-            "type": "string"
+            "description": "The ADR-026 vocabulary concept the prop belongs to, 'native' (a passed-through HTML attribute), or 'new term: <reason>'. spec:validate checks that the prop's name fits its concept (scripts/prop-vocabulary.js).",
+            "anyOf": [
+              {
+                "enum": [
+                  "Visual weight/style", "Size", "Corners", "Layout axis", "Glyph direction",
+                  "Lifecycle", "Controlled state", "Discrete event", "Boolean",
+                  "Accessible name", "Error", "Content", "Image", "Collection", "Icon",
+                  "Element", "Inner heading", "Link", "native"
+                ]
+              },
+              { "type": "string", "pattern": "^new term: \\S" }
+            ]
           },
           "figma": {
             "type": "object",

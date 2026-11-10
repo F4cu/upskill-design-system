@@ -105,6 +105,8 @@ const codeOnlyVariant = (axis) => spec.props[axis]?.figma?.surface === "code-onl
 const focusState = spec.states.find((s) => s.name === "focus-visible");
 
 const LIMIT_SCOPE = { region: "region (section)", repeated: "repeated item", parent: "parent" };
+const WIDTH = { fill: "Fills its container", hug: "Hugs its content", fixed: "Keeps its own fixed size" };
+const conceptLabel = (c) => (c?.startsWith("new term: ") ? `New term: ${c.slice(10)}` : c === "native" ? "Native HTML attribute" : c);
 const builtFrom = [...new Set((spec.anatomy ?? []).map((part) => part.builtOn).filter((n) => n && n !== name))].sort();
 
 const storybookId = `components-${name.toLowerCase()}`;
@@ -313,6 +315,8 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
               </dd>
             </>
           ))}
+          <dt>Width</dt>
+          <dd>{WIDTH[usage.composition?.width] ?? NONE}</dd>
         </dl>
       </>
     )
@@ -366,7 +370,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
 
         <h2 id="props">{h.props}</h2>
         <table>
-          <thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Options</th></tr></thead>
+          <thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Options</th><th scope="col">Concept</th></tr></thead>
           <tbody>
             {Object.entries(spec.props).map(([prop, p]) => {
               const useWhen = usage.variants?.[prop]?.useWhen;
@@ -382,6 +386,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
                       </ul>
                     ) : "—"}
                   </td>
+                  <td>{conceptLabel(p.concept)}</td>
                 </tr>
               );
             })}

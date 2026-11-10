@@ -80,6 +80,7 @@ sources:
 # rewritten 2026-11-10: reading-order blurbs for 02 and 10 name usage.json (ADR-001 amendment 2026-11-10: metadata.json renamed usage.json)
 # clock reset 2026-11-10: pattern stories shipped (ADR-001 option D, tree dropped, /layout-generation recipes point at stories); this page's overview of usage files and commands is unchanged, still accurate
 # clock reset 2026-11-10: ADR-001 third amendment (writing rules, placeholder axes removed); this page describes no usage field, still accurate
+# clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 ---
 # Start here
 

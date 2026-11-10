@@ -31,7 +31,7 @@ import { fileURLToPath } from "url";
 import Ajv from "ajv/dist/2020.js";
 import { publicComponents, styleValueTokenPaths, componentTokenReads } from "./lib.js";
 import { createPropsReader } from "./spec-props.js";
-import { vocabularyErrors, staleWaivers } from "./prop-vocabulary.js";
+import { vocabularyErrors, staleWaivers, conceptRuleErrors } from "./prop-vocabulary.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -94,7 +94,14 @@ for (const { name, file } of specs) {
   if (!fs.existsSync(path.join(SPEC_DIR, name, "index.tsx"))) errors.push("index.tsx not found");
 
   if (!validate(spec)) {
-    for (const e of validate.errors) errors.push(`${e.instancePath || "/"} ${e.message}`);
+    for (const e of validate.errors) {
+      const at = e.instancePath || "/";
+      if (at.endsWith("/concept")) {
+        if (e.keyword === "anyOf") errors.push(`${at} must be an ADR-026 concept from the spec schema's enum, "native", or "new term: <reason>"`);
+        continue;
+      }
+      errors.push(`${at} ${e.message}`);
+    }
     report(file, errors);
     continue;
   }
@@ -253,6 +260,10 @@ if (!EXTERNAL_DIR) {
     console.error(`✗ scripts/prop-vocabulary-waivers.json — "${id}" no longer matches a violation; delete it`);
     failures++;
   }
+}
+for (const msg of conceptRuleErrors()) {
+  console.error(`✗ scripts/prop-vocabulary.js — ${msg}`);
+  failures++;
 }
 
 if (failures) {

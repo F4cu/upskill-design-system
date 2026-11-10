@@ -29,6 +29,7 @@ sources:
 # rewritten 2026-11-10: citations name composition.donts (was rules) and composition.patterns with code in <Name>.patterns.stories.tsx; /layout-generation carousel and show-more recipes now point at those stories
 # clock reset 2026-11-10: validate-layout.js gains a typed-separator check for CardHorizontal author/duration (spec constraints); landmark grammar and inline-style rules unchanged, still accurate
 # clock reset 2026-11-10: validate-layout.js skips *.test.tsx files in a directory scan (deliberate @ts-expect-error violations); grammar unchanged, still accurate
+# clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 ---
 # Layout grammar
 

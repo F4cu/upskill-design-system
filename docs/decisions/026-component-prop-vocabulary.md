@@ -292,3 +292,18 @@ Exceptions are waived by id in `scripts/prop-vocabulary-waivers.json`, a shrinki
 
 **Consequences.** The prose in `packages/components/AGENTS.md` keeps what needs judgement: which concept a prop is, the state groups, and the Figma mappings. It drops what the check enforces. `generate-pattern-schema.js` still reports `drift` for `/layout-generation`; the blocking check is separate. The harness-ablation Arm 0 strips the new script and its waivers along with `validate-spec.js`.
 
+
+## Amendment (2026-11-10) — Each prop's `concept` is checked against its name
+
+Until now nothing read a spec prop's `concept`: `spec:generate` wrote it, a `TODO` failed the check, and the content was free text (#150). Four props carried a sentence instead of a concept name.
+
+**Decision.** The concept names are a closed list, the enum on `props.<p>.concept` in `component.spec.schema.json`. They are the short concept names of the vocabulary table in `packages/components/AGENTS.md`, which every spec already used, rather than this ADR's longer row titles: renaming over a hundred values would add churn and no information. The value is one of them, `native`, or `new term: <reason>`. `scripts/prop-vocabulary.js` gives each concept a name rule and `spec:validate` fails, with a waiver id, when:
+
+- a prop's name doesn't fit its concept (`Size` must be `size`, `Image` must be `src`/`alt` or `<part>Src`/`<part>Alt`, `Discrete event` must be `on<Verb>`, `Controlled state` allows `on<X>Change` or `onChange` but no other callback, `Lifecycle` allows `status` or the data it derives from, `progress`, ADR-025);
+- a vocabulary name carries another concept (`variant` is always `Visual weight/style`, `label` always `Accessible name`), unless the prop is native;
+- `native` sits on a prop that isn't kind `native`, or a `Boolean` prop isn't typed `boolean`;
+- the schema enum and the name rules disagree.
+
+Native-input names (`checked`, `value` + `onChange` on Checkbox and TextField) are `Controlled state`, the row that already says native wrappers keep native names. The docs component page shows the concept in the props table; a `new term` shows its reason.
+
+**Consequences.** `concept` moves from unread to gated. The 37 `new term` values become reviewable on the docs page; 25 of them are the layout primitives' props, which is evidence for a vocabulary row for layout props, not decided here. No existing spec needed a waiver.

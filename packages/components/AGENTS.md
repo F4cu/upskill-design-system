@@ -31,7 +31,7 @@ States are grouped by who sets them, each with its own home; never one `state` p
 
 ## Prop vocabulary (ADR-026)
 
-One concept, one name; the full row list, with a concept name per row, is ADR-026's table. Reuse these; any other name is a **new term** with a reason in the `/component-scaffold` API proposal. `spec:validate` enforces the mechanical rules (banned names and prefixes, `false`-default booleans, `on<Verb>` callbacks, the controlled triple, collection names, `size`/`shape`/`orientation` values, Figma names equal up to casing); its exceptions are in `scripts/prop-vocabulary-waivers.json`. Enum values are camelCase.
+One concept, one name; the full row list, with a concept name per row, is ADR-026's table. Reuse these; any other name is a **new term** with a reason in the `/component-scaffold` API proposal. `spec:validate` enforces the mechanical rules (banned names and prefixes, `false`-default booleans, `on<Verb>` callbacks, the controlled triple, collection names, `size`/`shape`/`orientation` values, Figma names equal up to casing, a prop's name fitting its spec `concept`, whose values are the schema enum); its exceptions are in `scripts/prop-vocabulary-waivers.json`. Enum values are camelCase.
 
 | Concept | Name |
 |---|---|

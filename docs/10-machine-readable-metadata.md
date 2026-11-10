@@ -36,6 +36,7 @@ sources:
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts {case, because, instead}; patterns → composition.patterns {name, useWhen}, code in <Name>.patterns.stories.tsx (option D); pattern-name uniqueness check
 # rewritten 2026-11-10: pattern stories shipped: usage:validate checks pattern names against <Name>.patterns.stories.tsx exports; tree dropped
 # rewritten 2026-11-10: usage:validate checks component-level accepts/containedBy names (#149 step 1); audit rows and totals updated; layout:validate enforcement still undecided
+# rewritten 2026-11-10: props.concept gated by spec:validate (ADR-026 amendment), width rendered on the docs page (#150); audit rows, totals and gaps updated
 # rewritten 2026-11-10: ADR-001 third amendment: variants optional, every axis a spec prop, prose lint (warnings); links the new 13-writing-contract-files guide
 # 2026-11-10: prop-rule row says how spec constraints are enforced (type, test, layout:validate); 7 of the 9 documented-only ones now are
 # clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups; the drift check this page describes is unchanged
@@ -203,7 +204,7 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `composition.parts` | Gated | `usage:validate`, `layout:validate`, `spec:validate` (must match `anatomy`), `generate-pattern-schema.js`, `spec:generate` |
 | `composition.accepts`, `composition.containedBy` | Gated | `usage:validate` (each entry is a component; `accepts` may be `["*"]`); `containedBy` is rendered ("Placed inside"). Whether a layout follows them is not checked |
 | `composition.donts` | Rendered | Docs page. Don'ts a check can't express, by design. |
-| `composition.width` | None | Agents only |
+| `composition.width` | Rendered | Docs page ("Width" under Related); `/layout-generation` cites it |
 
 **`spec.json`**
 
@@ -217,7 +218,7 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `props.<p>.kind`, `options`, `default` | Gated | `spec:validate` against the TypeScript props types and the code's defaults, and against `usage.json` variants |
 | `props.<p>.figma` (`surface`, `property`) | Gated | `spec:validate` (figma-only props are skipped); `prop-vocabulary.js` (Figma name vs prop name, ADR-026) |
 | `props.<p>.type` | Rendered | Docs page |
-| `props.<p>.concept` | None | Written by `spec:generate` as a `TODO` that fails the check until filled. Nothing reads the content. |
+| `props.<p>.concept` | Gated | `spec:validate` (a concept from the schema enum, `native`, or `new term: <reason>`; `prop-vocabulary.js` checks the prop's name fits it, ADR-026 amendment 2026-11-10); rendered in the props table |
 | `constraints[].if`, `require`, `ignore`, `forbid` | Gated | `spec:validate` (every reference is a spec prop) |
 | `constraints[].enforcedBy` | Used | `spec:validate` lists empty ones as backlog |
 | `constraints[].reason` | Rendered | Docs page |
@@ -230,13 +231,13 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `decisions[].adr` | Gated | `spec:validate` (the ADR file exists) |
 | `decisions[].decision`, `reason`, `ruledOut` | Rendered | Docs page |
 
-**Totals.** Of the 40 fields above, 20 are gated and 6 are used by a script, so 26 depend on code parsing a fixed shape. Another 12 are rendered by the docs page, which needs the same stable structure. Only 2 have no code reader. In Markdown, every one of the 26 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
+**Totals.** Of the 40 fields above, 21 are gated and 6 are used by a script, so 27 depend on code parsing a fixed shape. The other 13 are rendered by the docs page, which needs the same stable structure. None is left without a code reader. In Markdown, every one of the 27 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
 
-**Gaps the audit found.** None of these is fixed here; each needs its own decision:
+**Gaps the audit found.** Each needed its own decision:
 
 - **`patterns[].tree` was never parsed.** Its 62 trees were written in a notation agents read, and a misspelled component name in one passed every check. Resolved by option D (ADR-001 second amendment, 2026-11-10): patterns became `{ name, useWhen }` and their code moved to type-checked stories, one export per pattern.
 - **A layout's component-level containment is unchecked.** Since 2026-11-10 `usage:validate` confirms every component-level `accepts`/`containedBy` entry is a component (#149), but `layout:validate` checks containment only for `composition.parts`, so these two fields work only as citations for `/layout-generation`. Whether to enforce them against the nearest JSX parent is undecided: Box/Stack/Inline wrappers may need a transparent-wrapper rule.
-- **`composition.width` and `props.<p>.concept` have no code reader.** By the rule above, each should either get a reader (a check, or a column on the docs page) or be dropped, as `usage.keywords` was.
+- **`composition.width` and `props.<p>.concept` had no code reader.** Resolved 2026-11-10 (#150): `concept` is gated by `spec:validate` and shown in the props table; `width` is shown on the Usage page. No code can check `width` against the component, since nothing in its code states fill or hug.
 
 `component.type` is the one place the schema enforces a closed taxonomy (`interactive|display|container|input|layout`; the atomic-design `category` it used to sit beside was dropped on 2026-11-10, since only its `layout` value was ever read). Every other section is free-text within its shape. That's deliberate: the field is load-bearing for both `a11y-coverage.js`'s interactivity derivation and `generate-pattern-schema.js`'s bucketing fallback (`layout-primitive` when structural detection finds nothing else), so an unenforced vocabulary there would quietly break two downstream consumers at once.
 
