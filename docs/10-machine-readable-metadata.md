@@ -35,6 +35,7 @@ sources:
 # rewritten 2026-11-10: deterministic-reader audit (gated/used/rendered/none per field, totals, gaps); layout:validate row corrected (part-level accepts/containedBy only)
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts {case, because, instead}; patterns → composition.patterns {name, useWhen}, code in <Name>.patterns.stories.tsx (option D); pattern-name uniqueness check
 # rewritten 2026-11-10: pattern stories shipped: usage:validate checks pattern names against <Name>.patterns.stories.tsx exports; tree dropped
+# rewritten 2026-11-10: ADR-001 third amendment: variants optional, every axis a spec prop, prose lint (warnings); links the new 13-writing-contract-files guide
 ---
 # Machine-readable metadata
 
@@ -124,7 +125,8 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 
 - `component.name` must equal the containing directory name.
 - Every `composition.parts` entry must be internally consistent: names are unique and don't collide with a component name, `accepts` appears only on `slot`/`open` parts (and is required there), each `accepts` entry is a component or a sibling part, each `containedBy` entry is a sibling part, and `builtOn` is a component or `null`. "Component" means one exported by `@upskill/components` (`publicComponents()` in `scripts/lib.js`), the same list `layout:validate` uses (#98).
-- Every `notFor.instead` is a component (or `null` with a `note` naming the alternative outside the library); every `composition.limits[].if` names a real variant axis and option; every `variants.<axis>.useWhen` key is an option of that axis; every `composition.patterns[].name` is unique across the set, since the story export, the Figma example frame and `spec.anatomyExamples` share it.
+- Every `notFor.instead` is a component (or `null` with a `note` naming the alternative outside the library); every `composition.limits[].if` names a real variant axis and option; every `variants.<axis>.useWhen` key is an option of that axis, and every axis is a prop in the spec (a component with no visual prop has no `variants`); every `composition.patterns[].name` is unique across the set, since the story export, the Figma example frame and `spec.anatomyExamples` share it.
+- The prose follows the mechanical writing rules: the description opens "A <noun> …" in at most 25 words, `useWhen` lines have at most 20, and no prose carries px/rem sizes, CSS or (in the description) ADR numbers. These are warnings until the editorial pass lands; [Writing contract files](13-writing-contract-files.md) has the full rules.
 - No `<Name>.metadata.json` is left behind.
 - Every `<Name>.spec.json` must parse as JSON. The full spec check is `spec:validate`, which needs built tokens and runs as its own CI step; the parse check keeps a malformed spec from passing the token-free local gate.
 
@@ -192,7 +194,7 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `composition.patterns[].name` | Gated | `usage:validate` (unique across the set; equal to the exports of `<Name>.patterns.stories.tsx`, PascalCase); `spec:validate` (an `anatomyExamples` pattern must exist); `anatomy:test` renders the story with that name |
 | `composition.patterns[].useWhen` | Rendered | Docs page, linked to the pattern's story in `<Name>.patterns.stories.tsx`, which holds its code |
 | `variants.<axis>.options`, `default` | Gated | `spec:validate` (must equal the spec prop and the TypeScript union); `usage:validate` (`limits` and `useWhen` keys must name options); `airtable-sync.js` |
-| `variants.<axis>.useWhen` | Gated (keys) | `usage:validate` (each key is an option); the text is rendered |
+| `variants.<axis>.useWhen` | Gated (keys) | `usage:validate` (each key is an option; the text is linted as warnings); the text is rendered |
 | `composition.nests`, `composition.limits` | Gated | `layout:validate`; `usage:validate` checks the axis and option each limit names |
 | `composition.parts` | Gated | `usage:validate`, `layout:validate`, `spec:validate` (must match `anatomy`), `generate-pattern-schema.js`, `spec:generate` |
 | `composition.containedBy` | Rendered | Docs page ("Placed inside"). The names aren't validated. |
@@ -278,6 +280,6 @@ flowchart TB
 
 ## Related
 
-- Docs: [Component lifecycle](02-component-lifecycle.md), [Accessibility](03-accessibility.md), [Layout grammar](04-layout-grammar.md), [Agentic moments](06-agentic-moments.md), [Context engineering](09-context-engineering.md)
+- Docs: [Writing contract files](13-writing-contract-files.md), [Component lifecycle](02-component-lifecycle.md), [Accessibility](03-accessibility.md), [Layout grammar](04-layout-grammar.md), [Agentic moments](06-agentic-moments.md), [Context engineering](09-context-engineering.md)
 - ADRs: [001 — Component metadata schema](decisions/001-component-metadata-schema.md) (+ amendments), [027 — Component spec file](decisions/027-component-spec-file.md), [008 — Behavioral a11y tier](decisions/008-behavioral-a11y-tier.md), [013 — Cross-component pattern schema](decisions/013-cross-component-pattern-schema.md) (+ amendment), [023 — Subcomponents](decisions/023-subcomponents-compound-components.md)
 - Scripts: `npm run usage:validate`, `npm run spec:validate`, `npm run spec:generate`, `npm run patterns:generate`, `npm run a11y:coverage` — see the [CLI reference](07-cli-reference.md)

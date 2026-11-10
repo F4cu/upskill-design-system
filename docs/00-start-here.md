@@ -79,6 +79,7 @@ sources:
 # clock reset 2026-11-10: packages/components/AGENTS.md state-model and vocabulary prose shrinks once spec:validate enforces it (ADR-026 amendment 2026-11-10); this page doesn't describe either, still accurate
 # rewritten 2026-11-10: reading-order blurbs for 02 and 10 name usage.json (ADR-001 amendment 2026-11-10: metadata.json renamed usage.json)
 # clock reset 2026-11-10: pattern stories shipped (ADR-001 option D, tree dropped, /layout-generation recipes point at stories); this page's overview of usage files and commands is unchanged, still accurate
+# clock reset 2026-11-10: ADR-001 third amendment (writing rules, placeholder axes removed); this page describes no usage field, still accurate
 ---
 # Start here
 

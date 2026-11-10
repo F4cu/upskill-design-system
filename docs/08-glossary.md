@@ -49,6 +49,7 @@ sources:
 # clock reset 2026-11-10: spec:validate gains the blocking prop-vocabulary check (ADR-026 amendment 2026-11-10); the Spec and Deterministic gate entries don't enumerate its checks, still accurate
 # rewritten 2026-11-10: Component metadata entry renamed Component usage file; spec entry notes layout generation reads constraints (ADR-001 amendment 2026-11-10)
 # rewritten 2026-11-10: pattern aggregate entry no longer cites the composedOf drift check (removed with the usage.json rename); usage schema dropped patterns[].tree, other entries still accurate
+# rewritten 2026-11-10: Props and variants: only real props get an axis (ADR-001 third amendment)
 ---
 # Glossary
 
@@ -95,7 +96,7 @@ A subcomponent that accepts several children from a fixed list and lays them out
 Two things are orthogonal when they are fully independent — using or changing one has no effect on the other. In this repo, `ScrollArea` (native browser scroll), `useCarousel` (JS-animated carousel), and `useSlider` (fade-in step-through) are orthogonal: they solve different problems and share no state or implementation. The opposite of coupled.
 
 **Props and variants**
-Props are the inputs you pass to a component to control its appearance or behavior — similar to settings or options. For example, `<Button size="lg" disabled>Save</Button>` passes a `size` prop and a `disabled` prop. A **variant** is a specific type of prop that switches between named visual styles: `<Button variant="accent">` vs `<Button variant="neutral">`. Figma uses the same name, cased `Variant`. In this repo's usage files, variants are modelled as named axes — each axis (like `variant` or `size`) lists its options, its default, and the purpose of each option. This is how the scaffold and layout tools know what combinations a component supports.
+Props are the inputs you pass to a component to control its appearance or behavior — similar to settings or options. For example, `<Button size="lg" disabled>Save</Button>` passes a `size` prop and a `disabled` prop. A **variant** is a specific type of prop that switches between named visual styles: `<Button variant="accent">` vs `<Button variant="neutral">`. Figma uses the same name, cased `Variant`. In this repo's usage files, variants are modelled as named axes — each axis (like `variant` or `size`) lists its options, its default, and when to use each option. Only real props get an axis, so a component with no visual prop has no variants. This is how the scaffold and layout tools know what combinations a component supports.
 
 **Review checklist**
 The four items a component clears while in the `in review` stage: automated gate, visual review, code review, learnings back-fill. Derivation rules, per-path behavior, and the `n/a — reason` convention live in [Component lifecycle](02-component-lifecycle.md#two-axes-because-one-field-kept-lying) — the single prose owner of the checklist mechanics. See also Review path, Visual review.
