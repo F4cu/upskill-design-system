@@ -34,8 +34,8 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 - [ ] ADR-001 amendment (relabel + D, if chosen)
 
 **Pattern stories** (see "Follow-up: pattern trees vs stories")
-- [ ] Choose A, B, C or D
-- [ ] Triage the 62 patterns: write a story or delete the pattern
+- [x] Choose A, B, C or D: D (2026-11-10)
+- [ ] Triage the 62 patterns: proposed (24 keep, 38 delete), awaiting approval
 - [ ] Decide the fate of `/layout-generation`'s "Recurring patterns" section (carousel, CourseModuleList)
 - [ ] `<Name>.patterns.stories.tsx` per component; `usage:validate` checks exports ↔ pattern names; `anatomy:test`, `AnatomyOverlay`, screenshot and a11y scripts pick up the new files
 - [ ] Drop `patterns[].tree` from schema and files
@@ -366,6 +366,45 @@ B and C overlap: C makes B unnecessary, and B is a cheaper first step if C never
 **Precedent.** Systems keep examples as code and point to them from metadata. Polaris docs frontmatter: `examples: [{fileName, title, description}]`. Atlassian: an `examples/` folder, one file per example. GOV.UK Frontend: named examples as data, which serve as docs, test fixtures and previews. Primer React: `<Name>.docs.json` lists story ids, and stories are split by purpose (`.stories.tsx`, `.features.stories.tsx`, `.examples.stories.tsx`), which is the model for the separate `.patterns.stories.tsx`. The Storybook MCP manifest generates agent-facing snippets from stories. Nobody hand-writes a tree in metadata. Recalled from their public repos, not re-checked 2026-11-10. Code Connect doesn't fit: it maps one Figma component to its code, not compositions, and it's Enterprise/Org-only (ADR-002).
 
 **Why a separate `.patterns.stories.tsx`.** `<Name>.stories.tsx` holds states and options (axe sweep, screenshots). Compositions go in their own file so the layout agent opens a small file, and exports ↔ pattern names can be compared exactly. `anatomy:test` and `AnatomyOverlay` look stories up by name, so they need to read the second file too. Check that the screenshot and a11y scripts pick up the new glob.
+
+**Decision (2026-11-10): D.**
+
+### Pattern triage (proposed 2026-11-10, awaiting approval)
+
+Test for keeping a pattern: it records a decision the writer can't get from `accepts`/`containedBy`/`limits`/`useWhen` (weight, landmarks, parts use, a11y wiring, placement), and a consumer builds it. Delete: a preset's prop combination (that's a state story), a component's internal markup, trivial "Heading + Text in a Stack" shapes, duplicates, and trees that break the grammar or contradict a `notFor`.
+
+**Keep: 24 patterns (5 already have stories, 19 need one)**
+
+| Owner | Pattern | Story source |
+|---|---|---|
+| Accordion | `course-module-list` (was `course-curriculum`, takes in the show-more recipe) | move `stories/CourseModuleList.stories.tsx` |
+| Box | `page-landmarks` (merges `page-main`, `page-header`, `page-section`, `page-footer`, `container`, AppHeader `full-page-layout`) | new; AppHeader goes directly under main, per `/layout-generation` (the old AppHeader tree wrapped main in a Stack, which contradicted it) |
+| Breadcrumb | `page-header-trail` | new |
+| Button | `form-actions`, `destructive-confirm`, `card-actions`, `hero-cta` (takes in Heading `hero-block`) | new; `card-actions` and `form-actions` are cited by `limits` |
+| CardHorizontal | `started-courses-list`, `footer-recommendations`, `certified-badge` | `footer-recommendations` from `stories/FooterHighlights.stories.tsx`; `certified-badge` needs a story-local CSS Module |
+| CardVertical | `favorite-saved`, `overflow-menu`, `custom-meta`, `instructor-row`, `grouped-meta` (have stories), `card-carousel` (was `discover-carousel`, takes in ButtonArrow `carousel-paginator`, `saved-courses-carousel` and the carousel recipe) | move `stories/Carousel.stories.tsx` |
+| Checkbox | `notification-preferences` (takes in Card `preferences-section`) | new |
+| Chip | `filter-bar` (takes in `filter-bar-single`; same tree, single-select is page logic, said in `useWhen`) | new |
+| Divider | `section-break` | new |
+| ScrollArea | `native-scroll-carousel`, `scrollable-list` | new; both trees use inline styles (#151; `scrollable-list` → a height prop or Box `maxHeight`) |
+| TextField | `form-field-stack` (takes in Card `form-section`, Stack `form-field-group`), `inline-name-row` | `form-field-stack` from `stories/SettingsForm.stories.tsx`; `inline-name-row` rewritten with Box `grow` (the tree had a banned `style={{flex:1}}`) |
+| TextLink | `author-credit` | new |
+
+**Delete: 38**
+
+- **Preset prop combinations, already state stories** (6): CardVertical `default-card`, `in-progress-card`, `completed-card`, `placeholder-favorite`, `favorite-progress`, `title-only`. Check the CardVertical Figma examples section for frames named after them.
+- **A component's internal markup, not a consumer composition** (5): Avatar `nav-user-chip` (AppHeader), DropdownMenu `user-context-menu` and `custom-select` (AppHeader, Select), Image `card-thumbnail` and ProgressBar `course-progress` (CardHorizontal). DropdownMenu gets a consumer pattern once #151 lands.
+- **Merged into a kept pattern** (13): Box `page-main`, `page-header`, `page-section`, `page-footer`, `container`; AppHeader `full-page-layout`; Heading `hero-block`; ButtonArrow `carousel-paginator`; CardVertical `saved-courses-carousel`; Card `preferences-section`, `form-section`; Stack `form-field-group`; Chip `filter-bar-single`.
+- **Trivial, no decision recorded** (11): Accordion `faq-list`, Avatar `profile-header`, Badge `card-category-row` (`grouped-meta` covers badge-in-meta), Box `padded-surface`, Heading `titled-section`, Text `body-section`, Stack `content-block`, `card-body`, Icon `icon-label-pair` (`certified-badge` covers icon + text color), Image `hero-banner`, VideoFrame `video-preview-card`.
+- **Contradict another rule** (3): Inline `form-actions-row` (accent first, the opposite of Button `form-actions`), `nav-bar` (rebuilds AppHeader), `tag-group` (Text as tags; Badge/Chip exist).
+
+Renames (`course-curriculum`, `discover-carousel`) are not counted as deletions: 6 + 5 + 13 + 11 + 3 = 38, and 38 + 24 = 62.
+
+14 components end up with no patterns (AppHeader, Avatar, Badge, ButtonArrow, Card, DropdownMenu, Heading, Icon, Image, Inline, ProgressBar, Stack, Text, VideoFrame). The schema doesn't require `patterns`.
+
+**Recurring patterns in `/layout-generation`:** "Accordion with show-more" and "Card carousel with arrows" become `course-module-list` and `card-carousel`, so those two sections shrink to a pointer. The other subsections (fonts, column padding, inverted text, logos, AppHeader prop mapping) aren't compositions and stay.
+
+**Existing `src/stories/` examples:** CourseModuleList, Carousel, SettingsForm and FooterHighlights move to their owners' `.patterns.stories.tsx`. CourseSlider and `layout/Layout.stories.tsx` (Landing Page) stay as page-level examples.
 
 **Before committing to D:**
 1. Triage the 62 patterns: write a story, or delete the pattern. Some are likely filler.
