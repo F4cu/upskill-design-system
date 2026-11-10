@@ -31,6 +31,7 @@ sources:
 # clock reset 2026-10-12: ADR-023/026 amendments + packages/components AGENTS.md (an optional part maps to a Figma Has <x> boolean; ADR-023 example completion -> Value); metadata and spec schemas unchanged, this page describes no individual mapping, still accurate
 # clock reset 2026-11-10: /component-scaffold step 5 names the composition/usage.patterns fields layout generation needs; the metadata model described here is unchanged, still accurate
 # rewritten 2026-11-10: usage.json rename and relabel (ADR-001 amendment 2026-11-10): where each "don't" lives, composition limits/nests, validator checks, consumption map, diagram
+# rewritten 2026-11-10: consumption map replaced by a per-field readers table across usage.json and spec.json (incl. anatomy:test, docs renderer, airtable-sync)
 ---
 # Machine-readable metadata
 
@@ -142,12 +143,28 @@ Each anatomy part is marked in the rendered HTML with `data-part="<name>"`, and 
 
 `drift[]` checks prop names against the prop vocabulary ([ADR-026](decisions/026-component-prop-vocabulary.md)). Every `on<X>Change` callback needs an `x` prop, every `default<X>` needs both `x` and `on<X>Change`, and a selection component never carries a `selected*` prop. That is how `selectedValue` on `DropdownMenu` was caught. Components may use different callback names, because each callback is named after its own state (`onOpenChange`, `onValueChange`, `onPressedChange`). Since 2026-11-10 the same rules, plus banned names and prefixes, `false`-default booleans, collection names, axis values and Figma names, also **block** in `spec:validate` (`scripts/prop-vocabulary.js`, [ADR-026](decisions/026-component-prop-vocabulary.md) amendment). Known exceptions are listed by id in `scripts/prop-vocabulary-waivers.json`, a ledger that only shrinks.
 
-The consumption map — which command reads which section for what:
+### Who reads which field
 
-- `/component-scaffold` reads both schemas, an existing component's usage file and spec as templates, and Figma design context — it *produces* the new spec (first, from the approved API proposal) and usage file rather than consuming them.
-- `/layout-generation` reads every usage file whole (`composition` including `parts`, `limits` and `rules`; `patterns`; `notFor`; each option's `useWhen`), each spec's `constraints` and nothing else from the specs, and (layout/composition tasks only) `component-patterns.json`.
-- `a11y-coverage.js` derives "interactive" from `component.type` and the spec's `accessibility.role` and `accessibility.keyboardInteractions`, and fails the build if an interactive component has no behavioral a11y test.
-- `/extract-learnings` writes back into the spec's `accessibility.*`, `constraints` and `decisions`, and the usage file's `notFor` and `composition.*`.
+The two files are split by reader. The usage file is for **picking and composing** a component, the spec is for **building and reviewing** it, and the renderers only display both. Before adding a field, find its reader in this table. A field nobody reads costs tokens on every `/layout-generation` run and can drift without anyone noticing (`usage.keywords` was dropped on 2026-11-10 for that reason).
+
+| Reader | Kind | From `usage.json` | From `spec.json` | What for |
+|---|---|---|---|---|
+| `/component-scaffold` (Stage 1 of `/add-component`) | Writer | Writes it after the spec | Writes it first, from the approved API proposal | A new component's contract, written before the code. The closest existing pair is read as a template. |
+| `/layout-generation` | Picker / composer | Every file, whole: `composition` (incl. `parts`, `limits`, `rules`), `patterns`, `notFor`, each option's `useWhen` | `constraints` only | Choosing components and citing a field for every structural choice |
+| `layout:validate` (`validate-layout.js`) | Gate | `composition` (`accepts`, `containedBy`, `nests`, `limits`, `parts`) | — | Checking a layout file against the composition graph |
+| `/review-component` | Builder check | — | The whole spec, as the intent the code is held to: each `anatomy` role and `action` against the markup, `constraints` against their `enforcedBy`, `states` against the CSS and handlers | Findings that `spec:validate` can't produce |
+| `spec:validate` (`validate-spec.js`) | Gate | `variants` (options must match the spec's props) | Every section, against the code and the built tokens | Keeping the spec and the code in step |
+| `usage:validate` (`validate-usage.js`) | Gate | Every section, against the schema and the fixed set | Parse check only | Keeping the usage file well-formed |
+| `anatomy:test` | Gate | — (a pattern example renders the story named after the pattern) | `anatomy`, `anatomyExamples` | Every part renders with its `data-part` marker |
+| `a11y-coverage.js` | Gate | `component.type` | `accessibility.role`, `accessibility.keyboardInteractions` | Deriving "interactive" and requiring a behavioral a11y test |
+| `generate-pattern-schema.js` | Aggregator | `component.type`, `component.status` | — | Building `.claude/component-patterns.json` (with the JSX scan) |
+| `airtable-sync.js` | Governance push | `component` (incl. `status`, `figmaNodeId`), `variants` | `styles` tokens, through `readComponentUsage` | The Airtable component table (ADR-010) |
+| `spec-bundle.js` → docs component pages | Renderer | `component`, `useWhen`, `notFor`, `patterns`, `variants`, `composition` | `anatomy`, `anatomyExamples`, `props`, `constraints`, `states`, `accessibility`, `styles`, `figma`, `decisions`, `ruledOut` | Generated pages: the anatomy overlay drawn on rendered examples, a parts tree and a parts table ([ADR-030](decisions/030-spec-renderers.md)) |
+| Figma parity plugin (planned, ADR-030 Part B) | Renderer | Through `specs.bundle.json` | Through `specs.bundle.json` | Flagging differences between Figma and the spec |
+| `spec:generate` (`generate-spec.js`) | Writer | `composition.parts` | Drafts every section from existing code | Backfilling specs only, never a new component |
+| `/extract-learnings` | Writer | Writes `notFor`, `composition.*` | Writes `accessibility.*`, `constraints`, `decisions` | Turning review findings into durable rules |
+
+`anatomy` is builder context, not only renderer input. The scaffold writes it before any code, the code marks each part with `data-part`, `anatomy:test` checks the markers, and the reviewer checks each part's role. The docs diagram reuses the same data. `anatomyExamples` is the one section that exists mainly for display, but `anatomy:test` renders the same examples, so it stays in the spec.
 
 `component.type` is the one place the schema enforces a closed taxonomy (`interactive|display|container|input|layout`; the atomic-design `category` it used to sit beside was dropped on 2026-11-10, since only its `layout` value was ever read). Every other section is free-text within its shape. That's deliberate: the field is load-bearing for both `a11y-coverage.js`'s interactivity derivation and `generate-pattern-schema.js`'s bucketing fallback (`layout-primitive` when structural detection finds nothing else), so an unenforced vocabulary there would quietly break two downstream consumers at once.
 
