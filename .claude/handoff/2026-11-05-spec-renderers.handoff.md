@@ -57,9 +57,24 @@ Where a spec has nothing for a section, the renderer says "none recorded". It ne
 
 ### Phase A2: anatomy diagram
 
-- **Cheapest option:** a Mermaid tree of the anatomy nesting. `astro-mermaid` is already installed.
-- **Richer option:** the live component with numbered markers on its parts, which needs `@astrojs/react` and a way to find parts in the DOM (check whether components expose a part attribute). Or embed the Storybook default story.
-- Decide by trying the Mermaid tree on CardVertical first.
+Target look: numbered markers on the rendered component plus a numbered legend, as in the [M3 card guidelines](https://m3.material.io/components/cards/guidelines). Those images look hand-exported from Figma, so they show the look, not a way to generate it. Spectacular draws on the Figma canvas from named layers, which is Part B's method, not Part A's.
+
+**Options (checked 2026-11-10):**
+
+- **Live component with an SVG overlay (leaning).** The page renders the real component at build time with `@astrojs/react` (the only new dependency). A small script on the page measures each part's position and size and draws numbered markers in an SVG over it. The legend comes from `anatomy[]`. It follows theme and brand, and can't drift from code because it *is* the code. No diagram library.
+- **Screenshot at build time.** Playwright opens the Storybook story, reads each part's position and size, and writes an SVG with the screenshot embedded. Works without JavaScript, but needs one image per theme and makes the build heavier. Fallback only.
+- **Mermaid tree** (`astro-mermaid` already installed). Shows how parts nest, not where they sit. Use it next to the overlay for deep nesting (CardVertical, 4 levels), not instead of it.
+
+**Prerequisite: no component marks its parts in the rendered HTML** (Open decision 9). On 2026-11-10, no component under `packages/components/src` set `data-part`, `data-slot` or anything like it. The spec names the parts, and Figma layer names point to them (ADR-023). Code has no equivalent, so the overlay has nothing to find. This is a missing implementation convention, not a missing contract layer: `spec.json` already holds the structure the diagram needs.
+
+- Button's `Label` is bare text with no wrapping element. Either wrap it, or measure the text node with a DOM `Range`.
+- Optional parts with a `when` condition (Button's `Icon`, `TrailingIcon`) render only with the right props. The diagram needs a set of props that turns them all on. That could be an optional spec field or a dedicated Storybook story.
+
+**Spike:**
+
+1. Add `@astrojs/react` to `apps/docs` and confirm a component renders inside Starlight with its CSS Modules and `tokens.css`.
+2. Add `data-part` to Button and CardVertical only, and build the overlay.
+3. Check whether CardVertical's 21 markers still read clearly. If they don't, fall back to a Mermaid tree plus markers on the top-level parts only. Record which one ships.
 
 ### Phase A3: all 27 components
 
@@ -104,12 +119,17 @@ One auto-layout frame per component, with the five sections, placed next to its 
 
 1. **ADR-030 scope:** one ADR for the bundle plus both renderers, or one for the bundle and docs pages now and an amendment when the plugin starts. Leaning one ADR, amended per part.
 2. **Docs pages:** custom collection loader or dynamic `StarlightPage` route (see Part A). Either way, no generated markdown committed.
-3. **Anatomy diagram on the web:** Mermaid tree, live component with markers, or Storybook embed (Phase A2).
+3. **Anatomy diagram on the web:** live component with an SVG overlay (leaning), screenshot at build time, or Mermaid tree only (Phase A2). Depends on decision 9.
 4. **Bundle committed or built:** built in CI (recommended; it's derived) or committed as a frozen file. Committed would let `sense.js` read it, but it's one more file to keep in sync.
 5. **Plugin workspace location:** `apps/figma-spec-sheets` (a consumer, like `apps/showcase`) or `packages/figma-plugin`. Leaning `apps/`, since nothing imports it.
 6. **Where sheets live in the Figma file:** next to each set on the component pages, or a dedicated Specs page that links back to the set. A dedicated page is less risky for the library's published layout.
 7. **Plugin mismatch policy:** flag only, or also offer "bind to spec token" (writing to Figma). Leaning flag-only for v1; writing is `/figma-cli`'s job and goes through the fidelity handoff's decision path.
 8. **Name:** "spec sheets" is a working name for the plugin. Pick something that doesn't read as a copy of Spectacular.
+9. **Part names in rendered HTML:** each anatomy part's element carries `data-part="<anatomy name>"`. That's the code equivalent of ADR-023's rule that part names equal Figma layer names. Other libraries do the same (Ark UI / Zag.js use `data-scope` + `data-part`, newer shadcn/ui components use `data-slot`), and it also gives tests and styles a stable hook. Sub-questions:
+   - **Enforcement:** a check in `spec:validate`, or a test that renders each component, that every `anatomy[].name` appears as a `data-part` in the output.
+   - **Bare-text parts** like Button's `Label`: wrap them in an element, or let the overlay measure the text node.
+   - **Optional parts:** add an optional spec field listing props that render every part, or use a Storybook story.
+   - **Where it's recorded:** other code and tooling will depend on this convention, so it needs an ADR (part of ADR-030, or its own) plus a line in `packages/components/AGENTS.md`. The spec schema doesn't change unless the optional-props field is added.
 
 ## Measurement (for the case study; decide before Phase A1)
 
