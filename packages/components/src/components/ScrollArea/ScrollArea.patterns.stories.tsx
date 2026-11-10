@@ -23,13 +23,11 @@ const meta: Meta<typeof ScrollArea> = {
 export default meta
 type Story = StoryObj<typeof ScrollArea>
 
-// The max-content width and the fixed height are inline until #151 moves them
-// inside ScrollArea.
 export const NativeScrollCarousel: Story = {
   render: () => (
     <Box maxWidth={640}>
       <ScrollArea orientation="horizontal">
-        <Inline gap="md" wrap={false} align="start" style={{ width: 'max-content' }}>
+        <Inline gap="md" wrap={false} align="start">
           {COURSES.map((course) => (
             <Box key={course.title} minWidth={250} maxWidth={250}>
               <CardVertical size="sm" {...course} />
@@ -43,7 +41,7 @@ export const NativeScrollCarousel: Story = {
 
 export const ScrollableList: Story = {
   render: () => (
-    <ScrollArea orientation="vertical" style={{ height: 240 }}>
+    <ScrollArea orientation="vertical" maxHeight={240}>
       <Stack gap="sm">
         {LESSONS.map((lesson) => (
           <Text key={lesson}>{lesson}</Text>

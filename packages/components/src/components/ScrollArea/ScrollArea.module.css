@@ -12,6 +12,12 @@
   overflow-y: hidden;
 }
 
+/* A block-level child is clamped to the container's width, so its items shrink
+   instead of overflowing. Sizing it to its content is what makes the row scroll. */
+.horizontal > * {
+  width: max-content;
+}
+
 .vertical {
   overflow-y: auto;
   overflow-x: hidden;

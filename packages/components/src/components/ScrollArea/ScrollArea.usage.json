@@ -46,13 +46,6 @@
     ],
     "width": "fill",
     "nests": false,
-    "donts": [
-      {
-        "case": "Placing a block-level Inline inside ScrollArea without width: max-content",
-        "because": "Block-level flex containers are constrained to their parent's width by the browser. Inside overflow-x: auto the browser squeezes items rather than creating scroll, causing cards to shrink and titles to wrap unexpectedly.",
-        "instead": "Always pass style={{ width: 'max-content' }} to Inline when it is the direct child of a horizontal ScrollArea."
-      }
-    ],
     "patterns": [
       {
         "name": "native-scroll-carousel",

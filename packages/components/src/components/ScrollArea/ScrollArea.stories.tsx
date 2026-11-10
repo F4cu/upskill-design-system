@@ -19,6 +19,7 @@ const meta: Meta<typeof ScrollArea> = {
   component: ScrollArea,
   argTypes: {
     orientation: { control: 'radio', options: ['horizontal', 'vertical'] },
+    maxHeight: { control: 'number' },
   },
 }
 
@@ -30,7 +31,7 @@ export const Default: Story = {
   render: (args) => (
     <div style={{ width: 640 }}>
       <ScrollArea {...args}>
-        <Inline gap="md" wrap={false} align="start" style={{ width: 'max-content' }}>
+        <Inline gap="md" wrap={false} align="start">
           {COURSES.map((course) => (
             <div key={course.title} style={{ width: 250 }}>
               <CardVertical
@@ -48,16 +49,14 @@ export const Default: Story = {
 }
 
 export const Vertical: Story = {
-  args: { orientation: 'vertical' },
+  args: { orientation: 'vertical', maxHeight: 200 },
   render: (args) => (
-    <div style={{ height: 200 }}>
-      <ScrollArea {...args} style={{ height: '100%' }}>
-        <Stack gap="sm">
-          {COURSES.map((course) => (
-            <Text key={course.title} size="body-default">{course.title}</Text>
-          ))}
-        </Stack>
-      </ScrollArea>
-    </div>
+    <ScrollArea {...args}>
+      <Stack gap="sm">
+        {COURSES.map((course) => (
+          <Text key={course.title} size="body-default">{course.title}</Text>
+        ))}
+      </Stack>
+    </ScrollArea>
   ),
 }

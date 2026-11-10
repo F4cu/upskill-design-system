@@ -23,6 +23,15 @@
         "property": "Orientation"
       }
     },
+    "maxHeight": {
+      "kind": "content",
+      "type": "string | number",
+      "default": null,
+      "concept": "new term: layout prop shared with the layout primitives (Box maxHeight, ADR-011, ADR-020); ADR-026 has no row for it",
+      "figma": {
+        "surface": "code-only"
+      }
+    },
     "children": {
       "kind": "content",
       "type": "ReactNode",
