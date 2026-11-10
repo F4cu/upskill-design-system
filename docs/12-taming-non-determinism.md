@@ -24,6 +24,7 @@ sources:
 # rewritten 2026-11-10: citations and parts name usage.json fields; gate command uses usage:validate (ADR-001 amendment 2026-11-10)
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts, patterns → composition.patterns {name, useWhen} with stories
 # clock reset 2026-11-10: pattern tree dropped and pattern-story export check added to usage:validate; this page's account of the deterministic gates still holds
+# clock reset 2026-11-10: ADR-001 third amendment (variants optional, prose lint as warnings in usage:validate); the gate and checks this page describes are unchanged, still accurate
 ---
 # Taming non-determinism
 
