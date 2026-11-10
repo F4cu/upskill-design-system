@@ -55,6 +55,28 @@ Placement candidates (not picking info): `component.status` (lifecycle, ADR-010)
 
 Caveat: their library has 195 entries read through a CLI shortlist. Here `/layout-generation` reads all 27 files whole, so every added field (T8 especially) costs 27× per run. Measure with the pattern-accuracy harness before and after.
 
+## Direction (decided 2026-11-10): thin picking, rich composition
+
+toolkit-research is weighted toward **picking**: 195 entries, many lookalikes, and an agent shortlisting 2–3 from a problem statement. That isn't this system's problem:
+
+- **27 components with mostly distinct roles, read whole.** `/layout-generation` reads all 27 files on every run, so nothing is searched. When a layout starts from Figma, the instance on the canvas usually decides the component.
+- **The hard part here is composition.** It's knowing the weight per container (a card's lead action is `neutral`, never `accent`), what nests where, and which tree a region uses. That knowledge lives in `usage.patterns` (64 trees), `composition`, `variants.purpose` and the anti-patterns about weight and containment.
+- **Evidence:** nothing in `scripts/`, `apps/` or `.claude/commands/` reads `usage.keywords`. Only the schema mentions it. 106 anti-patterns across the set: sort them into wrong picks, composition rules and build rules during the audit.
+
+What that does to the takeaways:
+
+| | Change |
+|---|---|
+| T5 keywords | **Drop the field.** No reader; costs tokens 27× per run. |
+| T2 when lines | Keep `when` short, or fold it into `description`. No new picking field. |
+| T3/T4 `instead` / lookalikes | **Only for real lookalike groups:** Badge/Chip, Card/CardHorizontal/CardVertical, Button/ButtonArrow/TextLink. |
+| T8 content / overflow | Not in usage. Long-text behaviour goes to `spec.json` if anywhere. |
+| T11 group by purpose | Low priority. |
+| T1 build rules → `spec.json` | Unchanged; still the biggest cleanup. |
+| `patterns`, `composition`, weight rules | **The part to invest in.** Labels should make composition the main content of the file. |
+
+The name still fits: "usage" covers *how to use* a component, not only *when to pick* it. **Change the audit's focus to match:** study how other systems document composition (GOV.UK patterns built from components, shadcn blocks, Atlassian/Polaris do and don't pairs on placement, ADR-013's pattern aggregate) more than their when-to-use pages, which toolkit-research has already covered.
+
 ## Rename blast radius (measured 2026-11-10)
 
 27 data files plus about 50 live references outside `.claude/handoff/archive/`:
