@@ -29,6 +29,7 @@ sources:
 # 2026-11-10: gate list gains anatomy:test (ADR-030 amendment); ADR-027 amendment adds anatomy builtOnPart/notRendered, which this page doesn't describe
 # rewritten 2026-11-10: metadata.json renamed usage.json and relabelled (ADR-001 amendment 2026-11-10); schema paragraph, variants example and gate command updated
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts, patterns → composition.patterns {name, useWhen} with stories
+# rewritten 2026-11-10: carousel reference is now the CardVertical card-carousel pattern story (ADR-006 amendment); usage:validate also checks pattern names against <Name>.patterns.stories.tsx exports
 ---
 # Component lifecycle
 
@@ -80,7 +81,7 @@ The existing prop API stays as a **preset**, rebuilt from the parts, so nothing 
 
 ### The carousel precedent: sometimes the answer is a hook
 
-[ADR-006](decisions/006-carousel-hook-not-component.md) is the same don't-over-build spirit applied a level up. The Homepage needed a horizontal card carousel; the options were a full `Carousel` component, a hook + documented pattern, or nothing. Prior art split cleanly: Polaris, Atlassian, Radix, and Chakra ship *no* carousel component (primitives + pattern); Carbon, Ant, and Bootstrap ship one but are full product frameworks that accept the maintenance cost; shadcn/ui wraps Embla. The decision: `useCarousel(itemCount, visibleCount)` encapsulates only the error-prone shared logic (offset tracking, `canPrev`/`canNext`, `prev`/`next`/`reset`); layout and markup stay in consuming code, with the `Layout/Examples/Carousel` story as the canonical reference. "Nothing" was rejected because developers would diverge on disabled-state logic and produce off-by-one bugs. The revisit trigger is explicit: 3+ distinct layouts or raised a11y requirements.
+[ADR-006](decisions/006-carousel-hook-not-component.md) is the same don't-over-build spirit applied a level up. The Homepage needed a horizontal card carousel; the options were a full `Carousel` component, a hook + documented pattern, or nothing. Prior art split cleanly: Polaris, Atlassian, Radix, and Chakra ship *no* carousel component (primitives + pattern); Carbon, Ant, and Bootstrap ship one but are full product frameworks that accept the maintenance cost; shadcn/ui wraps Embla. The decision: `useCarousel(itemCount, visibleCount)` encapsulates only the error-prone shared logic (offset tracking, `canPrev`/`canNext`, `prev`/`next`/`reset`); layout and markup stay in consuming code, with the CardVertical `card-carousel` pattern story (`CardVertical.patterns.stories.tsx`) as the canonical reference. "Nothing" was rejected because developers would diverge on disabled-state logic and produce off-by-one bugs. The revisit trigger is explicit: 3+ distinct layouts or raised a11y requirements.
 
 ## How it works, concretely
 

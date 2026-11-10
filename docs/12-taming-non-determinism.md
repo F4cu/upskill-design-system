@@ -23,6 +23,7 @@ sources:
 # clock reset 2026-11-10: spec:validate also blocks prop-vocabulary violations (ADR-026 amendment 2026-11-10); the gate list on this page is unchanged, still accurate
 # rewritten 2026-11-10: citations and parts name usage.json fields; gate command uses usage:validate (ADR-001 amendment 2026-11-10)
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts, patterns → composition.patterns {name, useWhen} with stories
+# clock reset 2026-11-10: pattern tree dropped and pattern-story export check added to usage:validate; this page's account of the deterministic gates still holds
 ---
 # Taming non-determinism
 

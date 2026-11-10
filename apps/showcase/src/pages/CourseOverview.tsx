@@ -194,7 +194,7 @@ export default function CourseOverview() {
 
                 <Heading as="h2" size="subheader">Content</Heading>
 
-                {/* CourseModuleList pattern: Accordion + show-more transparent Button (Layout/Examples/CourseModuleList) */}
+                {/* CourseModuleList pattern: Accordion + show-more transparent Button (Accordion pattern course-module-list) */}
                 {/* showAll state slices ALL_MODULES; button label + icon reflect toggle state */}
                 <div>
                   <Accordion>

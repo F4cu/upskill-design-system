@@ -78,6 +78,7 @@ sources:
 # clock reset 2026-11-10: moment invariants move from CLAUDE.md into each command file, Common tasks trimmed (ADR-029 amendment 2026-11-10); this page lists the moments and files, not their contents, still accurate
 # clock reset 2026-11-10: packages/components/AGENTS.md state-model and vocabulary prose shrinks once spec:validate enforces it (ADR-026 amendment 2026-11-10); this page doesn't describe either, still accurate
 # rewritten 2026-11-10: reading-order blurbs for 02 and 10 name usage.json (ADR-001 amendment 2026-11-10: metadata.json renamed usage.json)
+# clock reset 2026-11-10: pattern stories shipped (ADR-001 option D, tree dropped, /layout-generation recipes point at stories); this page's overview of usage files and commands is unchanged, still accurate
 ---
 # Start here
 

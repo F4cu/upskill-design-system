@@ -5,6 +5,7 @@ title: "ADR-006 — Carousel as hook + pattern, not a DS component"
 
 **Date:** 2026-06-18
 **Status:** `accepted`
+**Amended:** 2026-11-10
 
 ## Context
 
@@ -39,3 +40,7 @@ Option 1 (full component) was rejected because it would grow scope without a cle
 - The `Layout/Examples/Carousel` story is the reference implementation. Divergence from it is intentional and visible in review.
 - If the carousel pattern is used in 3+ distinct layouts with meaningfully different markup, or if accessibility requirements (keyboard nav, `aria-live`) are raised, this decision should be revisited and a `Carousel` component considered — at that point `useCarousel` becomes its internal hook rather than a throwaway.
 - A `ScrollArea` primitive (see ADR-007 if created) would complement this pattern by standardising the overflow clip container, but is a separate concern.
+
+## Amendment (2026-11-10)
+
+The reference implementation moved. `Layout/Examples/Carousel` was deleted, and the canonical carousel is now the CardVertical pattern `card-carousel`, the `CardCarousel` export in `CardVertical.patterns.stories.tsx` (ADR-001 amendment 2026-11-10, option D). The decision itself is unchanged: hook plus pattern, no `Carousel` component.
