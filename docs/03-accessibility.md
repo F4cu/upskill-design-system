@@ -24,6 +24,7 @@ sources:
 # clock reset 2026-10-09: a11y-coverage.js imports isInteractive from scripts/lib.js (shared with component:risk); the Tier 2 derivation and gate are unchanged, still accurate
 # clock reset 2026-10-10: token-contrast-check.js gains Button/Chip :active pairs; active text darkens a step instead of new waivers; curation and waiver conventions unchanged, still accurate
 # rewritten 2026-10-12: a11y-coverage.js reads accessibility.* from the spec (ADR-027 rollout); wording of where the fields live updated
+# rewritten 2026-11-10: interactivity derivation names the usage file (metadata.json renamed usage.json, ADR-001 amendment 2026-11-10); a11y-coverage.js logic unchanged
 ---
 # Accessibility
 
@@ -47,7 +48,7 @@ Three harness options were weighed. Storybook test-runner + Playwright + axe (a 
 
 ### Gated by *derived* interactivity, not applied everywhere
 
-Requiring behavioral tests for every component would "write near-empty tests for ~18 display/landmark components." Instead, `scripts/a11y-coverage.js` derives interactivity from fields the component already declares (no schema change): a component is interactive if its metadata `component.type ∈ {interactive, input}`, **or** its [spec](08-glossary.md)'s `accessibility.role` is an interactive ARIA role, **or** it declares a keyboard interaction beyond plain Tab / native scroll. A naive "has any `keyboardInteraction`" rule was explicitly rejected — it over-includes `AppHeader`, `Breadcrumb`, and `ScrollArea` via native-scroll Tab behavior. The derivation resolves to the genuine widgets: `Button`, `ButtonArrow`, `Chip`, `Checkbox`, `Select`, `TextField`, `DropdownMenu` (plus `Accordion` once built). Non-interactive components (`Badge`, `Divider`) need no test.
+Requiring behavioral tests for every component would "write near-empty tests for ~18 display/landmark components." Instead, `scripts/a11y-coverage.js` derives interactivity from fields the component already declares (no schema change): a component is interactive if its usage file's `component.type ∈ {interactive, input}`, **or** its [spec](08-glossary.md)'s `accessibility.role` is an interactive ARIA role, **or** it declares a keyboard interaction beyond plain Tab / native scroll. A naive "has any `keyboardInteraction`" rule was explicitly rejected — it over-includes `AppHeader`, `Breadcrumb`, and `ScrollArea` via native-scroll Tab behavior. The derivation resolves to the genuine widgets: `Button`, `ButtonArrow`, `Chip`, `Checkbox`, `Select`, `TextField`, `DropdownMenu` (plus `Accordion` once built). Non-interactive components (`Badge`, `Divider`) need no test.
 
 ### The jsdom trade-off, accepted and then partially closed
 
