@@ -9,17 +9,6 @@
   "useWhen": [
     "Every page that requires global navigation and search"
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Elevated background bar with logo, search, nav links, and user dropdown."
-      }
-    }
-  },
   "composition": {
     "accepts": [],
     "containedBy": [],

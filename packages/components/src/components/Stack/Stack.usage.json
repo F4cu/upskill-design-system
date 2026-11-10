@@ -18,17 +18,6 @@
       "instead": "Inline"
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Column flex container with configurable gap, alignment, and justification."
-      }
-    }
-  },
   "composition": {
     "accepts": [
       "Box",

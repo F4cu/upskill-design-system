@@ -18,17 +18,6 @@
       "note": "Use a spinner or skeleton component (not in scope for this library)."
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Accent-coloured fill on a neutral track."
-      }
-    }
-  },
   "composition": {
     "accepts": [],
     "containedBy": [

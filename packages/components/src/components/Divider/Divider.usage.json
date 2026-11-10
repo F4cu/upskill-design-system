@@ -18,17 +18,6 @@
       "note": "Use the container's own border. Divider separates content inside a container."
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Horizontal rule with the default border token."
-      }
-    }
-  },
   "composition": {
     "accepts": [],
     "containedBy": [

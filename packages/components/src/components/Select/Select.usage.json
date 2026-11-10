@@ -24,17 +24,6 @@
       "note": "Use Checkbox for a single on/off toggle; use radio inputs for two mutually exclusive choices."
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Standard dropdown with label. Error state is controlled via the error prop."
-      }
-    }
-  },
   "composition": {
     "accepts": [],
     "containedBy": [

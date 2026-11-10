@@ -25,17 +25,6 @@
       "note": "Use Stack with Heading and Text for always-visible sections"
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Single variant. Visual style is always the same: transparent trigger, elevated background when expanded."
-      }
-    }
-  },
   "composition": {
     "accepts": [
       "AccordionItem"

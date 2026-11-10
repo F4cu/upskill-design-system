@@ -21,7 +21,8 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 - [x] ~~Step 6: re-run the pattern-accuracy harness~~ Not possible: frozen at `044d28f`
 
 **Rename follow-ups** (step 7)
-- [ ] Editorial pass: variant `useWhen` situation-first, descriptions open on a category noun, prop-usage lines out of top-level `useWhen`, px sizes to spec (26 components)
+- [x] Editorial pass, groundwork: writing rules in the schema descriptions, prose lint in `usage:validate` (warnings, `PROSE_FAILS = false`; 78 at start), `variants` optional + every axis must be a spec prop, 11 placeholder `variant` axes removed; ADR-001 third 2026-11-10 amendment (2026-11-10)
+- [ ] Editorial pass, rewrite: variant `useWhen` situation-first, descriptions open on a category noun, prop-usage lines out of top-level `useWhen`, px sizes to spec (26 components + the example file, which copies Button). Done when the lint is clean and `PROSE_FAILS` flips to `true`
 - [ ] GitHub issue: narrow `BadgeProps` to omit `onClick`/`onKeyDown`, and `IconProps` to omit `color`/`fill`/`stroke`/`role`/`aria-*` (Icon's old rule text noted only `children` is omitted)
 - [ ] The 9 documented-only constraints enforced by `spec:validate`
 

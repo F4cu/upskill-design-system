@@ -17,17 +17,6 @@
       "instead": "Image"
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "16:9 thumbnail with centred play overlay."
-      }
-    }
-  },
   "composition": {
     "accepts": [],
     "containedBy": [

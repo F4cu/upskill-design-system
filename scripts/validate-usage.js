@@ -2,7 +2,7 @@
 // Validates every <Name>.usage.json against component.usage.schema.json
 // (ADR-001 amendment 2026-11-10). Also checks that component.name matches the
 // folder, that notFor.instead names a component, that composition.limits name
-// real variant options, that pattern names are unique across the set and match
+// real variant options, that every variant axis is a spec prop, that pattern names are unique across the set and match
 // the exports of <Name>.patterns.stories.tsx, resolves composition.parts cross-references, validates
 // the canonical example file, and checks every <Name>.spec.json parses. Exits
 // non-zero on any failure so it can gate CI. This is the contract the
@@ -38,7 +38,7 @@ function schemaError(e) {
   const at = e.instancePath || "/";
   if (e.keyword === "enum") return `${at} must be one of: ${e.params.allowedValues.map((v) => JSON.stringify(v)).join(", ")}`;
   if (e.keyword === "minProperties" && at === "/variants") {
-    return `${at} must have at least one axis — model a binary state as an axis, e.g. { "checked": { "options": [false, true], "default": false, "useWhen": { … } } } (Chip)`;
+    return `${at} is empty — omit variants when the component has no visual prop`;
   }
   if (e.keyword === "additionalProperties") {
     const prop = e.params.additionalProperty;
@@ -168,6 +168,44 @@ function checkVariantUseWhen(data) {
   return errors;
 }
 
+// Every axis is a prop of the spec, so a placeholder axis with no prop behind
+// it can't creep back in (ADR-001 amendment 2026-11-10, third).
+function checkAxesAreProps(data, dir) {
+  const file = path.join(dir, `${data.component?.name}.spec.json`);
+  if (!fs.existsSync(file)) return [];
+  const props = JSON.parse(fs.readFileSync(file, "utf8")).props ?? {};
+  return Object.keys(data.variants ?? {})
+    .filter((axis) => !(axis in props))
+    .map((axis) => `variants.${axis}: not a prop in ${data.component.name}.spec.json — omit placeholder axes`);
+}
+
+// The mechanical part of the schema's writing rules. Warnings until the
+// editorial pass lands, then PROSE_FAILS flips to true.
+const PROSE_FAILS = false;
+const DESCRIPTION_MAX_WORDS = 25;
+const LINE_MAX_WORDS = 20;
+const UNITS = /\b\d+(\.\d+)?(px|rem|em)\b/;
+const CSS = /\b(overflow(-[xy])?|border(-[a-z]+)*|line-height|font-(weight|size|family)|display|flex(-[a-z]+)?|pointer-events|aspect-ratio)\s*:/;
+const words = (s) => s.trim().split(/\s+/).length;
+function checkProse(data) {
+  const issues = [];
+  const line = (at, text, max) => {
+    if (words(text) > max) issues.push(`${at}: ${words(text)} words (max ${max})`);
+    if (UNITS.test(text)) issues.push(`${at}: a size in px/rem belongs in the spec`);
+    if (CSS.test(text)) issues.push(`${at}: CSS belongs in the spec`);
+  };
+  const d = data.component?.description ?? "";
+  if (!/^An? [a-z]/.test(d)) issues.push(`component.description: open on one category noun, "A <noun> that …"`);
+  if (/\bADR-\d+/.test(d)) issues.push(`component.description: no ADR references`);
+  line("component.description", d, DESCRIPTION_MAX_WORDS);
+  (data.useWhen ?? []).forEach((w, i) => line(`useWhen[${i}]`, w, LINE_MAX_WORDS));
+  for (const [axis, v] of Object.entries(data.variants ?? {})) {
+    for (const [opt, w] of Object.entries(v.useWhen ?? {})) line(`variants.${axis}.useWhen.${opt}`, w, LINE_MAX_WORDS);
+  }
+  (data.composition?.patterns ?? []).forEach((p) => line(`composition.patterns["${p.name}"].useWhen`, p.useWhen, LINE_MAX_WORDS));
+  return issues;
+}
+
 const targets = [];
 for (const dir of fs.readdirSync(COMPONENTS_DIR)) {
   const file = path.join(COMPONENTS_DIR, dir, `${dir}.usage.json`);
@@ -178,6 +216,7 @@ for (const dir of fs.readdirSync(COMPONENTS_DIR)) {
 targets.push({ file: EXAMPLE_PATH, expectedName: null });
 
 let failures = 0;
+let proseWarnings = 0;
 for (const { file, expectedName, stray, legacy } of targets) {
   const rel = path.relative(ROOT, file);
   if (stray) {
@@ -211,7 +250,9 @@ for (const { file, expectedName, stray, legacy } of targets) {
 
   if (data.composition?.parts) errors.push(...checkParts(data.composition.parts));
   errors.push(...checkNotFor(data), ...checkLimits(data), ...checkVariantUseWhen(data));
-  if (expectedName) errors.push(...checkPatterns(data, rel), ...checkPatternStories(data, path.dirname(file)));
+  if (expectedName) errors.push(...checkPatterns(data, rel), ...checkPatternStories(data, path.dirname(file)), ...checkAxesAreProps(data, path.dirname(file)));
+  const prose = checkProse(data);
+  if (PROSE_FAILS) errors.push(...prose);
 
   if (errors.length) {
     console.error(`✗ ${rel}`);
@@ -219,6 +260,10 @@ for (const { file, expectedName, stray, legacy } of targets) {
     failures++;
   } else {
     console.log(`✓ ${rel}`);
+  }
+  if (!PROSE_FAILS && prose.length) {
+    proseWarnings += prose.length;
+    for (const msg of prose) console.warn(`    ⚠ ${msg}`);
   }
 }
 
@@ -240,4 +285,5 @@ if (failures) {
   console.error(`\n${failures} file(s) failed validation.`);
   process.exit(1);
 }
+if (proseWarnings) console.warn(`\n⚠ ${proseWarnings} writing-rule warning(s); they fail once PROSE_FAILS is true.`);
 console.log(`\n✓ All ${targets.length} usage files valid.`);

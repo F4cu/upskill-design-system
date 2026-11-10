@@ -18,17 +18,6 @@
       "note": "Omit the breadcrumb."
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Ordered trail of linked items with a non-linked current page label."
-      }
-    }
-  },
   "composition": {
     "accepts": [],
     "containedBy": [

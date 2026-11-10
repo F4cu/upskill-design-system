@@ -25,17 +25,6 @@
       "note": "Use native <input type='checkbox'> with an immediate onChange handler and role='switch' until a Switch component is added."
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Single boolean toggle. Checked/disabled states are controlled via standard HTML props."
-      }
-    }
-  },
   "composition": {
     "accepts": [],
     "containedBy": [

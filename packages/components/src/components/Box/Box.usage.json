@@ -20,15 +20,6 @@
     }
   ],
   "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "A generic padded container. Rendered as div by default; override with the as prop for semantic HTML."
-      }
-    },
     "background": {
       "options": [
         "canvas",

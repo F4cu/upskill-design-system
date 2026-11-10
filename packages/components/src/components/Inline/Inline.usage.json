@@ -18,17 +18,6 @@
       "instead": "Stack"
     }
   ],
-  "variants": {
-    "variant": {
-      "options": [
-        "default"
-      ],
-      "default": "default",
-      "useWhen": {
-        "default": "Row flex container with configurable gap, alignment, justification, and optional wrapping."
-      }
-    }
-  },
   "composition": {
     "accepts": [
       "Box",
