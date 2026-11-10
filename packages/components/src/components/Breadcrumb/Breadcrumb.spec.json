@@ -57,8 +57,10 @@
       "if": {
         "items": "*"
       },
-      "reason": "Omit href on the last item: it is the current page, which the component renders as plain text with aria-current=page.",
-      "enforcedBy": []
+      "reason": "Omit href on the last item: it is the current page, which the component renders as plain text with aria-current=page, ignoring any href.",
+      "enforcedBy": [
+        "test"
+      ]
     }
   ],
   "states": [

@@ -4,12 +4,14 @@ import styles from './Text.module.css'
 export type TextSize = 'body-default' | 'body-small' | 'metadata' | 'label' | 'inherit'
 export type TextColor = 'default' | 'subtle' | 'brand' | 'disabled' | 'inverted' | 'inverted-subtle' | 'accent-inverted'
 
-export type TextProps = {
-  as?: ElementType
+type TextElement =
+  | { as: 'label'; htmlFor?: string }
+  | { as?: Exclude<ElementType, 'label'>; htmlFor?: never }
+
+export type TextProps = TextElement & {
   size?: TextSize
   color?: TextColor
   className?: string
-  htmlFor?: string
   style?: CSSProperties
   children?: React.ReactNode
 } & Omit<HTMLAttributes<HTMLElement>, 'style'>

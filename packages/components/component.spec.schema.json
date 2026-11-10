@@ -144,7 +144,7 @@
     },
 
     "constraints": {
-      "description": "Prop combinations the component requires or forbids. Contextual misuse (where a component is placed) goes in <Name>.usage.json composition.rules. Content-format rules on a single prop are documented-only constraints (empty enforcedBy).",
+      "description": "Prop combinations the component requires or forbids. Contextual misuse (where a component is placed) goes in <Name>.usage.json composition.donts. Content-format rules on a single prop are constraints too: lint when validate-layout checks literal values, else documented only (empty enforcedBy).",
       "type": "array",
       "items": {
         "type": "object",
@@ -169,7 +169,7 @@
           },
           "reason": { "type": "string" },
           "enforcedBy": {
-            "description": "What stops a violation. Empty means documented only: the validator reports it as a backlog item.",
+            "description": "What stops a violation: type (a TypeScript error), test (an a11y test asserts the behaviour or a @ts-expect-error case), lint (npm run lint or layout:validate). Empty means documented only: the validator reports it as a backlog item.",
             "type": "array",
             "items": { "type": "string", "enum": ["type", "test", "lint"] }
           }

@@ -247,7 +247,9 @@
         ]
       },
       "reason": "ProgressBar has no inverted treatment: its track and fill aren't contrast-checked against the inverted container. Inverted footer cards show duration and certified only.",
-      "enforcedBy": []
+      "enforcedBy": [
+        "type"
+      ]
     },
     {
       "id": "one-datum-per-prop",
@@ -255,7 +257,9 @@
         "duration": "*"
       },
       "reason": "duration holds the duration only. Pass the author in author, never packed into duration (\"Jon Kabat-Zinn · 2 hours\"): a merged string hides the author from consumers, agents and Figma.",
-      "enforcedBy": []
+      "enforcedBy": [
+        "lint"
+      ]
     },
     {
       "id": "no-typed-separators",
@@ -263,7 +267,9 @@
         "author": "*"
       },
       "reason": "Pass plain values. The component draws the separator between author and duration (aria-hidden); never type \"·\" or add a separator before Certified.",
-      "enforcedBy": []
+      "enforcedBy": [
+        "lint"
+      ]
     }
   ],
   "states": [

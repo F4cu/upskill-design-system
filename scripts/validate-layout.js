@@ -4,7 +4,7 @@
 // elements when duplicated, fixed-set component names only (plus declared
 // <Parent.Part> subcomponents and their composition rules, ADR-023), no raw container
 // divs, composition limits and nesting from usage.json (ADR-024's Button
-// emphasis is one limit), and the inline-style
+// emphasis is one limit), typed separators in one-datum props, and the inline-style
 // reconciliation rule (AGENTS.md "Layout grammar").
 // Exits non-zero on any violation so it can gate the layout-generation skill.
 // Accepts a file path or a directory (scans *.tsx recursively).
@@ -121,6 +121,25 @@ function getAttrStringValue(attr) {
     attr.value.expression?.type === 'StringLiteral'
   ) return attr.value.expression.value
   return null
+}
+
+// One prop per datum (ADR-023 amendment 2026-10-02): the component draws the
+// separator between values, so a typed one means a value was packed into the
+// wrong prop. Literal values only; data-driven values pass through unchecked.
+const SEPARATOR_PROPS = new Map([['CardHorizontal', ['author', 'duration']]])
+const TYPED_SEPARATOR = /[·•|]/
+
+function checkTypedSeparators(name, openingEl, errors) {
+  for (const prop of SEPARATOR_PROPS.get(name) ?? []) {
+    const attr = getAttr(openingEl, prop)
+    const expr = attr?.value?.type === 'JSXExpressionContainer' ? attr.value.expression : attr?.value
+    const text = expr?.type === 'StringLiteral' ? expr.value
+      : expr?.type === 'TemplateLiteral' ? expr.quasis.map(q => q.value.cooked).join('')
+      : null
+    if (text && TYPED_SEPARATOR.test(text)) {
+      errors.push(`Line ${openingEl.loc?.start.line}: <${name} ${prop}="${text}"> has a typed separator — pass one value per prop; the component draws the separator (spec constraints one-datum-per-prop, no-typed-separators)`)
+    }
+  }
 }
 
 function hasAttr(openingEl, name) {
@@ -398,6 +417,7 @@ function validateFile(filePath, { styleOnly = false } = {}) {
 
     const rawName = jsxName(node.name)
     if (!rawName) return
+    checkTypedSeparators(rawName, node, errors)
 
     // Determine effective landmark tag (Box as="…" → effective tag)
     let effectiveTag = rawName

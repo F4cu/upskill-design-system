@@ -195,14 +195,6 @@
   },
   "constraints": [
     {
-      "id": "subtitle-as-text",
-      "if": {
-        "Item.subtitle": "*"
-      },
-      "reason": "Pass <Text as=\"span\" size=\"metadata\" color=\"subtle\">, never a raw string or element: raw elements bypass the typography scale and color tokens.",
-      "enforcedBy": []
-    },
-    {
       "id": "controlled-open-wins",
       "if": {
         "Item.open": "*"
@@ -210,8 +202,11 @@
       "ignore": [
         "Item.defaultOpen"
       ],
-      "reason": "Never pass both. The controlled open prop wins over defaultOpen (a DEV-only warning fires). Use open + onOpenChange for controlled, or defaultOpen alone for uncontrolled.",
-      "enforcedBy": []
+      "reason": "Never pass both: AccordionItemProps makes it a type error, and at runtime the controlled open prop wins (a DEV-only warning fires). Use open + onOpenChange for controlled, or defaultOpen alone for uncontrolled.",
+      "enforcedBy": [
+        "type",
+        "test"
+      ]
     }
   ],
   "states": [

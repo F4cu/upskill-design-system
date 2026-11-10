@@ -4,16 +4,18 @@ import { Icon } from '../Icon'
 import { Text } from '../Text'
 import styles from './Accordion.module.css'
 
+type AccordionItemOpenState =
+  | { open: boolean; defaultOpen?: never }
+  | { open?: undefined; defaultOpen?: boolean }
+
 export type AccordionItemProps = {
   title: string
   subtitle?: string
-  defaultOpen?: boolean
-  open?: boolean
   onOpenChange?: (open: boolean) => void
   headingLevel?: 2 | 3 | 4 | 5 | 6
   children: ReactNode
   className?: string
-}
+} & AccordionItemOpenState
 
 export function AccordionItem({
   title,

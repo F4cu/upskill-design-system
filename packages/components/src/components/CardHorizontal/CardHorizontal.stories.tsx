@@ -89,7 +89,7 @@ export const List: Story = {
   render: (args) => (
     <Stack gap="sm" maxWidth={480}>
       <CardHorizontal {...args} />
-      <CardHorizontal {...args} title="Advanced CSS Layouts" certified={false} progress={20} />
+      <CardHorizontal {...args} variant="default" title="Advanced CSS Layouts" certified={false} progress={20} />
       <CardHorizontal {...args} title="React Fundamentals" progress={undefined} />
     </Stack>
   ),

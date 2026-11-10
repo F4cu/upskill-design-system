@@ -1,7 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [],
-  "generatedFrom": "db48cc8b20a2fc417b3dfec6b5ad0220b6eddeb9",
+  "generatedFrom": "799a3854ef8b4f43628531cddad9039b825af6f4",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -220,10 +220,6 @@
               "aria-expanded": "{isOpen}",
               "element": "button",
               "id": "{triggerId}"
-            },
-            {
-              "aria-hidden": "true",
-              "element": "Icon"
             },
             {
               "aria-hidden": "{!isOpen ? true : undefined}",
@@ -451,6 +447,7 @@
           "maturity": "beta",
           "stage": "in review",
           "systemSpecificNotes": [
+            "The leading icon is decorative: Icon without a label renders aria-hidden, so the label alone names the field.",
             "aria-describedby (points to error message element when error prop is set)",
             "aria-invalid (set to true when error prop is set)"
           ]
@@ -499,10 +496,6 @@
             {
               "aria-label": "Breadcrumb",
               "element": "nav"
-            },
-            {
-              "aria-hidden": "true",
-              "element": "Icon"
             },
             {
               "aria-current": "{isLast ? 'page' : undefined}",

@@ -70,21 +70,31 @@ export function parseFile(filePath) {
 function collectProps(sf) {
   const props = new Set();
   const nativeSpreads = [];
-  sf.forEachChild(function visit(node) {
-    if (ts.isTypeAliasDeclaration(node) && /Props$/.test(node.name.text)) {
-      const parts = ts.isIntersectionTypeNode(node.type) ? node.type.types : [node.type];
-      for (const part of parts) {
-        if (ts.isTypeLiteralNode(part)) {
-          for (const member of part.members) {
-            if (ts.isPropertySignature(member) && member.name && ts.isIdentifier(member.name)) {
-              props.add(member.name.text);
-            }
-          }
-        } else {
-          nativeSpreads.push(part.getText(sf).replace(/\s+/g, " "));
+  const localAliases = new Map();
+  sf.forEachChild((node) => {
+    if (ts.isTypeAliasDeclaration(node)) localAliases.set(node.name.text, node.type);
+  });
+  // A prop group can be a local alias or a union of literals (e.g. a controlled
+  // pair whose branches forbid each other); its members are props, not a spread.
+  function addPart(part) {
+    if (ts.isIntersectionTypeNode(part)) return part.types.forEach(addPart);
+    if (ts.isUnionTypeNode(part) && part.types.every(ts.isTypeLiteralNode)) return part.types.forEach(addPart);
+    if (ts.isTypeReferenceNode(part) && ts.isIdentifier(part.typeName) && !/Props$/.test(part.typeName.text)) {
+      const local = localAliases.get(part.typeName.text);
+      if (local && (ts.isTypeLiteralNode(local) || ts.isUnionTypeNode(local) || ts.isIntersectionTypeNode(local))) return addPart(local);
+    }
+    if (ts.isTypeLiteralNode(part)) {
+      for (const member of part.members) {
+        if (ts.isPropertySignature(member) && member.name && ts.isIdentifier(member.name)) {
+          props.add(member.name.text);
         }
       }
+      return;
     }
+    nativeSpreads.push(part.getText(sf).replace(/\s+/g, " "));
+  }
+  sf.forEachChild(function visit(node) {
+    if (ts.isTypeAliasDeclaration(node) && /Props$/.test(node.name.text)) addPart(node.type);
     node.forEachChild(visit);
   });
   return { props, nativeSpreads };

@@ -27,6 +27,7 @@ sources:
 # clock reset 2026-11-10: /layout-generation gains an invariant line at its top (ADR-029 amendment 2026-11-10); the grammar is unchanged, still accurate
 # rewritten 2026-11-10: layout citations name usage.json fields (composition.limits/rules, patterns), ADR-001 amendment 2026-11-10
 # rewritten 2026-11-10: citations name composition.donts (was rules) and composition.patterns with code in <Name>.patterns.stories.tsx; /layout-generation carousel and show-more recipes now point at those stories
+# clock reset 2026-11-10: validate-layout.js gains a typed-separator check for CardHorizontal author/duration (spec constraints); landmark grammar and inline-style rules unchanged, still accurate
 ---
 # Layout grammar
 

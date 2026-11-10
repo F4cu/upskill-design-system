@@ -36,6 +36,8 @@ sources:
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts {case, because, instead}; patterns → composition.patterns {name, useWhen}, code in <Name>.patterns.stories.tsx (option D); pattern-name uniqueness check
 # rewritten 2026-11-10: pattern stories shipped: usage:validate checks pattern names against <Name>.patterns.stories.tsx exports; tree dropped
 # rewritten 2026-11-10: ADR-001 third amendment: variants optional, every axis a spec prop, prose lint (warnings); links the new 13-writing-contract-files guide
+# 2026-11-10: prop-rule row says how spec constraints are enforced (type, test, layout:validate); 7 of the 9 documented-only ones now are
+# clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups; the drift check this page describes is unchanged
 ---
 # Machine-readable metadata
 
@@ -62,7 +64,7 @@ Until 2026-11-10 every "don't" was one `usage.antiPatterns` list: 106 entries mi
 | Countable composition rule | At most one accent Button per region, none inside a repeated item | `usage.json` `composition.limits` | `layout:validate` |
 | Self-nesting | Card inside Card | `usage.json` `composition.nests: false` | `layout:validate` |
 | Other composition don't | Mixing Card, CardVertical and CardHorizontal in one section | `usage.json` `composition.donts` (`case`, `because`, `instead`) | Read by `/layout-generation` |
-| Prop rule | Accordion `open` together with `defaultOpen` | spec `constraints` | `spec:validate` lists unenforced ones as backlog |
+| Prop rule | Accordion `open` together with `defaultOpen` | spec `constraints`, each naming what enforces it in `enforcedBy` | A prop type, an a11y test, or `layout:validate` (literal values, e.g. a typed `·` in CardHorizontal `duration`); `spec:validate` lists unenforced ones as backlog |
 | How it's built | Accordion's panel is always mounted | spec `decisions` | Read by `/review-component` |
 
 Rules something else already enforced (the inline-style ban, a `label` the types require, a parent `containedBy` already excludes) were deleted rather than moved. Every entry still says *why*: partial guidance isn't useful to an agent (ADR-001). `packages/components/AGENTS.md`'s type-enforced rule still applies: when a constraint is a hard "never do X," the prop type must make the violation a compile error (a narrowed `Omit<...>` on the spread native-attributes type), not just a documented warning.

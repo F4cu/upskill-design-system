@@ -10,6 +10,10 @@ import styles from './CardHorizontal.module.css'
 
 export type CardHorizontalVariant = 'default' | 'inverted'
 
+type CardHorizontalSurface =
+  | { variant?: 'default'; progress?: number }
+  | { variant: 'inverted'; progress?: never }
+
 export type CardHorizontalProps = {
   thumbnailSrc?: string
   thumbnailAlt?: string
@@ -17,9 +21,7 @@ export type CardHorizontalProps = {
   author?: string
   duration?: string
   certified?: boolean
-  progress?: number
-  variant?: CardHorizontalVariant
-} & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'children' | 'aria-labelledby'>
+} & CardHorizontalSurface & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'children' | 'aria-labelledby'>
 
 export function CardHorizontal({
   thumbnailSrc,

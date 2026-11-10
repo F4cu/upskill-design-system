@@ -37,6 +37,7 @@ sources:
 # rewritten 2026-11-10: usage.json rename; /extract-learnings routing names notFor, composition.limits/rules, spec constraints/decisions (ADR-001 amendment 2026-11-10)
 # rewritten 2026-11-10: second relabel (ADR-001 second amendment): composition.rules → donts, patterns → composition.patterns {name, useWhen} with stories
 # clock reset 2026-11-10: /layout-generation's carousel and show-more recipes became pointers at pattern stories; the Recurring patterns consolidation pass described here is unchanged, still accurate
+# clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups (Accordion's open/defaultOpen union); aggregate output and drift unchanged, still accurate
 ---
 # Agentic moments
 

@@ -101,8 +101,10 @@
       "require": [
         "as"
       ],
-      "reason": "as must be \"label\": htmlFor is spread onto whatever element as renders.",
-      "enforcedBy": []
+      "reason": "as must be \"label\": htmlFor is spread onto whatever element as renders, so TextProps only accepts it with as=\"label\".",
+      "enforcedBy": [
+        "type"
+      ]
     }
   ],
   "states": [

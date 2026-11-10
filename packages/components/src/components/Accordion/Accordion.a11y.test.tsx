@@ -129,6 +129,17 @@ describe('AccordionItem — a11y behavior', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
   })
 
+  it('makes passing both open and defaultOpen a type error', () => {
+    // Checked by typecheck, not at runtime: the line must stay a compile error.
+    const invalid = [
+      // @ts-expect-error controlled open and defaultOpen are mutually exclusive
+      <AccordionItem key="both" title="Module 1" open defaultOpen>
+        <p>Content</p>
+      </AccordionItem>,
+    ]
+    expect(invalid).toHaveLength(1)
+  })
+
   it('Tab moves through focusable panel content then to the next trigger (keyboardInteractions: Tab)', async () => {
     const user = userEvent.setup()
     render(
