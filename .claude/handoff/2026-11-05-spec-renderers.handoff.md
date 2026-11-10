@@ -21,7 +21,7 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 - [x] ADR-030 accepted: all twelve open decisions closed (2026-11-10, `f9a029a`)
 
 **Contract prerequisites** (decisions 9 and 12)
-- [ ] Spec schema: optional `anatomyProps`, `decisions[]`, `ruledOut[]`; `spec:validate` checks that `adr` refs resolve; ADR-027 amendment and a line in `packages/components/AGENTS.md`
+- [ ] Spec schema: optional `anatomyProps` (a list of props-or-pattern examples, see decision 9), `decisions[]`, `ruledOut[]`; `spec:validate` checks that `adr` refs resolve; ADR-027 amendment and a line in `packages/components/AGENTS.md`
 - [ ] Backfill `decisions[]` / `ruledOut[]` for Button and CardVertical (the rest as `TODO`s)
 - [ ] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test
 
@@ -248,6 +248,9 @@ Full reasoning and rejected options are in `docs/decisions/030-spec-renderers.md
    - **Enforcement:** a render test that fails when a declared part doesn't render.
    - **Bare-text parts** (Button's `Label`) are wrapped in an element.
    - **Optional parts** are turned on by a new optional spec field (working name `anatomyProps`).
+     - **Props alone don't cover compound components** (ADR-023). Button's parts appear through props, but CardVertical's parts appear because someone writes them in JSX, like Ark/Chakra, where the anatomy is a composition snippet. So the field holds either example props or a reference to an existing metadata pattern (e.g. `{ "pattern": "instructor-row" }`), never a second copy of a tree.
+     - **Make it a list.** Some parts can't appear together: CardVertical's `Action` holds `Favorite` *or* `Menu`, never both. Each entry is one example; the overlay and the render test cover the union, and a part missing from every entry fails the test. Scan all 27 specs' `when` conditions and `slot` parts before locking the schema.
+     - **Final name** is decided at the schema step (`anatomyExamples` fits a list of props-or-pattern entries better than `anatomyProps`).
    - **Recording:** the ADR-027 amendment and the `packages/components/AGENTS.md` line ship with the schema change.
 10. **Page layout:** link tabs over three routes, `aria-current="page"`; Usage before Spec, accessibility on its own, no Figma columns on the web.
 11. **`figma-parity.json`:** `.claude/figma-parity.json`, added to the frozen-snapshot table in `CLAUDE.md` when it lands; `npm run status` warns when the capture is older than the last spec change.
