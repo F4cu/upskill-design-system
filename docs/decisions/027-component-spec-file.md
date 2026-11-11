@@ -5,7 +5,7 @@ title: "ADR-027 — Component spec file, split from metadata by reader"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-11-10
+**Amended:** 2026-11-11
 
 ## Context
 
@@ -274,3 +274,8 @@ ADR-001's amendment of this date renames `<Name>.metadata.json` to `<Name>.usage
 - **`/layout-generation` reads `spec.constraints`** as well as `usage.json`. That makes `constraints` the one spec section with a layout reader, so it stays small and checkable: an entry the validator can't enforce is reported as backlog, as before.
 
 `anatomyExamples` entries of the form `{ "pattern": "<name>" }` now refer to `patterns` at the top level of `usage.json`, not `usage.patterns` in the metadata.
+
+## Amendment (2026-11-11) — `anatomyExamples` entries can say what the diagram numbers
+
+Two optional fields on each `anatomyExamples` entry, read only by the docs anatomy diagram (ADR-030 Phase A3 amendment): `mark`, the parts the example numbers, and `focus`, a part to crop to, at its real size, so its descendants can be numbered. `spec:validate` checks that every name is an anatomy part, that all entries set `mark` once any entry does, that no part is numbered twice in the overview, that a `focus` part is marked in an unfocused entry, and that a focus entry marks only that part's descendants. `anatomy:test` checks that each marked or focused part renders in its own example. Rendering itself is unchanged: the union of the examples must still render every part.
+

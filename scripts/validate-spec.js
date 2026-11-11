@@ -13,6 +13,9 @@
 //   - anatomyExamples, decisions (ADR-030): example props are root spec props
 //     with valid options, example patterns are usage.json composition.patterns names,
 //     every builtOnPart is an anatomy part of the parent's builtOn component,
+//     mark/focus name anatomy parts (all entries or none set mark; a part is
+//     numbered once in the overview; focus is numbered in the overview and
+//     its marks descend from it),
 //     and every decision's adr has a file in docs/decisions/.
 //   - vocabulary (ADR-025, ADR-026): prop names, boolean defaults, the
 //     controlled triple and Figma names, via scripts/prop-vocabulary.js; a
@@ -198,6 +201,20 @@ for (const { name, file } of specs) {
       else if (def.options && !def.options.includes(value)) errors.push(`${at}.props.${prop}: "${value}" is not an option`);
     }
   });
+  const examples = spec.anatomyExamples ?? [];
+  if (examples.some((e) => e.mark)) {
+    const parentOf = new Map(spec.anatomy.map((p) => [p.name, p.parent]));
+    const descends = (n, ancestor) => { for (let p = parentOf.get(n); p; p = parentOf.get(p)) if (p === ancestor) return true; return false; };
+    const overview = new Set();
+    examples.forEach((e, i) => {
+      const at = `anatomyExamples[${i}]`;
+      if (!e.mark) return errors.push(`${at}: mark is required once any entry sets it`);
+      for (const n of [...e.mark, ...(e.focus ? [e.focus] : [])]) if (!partNames.includes(n)) errors.push(`${at}: "${n}" is not an anatomy part`);
+      if (e.focus) { for (const n of e.mark) if (!descends(n, e.focus)) errors.push(`${at}.mark: "${n}" is not inside focus "${e.focus}"`); return; }
+      for (const n of e.mark) { if (overview.has(n)) errors.push(`${at}.mark: "${n}" is already numbered by an earlier example`); overview.add(n); }
+    });
+    examples.forEach((e, i) => { if (e.focus && !overview.has(e.focus)) errors.push(`anatomyExamples[${i}].focus: "${e.focus}" is not marked in an unfocused example`); });
+  }
   for (const d of spec.decisions ?? []) {
     if (d.adr && !ADR_IDS.has(d.adr)) errors.push(`decisions: ${d.adr} has no file in docs/decisions/`);
   }

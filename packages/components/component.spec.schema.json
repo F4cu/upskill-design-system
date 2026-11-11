@@ -67,7 +67,7 @@
     },
 
     "anatomyExamples": {
-      "description": "Examples that together render every anatomy part (ADR-030), read by the render test, the docs anatomy overlay and the Figma parity plugin. One entry per example: root props, or a usage composition.patterns name for compound compositions (rendered from the same-named PascalCase export in <Name>.patterns.stories.tsx). Use several when parts exclude each other (a slot holding one of two parts).",
+      "description": "Examples that together render every anatomy part (ADR-030), read by the render test, the docs anatomy overlay and the Figma parity plugin. One entry per example: root props, or a usage composition.patterns name for compound compositions (rendered from the same-named PascalCase export in <Name>.patterns.stories.tsx). Use several when parts exclude each other (a slot holding one of two parts). mark and focus split the docs diagram into an overview of the main parts plus cropped details (ADR-030 Phase A3).",
       "type": "array",
       "minItems": 1,
       "items": {
@@ -80,6 +80,17 @@
                 "description": "Spec prop → value. Root props only; part props need a pattern.",
                 "type": "object",
                 "minProperties": 1
+              },
+              "mark": {
+                "description": "Docs diagram only: the parts this example numbers. Unfocused examples number the main parts (1, 2, 3); a focus example numbers the focus part's descendants (6.1, 6.2). Omit on a single example to number every part. Required on every entry once any entry sets it.",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "string" }
+              },
+              "focus": {
+                "description": "Docs diagram only: crop this example to one part, at its real size, marked in an unfocused example, to number its descendants.",
+                "type": "string"
               }
             },
             "additionalProperties": false
@@ -88,7 +99,18 @@
             "type": "object",
             "required": ["pattern"],
             "properties": {
-              "pattern": { "description": "A composition.patterns name in this component's usage.json.", "type": "string" }
+              "pattern": { "description": "A composition.patterns name in this component's usage.json.", "type": "string" },
+              "mark": {
+                "description": "Docs diagram only: the parts this example numbers. Unfocused examples number the main parts (1, 2, 3); a focus example numbers the focus part's descendants (6.1, 6.2). Omit on a single example to number every part. Required on every entry once any entry sets it.",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "string" }
+              },
+              "focus": {
+                "description": "Docs diagram only: crop this example to one part, at its real size, marked in an unfocused example, to number its descendants.",
+                "type": "string"
+              }
             },
             "additionalProperties": false
           }

@@ -52,6 +52,7 @@ pre.mermaid {
 .anatomy-examples {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 1rem;
   margin-top: 1rem;
 }
@@ -61,11 +62,37 @@ pre.mermaid {
   background: var(--ds-color-background-container-canvas);
   border: 1px solid var(--sl-color-hairline);
   border-radius: 0.5rem;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.anatomy-figure {
+  margin: 0;
+  max-width: 100%;
+}
+.anatomy-figure.is-overview {
+  flex-basis: 100%;
+}
+.anatomy-caption {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
+.anatomy-stages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
 }
 .anatomy-stage {
   position: relative;
   width: max-content;
-  max-width: 100%;
+  padding-block: 0.25rem;
+}
+.anatomy-viewport {
+  position: relative;
+  overflow: hidden;
 }
 .anatomy-svg {
   position: absolute;
@@ -75,13 +102,17 @@ pre.mermaid {
   overflow: visible;
   pointer-events: none;
 }
-.anatomy-svg rect {
-  fill: none;
-  stroke: var(--sl-color-accent);
-  stroke-width: 1;
-  stroke-dasharray: 3 2;
+.anatomy-svg g {
+  pointer-events: visiblePainted;
 }
-.anatomy-svg circle {
+.anatomy-svg path {
+  fill: none;
+  stroke: var(--sl-color-gray-3);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.anatomy-svg .anatomy-dot,
+.anatomy-svg .anatomy-badge {
   fill: var(--sl-color-accent);
 }
 .anatomy-svg text {
@@ -89,11 +120,52 @@ pre.mermaid {
   font: 600 11px/1 var(--sl-font-system);
   text-anchor: middle;
   dominant-baseline: central;
+  pointer-events: none;
 }
-.anatomy-example figcaption {
-  margin-top: 1rem;
+.anatomy-svg g.is-active path {
+  stroke: var(--sl-color-accent);
+}
+.anatomy-svg g.is-active .anatomy-badge,
+.anatomy-svg g.is-active .anatomy-dot {
+  fill: var(--sl-color-accent-high);
+}
+.anatomy-svg .anatomy-outline {
+  fill: none;
+  stroke: var(--sl-color-gray-4);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+.anatomy-svg .anatomy-focus {
+  fill: none;
+  stroke: var(--sl-color-accent);
+  stroke-width: 1;
+  stroke-dasharray: 3 2;
+}
+.anatomy-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 1.25rem;
+  margin: 1rem 0 0;
   font-size: var(--sl-text-xs);
+  padding: 0;
+  list-style: none;
+}
+.anatomy-legend li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+.anatomy-legend code {
   color: var(--sl-color-gray-3);
+}
+.anatomy-legend li.is-active code {
+  color: var(--sl-color-accent-high);
+}
+.anatomy-num {
+  color: var(--sl-color-accent-high);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 /* Live examples (ADR-030 Phase A2): the real component on its own canvas */
@@ -103,4 +175,44 @@ pre.mermaid {
   border: 1px solid var(--sl-color-hairline);
   border-radius: 0.5rem;
   overflow-x: auto;
+}
+
+/* Props tables on component Spec pages (ADR-030 Phase A3): option values wrap
+   as chips, every cell centred vertically. Prefixed with .sl-markdown-content
+   to outrank Starlight's table and inline-code rules in any stylesheet order. */
+.sl-markdown-content .props-table :is(td, th) {
+  vertical-align: middle;
+}
+.sl-markdown-content .props-table .options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.sl-markdown-content .props-table .options code {
+  margin: 0;
+}
+/* The Part cell spans its rows, so later rows start at the Prop cell, which
+   Starlight would treat as a first cell and strip of its left padding. */
+.sl-markdown-content .part-props th[scope="row"] {
+  padding-inline-start: 1rem;
+}
+
+/* State tiles on component Spec pages (ADR-030 Phase A3): the caption reuses
+   .anatomy-caption (kind and name, then the trigger), in place of a table. */
+.state figcaption {
+  gap: 0.125rem;
+}
+.state-missing {
+  display: grid;
+  place-items: center;
+  min-height: 8rem;
+  padding: 1rem;
+  border: 1px dashed var(--sl-color-gray-4);
+  border-radius: 0.5rem;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
+.sl-markdown-content .state-interactions {
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-3);
 }

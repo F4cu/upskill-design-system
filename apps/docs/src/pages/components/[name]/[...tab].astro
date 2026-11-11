@@ -29,7 +29,7 @@ export function getStaticPaths() {
 }
 
 const { name, tabId } = Astro.props;
-const { spec, usage, hash, a11y } = bundle.components[name];
+const { spec, usage, a11y } = bundle.components[name];
 const published = new Set(publishedComponents());
 
 // "ADR-024" → its page on this site, or null when no published ADR has that number.
@@ -85,24 +85,27 @@ const anatomy = (() => {
   return out;
 })();
 
-// Deep anatomies (three or more levels) mark only the top two levels on the
-// first example and show the full nesting as a tree: 21 markers on
-// CardVertical covered its own text (ADR-030 Phase A2 spike).
-const deepAnatomy = anatomy.some((p) => p.depth >= 2);
-const markedParts = anatomy.filter((p) => !deepAnatomy || p.depth <= 1).map((p) => p.name);
-const overlayExamples = deepAnatomy ? spec.anatomyExamples?.slice(0, 1) : spec.anatomyExamples;
-const partNumber = (n) => anatomy.findIndex((p) => p.name === n) + 1;
-const anatomyTree = [
-  "flowchart LR",
-  ...anatomy.map((p) => `  p${partNumber(p.name)}["${partNumber(p.name)} ${p.name}"]`),
-  ...anatomy.filter((p) => p.parent).map((p) => `  p${partNumber(p.parent)} --> p${partNumber(p.name)}`),
-].join("\n");
-
-const formatProps = (props) =>
-  Object.entries(props ?? {})
-    .map(([k, v]) => `${k}=${typeof v === "string" ? `"${v}"` : JSON.stringify(v)}`)
-    .join(" ");
-
+// Spec props keyed '<Part>.<prop>' belong to an ADR-023 part, not the preset.
+const rootProps = Object.entries(spec.props).filter(([key]) => !key.includes("."));
+const partProps = [...Object.entries(spec.props).filter(([key]) => key.includes(".")).reduce((groups, [key, p]) => {
+  const [part, prop] = key.split(".");
+  return groups.set(part, [...(groups.get(part) ?? []), [prop, p]]);
+}, new Map())];
+// A slot prop's TypeScript type (ReactElement<CardVerticalFavoriteProps | …>)
+// reads as "element", with the parts it accepts as its options.
+const elementOf = (type) => {
+  const m = /^ReactElement<(.+)>$/.exec(type ?? "");
+  if (!m) return null;
+  return m[1].split("|").map((t) => {
+    const props = t.trim().replace(/Props$/, "");
+    const part = props.startsWith(name) ? props.slice(name.length) : "";
+    return part ? `${name}.${part}` : props;
+  });
+};
+// A prop with a fixed set of values reads as "enum"; the values are its options.
+const typeCell = (p) => (elementOf(p.type) ? "element" : p.options ? "enum" : p.type);
+const optionsOf = (p) => p.options ?? elementOf(p.type);
+const defaultCell = (p) => (p.default === null || p.default === undefined ? "—" : JSON.stringify(p.default));
 const codeOnlyVariant = (axis) => spec.props[axis]?.figma?.surface === "code-only";
 const focusState = spec.states.find((s) => s.name === "focus-visible");
 
@@ -118,11 +121,14 @@ const stateExample = (s) => {
   if (s.kind === "interaction") return "interaction";
   return hasStory(name, "stories", stateStory(s)) ? "rendered" : "missing";
 };
-const renderedStates = (spec.states ?? []).filter((s) => stateExample(s) === "rendered");
+// The States section shows every state with a story (or the gap where one is
+// missing) as a captioned tile; interaction states are listed, not forced.
+const shownStates = (spec.states ?? []).filter((s) => stateExample(s) !== "interaction");
+const interactionStates = (spec.states ?? []).filter((s) => stateExample(s) === "interaction");
+const KIND = { interaction: "Interaction", appData: "App data", lifecycle: "Lifecycle", content: "Content" };
 
 const LIMIT_SCOPE = { region: "region (section)", repeated: "repeated item", parent: "parent" };
 const WIDTH = { fill: "Fills its container", hug: "Hugs its content", fixed: "Keeps its own fixed size" };
-const conceptLabel = (c) => (c?.startsWith("new term: ") ? `New term: ${c.slice(10)}` : c === "native" ? "Native HTML attribute" : c);
 const builtFrom = [...new Set((spec.anatomy ?? []).map((part) => part.builtOn).filter((n) => n && n !== name))].sort();
 
 const storybookId = `components-${name.toLowerCase()}`;
@@ -190,8 +196,6 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
       <dd><code>{usage.component.status}</code></dd>
       <dt>Links</dt>
       <dd>{links.map((l, i) => <>{i > 0 && " · "}<a href={l.href}>{l.label}</a></>)}</dd>
-      <dt>Generated from</dt>
-      <dd><code title={hash}>{hash.slice(0, 12)}</code></dd>
     </dl>
   </div>
 
@@ -356,104 +360,75 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
       <>
         <h2 id="anatomy">{h.anatomy}</h2>
         {spec.anatomyExamples?.length ? (
-          <>
           <div class="not-content">
-            <AnatomyOverlay client:visible name={name} parts={anatomy.map(({ depth, ...p }) => p)} marked={markedParts} examples={overlayExamples} />
+            <AnatomyOverlay client:visible name={name} parts={anatomy} examples={spec.anatomyExamples} variants={Object.fromEntries(Object.entries(usage.variants ?? {}).map(([axis, v]) => [axis, v.default]))} />
           </div>
-          {deepAnatomy && (
-            <>
-              <p>The diagram numbers the top two levels only. The tree shows every part; numbers match the table.</p>
-              <pre class="mermaid">{anatomyTree}</pre>
-            </>
-          )}
-          </>
         ) : (
           <p>No anatomy examples recorded, so no diagram.</p>
         )}
-        <table>
-          <thead>
-            <tr><th scope="col">#</th><th scope="col">Part</th><th scope="col">Element</th><th scope="col">Role</th><th scope="col">Present</th><th scope="col">Built on</th><th scope="col">Notes</th></tr>
-          </thead>
+
+        <h2 id="props">{h.props}</h2>
+        <table class="props-table">
+          <thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Options</th></tr></thead>
           <tbody>
-            {anatomy.map((part) => (
+            {rootProps.map(([prop, p]) => (
               <tr>
-                <td>{anatomy.indexOf(part) + 1}</td>
-                <th scope="row" class="part" style={`--depth: ${part.depth}`}>
-                  {part.depth > 0 && <span aria-hidden="true" class="nest">└ </span>}
-                  <code>{part.name}</code>
-                  {part.parent && <span class="sr-only"> (inside {part.parent})</span>}
-                </th>
-                <td><code>{part.element}</code></td>
-                <td>{part.role}</td>
-                <td>{part.required ? "Always" : part.when ? `When ${part.when}` : "Optional"}{part.notRendered && <><br /><em>Not rendered by any example: {part.notRendered}</em></>}</td>
-                <td>
-                  {part.builtOn ? (componentHref(part.builtOn) ? <a href={componentHref(part.builtOn)}>{part.builtOn}</a> : part.builtOn) : "—"}
-                  {part.builtOnPart && <> (part <code>{part.builtOnPart}</code>)</>}
-                  {part.builtOnProps && <><br /><code>{formatProps(part.builtOnProps)}</code></>}
-                </td>
-                <td>{[part.action, part.notes].filter(Boolean).join(" ")}</td>
+                <th scope="row"><code>{prop}</code></th>
+                <td><code>{typeCell(p)}</code></td>
+                <td>{defaultCell(p) === "—" ? "—" : <code>{defaultCell(p)}</code>}</td>
+                <td>{optionsOf(p) ? <span class="options">{optionsOf(p).map((o) => <code>{o}</code>)}</span> : "—"}</td>
               </tr>
             ))}
           </tbody>
         </table>
-
-        <h2 id="props">{h.props}</h2>
-        <table>
-          <thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Options</th><th scope="col">Concept</th></tr></thead>
-          <tbody>
-            {Object.entries(spec.props).map(([prop, p]) => {
-              const useWhen = usage.variants?.[prop]?.useWhen;
-              return (
-                <tr>
-                  <th scope="row"><code>{prop}</code></th>
-                  <td><code>{p.type}</code></td>
-                  <td>{p.default === null || p.default === undefined ? "—" : <code>{JSON.stringify(p.default)}</code>}</td>
-                  <td>
-                    {p.options ? (
-                      <ul class="options">
-                        {p.options.map((o) => <li><code>{o}</code>{useWhen?.[o] && `: ${useWhen[o]}`}</li>)}
-                      </ul>
-                    ) : "—"}
-                  </td>
-                  <td>{conceptLabel(p.concept)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {partProps.length > 0 && (
+          <>
+            <h3 id="composition-props">Composition props</h3>
+            <p>Props of <code>{name}.Root</code> and its parts, for building the component from parts instead of the preset (<a href={adrHref("ADR-023")}>ADR-023</a>).</p>
+            <details class="composition-props">
+              <summary>Show {partProps.reduce((n, [, props]) => n + props.length, 0)} props on {partProps.length} parts</summary>
+            <table class="props-table part-props">
+              <thead><tr><th scope="col">Part</th><th scope="col">Prop</th><th scope="col">Default</th><th scope="col">Options</th></tr></thead>
+              <tbody>
+                {partProps.map(([part, props]) =>
+                  props.map(([prop, p], i) => (
+                    <tr>
+                      {i === 0 && <th scope="rowgroup" rowspan={props.length}><code>{name}.{part}</code></th>}
+                      <th scope="row"><code>{prop}</code></th>
+                      <td>{defaultCell(p) === "—" ? "—" : <code>{defaultCell(p)}</code>}</td>
+                      <td>{optionsOf(p) ? <span class="options">{optionsOf(p).map((o) => <code>{o}</code>)}</span> : "—"}</td>
+                    </tr>
+                  )),
+                )}
+              </tbody>
+            </table>
+            </details>
+          </>
+        )}
 
         <h2 id="states">{h.states}</h2>
         {spec.states?.length ? (
           <>
-          <p>States set by props or data render from their stories. Interaction states (hover, press, focus, open) are not forced; try them on the live examples on the Usage page.</p>
-          {renderedStates.length > 0 && (
-            <div class="state-grid not-content">
-              {renderedStates.map((s) => (
-                <figure class="state">
+          <div class="state-grid not-content">
+            {shownStates.map((s) => (
+              <figure class="state">
+                {stateExample(s) === "rendered" ? (
                   <LiveExample client:visible name={name} file="stories" exportName={stateStory(s)} />
-                  <figcaption><code>{s.name}</code> · {s.kind}</figcaption>
-                </figure>
-              ))}
-            </div>
+                ) : (
+                  <div class="state-missing">No <code>{stateStory(s)}</code> story</div>
+                )}
+                <figcaption class="anatomy-caption">
+                  <span>{KIND[s.kind]}: <code>{s.name}</code></span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          {interactionStates.length > 0 && (
+            <p class="state-interactions">
+              Interaction states, not forced; try them on the live example on the Usage page:{" "}
+              {interactionStates.map((s, i) => <>{i > 0 && ", "}<code title={s.trigger}>{s.name}</code></>)}.
+            </p>
           )}
-          <table>
-            <thead><tr><th scope="col">State</th><th scope="col">Kind</th><th scope="col">Trigger</th><th scope="col">Example</th><th scope="col">Notes</th></tr></thead>
-            <tbody>
-              {spec.states.map((s) => (
-                <tr>
-                  <th scope="row"><code>{s.name}</code></th>
-                  <td>{s.kind}</td>
-                  <td><code>{s.trigger}</code></td>
-                  <td>
-                    {stateExample(s) === "rendered" && <>Shown above (<code>{stateStory(s)}</code>)</>}
-                    {stateExample(s) === "interaction" && "Not forced"}
-                    {stateExample(s) === "missing" && <>No <code>{stateStory(s)}</code> story</>}
-                  </td>
-                  <td>{s.notes ?? ""}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
           </>
         ) : (
           <p>{NONE}</p>
@@ -586,22 +561,12 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   .component-meta dd {
     margin: 0;
   }
-  .part {
-    padding-inline-start: calc(0.75rem + var(--depth) * 1rem);
-    white-space: nowrap;
-    font-weight: normal;
-  }
-  .nest,
   .context,
   .note {
     color: var(--sl-color-gray-3);
   }
   .context {
     font-size: var(--sl-text-xs);
-  }
-  .options {
-    margin: 0;
-    padding-inline-start: 1rem;
   }
   .state-grid {
     display: grid;
@@ -612,11 +577,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   .state {
     margin: 0;
   }
-  .state figcaption {
-    margin-top: 0.5rem;
-    font-size: var(--sl-text-xs);
-    color: var(--sl-color-gray-3);
-  }
+
   details summary {
     cursor: pointer;
   }

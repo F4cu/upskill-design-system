@@ -201,9 +201,10 @@
     }
   ],
   "anatomyExamples": [
-    { "props": { "title": "Creative Acts for Curious People", "duration": "12 Hours", "certified": true, "progress": 100 } },
-    { "pattern": "favorite-saved" },
-    { "pattern": "overflow-menu" }
+    {"pattern": "favorite-saved", "mark": ["Root", "Media", "Action", "Progress", "Title", "Meta"]},
+    {"props": {"title": "Creative Acts for Curious People", "duration": "12 Hours", "certified": true, "progress": 100}, "focus": "Meta", "mark": ["Duration", "Certified", "Completed"]},
+    {"pattern": "favorite-saved", "focus": "Action", "mark": ["Favorite"]},
+    {"pattern": "overflow-menu", "focus": "Action", "mark": ["Menu"]}
   ],
   "props": {
     "thumbnailSrc": {

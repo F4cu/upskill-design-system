@@ -28,6 +28,11 @@ function lookup(name: string, file: StoryFile, exportName: string) {
   return story && exportName !== 'default' ? { meta: module.default, story } : null
 }
 
+export const storyArgs = (name: string, file: StoryFile, exportName: string): Args => {
+  const found = lookup(name, file, exportName)
+  return found ? { ...found.meta.args, ...found.story.args } : {}
+}
+
 export const hasStory = (name: string, file: StoryFile, exportName: string) => lookup(name, file, exportName) !== null
 
 export function StoryRender({ name, file, exportName }: { name: string; file: StoryFile; exportName: string }) {

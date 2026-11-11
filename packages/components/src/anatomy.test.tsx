@@ -10,8 +10,10 @@ import type { ComponentType } from 'react'
 // after the pattern in <Name>.patterns.stories.tsx (overflow-menu →
 // OverflowMenu). A part inside its parent's
 // builtOn component is found by that component's own marker (builtOnPart).
+// The parts an example numbers in the docs diagram (mark, and the part it
+// zooms into, focus) must render in that example.
 type Part = { name: string; parent?: string; builtOnPart?: string; notRendered?: string }
-type Example = { props?: Record<string, unknown>; pattern?: string }
+type Example = { props?: Record<string, unknown>; pattern?: string; mark?: string[]; focus?: string }
 type Spec = { component: string; anatomy: Part[]; anatomyExamples?: Example[] }
 
 const specs = import.meta.glob<Spec>('./components/*/*.spec.json', { eager: true, import: 'default' })
@@ -36,6 +38,7 @@ for (const [file, spec] of Object.entries(specs)) {
 
   it(`${spec.component}: every anatomy part carries data-part in an example`, () => {
     const found = new Set<string>()
+    const unmarked: string[] = []
     for (const example of examples) {
       let Example: ComponentType | undefined
       if (example.pattern) {
@@ -48,10 +51,15 @@ for (const [file, spec] of Object.entries(specs)) {
       }
       if (!Example) continue
       const { container } = render(<Example />)
-      for (const part of spec.anatomy) if (locate(container, part, spec.anatomy)) found.add(part.name)
+      const here = new Set(spec.anatomy.filter((part) => locate(container, part, spec.anatomy)).map((p) => p.name))
+      here.forEach((n) => found.add(n))
+      for (const n of [...(example.mark ?? []), ...(example.focus ? [example.focus] : [])]) {
+        if (!here.has(n)) unmarked.push(`${example.pattern ?? 'props example'}: ${n}`)
+      }
       cleanup()
     }
     const missing = spec.anatomy.filter((p) => !p.notRendered && !found.has(p.name)).map((p) => p.name)
     expect(missing, 'anatomy parts with no data-part in any example').toEqual([])
+    expect(unmarked, 'mark/focus parts that do not render in their example').toEqual([])
   })
 }

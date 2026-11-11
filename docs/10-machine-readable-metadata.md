@@ -139,11 +139,11 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 `scripts/validate-spec.js` (`npm run spec:validate`) checks each spec against `component.spec.schema.json` and then against the code: every prop in the props types is in the spec and vice versa, variant options match the TypeScript union and the usage file's axis, the `styles` tokens match the code's reads (above), internal references between states, constraints, anatomy and `composition.parts` resolve, and prop names follow the prop vocabulary (below). Every component must have a spec, and a `TODO` left by `spec:generate` fails the check.
 
 Three optional spec sections serve the generated docs pages and the Figma parity check ([ADR-030](decisions/030-spec-renderers.md)):
-- `anatomyExamples` lists the examples that together render every part. Each entry is root props, or the name of a `composition.patterns` entry in the usage file for compositions written in JSX.
+- `anatomyExamples` lists the examples that together render every part. Each entry is root props, or the name of a `composition.patterns` entry in the usage file for compositions written in JSX. Two optional fields shape the docs diagram: `mark` (the parts an example numbers) and `focus` (a part to crop to, at real size, to number its descendants as 6.1, 6.2).
 - `decisions` records per-component choices too small for an ADR.
 - `ruledOut` records options considered and rejected, so nobody proposes them again without new evidence.
 
-`spec:validate` checks that example props and patterns exist, and that every `adr` a decision cites has a file in `docs/decisions/` ([ADR-027](decisions/027-component-spec-file.md) amendment 2026-11-10).
+`spec:validate` checks that example props and patterns exist, that `mark` and `focus` name parts (a part numbered once in the overview, a focus part numbered there and its marks inside it), and that every `adr` a decision cites has a file in `docs/decisions/` ([ADR-027](decisions/027-component-spec-file.md) amendment 2026-11-10).
 
 Each anatomy part is marked in the rendered HTML with `data-part="<name>"`, and `npm run anatomy:test` renders the examples to check that every part is marked. Two optional anatomy fields cover the exceptions:
 - `builtOnPart` handles a part rendered inside a nested library component. CardVertical's `FavoriteGlyph` is Button's own `Icon` part.
@@ -171,7 +171,7 @@ The two files are split by reader. The usage file is for **picking and composing
 | `a11y-coverage.js` | Gate | `component.type` | `accessibility.role`, `accessibility.keyboardInteractions` | Deriving "interactive" and requiring a behavioral a11y test |
 | `generate-pattern-schema.js` | Aggregator | `component.type`, `component.status`, `composition.parts` | `accessibility.notes`, `accessibility.ariaAttributes` | Building `.claude/component-patterns.json` (with the JSX scan) |
 | `airtable-sync.js` | Governance push | `component` (incl. `status`, `figmaNodeId`), `variants` | `styles` tokens, through `readComponentUsage` | The Airtable component table (ADR-010) |
-| `spec-bundle.js` → docs component pages | Renderer | `component`, `useWhen`, `notFor`, `variants`, `composition` | `anatomy`, `anatomyExamples`, `props`, `constraints`, `states`, `accessibility`, `styles`, `figma`, `decisions`, `ruledOut` | Generated pages: the anatomy overlay drawn on rendered examples, a parts tree and a parts table ([ADR-030](decisions/030-spec-renderers.md)) |
+| `spec-bundle.js` → docs component pages | Renderer | `component`, `useWhen`, `notFor`, `variants`, `composition` | `anatomy`, `anatomyExamples`, `props`, `constraints`, `states`, `accessibility`, `styles`, `figma`, `decisions`, `ruledOut` | Generated pages: numbered callouts on rendered examples, an overview of the main parts plus cropped details ([ADR-030](decisions/030-spec-renderers.md)) |
 | Figma parity plugin (planned, ADR-030 Part B) | Renderer | Through `specs.bundle.json` | Through `specs.bundle.json` | Flagging differences between Figma and the spec |
 | `spec:generate` (`generate-spec.js`) | Writer | `composition.parts` | Drafts every section from existing code | Backfilling specs only, never a new component |
 | `/extract-learnings` | Writer | Writes `notFor`, `composition.*` | Writes `accessibility.*`, `constraints`, `decisions` | Turning review findings into durable rules |
@@ -215,7 +215,7 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `anatomy[].name`, `parent` | Gated | `spec:validate` (parents resolve, `styles` keys and `<Name>PartProps` types name parts); `anatomy:test` (a `data-part` marker per part) |
 | `anatomy[].builtOn`, `builtOnPart`, `notRendered` | Gated | `spec:validate` (a fixed-set component, matches `composition.parts`, the host spec has that part); `anatomy:test` |
 | `anatomy[].element`, `role`, `action`, `required`, `when`, `notes`, `builtOnProps` | Rendered | Docs page; `/review-component` checks `role` and `action` against the markup |
-| `anatomyExamples` | Gated | `spec:validate` (props and patterns exist); `anatomy:test` renders each one |
+| `anatomyExamples` | Gated | `spec:validate` (props and patterns exist; `mark`/`focus` name parts); `anatomy:test` renders each one and checks its marked parts render |
 | `props.<p>.kind`, `options`, `default` | Gated | `spec:validate` against the TypeScript props types and the code's defaults, and against `usage.json` variants |
 | `props.<p>.figma` (`surface`, `property`) | Gated | `spec:validate` (figma-only props are skipped); `prop-vocabulary.js` (Figma name vs prop name, ADR-026) |
 | `props.<p>.type` | Rendered | Docs page |

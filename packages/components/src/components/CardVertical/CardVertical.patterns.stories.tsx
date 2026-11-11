@@ -47,6 +47,7 @@ export const FavoriteSaved: Story = {
     title: 'Designing Calm Interfaces',
     duration: '9 Hours',
     certified: true,
+    progress: 40,
     size: 'lg',
     action: <CardVertical.Favorite defaultPressed onPressedChange={noop} />,
   },

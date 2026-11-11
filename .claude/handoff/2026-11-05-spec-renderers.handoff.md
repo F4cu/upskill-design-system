@@ -37,6 +37,8 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 - [x] Phase A2 spike: `@astrojs/react` in Starlight, SVG anatomy overlay; record whether the overlay or the Mermaid fallback ships (2026-11-10). **Both, by depth:** full overlay for anatomies up to two levels (Button); for three or more levels, markers on the top two levels plus a Mermaid tree (CardVertical, whose 21 markers covered its own Meta text). Developer chose the plan's fallback over gutter markers. ADR-030 amendment "Phase A2 spike"
 - [x] Phase A2: live default example, patterns (rendered from `<Name>.patterns.stories.tsx`), rendered states (2026-11-11). Stories by PascalCase name through one renderer shared with the overlay (story + meta decorators applied). Interaction states are listed, not forced. Gap shown on the page: CardVertical `favorite-pressed` has no `FavoritePressed` story. ADR-030 amendment "Phase A2: live examples, patterns and states"
 - [ ] Phase A3: refine the reference pages (Button, CardVertical) into the template every other page follows; simplify sections, record changes as an ADR-030 amendment
+  - [x] Anatomy (2026-11-11): overview of main parts plus cropped, real-size detail images (`mark` / `focus` on `anatomyExamples`, numbered 6.1), gutter callouts with horizontal/vertical hairlines, a legend under each figure; Mermaid tree and anatomy table removed. Iterating on CardVertical only; Button rides along. ADR-030 and ADR-027 amendments "Phase A3" (2026-11-11)
+  - [ ] Remaining sections (Usage, Props, States, Styles, Why, Parity, Accessibility), then sign-off
 - [ ] Phase A4: batch 2 (about 12 of the remaining 25), with `data-part` + `anatomyExamples` on each (`packages/components/AGENTS.md` was at 15990/16000 bytes; trimmed to 11993 on 2026-11-10, ADR-029 amendment)
 - [ ] Phase A5: batch 3 (the rest, all 27 published, filter removed), `00-start-here.md` link, reverse links on ADR pages
 
@@ -95,7 +97,7 @@ What they share: pages are split by question ("should I use this, and which vari
 
 Separate routes behind a tab bar whose tabs are links, M3-style (`/components/button/`, `/components/button/spec/`, `/components/button/accessibility/`), so each one has its own URL and table of contents and stays short (decision 10).
 
-- **Header (on all three):** name, `component.description`, maturity `status`, links to the Storybook story, the Figma node and the spec source on GitHub, and "Generated from `<hash>`".
+- **Header (on all three):** name, `component.description`, maturity `status`, links to the Storybook story, the Figma node and the spec source on GitHub. (The "Generated from `<hash>`" line was dropped in A3; the hash stays in the bundle.)
 - **Usage** (designers first, from usage.json):
   - live default example
   - when to use it (`useWhen`) and when not to (`notFor`, with `instead` or `note`)
