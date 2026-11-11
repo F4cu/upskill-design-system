@@ -44,27 +44,10 @@ const componentHref = (n) => (published.has(n) ? pageHref(n) : null);
 const NONE = "None recorded.";
 
 // --- formatting ---------------------------------------------------------
-const pxLabel = (value) => {
-  const m = /^(-?[\d.]+)rem$/.exec(value);
-  return m ? `${value} (${+m[1] * 16}px)` : value;
-};
 const formatWhen = (when) => {
   const entries = Object.entries(when);
   if (!entries.length) return "Default";
   return entries.map(([k, v]) => (v === "*" ? `${k} set` : `${k}=${v}`)).join(", ");
-};
-const tokenValue = (path) => {
-  const token = bundle.tokens[path];
-  const contexts = Object.entries(token.contexts ?? {}).map(([ctx, v]) => `${ctx}: ${pxLabel(v)}`);
-  return { value: pxLabel(token.value), contexts };
-};
-// One row per CSS property in a style rule (ADR-027 style value shapes).
-const styleRow = (property, value) => {
-  if (typeof value === "string") return { property, token: value, ...tokenValue(value) };
-  if (value.literal !== undefined) return { property, literal: value.literal, reason: value.reason };
-  if (value.sameAs) return { property, sameAs: value.sameAs };
-  const resolved = value.template.replace(/\{([a-z0-9.-]+)\}/g, (_, p) => bundle.tokens[p].value);
-  return { property, template: value.template, value: resolved, contexts: [] };
 };
 
 // Anatomy in depth-first order with each part's nesting depth.
@@ -83,6 +66,117 @@ const anatomy = (() => {
   };
   walk(null, 0);
   return out;
+})();
+
+// Styles grouped under the anatomy diagram's overview numbers: each styled
+// part rolls up to its nearest marked ancestor. A part built on a popover
+// component is only positioned here; its tokens belong to that component.
+const POPOVERS = new Set(["DropdownMenu"]);
+// A style rule's `when`: empty is Default, `state` an interaction or
+// ARIA-driven state, any other key a prop value. Rows run in that order.
+const stateRank = (when) => (!Object.keys(when).length ? 0 : "state" in when ? 2 : 1);
+const stateLabel = (when) => {
+  const entries = Object.entries(when);
+  if (!entries.length) return [{ text: "Default" }];
+  return entries.map(([k, v]) => (k === "state" ? { text: v } : { code: v === "*" ? k : `${k}="${v}"` }));
+};
+const styleGroups = (() => {
+  const byName = new Map(spec.anatomy.map((p) => [p.name, p]));
+  // Same numbering as AnatomyOverlay: an example without `mark` numbers every
+  // renderable part.
+  const renderable = spec.anatomy.filter((p) => !p.notRendered).map((p) => p.name);
+  const overview = [...new Set((spec.anatomyExamples ?? []).filter((e) => !e.focus).flatMap((e) => e.mark ?? renderable))]
+    .sort((a, b) => renderable.indexOf(a) - renderable.indexOf(b));
+  const groupOf = (n) => {
+    for (let p = byName.get(n); p; p = byName.get(p.parent)) if (overview.includes(p.name)) return p.name;
+    return n;
+  };
+  const tokensIn = (value) => {
+    if (typeof value === "string") return [{ token: value }];
+    if (value.literal !== undefined) return [{ literal: value.literal, reason: value.reason }];
+    if (value.sameAs) return [];
+    return [...value.template.matchAll(/\{([a-z0-9.-]+)\}/g)].map((m) => ({ token: m[1] }));
+  };
+  // What a part's builtOn component sets for the props the part passes it
+  // (builtOnProps), minus any property the part's own default rule overrides.
+  const inherited = (part) => {
+    const builtOn = byName.get(part)?.builtOn;
+    const props = byName.get(part)?.builtOnProps;
+    const rules = builtOn && builtOn !== name && props && bundle.components[builtOn]?.spec.styles?.Root;
+    if (!rules) return [];
+    const own = (spec.styles[part] ?? []).find((r) => !Object.keys(r.when).length)?.set ?? {};
+    const set = {};
+    const via = {};
+    for (const r of rules) {
+      const entries = Object.entries(r.when);
+      if (!entries.length || !entries.every(([k, v]) => (v === "*" ? k in props : props[k] === v))) continue;
+      for (const [prop, value] of Object.entries(r.set)) {
+        set[prop] = value;
+        via[prop] = `${builtOn} ${entries.map(([k, v]) => (v === "*" ? k : `${k}="${v}"`)).join(" ")}`;
+      }
+    }
+    return Object.entries(set).filter(([prop]) => !(prop in own)).map(([prop, value]) => ({ value, via: via[prop] }));
+  };
+  // A prop that crosses `state` in two or more of a part's rules (Button's
+  // variant × hover/active/disabled) splits the part: one subgroup per value,
+  // whose rows then read Default, hover, active… without repeating the prop.
+  const splitAxis = (rules) => {
+    const counts = {};
+    for (const r of rules) if ("state" in r.when) for (const k of Object.keys(r.when)) if (k !== "state") counts[k] = (counts[k] ?? 0) + 1;
+    return Object.entries(counts).sort(([, a], [, b]) => b - a).find(([, n]) => n >= 2)?.[0];
+  };
+  const SUB = "\u0000";
+  // "accentInverted" → "Accent inverted", for subgroup headers like "Variant: Accent".
+  const words = (s) => String(s).replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase().replace(/^./, (c) => c.toUpperCase());
+  const groups = new Map();
+  const add = (group, when, entries) => {
+    const conditions = groups.get(group) ?? new Map();
+    const list = conditions.get(when) ?? [];
+    for (const e of entries) if (!list.some((x) => x.token === e.token && x.literal === e.literal)) list.push(e);
+    conditions.set(when, list);
+    groups.set(group, conditions);
+  };
+  for (const part of new Set([...spec.anatomy.map((p) => p.name), ...Object.keys(spec.styles)])) {
+    if (POPOVERS.has(byName.get(part)?.builtOn)) continue;
+    const group = groupOf(part);
+    const rules = spec.styles[part] ?? [];
+    const axis = splitAxis(rules);
+    add(group, "{}", []);
+    for (const rule of rules) {
+      const { [axis]: value, ...rest } = rule.when;
+      const sub = axis && value !== undefined ? `${group}${SUB}${value === "*" ? words(axis) : `${words(axis)}: ${words(value)}`}` : group;
+      add(sub, JSON.stringify(sub === group ? rule.when : rest), Object.values(rule.set).flatMap(tokensIn));
+    }
+    add(group, "{}", inherited(part).flatMap(({ value, via }) => tokensIn(value).map((e) => ({ ...e, via }))));
+  }
+  // Every numbered part keeps its group, so the numbers match the diagram; a
+  // part with no tokens of its own says where its look comes from instead.
+  for (const part of overview) if (!groups.has(part)) groups.set(part, new Map());
+  const noteFor = (part) => {
+    const p = byName.get(part);
+    if (p?.builtOn && p.builtOn !== name) return { text: "Styled by", component: p.builtOn, href: componentHref(p.builtOn) };
+    return { text: `No tokens of its own; inherits from ${p?.parent ?? spec.anatomy[0].name}.` };
+  };
+  const order = (key) => {
+    const n = key.split(SUB)[0];
+    return overview.includes(n) ? overview.indexOf(n) : overview.length;
+  };
+  return [...groups]
+    .sort(([a], [b]) => order(a) - order(b))
+    .map(([key, conditions]) => ({
+      group: key.split(SUB)[0],
+      sub: key.split(SUB)[1],
+      number: overview.includes(key) ? overview.indexOf(key) + 1 : null,
+      note: overview.includes(key) && ![...conditions.values()].some((e) => e.length) ? noteFor(key) : null,
+      conditions: [...conditions].filter(([, e]) => e.length)
+        .map(([w, entries]) => [JSON.parse(w), entries.map((e) => ({
+          ...e,
+          className: [e.literal !== undefined && "literal", e.via && "inherited"].filter(Boolean).join(" ") || undefined,
+          title: [e.via && `From ${e.via}`, e.reason].filter(Boolean).join(". ") || undefined,
+        }))])
+        .sort(([a], [b]) => stateRank(a) - stateRank(b)),
+    }))
+    .filter((g) => g.conditions.length || g.note);
 })();
 
 // Spec props keyed '<Part>.<prop>' belong to an ADR-023 part, not the preset.
@@ -157,7 +251,7 @@ const HEADINGS = {
     ["anatomy", "Anatomy"],
     ["props", "Props"],
     ["states", "States"],
-    ["styles", "Styles and tokens"],
+    ["styles", "Token usage"],
     ["why", "Why it's built this way"],
     ["parity", "Design–code parity"],
   ],
@@ -435,34 +529,45 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
         )}
 
         <h2 id="styles">{h.styles}</h2>
-        <p>Grouped by part. Only the default condition is open; values resolve in the default context ({bundle.defaultContext.brand}, {bundle.defaultContext.theme}, {bundle.defaultContext.device}).</p>
-        {Object.entries(spec.styles).map(([part, rules]) => (
-          <>
-            <h3><code>{part}</code></h3>
-            {rules.map((rule) => (
-              <details open={Object.keys(rule.when).length === 0}>
-                <summary>{formatWhen(rule.when)}</summary>
-                <table>
-                  <thead><tr><th scope="col">Property</th><th scope="col">Token</th><th scope="col">Value</th></tr></thead>
-                  <tbody>
-                    {Object.entries(rule.set).map(([prop, value]) => {
-                      const row = styleRow(prop, value);
-                      return (
-                        <tr>
-                          <th scope="row"><code>{row.property}</code></th>
-                          {row.token && <><td><code>{row.token}</code></td><td>{row.value}{row.contexts.map((c) => <><br /><span class="context">{c}</span></>)}</td></>}
-                          {row.literal !== undefined && <><td>Literal</td><td><code>{row.literal}</code><br /><span class="context">{row.reason}</span></td></>}
-                          {row.sameAs && <><td>—</td><td>Same as <code>{row.sameAs}</code></td></>}
-                          {row.template && <><td><code>{row.template}</code></td><td>{row.value}</td></>}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </details>
-            ))}
-          </>
-        ))}
+        <p>The tokens each part uses, grouped by the numbers on the anatomy diagram, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Select a part to collapse it.</p>
+        <table class="styles-table">
+          <thead><tr><th scope="col">State</th><th scope="col">Tokens</th></tr></thead>
+          {styleGroups.map(({ group, sub, number, note, conditions }) => (
+            <tbody>
+              <tr class="part-row">
+                <th scope="rowgroup" colspan="2">
+                  <button type="button" class="part-toggle" aria-expanded="true">
+                    <span class="part-chevron" aria-hidden="true"></span>
+                    {number && <span class="part-number">{number}</span>}
+                    {sub ? <><span class="sr-only">{group}, </span>{sub}</> : group}
+                  </button>
+                </th>
+              </tr>
+              {note && (
+                <tr>
+                  <td colspan="2" class="group-note">
+                    {note.text}{note.component && <> {note.href ? <a href={note.href}>{note.component}</a> : note.component}.</>}
+                  </td>
+                </tr>
+              )}
+              {conditions.map(([when, entries]) => (
+                <tr>
+                  <th scope="row" class="condition">{stateLabel(when).map((l, i) => <>{i > 0 && " + "}{l.code ? <code>{l.code}</code> : l.text}</>)}</th>
+                  <td>
+                    <span class="options">
+                      {entries.map((e) => <code class={e.className} title={e.title}>{e.token ?? e.literal}</code>)}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          ))}
+        </table>
+        <dl class="styles-legend">
+          <div><dt><code>token.name</code></dt><dd>Token this component sets</dd></div>
+          <div><dt><code class="inherited">token.name</code></dt><dd>Token from the component the part is built on; hover it for which</dd></div>
+          <div><dt><code class="literal">value</code></dt><dd>Raw value with no token; hover it for the reason</dd></div>
+        </dl>
 
         <h2 id="why">{h.why}</h2>
         <h3>Decisions</h3>
@@ -550,6 +655,17 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
     (states, prop vocabulary, focus indicator); they are not repeated per component.
   </p>
 </StarlightPage>
+
+<script>
+  // Styles table: each part's subheader collapses the rows under it.
+  document.addEventListener("click", (event) => {
+    const button = (event.target as Element).closest(".part-toggle");
+    if (!button) return;
+    const expanded = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!expanded));
+    button.closest("tbody")?.classList.toggle("is-collapsed", expanded);
+  });
+</script>
 
 <style>
   .component-meta {

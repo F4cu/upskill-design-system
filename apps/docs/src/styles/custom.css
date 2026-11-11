@@ -197,6 +197,134 @@ pre.mermaid {
   padding-inline-start: 1rem;
 }
 
+/* Styles table on component Spec pages: one table, a collapsible subheader
+   row per part, one row per state. */
+.sl-markdown-content .styles-table {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.sl-markdown-content .styles-table thead th:first-child {
+  width: 11rem;
+}
+.sl-markdown-content .styles-table :is(td, th) {
+  vertical-align: middle;
+}
+.sl-markdown-content .styles-table .part-row th {
+  padding: 0;
+  font-size: var(--sl-text-sm);
+}
+.sl-markdown-content .styles-table .part-toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.sl-markdown-content .styles-table .group-note {
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-3);
+}
+.sl-markdown-content .styles-table .part-chevron {
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-inline-end: 0.75rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.15s;
+}
+.sl-markdown-content .styles-table .part-toggle[aria-expanded="false"] .part-chevron {
+  transform: rotate(-45deg);
+}
+.sl-markdown-content .styles-table tbody.is-collapsed tr:not(.part-row) {
+  display: none;
+}
+.sl-markdown-content .styles-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  font-size: var(--sl-text-xs);
+  color: var(--sl-color-gray-3);
+}
+.sl-markdown-content .styles-legend div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+.sl-markdown-content .styles-legend :is(dt, dd) {
+  margin: 0;
+  padding: 0;
+}
+.sl-markdown-content .styles-legend code.inherited,
+.sl-markdown-content .styles-legend code.literal {
+  background: none;
+  border: 1px solid var(--sl-color-gray-5);
+}
+.sl-markdown-content .styles-legend code.literal {
+  border-style: dashed;
+  border-color: var(--sl-color-gray-4);
+}
+.sl-markdown-content .styles-table .part-number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  margin-inline-end: 0.5rem;
+  border-radius: 999px;
+  background: var(--sl-color-accent);
+  color: var(--sl-color-black);
+  font-size: 11px;
+  font-weight: 600;
+}
+.sl-markdown-content .styles-table .condition {
+  width: 11rem;
+  font-size: var(--sl-text-sm);
+  font-weight: normal;
+  white-space: nowrap;
+}
+.sl-markdown-content .styles-table .options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+.sl-markdown-content .styles-table code {
+  margin: 0;
+}
+/* Inherited and raw values differ by outline only, so every chip keeps the
+   same colour and size: solid for a built-on component's token, dashed for
+   a value with no token. */
+.sl-markdown-content .styles-table code:is(.inherited, .literal) {
+  background: none;
+  border: 1px solid var(--sl-color-gray-5);
+  cursor: help;
+}
+.sl-markdown-content .styles-table code.literal {
+  border-style: dashed;
+  border-color: var(--sl-color-gray-4);
+}
+
+/* One look for every inline code tag on component pages, inside tables,
+   captions, legends and not-content blocks alike: Starlight's would otherwise
+   inherit each parent's colour and weight, and drop its background inside
+   .not-content. */
+main:has(.component-header) :not(pre) > code {
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-gray-2);
+  font-family: var(--__sl-font-mono);
+  font-size: var(--sl-text-xs);
+  font-weight: normal;
+  line-height: 1.4;
+}
+
 /* State tiles on component Spec pages (ADR-030 Phase A3): the caption reuses
    .anatomy-caption (kind and name, then the trigger), in place of a table. */
 .state figcaption {
