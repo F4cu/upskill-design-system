@@ -211,7 +211,7 @@ After generating the file, run:
 npm run layout:validate apps/showcase/src/pages/<Name>.tsx
 ```
 
-The validator checks landmark structure (one `<main>`, named sections, labelled navs), fixed-set usage, Button emphasis by context (no `accent` inside `CardVertical`/`CardHorizontal` or a `.map()`, at most one `accent` per section — ADR-024), and the inline-style reconciliation rules. Fix any violations before declaring the layout done.
+The validator checks landmark structure (one `<main>`, named sections, labelled navs), fixed-set usage, each component's `composition.limits` and `nests` from its usage file (e.g. Button: at most one `accent` per section, none inside a card or a `.map()`, ADR-024), and the inline-style reconciliation rules. Fix any violations before declaring the layout done.
 
 ### Visual review (human answer → review-state)
 
