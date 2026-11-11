@@ -9,7 +9,9 @@
 //   - styles: the token paths in the spec equal the --ds-* custom properties
 //     the CSS Module reads (plus any index.tsx reads, e.g. a size template), and each one is defined in the built token CSS.
 //   - states, constraints, anatomy: internal cross-references resolve; every
-//     composition.parts entry appears in the spec.
+//     composition.parts entry appears in the spec; a builtOnProps mapping
+//     follows a root prop, maps only its options, and has an otherwise unless
+//     the map covers them all (ADR-027 amendment 2026-11-11).
 //   - anatomyExamples, decisions (ADR-030): example props are root spec props
 //     with valid options, example patterns are usage.json composition.patterns names,
 //     every builtOnPart is an anatomy part of the parent's builtOn component,
@@ -133,6 +135,16 @@ for (const { name, file } of specs) {
       else if (!JSON.parse(fs.readFileSync(hostSpec, "utf8")).anatomy.some((p) => p.name === part.builtOnPart)) {
         errors.push(`${at}.builtOnPart: "${part.builtOnPart}" is not an anatomy part of ${host}`);
       }
+    }
+    for (const [prop, value] of Object.entries(part.builtOnProps ?? {})) {
+      if (typeof value !== "object") continue;
+      const where = `${at}.builtOnProps.${prop}`;
+      const def = spec.props[value.from];
+      if (!def || value.from.includes(".")) { errors.push(`${where}.from: "${value.from}" is not a root spec prop`); continue; }
+      const keys = Object.keys(value.map);
+      if (def.options) for (const k of keys) if (!def.options.map(String).includes(k)) errors.push(`${where}.map: "${k}" is not an option of ${value.from}`);
+      const covered = def.options && def.options.every((o) => keys.includes(String(o)));
+      if (value.otherwise === undefined && !covered) errors.push(`${where}: otherwise is required unless map covers every option of ${value.from}`);
     }
   }
   for (const part of metadata.composition?.parts ?? []) {

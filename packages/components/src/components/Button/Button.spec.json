@@ -12,10 +12,13 @@
       "name": "Icon",
       "element": "Icon",
       "builtOn": "Icon",
+      "builtOnProps": {
+        "size": { "from": "size", "map": { "sm": "sm" }, "otherwise": "md" }
+      },
       "role": "presentation",
       "required": false,
       "when": "icon is set",
-      "notes": "Icon size sm when size=sm, else md. Color inherits the Root's color (currentColor). In icon-only mode (shape set) it is the only visible content."
+      "notes": "Color inherits the Root's color (currentColor). In icon-only mode (shape set) it is the only visible content."
     },
     {
       "name": "Label",
@@ -29,10 +32,13 @@
       "name": "TrailingIcon",
       "element": "Icon",
       "builtOn": "Icon",
+      "builtOnProps": {
+        "size": { "from": "size", "map": { "sm": "sm" }, "otherwise": "md" }
+      },
       "role": "presentation",
       "required": false,
       "when": "trailingIcon is set and shape is unset",
-      "notes": "Same size and color rules as Icon."
+      "notes": "Same color rule as Icon."
     }
   ],
   "anatomyExamples": [

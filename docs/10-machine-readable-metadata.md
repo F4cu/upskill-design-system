@@ -38,6 +38,7 @@ sources:
 # rewritten 2026-11-10: usage:validate checks component-level accepts/containedBy names (#149 step 1); audit rows and totals updated; layout:validate enforcement still undecided
 # rewritten 2026-11-10: props.concept gated by spec:validate (ADR-026 amendment), width rendered on the docs page (#150); audit rows, totals and gaps updated
 # rewritten 2026-11-10: ADR-001 third amendment: variants optional, every axis a spec prop, prose lint (warnings); links the new 13-writing-contract-files guide
+# rewritten 2026-11-11: builtOnProps can follow a parent prop ({ from, map, otherwise }, ADR-027 amendment); spec:validate checks the mapping, the docs Token usage table reads it
 # 2026-11-10: prop-rule row says how spec constraints are enforced (type, test, layout:validate); 7 of the 9 documented-only ones now are
 # clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups; the drift check this page describes is unchanged
 # clock reset 2026-11-11: usage:validate checks one Figma example frame per pattern against the frozen packages/components/figma-pattern-frames.json (ADR-023 amendment 2026-11-11); the usage schema this page describes is unchanged, still accurate
@@ -214,7 +215,7 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `component` | Gated | `spec:validate` (must equal the folder name) |
 | `anatomy[].name`, `parent` | Gated | `spec:validate` (parents resolve, `styles` keys and `<Name>PartProps` types name parts); `anatomy:test` (a `data-part` marker per part) |
 | `anatomy[].builtOn`, `builtOnPart`, `notRendered` | Gated | `spec:validate` (a fixed-set component, matches `composition.parts`, the host spec has that part); `anatomy:test` |
-| `anatomy[].element`, `role`, `action`, `required`, `when`, `notes`, `builtOnProps` | Rendered | Docs page; `/review-component` checks `role` and `action` against the markup |
+| `anatomy[].element`, `role`, `action`, `required`, `when`, `notes`, `builtOnProps` | Rendered | Docs page; `/review-component` checks `role` and `action` against the markup. The Token usage table resolves `builtOnProps` against the builtOn component's styles; a value that follows a parent prop (`{ from, map, otherwise }`) has its `from`, map keys and `otherwise` checked by `spec:validate` (ADR-027 amendment 2026-11-11) |
 | `anatomyExamples` | Gated | `spec:validate` (props and patterns exist; `mark`/`focus` name parts); `anatomy:test` renders each one and checks its marked parts render |
 | `props.<p>.kind`, `options`, `default` | Gated | `spec:validate` against the TypeScript props types and the code's defaults, and against `usage.json` variants |
 | `props.<p>.figma` (`surface`, `property`) | Gated | `spec:validate` (figma-only props are skipped); `prop-vocabulary.js` (Figma name vs prop name, ADR-026) |

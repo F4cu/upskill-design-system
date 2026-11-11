@@ -30,6 +30,7 @@ sources:
 # clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 # clock reset 2026-11-11: usage:validate checks one Figma example frame per pattern against the frozen packages/components/figma-pattern-frames.json (ADR-023 amendment 2026-11-11); this page describes the gate's role, not its check list, still accurate
 # clock reset 2026-11-11: validate-spec.js checks anatomyExamples mark/focus (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
+# clock reset 2026-11-11: validate-spec.js checks builtOnProps mappings (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
 ---
 # Taming non-determinism
 

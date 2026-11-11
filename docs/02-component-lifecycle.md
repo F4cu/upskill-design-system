@@ -35,6 +35,7 @@ sources:
 # clock reset 2026-11-10: usage:validate now checks component-level composition.accepts/containedBy names (#149); this page says nothing about checking containment, still accurate
 # rewritten 2026-11-11: usage:validate checks one Figma example frame per pattern against the frozen packages/components/figma-pattern-frames.json (ADR-023 amendment 2026-11-11)
 # clock reset 2026-11-11: ADR-027 amendment adds optional anatomyExamples mark/focus; this page describes the metadata schema and the gate, not spec sections, still accurate
+# clock reset 2026-11-11: ADR-027 amendment lets builtOnProps follow a parent prop; this page doesn't describe builtOnProps, still accurate
 ---
 # Component lifecycle
 

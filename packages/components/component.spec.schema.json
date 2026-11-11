@@ -33,9 +33,24 @@
             "type": "string"
           },
           "builtOnProps": {
-            "description": "Fixed props the part passes to its builtOn component (e.g. a Heading's size). Values the consumer controls belong in props instead.",
+            "description": "Props the part passes to its builtOn component (e.g. a Heading's size). Each is a fixed value, or a mapping when the value follows one of this component's own props (Button's Icon size follows Button size, ADR-027 amendment 2026-11-11). Values the consumer passes straight through belong in props instead.",
             "type": "object",
-            "additionalProperties": { "type": ["string", "number", "boolean"] }
+            "additionalProperties": {
+              "anyOf": [
+                { "type": ["string", "number", "boolean"] },
+                {
+                  "type": "object",
+                  "description": "The child's value follows this component's prop `from`: `map` gives it per listed value, `otherwise` for every other value (the default included).",
+                  "required": ["from", "map"],
+                  "properties": {
+                    "from": { "type": "string", "description": "A root prop of this component." },
+                    "map": { "type": "object", "minProperties": 1, "additionalProperties": { "type": ["string", "number", "boolean"] } },
+                    "otherwise": { "type": ["string", "number", "boolean"] }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            }
           },
           "role": {
             "description": "Semantic role as exposed to assistive technology, or 'presentation' when hidden from it. An authored fact: design files cannot carry it.",

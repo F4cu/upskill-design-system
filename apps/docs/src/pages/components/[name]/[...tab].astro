@@ -99,23 +99,40 @@ const styleGroups = (() => {
   };
   // What a part's builtOn component sets for the props the part passes it
   // (builtOnProps), minus any property the part's own default rule overrides.
+  // A mapped prop ({ from, map, otherwise }, ADR-027 amendment 2026-11-11)
+  // resolves to `otherwise` for the Default row, and to each `map` value for a
+  // row under that value of this component's prop, listing only what changes.
   const inherited = (part) => {
     const builtOn = byName.get(part)?.builtOn;
     const props = byName.get(part)?.builtOnProps;
     const rules = builtOn && builtOn !== name && props && bundle.components[builtOn]?.spec.styles?.Root;
     if (!rules) return [];
     const own = (spec.styles[part] ?? []).find((r) => !Object.keys(r.when).length)?.set ?? {};
-    const set = {};
-    const via = {};
-    for (const r of rules) {
-      const entries = Object.entries(r.when);
-      if (!entries.length || !entries.every(([k, v]) => (v === "*" ? k in props : props[k] === v))) continue;
-      for (const [prop, value] of Object.entries(r.set)) {
-        set[prop] = value;
-        via[prop] = `${builtOn} ${entries.map(([k, v]) => (v === "*" ? k : `${k}="${v}"`)).join(" ")}`;
+    const resolve = (childProps) => {
+      const set = {};
+      const via = {};
+      for (const r of rules) {
+        const entries = Object.entries(r.when);
+        if (!entries.length || !entries.every(([k, v]) => (v === "*" ? childProps[k] !== undefined : childProps[k] === v))) continue;
+        for (const [prop, value] of Object.entries(r.set)) {
+          set[prop] = value;
+          via[prop] = `${builtOn} ${entries.map(([k, v]) => (v === "*" ? k : `${k}="${v}"`)).join(" ")}`;
+        }
+      }
+      return Object.fromEntries(Object.entries(set).filter(([prop]) => !(prop in own)).map(([prop, value]) => [prop, { value, via: via[prop] }]));
+    };
+    const base = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, typeof v === "object" ? v.otherwise : v]));
+    const baseSet = resolve(base);
+    const out = Object.values(baseSet).map((e) => ({ when: {}, ...e }));
+    for (const [k, v] of Object.entries(props)) {
+      if (typeof v !== "object") continue;
+      for (const [parentValue, childValue] of Object.entries(v.map)) {
+        const changed = Object.entries(resolve({ ...base, [k]: childValue }))
+          .filter(([prop, e]) => JSON.stringify(baseSet[prop]?.value) !== JSON.stringify(e.value));
+        out.push(...changed.map(([, e]) => ({ when: { [v.from]: parentValue }, ...e })));
       }
     }
-    return Object.entries(set).filter(([prop]) => !(prop in own)).map(([prop, value]) => ({ value, via: via[prop] }));
+    return out;
   };
   // A prop that crosses `state` in two or more of a part's rules (Button's
   // variant × hover/active/disabled) splits the part: one subgroup per value,
@@ -147,7 +164,7 @@ const styleGroups = (() => {
       const sub = axis && value !== undefined ? `${group}${SUB}${value === "*" ? words(axis) : `${words(axis)}: ${words(value)}`}` : group;
       add(sub, JSON.stringify(sub === group ? rule.when : rest), Object.values(rule.set).flatMap(tokensIn));
     }
-    add(group, "{}", inherited(part).flatMap(({ value, via }) => tokensIn(value).map((e) => ({ ...e, via }))));
+    for (const { when, value, via } of inherited(part)) add(group, JSON.stringify(when), tokensIn(value).map((e) => ({ ...e, via })));
   }
   // Every numbered part keeps its group, so the numbers match the diagram; a
   // part with no tokens of its own says where its look comes from instead.

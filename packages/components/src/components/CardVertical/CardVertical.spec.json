@@ -22,9 +22,12 @@
       "parent": "Media",
       "element": "Image",
       "builtOn": "Image",
+      "builtOnProps": {
+        "aspectRatio": { "from": "size", "map": { "lg": "4/5", "sm": "3/2" } }
+      },
       "role": "img, named by alt (default '': decorative, the title names the card)",
       "required": true,
-      "notes": "aspectRatio 4/5 when size=lg, 3/2 when size=sm. Without src, Image renders its placeholder."
+      "notes": "Without src, Image renders its placeholder."
     },
     {
       "name": "Action",

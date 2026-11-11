@@ -279,3 +279,12 @@ ADR-001's amendment of this date renames `<Name>.metadata.json` to `<Name>.usage
 
 Two optional fields on each `anatomyExamples` entry, read only by the docs anatomy diagram (ADR-030 Phase A3 amendment): `mark`, the parts the example numbers, and `focus`, a part to crop to, at its real size, so its descendants can be numbered. `spec:validate` checks that every name is an anatomy part, that all entries set `mark` once any entry does, that no part is numbered twice in the overview, that a `focus` part is marked in an unfocused entry, and that a focus entry marks only that part's descendants. `anatomy:test` checks that each marked or focused part renders in its own example. Rendering itself is unchanged: the union of the examples must still render every part.
 
+## Amendment (2026-11-11) — `builtOnProps` can follow one of the component's own props
+
+`builtOnProps` held only fixed values, so a part whose child prop follows one of the parent's props had nowhere to say so. Button passes `size={size === 'sm' ? 'sm' : 'md'}` to its Icon and TrailingIcon, and CardVertical passes `aspectRatio={size === 'lg' ? '4/5' : '3/2'}` to its Thumbnail. Both parts left `builtOnProps` empty and put the rule in `notes`, so the docs Token usage table (ADR-030) could not show which Icon tokens a Button icon uses.
+
+A `builtOnProps` value may now be a mapping instead of a scalar: `{ "from": "<prop>", "map": { "<value>": <child value>, … }, "otherwise": <child value> }`. `from` names a root prop of this component, `map` gives the child's value for each listed value of it, and `otherwise` covers every other value, the prop's default included. Button's Icon records `"size": { "from": "size", "map": { "sm": "sm" }, "otherwise": "md" }`.
+
+- **Still not consumer pass-through.** A mapping records a value the component derives. A prop the consumer passes straight through (Button's `icon` → Icon `name`) stays out of `builtOnProps`, as the field description already says.
+- **Checked.** `spec:validate` checks that `from` is a root spec prop, that each `map` key is one of its `options`, and that `otherwise` is set unless `map` covers every option.
+- **Read by the docs only.** The Token usage table resolves `otherwise` against the child component's styles for the Default row, and each `map` entry for a row under that prop value (`size="sm"` → `size.icon.sm`). Nothing else reads `builtOnProps`.
