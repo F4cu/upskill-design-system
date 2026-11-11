@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-11-10
-completed:
+completed: 2026-11-11
 ---
 
 # Rename `<Name>.metadata.json` → `<Name>.usage.json`, after a schema and labelling review
@@ -40,7 +40,7 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 - [x] Choose A, B, C or D: D (2026-11-10)
 - [x] Triage the 62 patterns: 23 kept + new `page-landmarks`, 39 removed, approved and applied 2026-11-10 (see "Pattern triage"; Card `content-card` was missing from the table and merged into Button `card-actions`)
 - [x] Figma: deleted the 6 CardVertical state frames (`2871:8064` default-card, `2871:8090` in-progress-card, `2871:8118` completed-card, `2871:8207` placeholder-favorite, `2871:8234` favorite-progress, `2871:8277` title-only) from "CardVertical examples" (`2871:8034`) via figma-cli, 2026-11-10. Read-back: Preset row = favorite-saved, overflow-menu; Parts row = custom-meta, instructor-row, grouped-meta. The component set (`52:4270`) is the variant matrix; example frames are for compositions only
-- [ ] Figma example sections for the other owners, after their stories exist: a `<Name> examples` section per component with one instance-only frame per pattern id (Accordion, Breadcrumb, Button ×4, CardHorizontal ×3, Checkbox, Chip, Divider, TextField ×2, TextLink, ScrollArea `scrollable-list`). `page-landmarks`, `card-carousel` and `native-scroll-carousel` go on the Layout Examples page (ADR-023 2026-10-06). Today only CardVertical has a section, so designers can't see the other compositions in Figma
+- [x] Figma example sections for the other owners, after their stories exist: a `<Name> examples` section per component with one instance-only frame per pattern id (Accordion, Breadcrumb, Button ×4, CardHorizontal ×3, Checkbox, Chip, Divider, TextField ×2, TextLink, ScrollArea `scrollable-list`). `page-landmarks`, `card-carousel` and `native-scroll-carousel` go on the Layout Examples page (ADR-023 2026-10-06). Today only CardVertical has a section, so designers can't see the other compositions in Figma
   - [x] 10 frames built via figma-cli, 2026-11-11. Each section has a canvas fill and holds one `Patterns` row; each frame holds its pattern id, `Story: <Export> — <useWhen>`, then instances plus auto-layout frames whose gaps and padding are bound to `space/stack|inline|inset/*`. Sections: Button examples `2963:7809` (Buttons; `form-actions` `2963:7749`, `destructive-confirm` `2963:7770`, `hero-cta` `2963:7791`), Accordion examples `2963:7861` (`course-module-list` `2963:7814`), Breadcrumb examples `2963:7882` (Headers; `page-header-trail` `2963:7866`), CardHorizontal examples `2963:8092` (Cards; `started-courses-list` `2963:7887`, `footer-recommendations` `2963:7969`, `certified-badge` `2963:8085`), Chip examples `2963:8125` (`filter-bar` `2963:8097`), TextField examples `2963:8150` (Input Fields; `inline-name-row` `2963:8130`). Differences from the stories: progress values 65/20 → 50/20 (Figma's ProgressBar only has 0/10/20/50/80/100); the TextField `Value` placeholder is cleared
   - [x] ~~Blocked: Figma had no Card, Divider, ScrollArea or TextLink component~~ Built 2026-11-11:
     - Components:
@@ -62,7 +62,7 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 - [x] `/layout-generation`'s "Recurring patterns": the show-more and carousel recipes shrink to pointers at `CourseModuleList` / `CardCarousel`, keeping only the showcase classes (`carousel-outer`, `hide-on-mobile`); the other subsections stay (2026-11-10)
 - [x] `<Name>.patterns.stories.tsx` for the 12 owners (24 exports); `usage:validate` fails when exports ≠ pattern names (negative-tested); `anatomy:test` and `AnatomyOverlay` read the patterns file; the axe sweep's glob already covers it (149 story tests pass); screenshots stay `--default` only, so no new baselines. CardVertical's 5 composition stories moved out of `CardVertical.stories.tsx` (`Composed` → `CustomMeta`); `src/stories/` CourseModuleList, Carousel, SettingsForm, FooterHighlights deleted; docs page links each pattern to its story (2026-11-10)
 - [x] Drop `patterns[].tree` from schema, example and files (2026-11-10). Also fixed docs 04 (`rules` → `donts`) and 08 (removed `composedOf` drift mention)
-- [ ] Check method chosen and run: first real `/layout-generation` runs, or a pre-registered layout eval with and without patterns (ADR-029)
+- [x] Check method chosen and run: first real `/layout-generation` runs, or a pre-registered layout eval with and without patterns (ADR-029)
   - [x] Method chosen 2026-11-11: a small pre-registered eval in a fresh session, following ADR-029's 2026-10-12 amendments (study B is the precedent), separate from the frozen harnesses
     - Design: 2 briefs (a Settings page; a Discover page) × 2 arms × 1 run, as sequential subagents, each arm in its own scratch worktree.
     - Arm A is `main`. Arm B removes three things:
@@ -72,11 +72,11 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
     - Both worktrees drop `.claude/handoff/` and `docs/`. Overlapping showcase pages (UserSettings, Homepage, CourseOverview) are deleted or avoided by the briefs.
     - Scoring is binary, with criteria fixed in advance (S1–S7, D1–D6, plus `layout:validate` error counts). "Benefit" means A passes ≥3 more checks with no more validator errors; within ±1 means no detectable effect.
     - Pre-registration goes in `.claude/handoff/2026-11-11-layout-patterns-check.handoff.md`, committed before the first run.
-  - [ ] Run it and record the verdict here
+  - [x] Run 2026-11-11 at `c146135`: A (patterns) 13/13, B (no patterns) 11/13, 0 `layout:validate` errors in all four runs. **Inconclusive at N = 1** (rule needs a ≥3-check gap). Settings 7/7 in both arms; B's two misses are on Discover (Chip group without `wrap`; arrows in a header row instead of `justify="end"`). Option D stays; details in `2026-11-11-layout-patterns-check.handoff.md`
 
 **Close-out**
-- [ ] Gate passes on the final migration
-- [ ] Handoff `status: done`, `npm run handoff:tidy`
+- [x] Gate passes on the final migration: full `AGENTS.md` gate set + `lint` + `claudemd:check` + `docs:check`, run locally on `main` (2026-11-11)
+- [x] Handoff `status: done`, `npm run handoff:tidy` (2026-11-11)
 
 ## Why `usage.json`
 

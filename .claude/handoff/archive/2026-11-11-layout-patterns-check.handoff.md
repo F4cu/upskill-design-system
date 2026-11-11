@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-11-11
-completed:
+completed: 2026-11-11
 ---
 
 # Layout-patterns check: does `composition.patterns` help `/layout-generation`? (pre-registration)
@@ -91,6 +91,52 @@ A check passes only if the page's JSX does what it says. Each names the pattern 
 
 N = 1 per cell, one rater who also wrote the checks and the predictions, two briefs. A passing result says the patterns help on these two pages, not in general. Checks were written from the pattern stories, so they measure conformance to the recorded shapes, not page quality in a broader sense. Not comparable with the frozen harness results (ADR-029 2026-10-12).
 
-## Results
+## Results (2026-11-11, runs at `c146135`)
 
-_(appended after the runs)_
+### Deviations from the frozen design
+
+1. Arm B also had `composition.patterns` stripped from `packages/components/component.usage.example.json`: it's a copy of Button's usage file, so leaving it would have handed B Button's four patterns. The pre-registered list missed it.
+2. Arm B's usage files were rewritten by `JSON.stringify(…, null, 2)`, so their formatting differs from A (arrays expanded). Same content apart from the removed key.
+3. `npm run typecheck` checks only `@upskill/components`, not `apps/showcase`, so "typecheck pass" says nothing about the generated pages. Recorded as run, not as a page check.
+4. Residual leak found in B: `.claude/component-patterns.json` lists `CardVertical.patterns.stories.tsx` as a `useCarousel` consumer. Both B runs saw the filename while reading that file. The file doesn't exist in B, so only the name leaked.
+
+### Scores
+
+| Check | Settings A | Settings B | | Check | Discover A | Discover B |
+|---|---|---|---|---|---|---|
+| S1 `inline-name-row` | ✓ | ✓ | | D1 `filter-bar` | ✓ | ✗ |
+| S2 `form-field-stack` | ✓ | ✓ | | D2 `card-carousel` track + arrows | ✓ | ✗ |
+| S3 `form-actions` | ✓ | ✓ | | D3 `card-carousel` items | ✓ | ✓ |
+| S4 `destructive-confirm` | ✓ | ✓ | | D4 `hero-cta` | ✓ | ✓ |
+| S5 `notification-preferences` | ✓ | ✓ | | D5 `started-courses-list` | ✓ | ✓ |
+| S6 `page-header-trail` | ✓ | ✓ | | D6 `instructor-row` + `favorite-saved` | ✓ | ✓ |
+| S7 `page-landmarks` | ✓ | ✓ | | | | |
+| **Total** | **7/7** | **7/7** | | | **6/6** | **4/6** |
+
+**A 13/13, B 11/13.** `layout:validate` errors: 0 in all four runs; all passed on the first attempt. `typecheck` passed in all four (see deviation 3).
+
+B's two failures:
+
+- **D1:** the Chip group is an `Inline` with `role="group"` and `aria-labelledby`, but without `wrap`. Five chips in a non-wrapping row can overflow on mobile, so this is a real defect, not only a shape mismatch.
+- **D2:** the arrows sit in an `Inline justify="space-between"` header row next to the section heading, not in an `Inline justify="end"` below the track. They still render right-aligned and `disabled` is bound to `canPrev`/`canNext`, so this fails the check as written but not functionally.
+
+### Per-run record
+
+| Run | Pattern stories read | Tokens | Tool uses | Duration |
+|---|---|---|---|---|
+| Settings A | `FormActions`, `DestructiveConfirm`, `FormFieldStack`, `InlineNameRow`, `NotificationPreferences`, `PageHeaderTrail`, `HeroCta` | 87k | 12 | 89 s |
+| Settings B | none (filename leak only, deviation 4) | 80k | 11 | 73 s |
+| Discover A | `CardCarousel`, `FilterBar`, `HeroCta`, `InstructorRow`, `FavoriteSaved`, `StartedCoursesList`, `FormActions`, `DestructiveConfirm` | 115k | 12 | 86 s |
+| Discover B | none (filename leak only) | 113k | 18 | 132 s |
+
+Both A runs read every pattern-story file's contents (each run also had the full set of filenames from a glob), which goes against the command's "open that file only for the patterns you pick". It cost little: A used +7k and +2k tokens over B.
+
+Unscored differences seen while scoring: Settings B gave each Checkbox `role="switch"` and immediate-apply state, an inference from Checkbox's `notFor` note on switches; Settings B left the title block outside a named section; A's footers add the `borderTop="inverted"` from `page-landmarks`, and B's don't. B also wired a controlled `searchValue` into AppHeader in both runs, which A didn't.
+
+### Verdict
+
+**Inconclusive at N = 1** under the pre-registered rule: A leads by 2 checks (the rule needs ≥3 for "benefit"), with equal validator errors. Not a harm signal.
+
+Against the predictions (A 11, B 7): A did better than predicted, and B did much better. Settings shows no difference: `useWhen`, `notFor`, `donts`, `limits` and the command's own grammar already determine those shapes. The whole gap is on Discover, in the two checks closest to layout detail (wrapping, arrow placement); the parts composition (D6) that was predicted hardest passed in both arms. Read cautiously: the checks were written from the pattern stories, so they favour A by construction, and a 2-check gap from one run per cell is within noise.
+
+**What this supports:** keep option D (cheap: pattern names + `useWhen` cost little per run and the stories double as Storybook docs and Figma frames), but don't expect patterns to carry composition on their own; most of it comes from the other usage fields. Not pursued further unless real `/layout-generation` runs show composition misses that a pattern would have caught.

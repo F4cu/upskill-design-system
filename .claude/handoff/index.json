@@ -16,22 +16,6 @@
     "path": ".claude/handoff/2026-11-05-spec-renderers.handoff.md"
   },
   {
-    "name": "2026-11-10-metadata-to-usage-rename",
-    "kind": "handoff",
-    "status": "active",
-    "created": "2026-11-10",
-    "updated": "2026-11-11",
-    "path": ".claude/handoff/2026-11-10-metadata-to-usage-rename.handoff.md"
-  },
-  {
-    "name": "2026-11-11-layout-patterns-check",
-    "kind": "handoff",
-    "status": "active",
-    "created": "2026-11-11",
-    "updated": "2026-11-11",
-    "path": ".claude/handoff/2026-11-11-layout-patterns-check.handoff.md"
-  },
-  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
@@ -222,6 +206,22 @@
     "created": "2026-10-12",
     "updated": "2026-11-10",
     "path": ".claude/handoff/archive/2026-10-12-spec-rollout-followups.handoff.md"
+  },
+  {
+    "name": "2026-11-10-metadata-to-usage-rename",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-11-10",
+    "updated": "2026-11-11",
+    "path": ".claude/handoff/archive/2026-11-10-metadata-to-usage-rename.handoff.md"
+  },
+  {
+    "name": "2026-11-11-layout-patterns-check",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-11-11",
+    "updated": "2026-11-11",
+    "path": ".claude/handoff/archive/2026-11-11-layout-patterns-check.handoff.md"
   },
   {
     "name": "docsify-docs-site",
