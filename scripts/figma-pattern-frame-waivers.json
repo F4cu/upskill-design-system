@@ -1,0 +1,12 @@
+{
+  "$comment": "composition.patterns with no Figma example frame yet, checked by usage:validate against packages/components/figma-pattern-frames.json. A waiver fails once its frame exists or the pattern is gone; delete it then. Never waive to hide a frame that drifted: rename the frame or the pattern.",
+  "waivers": [
+    { "pattern": "card-actions", "reason": "Needs a Card component; Figma has none. Stand-ins ruled out 2026-11-11 (instances only, ADR-023)." },
+    { "pattern": "notification-preferences", "reason": "Needs a Card component; Figma has none." },
+    { "pattern": "form-field-stack", "reason": "Needs a Card component; Figma has none." },
+    { "pattern": "section-break", "reason": "Needs Divider and Card components; Figma has neither." },
+    { "pattern": "scrollable-list", "reason": "Needs a ScrollArea component; Figma has none." },
+    { "pattern": "native-scroll-carousel", "reason": "Needs a ScrollArea component; Figma has none." },
+    { "pattern": "author-credit", "reason": "Needs a TextLink component; Figma has none." }
+  ]
+}

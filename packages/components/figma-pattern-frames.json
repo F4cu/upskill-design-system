@@ -1,0 +1,110 @@
+{
+  "$comment": "Frozen list of the Figma pattern example frames (ADR-023). Captured interactively by scripts/capture-pattern-frames.js via figma-cli; never regenerated in CI. usage:validate checks it against composition.patterns.",
+  "fileKey": "t4F3b1p03loOX9IpNXRaYR",
+  "fileName": "Upskill - Design System",
+  "capturedAt": "2026-11-11",
+  "frames": [
+    {
+      "pattern": "card-carousel",
+      "section": "Carrousel examples",
+      "page": "Carrousels",
+      "nodeId": "2963:8497"
+    },
+    {
+      "pattern": "certified-badge",
+      "section": "CardHorizontal examples",
+      "page": "Cards",
+      "nodeId": "2963:8085"
+    },
+    {
+      "pattern": "course-module-list",
+      "section": "Accordion examples",
+      "page": "Accordion",
+      "nodeId": "2963:7814"
+    },
+    {
+      "pattern": "custom-meta",
+      "section": "CardVertical examples",
+      "page": "Cards",
+      "nodeId": "2871:8326"
+    },
+    {
+      "pattern": "destructive-confirm",
+      "section": "Button examples",
+      "page": "Buttons",
+      "nodeId": "2963:7770"
+    },
+    {
+      "pattern": "favorite-saved",
+      "section": "CardVertical examples",
+      "page": "Cards",
+      "nodeId": "2871:8149"
+    },
+    {
+      "pattern": "filter-bar",
+      "section": "Chip examples",
+      "page": "Chips",
+      "nodeId": "2963:8097"
+    },
+    {
+      "pattern": "footer-recommendations",
+      "section": "CardHorizontal examples",
+      "page": "Cards",
+      "nodeId": "2963:7969"
+    },
+    {
+      "pattern": "form-actions",
+      "section": "Button examples",
+      "page": "Buttons",
+      "nodeId": "2963:7749"
+    },
+    {
+      "pattern": "grouped-meta",
+      "section": "CardVertical examples",
+      "page": "Cards",
+      "nodeId": "2871:8432"
+    },
+    {
+      "pattern": "hero-cta",
+      "section": "Button examples",
+      "page": "Buttons",
+      "nodeId": "2963:7791"
+    },
+    {
+      "pattern": "inline-name-row",
+      "section": "TextField examples",
+      "page": "Input Fields",
+      "nodeId": "2963:8130"
+    },
+    {
+      "pattern": "instructor-row",
+      "section": "CardVertical examples",
+      "page": "Cards",
+      "nodeId": "2871:8385"
+    },
+    {
+      "pattern": "overflow-menu",
+      "section": "CardVertical examples",
+      "page": "Cards",
+      "nodeId": "2871:8176"
+    },
+    {
+      "pattern": "page-header-trail",
+      "section": "Breadcrumb examples",
+      "page": "Headers",
+      "nodeId": "2963:7866"
+    },
+    {
+      "pattern": "page-landmarks",
+      "section": "Page Landmarks examples",
+      "page": "Layout Examples",
+      "nodeId": "2963:8155"
+    },
+    {
+      "pattern": "started-courses-list",
+      "section": "CardHorizontal examples",
+      "page": "Cards",
+      "nodeId": "2963:7887"
+    }
+  ]
+}

@@ -37,6 +37,7 @@ Moments and loops read the system's status quo from **committed files, never liv
 | `airtable-governance.json` | Airtable (`status`/`owner`/`successor`/`notes`) | `scripts/airtable-pull.js` (REST) |
 | `token-usage.json` | Repo scan (`var(--ds-*)` CSS refs + `{alias}` refs) | `scripts/token-usage.js` |
 | `figma-variables.json` | Figma variables (REST API is Enterprise-gated, so captured interactively, not by script) | `/figma-variable-audit` via figma-cli |
+| `packages/components/figma-pattern-frames.json` | Figma pattern example frames (ADR-023) | `node scripts/capture-pattern-frames.js` via figma-cli |
 | `.claude/component-signoff.json` | Airtable (`Implementation` = human `done`/`todo`) | `scripts/airtable-pull.js` (REST) |
 | `.claude/component-review-state.json` | Per-component review completion + `visualReview` records (local `runs/` artifacts merged over the committed baseline — never regressed by CI, ADR-015 amendment) | `scripts/sense.js` (`npm run sense`) |
 | `.claude/component-pipeline.json` | Component usage + review state + sign-off | `scripts/sense.js` (`npm run sense`) |

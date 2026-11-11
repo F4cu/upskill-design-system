@@ -40,6 +40,7 @@ sources:
 # rewritten 2026-11-10: ADR-001 third amendment: variants optional, every axis a spec prop, prose lint (warnings); links the new 13-writing-contract-files guide
 # 2026-11-10: prop-rule row says how spec constraints are enforced (type, test, layout:validate); 7 of the 9 documented-only ones now are
 # clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups; the drift check this page describes is unchanged
+# clock reset 2026-11-11: usage:validate checks one Figma example frame per pattern against the frozen packages/components/figma-pattern-frames.json (ADR-023 amendment 2026-11-11); the usage schema this page describes is unchanged, still accurate
 ---
 # Machine-readable metadata
 

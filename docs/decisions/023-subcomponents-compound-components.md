@@ -4,7 +4,7 @@ title: "ADR-023 — Subcomponents: preset + parts under a dot namespace"
 # ADR-023 — Subcomponents: preset + parts under a dot namespace
 
 **Date:** 2026-10-01
-**Amended:** 2026-10-12
+**Amended:** 2026-11-11
 **Status:** `accepted`
 
 ## Context
@@ -148,3 +148,14 @@ The 2026-10-06 part-kind table gives `Progress` → `completion` as its example 
 - **An optional fixed part also needs a visibility boolean.** In code, `<CardVertical.Progress>` is optional inside `Root`. Figma can't omit a layer per instance, so `Root` carries `Has progress` (default `false`) driving the nested instance's visibility. This is ADR-026's `Has <x>` recorded mapping, widened the same day to cover optional parts.
 
 The rule for `fixed` is now: a nested layer or instance with its own properties, exposed on the parent (`Progress` → `Value`, `Favorite` → `Pressed`); if the part is optional in code, the parent also gets a `Has <x>` visibility boolean (`Has progress`). The CardVertical spec's `Progress.value` entry had copied the stale `completion` example and now records `Has progress + Value`. The read-back that found it (2026-10-12, `2871:7567`) confirmed the file already matched this rule; only the documents were behind.
+
+## Amendment (2026-11-11) — Every pattern has a frame, checked against a frozen snapshot
+
+The 2026-10-06 amendment asked for one example frame per pattern, but nothing checked it, and until 2026-11-11 only CardVertical had frames. Two changes:
+
+- **Every pattern, layout patterns included.** `page-landmarks` and `card-carousel` have frames too, so "isn't a page layout" is dropped: every `composition.patterns` entry gets a frame. Section names follow the Figma page, not the owner (`card-carousel` sits in "Carrousel examples", `page-landmarks` in "Page Landmarks examples"), so a frame is identified by its pattern id alone: a frame inside any `* examples` section whose first child is a text layer reading the frame's name.
+- **A frozen snapshot and a gate.** `scripts/capture-pattern-frames.js` reads the frames through figma-cli into `packages/components/figma-pattern-frames.json`, captured interactively like `figma-variables.json`, because Figma reads stay out of CI (ADR-002). `usage:validate` fails when a frame names no pattern, a pattern has two frames, or a pattern has no frame and no waiver in `scripts/figma-pattern-frame-waivers.json`. A waiver also fails once its frame exists.
+
+**Waivers at the start.** Seven patterns need a Figma component that doesn't exist yet: Card (`card-actions`, `notification-preferences`, `form-field-stack`), Divider + Card (`section-break`), ScrollArea (`scrollable-list`, `native-scroll-carousel`) and TextLink (`author-credit`). Stand-in frames were rejected because they break the instances-only rule. The waivers go away as those components are built.
+
+**Consequence.** The snapshot can lag the Figma file. It is only as fresh as its `capturedAt`, the same trade-off as the variables snapshot. Renaming a pattern in `usage.json` fails the gate until the frame is renamed and recaptured, which is the drift the check exists to catch.

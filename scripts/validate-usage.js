@@ -4,7 +4,8 @@
 // folder, that notFor.instead and component-level composition.accepts/containedBy
 // name components, that composition.limits name
 // real variant options, that every variant axis is a spec prop, that pattern names are unique across the set and match
-// the exports of <Name>.patterns.stories.tsx, resolves composition.parts cross-references, validates
+// the exports of <Name>.patterns.stories.tsx and one Figma example frame each (frozen snapshot
+// figma-pattern-frames.json), resolves composition.parts cross-references, validates
 // the canonical example file, and checks every <Name>.spec.json parses. Exits
 // non-zero on any failure so it can gate CI. This is the contract the
 // component-scaffold and layout-generation agentic moments consume — keep it
@@ -21,6 +22,8 @@ const ROOT = path.resolve(__dirname, "..");
 const COMPONENTS_DIR = path.resolve(ROOT, "packages/components/src/components");
 const SCHEMA_PATH = path.resolve(ROOT, "packages/components/component.usage.schema.json");
 const EXAMPLE_PATH = path.resolve(ROOT, "packages/components/component.usage.example.json");
+const FRAMES_PATH = path.resolve(ROOT, "packages/components/figma-pattern-frames.json");
+const FRAME_WAIVERS_PATH = path.resolve(ROOT, "scripts/figma-pattern-frame-waivers.json");
 
 const SPEC_SECTIONS = ["states", "tokens", "accessibility"];
 const RENAMED = {
@@ -297,6 +300,44 @@ for (const { expectedName } of targets) {
     console.error(`✗ ${path.relative(ROOT, file)} — not valid JSON: ${e.message}`);
     failures++;
   }
+}
+
+// Each pattern has one Figma example frame (ADR-023), read from the frozen
+// snapshot that scripts/capture-pattern-frames.js captures via figma-cli.
+// Frames are matched by pattern id, not section: sections are named by page.
+function checkFigmaFrames() {
+  const errors = [];
+  const snapshot = JSON.parse(fs.readFileSync(FRAMES_PATH, "utf8"));
+  const waivers = JSON.parse(fs.readFileSync(FRAME_WAIVERS_PATH, "utf8")).waivers;
+  const waived = new Map(waivers.map((w) => [w.pattern, w]));
+  const framesByPattern = new Map();
+  for (const f of snapshot.frames) framesByPattern.set(f.pattern, [...(framesByPattern.get(f.pattern) ?? []), f]);
+  const where = (f) => `"${f.section}" on ${f.page} (${f.nodeId})`;
+  for (const [pattern, frames] of framesByPattern) {
+    if (!patternOwners.has(pattern)) {
+      errors.push(`frame "${pattern}" in ${frames.map(where).join(", ")} is not a composition.patterns name; rename the frame or the pattern`);
+    } else if (frames.length > 1) {
+      errors.push(`pattern "${pattern}" has ${frames.length} frames: ${frames.map(where).join(", ")}; keep one`);
+    }
+  }
+  for (const [pattern, owner] of patternOwners) {
+    if (framesByPattern.has(pattern) || waived.has(pattern)) continue;
+    errors.push(`pattern "${pattern}" (${owner}) has no example frame; build one, recapture, or waive it in ${path.relative(ROOT, FRAME_WAIVERS_PATH)}`);
+  }
+  for (const w of waivers) {
+    if (!patternOwners.has(w.pattern)) errors.push(`waiver "${w.pattern}" names no pattern; delete it`);
+    else if (framesByPattern.has(w.pattern)) errors.push(`waiver "${w.pattern}" is stale: the frame exists now; delete it`);
+  }
+  return { errors, capturedAt: snapshot.capturedAt, waived: waivers.length };
+}
+
+const frames = checkFigmaFrames();
+if (frames.errors.length) {
+  console.error(`✗ ${path.relative(ROOT, FRAMES_PATH)} (captured ${frames.capturedAt})`);
+  for (const msg of frames.errors) console.error(`    ${msg}`);
+  failures++;
+} else {
+  console.log(`✓ ${path.relative(ROOT, FRAMES_PATH)} — every pattern has one frame (${frames.waived} waived), captured ${frames.capturedAt}`);
 }
 
 if (failures) {
