@@ -46,7 +46,7 @@ Every generated page must follow this fixed hierarchy. One abstraction level per
 | **Container** | `.container` global class applied via `className` | presentational | centers content; max-width + grid margin; never a landmark |
 | **Column (N-column card grid)** | `.grid` global class (CSS Grid, column count auto-reflows via `--ds-grid-columns`) | presentational | use for equal-width card grids (3–4+ items) |
 | **Column (two-column wrapping)** | `Inline wrap` with `grow`/`minWidth` props on each child `Box` or `Stack` | presentational | use for two-panel layouts that stack on mobile; `minWidth` sets the breakpoint |
-| **Component** | library component from the fixed 26 set | per component | leaf — cite the usage.json rule that placed it |
+| **Component** | library component from the fixed set (`AGENTS.md`) | per component | leaf — cite the usage.json rule that placed it |
 | **Footer** | `<Box as="footer">` | `contentinfo` | one per page |
 
 **Inline-style reconciliation** (replaces the blanket "no inline styles"):
