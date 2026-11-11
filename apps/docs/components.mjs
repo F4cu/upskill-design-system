@@ -17,6 +17,7 @@ export const FIGMA_FILE = "https://www.figma.com/design/t4F3b1p03loOX9IpNXRaYR/"
 export const TABS = [
   { id: "usage", label: "Usage", path: "" },
   { id: "spec", label: "Spec", path: "spec/" },
+  { id: "tokens", label: "Tokens", path: "tokens/" },
   { id: "accessibility", label: "Accessibility", path: "accessibility/" },
 ];
 

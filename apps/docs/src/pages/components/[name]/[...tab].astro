@@ -1,5 +1,5 @@
 ---
-// Component pages (ADR-030, Phase A1): Usage, Spec and Accessibility per
+// Component pages (ADR-030, Phase A1): Usage, Spec, Tokens and Accessibility per
 // component, rendered from specs.bundle.json. Every row traces to a field in
 // the spec or <Name>.usage.json; a section with no data shows "None recorded".
 import { getCollection } from "astro:content";
@@ -268,10 +268,10 @@ const HEADINGS = {
     ["anatomy", "Anatomy"],
     ["props", "Props"],
     ["states", "States"],
-    ["styles", "Token usage"],
     ["why", "Why it's built this way"],
     ["parity", "Design–code parity"],
   ],
+  tokens: [["styles", "Token usage"]],
   accessibility: [
     ["role", "Role and ARIA"],
     ["keyboard", "Keyboard"],
@@ -545,8 +545,48 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           <p>{NONE}</p>
         )}
 
+        <h2 id="why">{h.why}</h2>
+        <h3>Decisions</h3>
+        {spec.decisions?.length ? (
+          <ul>
+            {spec.decisions.map((d) => (
+              <li>
+                {d.decision}
+                {d.reason && <> <em>{d.reason}</em></>}
+                {d.adr && <> ({adrHref(d.adr) ? <a href={adrHref(d.adr)}>{d.adr}</a> : d.adr})</>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>{NONE}</p>
+        )}
+        <h3>Ruled out</h3>
+        {spec.ruledOut?.length ? (
+          <table>
+            <thead><tr><th scope="col">Option</th><th scope="col">Why not</th><th scope="col">Seen in</th></tr></thead>
+            <tbody>
+              {spec.ruledOut.map((r) => <tr><td>{r.option}</td><td>{r.reason}</td><td>{r.source ?? ""}</td></tr>)}
+            </tbody>
+          </table>
+        ) : (
+          <p>{NONE}</p>
+        )}
+
+        <h2 id="parity">{h.parity}</h2>
+        {spec.figma.divergences?.length ? (
+          <ul>{spec.figma.divergences.map((d) => <li>{d.what} <em>{d.decision}</em></li>)}</ul>
+        ) : (
+          <p>{NONE}</p>
+        )}
+      </>
+    )
+  }
+
+  {
+    tabId === "tokens" && (
+      <>
         <h2 id="styles">{h.styles}</h2>
-        <p>The tokens each part uses, grouped by the numbers on the anatomy diagram, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Select a part to collapse it.</p>
+        <p>The tokens each part uses, grouped by the numbers on the <a href={`${pageHref(name, TABS.find((t) => t.id === "spec"))}#anatomy`}>anatomy diagram</a>, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Select a part to collapse it.</p>
         <table class="styles-table">
           <thead><tr><th scope="col">State</th><th scope="col">Tokens</th></tr></thead>
           {styleGroups.map(({ group, sub, number, note, conditions }) => (
@@ -585,40 +625,6 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           <div><dt><code class="inherited">token.name</code></dt><dd>Token from the component the part is built on; hover it for which</dd></div>
           <div><dt><code class="literal">value</code></dt><dd>Raw value with no token; hover it for the reason</dd></div>
         </dl>
-
-        <h2 id="why">{h.why}</h2>
-        <h3>Decisions</h3>
-        {spec.decisions?.length ? (
-          <ul>
-            {spec.decisions.map((d) => (
-              <li>
-                {d.decision}
-                {d.reason && <> <em>{d.reason}</em></>}
-                {d.adr && <> ({adrHref(d.adr) ? <a href={adrHref(d.adr)}>{d.adr}</a> : d.adr})</>}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>{NONE}</p>
-        )}
-        <h3>Ruled out</h3>
-        {spec.ruledOut?.length ? (
-          <table>
-            <thead><tr><th scope="col">Option</th><th scope="col">Why not</th><th scope="col">Seen in</th></tr></thead>
-            <tbody>
-              {spec.ruledOut.map((r) => <tr><td>{r.option}</td><td>{r.reason}</td><td>{r.source ?? ""}</td></tr>)}
-            </tbody>
-          </table>
-        ) : (
-          <p>{NONE}</p>
-        )}
-
-        <h2 id="parity">{h.parity}</h2>
-        {spec.figma.divergences?.length ? (
-          <ul>{spec.figma.divergences.map((d) => <li>{d.what} <em>{d.decision}</em></li>)}</ul>
-        ) : (
-          <p>{NONE}</p>
-        )}
       </>
     )
   }

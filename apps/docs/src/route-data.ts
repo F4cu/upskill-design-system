@@ -1,8 +1,8 @@
 import { defineRouteMiddleware } from "@astrojs/starlight/route-data";
 
 // Starlight marks a sidebar link current only on an exact path match, so the
-// Spec and Accessibility tabs (/components/<name>/spec/ …) would highlight
-// nothing. Mark the component's Usage link current on all three routes.
+// other tabs (/components/<name>/spec/ …) would highlight nothing. Mark the
+// component's Usage link current on every tab's route.
 const COMPONENT_ROUTE = /\/components\/[^/]+\//;
 
 type Entry = { type: "link"; href: string; isCurrent: boolean } | { type: "group"; entries: Entry[] };
