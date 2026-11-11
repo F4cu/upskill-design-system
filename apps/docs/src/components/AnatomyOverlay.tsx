@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { ComponentType } from 'react'
 import '../../../../packages/components/src/styles/tokens.css'
+import { StoryRender, pascal } from './stories'
 
 // Anatomy diagram (ADR-030 Phase A2): renders the real component from source
 // for each anatomyExamples entry, then numbers every part it can find by its
@@ -9,18 +10,11 @@ import '../../../../packages/components/src/styles/tokens.css'
 // layout; without JavaScript the examples still render, unnumbered.
 type Part = { name: string; parent?: string; builtOnPart?: string; notRendered?: string }
 type Example = { props?: Record<string, unknown>; pattern?: string }
-type Story = { args?: Record<string, unknown> }
 
 const components = import.meta.glob<Record<string, ComponentType<Record<string, unknown>>>>(
   '../../../../packages/components/src/components/*/index.tsx',
   { eager: true },
 )
-const stories = import.meta.glob<Record<string, Story & { component?: ComponentType }>>(
-  '../../../../packages/components/src/components/*/*.patterns.stories.tsx',
-  { eager: true },
-)
-
-const pascal = (kebab: string) => kebab.replace(/(?:^|-)([a-z0-9])/g, (_, c: string) => c.toUpperCase())
 
 function locate(root: Element, part: Part, parts: Part[]): Element | null {
   const parent = part.parent ? parts.find((p) => p.name === part.parent) : undefined
@@ -28,16 +22,12 @@ function locate(root: Element, part: Part, parts: Part[]): Element | null {
   return scope?.querySelector(`[data-part="${part.builtOnPart ?? part.name}"]`) ?? null
 }
 
-// A pattern example renders the story named after it, from its args alone:
-// meta.component with meta.args then the story's args. Decorators are skipped.
+// A pattern example renders the story named after it in PascalCase, with its
+// decorators, the same way the Usage page renders it.
 function exampleElement(name: string, example: Example) {
-  const dir = `../../../../packages/components/src/components/${name}`
-  const Component = components[`${dir}/index.tsx`][name]
-  if (example.props) return <Component {...example.props} />
-  const module = stories[`${dir}/${name}.patterns.stories.tsx`]
-  const meta = module.default as Story
-  const story = module[pascal(example.pattern!)] as Story
-  return <Component {...meta.args} {...story.args} />
+  if (example.pattern) return <StoryRender name={name} file="patterns.stories" exportName={pascal(example.pattern)} />
+  const Component = components[`../../../../packages/components/src/components/${name}/index.tsx`][name]
+  return <Component {...example.props} />
 }
 
 type Marker = { n: number; name: string; x: number; y: number; w: number; h: number; bx?: number }

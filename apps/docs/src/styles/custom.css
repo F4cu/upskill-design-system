@@ -95,3 +95,12 @@ pre.mermaid {
   font-size: var(--sl-text-xs);
   color: var(--sl-color-gray-3);
 }
+
+/* Live examples (ADR-030 Phase A2): the real component on its own canvas */
+.live-example {
+  padding: 1.5rem;
+  background: var(--ds-color-background-container-canvas);
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}

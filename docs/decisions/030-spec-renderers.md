@@ -5,7 +5,7 @@ title: "ADR-030 — Spec renderers: generated component pages and a Figma parity
 
 **Date:** 2026-11-10
 **Status:** `accepted`
-**Amended:** 2026-11-10
+**Amended:** 2026-11-11
 
 ## Context
 
@@ -82,3 +82,11 @@ The live overlay from decision 3 ships. `@astrojs/react` renders each `anatomyEx
 - **Pattern examples.** Rendered from the story's args on `meta.component`, without Storybook's runtime; story decorators are skipped.
 - **Fonts.** Component pages load the brand fonts through frontmatter `head`, as Storybook's `preview-head.html` does; other pages don't.
 
+
+## Amendment (2026-11-11) — Phase A2: live examples, patterns and states
+
+Usage and Spec render the real component from its stories, with one renderer (`apps/docs/src/components/stories.tsx`) shared by the live examples and the anatomy overlay.
+
+- **Stories by name.** The Usage example is the `Default` story; a pattern is its PascalCase export in `<Name>.patterns.stories.tsx`; a state is its PascalCase export in `<Name>.stories.tsx` (`rest` → `Default`). A missing story shows "No `<Export>` story" rather than a substitute. CardVertical's `favorite-pressed` has no `FavoritePressed` story, so it shows that gap.
+- **Render path.** `meta.args` then the story's args, through the story's `render` (else `meta.render`, else `meta.component`), wrapped in the story's decorators then meta's, as Storybook orders them. This replaces the spike's "decorators are skipped": pattern stories use decorators for width (CardVertical's 280px), and without them a card stretched to the column. Global decorators (theme, brand) stay skipped; Starlight's `data-theme` drives the tokens.
+- **Interaction states are not forced.** Hover, press, focus and open are pseudo-classes or internal state. Forcing them means rewriting the component CSS at runtime (the storybook-addon-pseudo-states approach). The spec's `trigger` strings don't say which element the pseudo-class is on, so a rewrite would also fire on other elements: CardVertical's card hover and action hover would show together, and the global `:focus-visible` rule would ring every element in the frame. The table marks them "Not forced", and the live examples are interactive.

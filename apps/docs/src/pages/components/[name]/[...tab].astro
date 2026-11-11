@@ -6,6 +6,8 @@ import { getCollection } from "astro:content";
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 import ComponentTabs from "../../../components/ComponentTabs.astro";
 import AnatomyOverlay from "../../../components/AnatomyOverlay.tsx";
+import LiveExample from "../../../components/LiveExample.tsx";
+import { hasStory, pascal } from "../../../components/stories.tsx";
 import {
   FIGMA_FILE,
   REPO_BLOB,
@@ -104,6 +106,20 @@ const formatProps = (props) =>
 const codeOnlyVariant = (axis) => spec.props[axis]?.figma?.surface === "code-only";
 const focusState = spec.states.find((s) => s.name === "focus-visible");
 
+// Live examples render stories by name (ADR-030 Phase A2): the Usage example
+// is the Default story, a pattern is its PascalCase export in
+// <Name>.patterns.stories.tsx, and a state is its PascalCase export in
+// <Name>.stories.tsx (rest → Default). Interaction states are pseudo-classes,
+// so they are shown on the live Default example rather than forced.
+const hasDefault = hasStory(name, "stories", "Default");
+const stateStory = (s) => (s.trigger === "rest" ? "Default" : pascal(s.name));
+const stateExample = (s) => {
+  if (s.trigger === "rest") return hasDefault ? "rendered" : "missing";
+  if (s.kind === "interaction") return "interaction";
+  return hasStory(name, "stories", stateStory(s)) ? "rendered" : "missing";
+};
+const renderedStates = (spec.states ?? []).filter((s) => stateExample(s) === "rendered");
+
 const LIMIT_SCOPE = { region: "region (section)", repeated: "repeated item", parent: "parent" };
 const WIDTH = { fill: "Fills its container", hug: "Hugs its content", fixed: "Keeps its own fixed size" };
 const conceptLabel = (c) => (c?.startsWith("new term: ") ? `New term: ${c.slice(10)}` : c === "native" ? "Native HTML attribute" : c);
@@ -122,6 +138,7 @@ const links = [
 
 const HEADINGS = {
   usage: [
+    ["example", "Example"],
     ["when-to-use", "When to use it"],
     ["variants", "Variants"],
     ["patterns", "Patterns"],
@@ -183,6 +200,13 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   {
     tabId === "usage" && (
       <>
+        <h2 id="example">{h.example}</h2>
+        {hasDefault ? (
+          <div class="not-content"><LiveExample client:visible name={name} file="stories" exportName="Default" /></div>
+        ) : (
+          <p>No <code>Default</code> story, so no live example.</p>
+        )}
+
         <h2 id="when-to-use">{h["when-to-use"]}</h2>
         {usage.useWhen?.length ? <ul>{usage.useWhen.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
 
@@ -217,7 +241,12 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
                 <dt><code>{p.name}</code></dt>
                 <dd>
                   <p>{p.useWhen}</p>
-                  <p><a href={`${STORYBOOK}?path=/story/${storybookId}-patterns--${p.name}`}>Example and code in Storybook</a></p>
+                  {hasStory(name, "patterns.stories", pascal(p.name)) ? (
+                    <div class="not-content"><LiveExample client:visible name={name} file="patterns.stories" exportName={pascal(p.name)} /></div>
+                  ) : (
+                    <p>No <code>{pascal(p.name)}</code> story in <code>{name}.patterns.stories.tsx</code>, so no live example.</p>
+                  )}
+                  <p><a href={`${STORYBOOK}?path=/story/${storybookId}-patterns--${p.name}`}>Code in Storybook</a></p>
                 </dd>
               </>
             ))}
@@ -395,14 +424,37 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
 
         <h2 id="states">{h.states}</h2>
         {spec.states?.length ? (
+          <>
+          <p>States set by props or data render from their stories. Interaction states (hover, press, focus, open) are not forced; try them on the live examples on the Usage page.</p>
+          {renderedStates.length > 0 && (
+            <div class="state-grid not-content">
+              {renderedStates.map((s) => (
+                <figure class="state">
+                  <LiveExample client:visible name={name} file="stories" exportName={stateStory(s)} />
+                  <figcaption><code>{s.name}</code> · {s.kind}</figcaption>
+                </figure>
+              ))}
+            </div>
+          )}
           <table>
-            <thead><tr><th scope="col">State</th><th scope="col">Kind</th><th scope="col">Trigger</th><th scope="col">Notes</th></tr></thead>
+            <thead><tr><th scope="col">State</th><th scope="col">Kind</th><th scope="col">Trigger</th><th scope="col">Example</th><th scope="col">Notes</th></tr></thead>
             <tbody>
               {spec.states.map((s) => (
-                <tr><th scope="row"><code>{s.name}</code></th><td>{s.kind}</td><td><code>{s.trigger}</code></td><td>{s.notes ?? ""}</td></tr>
+                <tr>
+                  <th scope="row"><code>{s.name}</code></th>
+                  <td>{s.kind}</td>
+                  <td><code>{s.trigger}</code></td>
+                  <td>
+                    {stateExample(s) === "rendered" && <>Shown above (<code>{stateStory(s)}</code>)</>}
+                    {stateExample(s) === "interaction" && "Not forced"}
+                    {stateExample(s) === "missing" && <>No <code>{stateStory(s)}</code> story</>}
+                  </td>
+                  <td>{s.notes ?? ""}</td>
+                </tr>
               ))}
             </tbody>
           </table>
+          </>
         ) : (
           <p>{NONE}</p>
         )}
@@ -550,6 +602,20 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   .options {
     margin: 0;
     padding-inline-start: 1rem;
+  }
+  .state-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin-block: 1rem;
+  }
+  .state {
+    margin: 0;
+  }
+  .state figcaption {
+    margin-top: 0.5rem;
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
   }
   details summary {
     cursor: pointer;
