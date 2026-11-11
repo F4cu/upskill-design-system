@@ -81,6 +81,7 @@ sources:
 # clock reset 2026-11-10: pattern stories shipped (ADR-001 option D, tree dropped, /layout-generation recipes point at stories); this page's overview of usage files and commands is unchanged, still accurate
 # clock reset 2026-11-10: ADR-001 third amendment (writing rules, placeholder axes removed); this page describes no usage field, still accurate
 # clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
+# rewritten 2026-11-11: snapshot table lists figma-pattern-frames.json (ADR-023 amendment 2026-11-11)
 ---
 # Start here
 
@@ -114,7 +115,7 @@ Where a page on this site describes something the showcase demonstrates live, it
 
 | Surface | Answers | Open it |
 |---|---|---|
-| Frozen snapshots (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`, `.claude/component-signoff.json`, `.claude/component-review-state.json`, `.claude/component-pipeline.json`, `.claude/component-patterns.json`, `.claude/STATUS_QUO.md`, `.claude/pipeline-status.json`) | "What's the last-captured state of governance, usage, review, and CI/issues — without hitting a live API?" (CLAUDE.md's "Frozen-memory snapshots" table has the full source/capture mapping.) | Read the file directly, or regenerate with `npm run sense` (most files) / `npm run pipeline:status` (`.claude/pipeline-status.json`: CI workflow conclusions + open issues, via `gh`). |
+| Frozen snapshots (`airtable-governance.json`, `token-usage.json`, `figma-variables.json`, `figma-pattern-frames.json`, `.claude/component-signoff.json`, `.claude/component-review-state.json`, `.claude/component-pipeline.json`, `.claude/component-patterns.json`, `.claude/STATUS_QUO.md`, `.claude/pipeline-status.json`) | "What's the last-captured state of governance, usage, review, and CI/issues — without hitting a live API?" (CLAUDE.md's "Frozen-memory snapshots" table has the full source/capture mapping.) | Read the file directly, or regenerate with `npm run sense` (most files) / `npm run pipeline:status` (`.claude/pipeline-status.json`: CI workflow conclusions + open issues, via `gh`). |
 | `npm run status` | "Component and token totals, governance summary, and the latest five token changes — what does the system look like right now?" | Terminal, no args. |
 | `npm run status:board` | "Every component's stage and review checklist (visual/code/learnings) in one table." | Terminal, no args. |
 | `npm run status:component <Name>` | "Where does this one component stand, and what's the next step?" | `npm run status:component -- <Name>`. |
