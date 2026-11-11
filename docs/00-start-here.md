@@ -82,6 +82,7 @@ sources:
 # clock reset 2026-11-10: ADR-001 third amendment (writing rules, placeholder axes removed); this page describes no usage field, still accurate
 # clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 # rewritten 2026-11-11: snapshot table lists figma-pattern-frames.json (ADR-023 amendment 2026-11-11)
+# clock reset 2026-11-11: /layout-generation's final step names the limits-driven composition check and the grammar table points at the fixed set instead of a count; this page describes neither, still accurate
 ---
 # Start here
 

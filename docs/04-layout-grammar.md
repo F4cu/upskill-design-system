@@ -31,6 +31,7 @@ sources:
 # clock reset 2026-11-10: validate-layout.js skips *.test.tsx files in a directory scan (deliberate @ts-expect-error violations); grammar unchanged, still accurate
 # clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 # clock reset 2026-11-11: ADR-023 amendment (one Figma example frame per pattern, checked by usage:validate); the layout grammar is unchanged, still accurate
+# rewritten 2026-11-11: the validator paragraph now describes the limits/nests check driven by usage.json (checkComposition replaced the hard-coded Button-emphasis check in the 2026-11-10 rename); Button emphasis stays as its example
 ---
 # Layout grammar
 
@@ -84,7 +85,7 @@ Dotted names are allowed for subcomponents ([ADR-023](decisions/023-subcomponent
 
 Children rendered from an expression (`{items.map(…)}`) can't be counted statically, so the one-child and required checks skip that element.
 
-It also checks **Button emphasis by context** ([ADR-024](decisions/024-button-variants-by-weight.md)). Button variants name a fixed weight (`accent`, `neutral`, `transparent`, `danger`), so which action is "primary" has to come from the container. A literal `variant="accent"` fails inside `CardVertical`/`CardHorizontal` or a `.map()` callback, where N repeated items would render N primaries, and when a `<section>` holds more than one.
+It also checks each component's **composition limits and nesting**, read from its usage file. A limit counts the elements whose literal props match it, per region (the nearest `<section>`), per repeated item (inside `CardVertical`/`CardHorizontal` or a `.map()` callback) or per direct parent; `nests: false` fails a component placed anywhere inside another of the same name. A computed prop value can't be judged statically, so it never matches. Button emphasis by context ([ADR-024](decisions/024-button-variants-by-weight.md)) is one such limit: variants name a fixed weight (`accent`, `neutral`, `transparent`, `danger`), so which action is "primary" has to come from the container. A literal `variant="accent"` fails inside a repeated item, where N items would render N primaries, and when a `<section>` holds more than one.
 
 ```bash
 npm run layout:validate -- apps/showcase/src/pages/CourseOverview.tsx
