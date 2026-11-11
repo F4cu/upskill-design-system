@@ -50,7 +50,13 @@
     ]
   },
   "figma": {
-    "sets": [],
+    "sets": [
+      {
+        "name": "Divider",
+        "nodeId": "2963:8698",
+        "covers": "A single component, no properties"
+      }
+    ],
     "divergences": []
   }
 }

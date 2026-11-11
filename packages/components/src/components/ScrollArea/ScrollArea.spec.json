@@ -81,7 +81,18 @@
     ]
   },
   "figma": {
-    "sets": [],
-    "divergences": []
+    "sets": [
+      {
+        "name": "ScrollArea",
+        "nodeId": "2963:8721",
+        "covers": "Orientation; Children is a native slot that clips and scrolls in prototypes"
+      }
+    ],
+    "divergences": [
+      {
+        "what": "maxHeight has no Figma property: the vertical variant is a fixed 240px frame.",
+        "decision": "Accepted 2026-11-11: resize the instance to the maxHeight; spec marks maxHeight code-only."
+      }
+    ]
   }
 }

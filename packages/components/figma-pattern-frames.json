@@ -5,6 +5,18 @@
   "capturedAt": "2026-11-11",
   "frames": [
     {
+      "pattern": "author-credit",
+      "section": "TextLink examples",
+      "page": "Buttons",
+      "nodeId": "2963:9191"
+    },
+    {
+      "pattern": "card-actions",
+      "section": "Button examples",
+      "page": "Buttons",
+      "nodeId": "2963:8749"
+    },
+    {
       "pattern": "card-carousel",
       "section": "Carrousel examples",
       "page": "Carrousels",
@@ -59,6 +71,12 @@
       "nodeId": "2963:7749"
     },
     {
+      "pattern": "form-field-stack",
+      "section": "TextField examples",
+      "page": "Input Fields",
+      "nodeId": "2963:8788"
+    },
+    {
       "pattern": "grouped-meta",
       "section": "CardVertical examples",
       "page": "Cards",
@@ -83,6 +101,18 @@
       "nodeId": "2871:8385"
     },
     {
+      "pattern": "native-scroll-carousel",
+      "section": "ScrollArea examples",
+      "page": "Carrousels",
+      "nodeId": "2963:8924"
+    },
+    {
+      "pattern": "notification-preferences",
+      "section": "Checkbox examples",
+      "page": "Checkbox and Toggle",
+      "nodeId": "2963:8827"
+    },
+    {
       "pattern": "overflow-menu",
       "section": "CardVertical examples",
       "page": "Cards",
@@ -99,6 +129,18 @@
       "section": "Page Landmarks examples",
       "page": "Layout Examples",
       "nodeId": "2963:8155"
+    },
+    {
+      "pattern": "scrollable-list",
+      "section": "ScrollArea examples",
+      "page": "Carrousels",
+      "nodeId": "2963:9125"
+    },
+    {
+      "pattern": "section-break",
+      "section": "Divider examples",
+      "page": "Foundation",
+      "nodeId": "2963:8876"
     },
     {
       "pattern": "started-courses-list",

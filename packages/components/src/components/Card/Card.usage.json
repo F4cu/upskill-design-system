@@ -4,7 +4,7 @@
     "type": "container",
     "status": "beta",
     "description": "A surface container that groups related content or form fields into one section, with no content structure of its own.",
-    "figmaNodeId": "none"
+    "figmaNodeId": "2963:8696"
   },
   "useWhen": [
     "Grouping a set of related form fields or content items into a distinct visual section",

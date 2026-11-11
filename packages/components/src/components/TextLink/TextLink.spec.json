@@ -164,7 +164,22 @@
     ]
   },
   "figma": {
-    "sets": [],
-    "divergences": []
+    "sets": [
+      {
+        "name": "TextLink",
+        "nodeId": "2963:8747",
+        "covers": "Size × State (State is preview only)"
+      }
+    ],
+    "divergences": [
+      {
+        "what": "Figma text is Roboto Bold; code uses font.weight.semibold. The existing Text Link text style (body-default) is Bold, and the other sizes copy it.",
+        "decision": "Open 2026-11-11: matches the file's Text Link style; align when the type styles bind font weights."
+      },
+      {
+        "what": "Href is a text property bound to no layer: Figma can't drive a hyperlink from a component property.",
+        "decision": "Accepted 2026-11-11: the property records the target for handoff only."
+      }
+    ]
   }
 }

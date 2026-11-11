@@ -4,7 +4,7 @@
     "type": "layout",
     "status": "beta",
     "description": "A container that scrolls its content horizontally or vertically with native scrolling and no visible scrollbar.",
-    "figmaNodeId": "none"
+    "figmaNodeId": "2963:8721"
   },
   "useWhen": [
     "A row of cards or items should scroll horizontally without a visible scrollbar (touch and trackpad users can scroll naturally)",

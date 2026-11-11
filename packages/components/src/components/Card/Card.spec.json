@@ -142,7 +142,13 @@
     ]
   },
   "figma": {
-    "sets": [],
+    "sets": [
+      {
+        "name": "Card",
+        "nodeId": "2963:8696",
+        "covers": "Variant × Padding; Children is a native slot"
+      }
+    ],
     "divergences": []
   }
 }

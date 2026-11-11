@@ -4,7 +4,7 @@
     "type": "interactive",
     "status": "beta",
     "description": "An underlined inline link that navigates to a URL from within body text or a metadata line.",
-    "figmaNodeId": "none"
+    "figmaNodeId": "2963:8747"
   },
   "useWhen": [
     "Linking an author name, entity, or term inline within a paragraph or metadata line",

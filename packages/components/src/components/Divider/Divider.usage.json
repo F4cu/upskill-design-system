@@ -4,7 +4,7 @@
     "type": "display",
     "status": "beta",
     "description": "A horizontal line that separates groups of content inside one container.",
-    "figmaNodeId": "none"
+    "figmaNodeId": "2963:8698"
   },
   "useWhen": [
     "Separating distinct sections within a Card or page layout",
