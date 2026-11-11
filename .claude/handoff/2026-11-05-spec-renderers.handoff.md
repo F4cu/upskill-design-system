@@ -25,7 +25,7 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 **Contract prerequisites** (decisions 9 and 12)
 - [x] Spec schema: optional `anatomyExamples` (a list of props-or-pattern examples, see decision 9), `decisions[]`, `ruledOut[]`; `spec:validate` checks example props/patterns and that `adr` refs resolve; ADR-027 amendment and a line in `packages/components/AGENTS.md` (2026-11-10)
 - [x] Backfill `decisions[]` / `ruledOut[]` for Button and CardVertical; the other 25 stay without the fields (a `TODO` string fails `spec:validate`) and show "none recorded" until backfilled (2026-11-10)
-- [x] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test (`npm run anatomy:test`, in CI); their `anatomyExamples` filled; `builtOnPart` for parts inside a nested component, `notRendered` for parts no example renders (`MenuPanel`; TextField `Placeholder` in A3); pattern examples render the PascalCase-named story (2026-11-10, ADR-030 amendment "data-part markers")
+- [x] `data-part` on Button and CardVertical (Button's `Label` wrapped), with the render test (`npm run anatomy:test`, in CI); their `anatomyExamples` filled; `builtOnPart` for parts inside a nested component, `notRendered` for parts no example renders (`MenuPanel`; TextField `Placeholder` in A4/A5); pattern examples render the PascalCase-named story (2026-11-10, ADR-030 amendment "data-part markers")
 
 **Shared input**
 - [x] Phase 0: `npm run spec:bundle`, byte-identical across two runs, fails on an unresolved token path (2026-11-10, `scripts/spec-bundle.js`; wired into `docs:build` in A1)
@@ -36,7 +36,9 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 - [x] Measurement: traceability count on the Button and CardVertical pages (2026-11-10). 335 rendered rows across the six pages: **325 (97.0%) trace to a spec or metadata field**, 4 to bundle-level data (`defaultContext` in the Styles intro, the derived ADR-008 tier on Accessibility), 6 to nothing: the site-wide ADR footer, a renderer constant by design. 0 mismatches, 0 expected rows missing. The target "all of them" is not met literally; the 10 rows are listed in the run output. One claim is renderer-written, not data: "Every story is also swept by axe" on the Accessibility tier row. Method: a counter builds the expected rows from the bundle per section, reads every rendered row (tbody `tr`, `summary`, and `li`/`dd`/`p` outside tables) from the built HTML, and requires each expected string in the row's text, so it checks presence, not wording. The first run reported 69 mismatches, a counter bug (the Styles intro paragraph shifted the alignment), fixed before the result above. Counter and per-row output: gitignored `.claude/handoff/runs/spec-pages-traceability/`
 - [x] Phase A2 spike: `@astrojs/react` in Starlight, SVG anatomy overlay; record whether the overlay or the Mermaid fallback ships (2026-11-10). **Both, by depth:** full overlay for anatomies up to two levels (Button); for three or more levels, markers on the top two levels plus a Mermaid tree (CardVertical, whose 21 markers covered its own Meta text). Developer chose the plan's fallback over gutter markers. ADR-030 amendment "Phase A2 spike"
 - [x] Phase A2: live default example, patterns (rendered from `<Name>.patterns.stories.tsx`), rendered states (2026-11-11). Stories by PascalCase name through one renderer shared with the overlay (story + meta decorators applied). Interaction states are listed, not forced. Gap shown on the page: CardVertical `favorite-pressed` has no `FavoritePressed` story. ADR-030 amendment "Phase A2: live examples, patterns and states"
-- [ ] Phase A3: all 27 components (`data-part` + `anatomyExamples` on all; `packages/components/AGENTS.md` was at 15990/16000 bytes; trimmed to 11993 on 2026-11-10, ADR-029 amendment), `00-start-here.md` link, reverse links on ADR pages
+- [ ] Phase A3: refine the reference pages (Button, CardVertical) into the template every other page follows; simplify sections, record changes as an ADR-030 amendment
+- [ ] Phase A4: batch 2 (about 12 of the remaining 25), with `data-part` + `anatomyExamples` on each (`packages/components/AGENTS.md` was at 15990/16000 bytes; trimmed to 11993 on 2026-11-10, ADR-029 amendment)
+- [ ] Phase A5: batch 3 (the rest, all 27 published, filter removed), `00-start-here.md` link, reverse links on ADR pages
 
 **Part B: Figma parity plugin**
 - [ ] Phase B0 spike: dev plugin loads in Figma desktop (manual); Plugin API access confirmed on the current plan; Button/CardVertical layer names checked against `anatomy[]`
@@ -158,8 +160,17 @@ Target look: numbered markers on the rendered component plus a numbered legend, 
 2. Add `data-part` to Button and CardVertical only, and build the overlay.
 3. Check whether CardVertical's 21 markers still read clearly. If they don't, fall back to a Mermaid tree plus markers on the top-level parts only. Record which one ships.
 
-### Phase A3: all 27 components
+### Phase A3: refine the reference pages into a template
 
+Button (shallow anatomy, interaction states) and CardVertical (deep anatomy, parts, patterns) are the reference pages. Iterate on them until they are the template: simplify and cut sections that don't earn their place, settle wording, layout and the missing-data messages. Everything in A4/A5 is that template applied, not redesigned per batch.
+
+- **Done when:** the developer signs off both pages as the template, the site builds, and the changes are recorded in an ADR-030 amendment.
+
+### Phases A4 and A5: the other 25 components, in two batches
+
+- **Batch split** (chosen at the start of A4): put the components least like the two references in batch 2 (for example a primitive with no states such as `Stack`, a form input such as `TextField`, a disclosure such as `Accordion` or `DropdownMenu`), so the template meets its edge cases early; batch 3 is the rest. A template change found in batch 2 is fixed on all published pages before batch 3.
+- Each batch: `data-part` + `anatomyExamples` on every component in it (`anatomy:test` covers them), add the names to the published list in `apps/docs/components.mjs`, check each page in light and dark.
+- A5 removes the published list (all 27), then the site-wide items below.
 - Generate every page, link each one to its Storybook story and its spec file on GitHub, and add one line to `00-start-here.md` pointing to the Components section.
 - **Reverse links on ADR pages:** each ADR page gets a "Components shaped by this decision" list, worked out from the `decisions[].adr` values in the bundle. Nothing is hand-maintained on the ADR side. Depends on decision 12.
 

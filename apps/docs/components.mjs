@@ -7,7 +7,7 @@ import bundle from "../../dist/specs.bundle.json" with { type: "json" };
 // still resolves once Vite bundles the page.
 export { bundle };
 
-// Phase A1 publishes two components; A3 drops the filter.
+// Grows by batch in Phases A4 and A5; A5 drops the filter.
 const PUBLISHED = ["Button", "CardVertical"];
 
 export const REPO_BLOB = "https://github.com/F4cu/upskill-design-system/blob/main";
