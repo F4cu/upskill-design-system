@@ -63,6 +63,16 @@ Tick an item when it's done, and add the date and commit or PR. Details live in 
 - [x] `<Name>.patterns.stories.tsx` for the 12 owners (24 exports); `usage:validate` fails when exports ≠ pattern names (negative-tested); `anatomy:test` and `AnatomyOverlay` read the patterns file; the axe sweep's glob already covers it (149 story tests pass); screenshots stay `--default` only, so no new baselines. CardVertical's 5 composition stories moved out of `CardVertical.stories.tsx` (`Composed` → `CustomMeta`); `src/stories/` CourseModuleList, Carousel, SettingsForm, FooterHighlights deleted; docs page links each pattern to its story (2026-11-10)
 - [x] Drop `patterns[].tree` from schema, example and files (2026-11-10). Also fixed docs 04 (`rules` → `donts`) and 08 (removed `composedOf` drift mention)
 - [ ] Check method chosen and run: first real `/layout-generation` runs, or a pre-registered layout eval with and without patterns (ADR-029)
+  - [x] Method chosen 2026-11-11: a small pre-registered eval in a fresh session, following ADR-029's 2026-10-12 amendments (study B is the precedent), separate from the frozen harnesses
+    - Design: 2 briefs (a Settings page; a Discover page) × 2 arms × 1 run, as sequential subagents, each arm in its own scratch worktree.
+    - Arm A is `main`. Arm B removes three things:
+      - `composition.patterns` from every usage file;
+      - every `*.patterns.stories.tsx`;
+      - the pattern pointers in `/layout-generation`.
+    - Both worktrees drop `.claude/handoff/` and `docs/`. Overlapping showcase pages (UserSettings, Homepage, CourseOverview) are deleted or avoided by the briefs.
+    - Scoring is binary, with criteria fixed in advance (S1–S7, D1–D6, plus `layout:validate` error counts). "Benefit" means A passes ≥3 more checks with no more validator errors; within ±1 means no detectable effect.
+    - Pre-registration goes in `.claude/handoff/2026-11-11-layout-patterns-check.handoff.md`, committed before the first run.
+  - [ ] Run it and record the verdict here
 
 **Close-out**
 - [ ] Gate passes on the final migration
