@@ -274,8 +274,10 @@ export default function CourseOverview() {
             </Stack>
 
             {/* Carousel — Box clips track; .carousel-outer switches to native scroll on mobile */}
-            <Box overflow="hidden" className="carousel-outer">
-              <div
+            <Box overflow="hidden" className="carousel-outer" onFocus={carousel.onFocus}>
+              <ul
+                role="list"
+                aria-labelledby="recommended-heading"
                 style={{
                   display: 'flex',
                   gap: 'var(--ds-grid-gutter)',
@@ -284,7 +286,7 @@ export default function CourseOverview() {
                 }}
               >
                 {RECOMMENDED_COURSES.map((course, i) => (
-                  <div key={course.title} style={{ flexShrink: 0, width: `${CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
+                  <li key={course.title} style={{ flexShrink: 0, width: `${CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
                     <CardVertical
                       thumbnailSrc={CARD_IMGS[i % CARD_IMGS.length]}
                       title={course.title}
@@ -292,15 +294,17 @@ export default function CourseOverview() {
                       certified={course.certified}
                       size="lg"
                     />
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </Box>
 
             <Inline gap="sm" justify="end" className="hide-on-mobile">
-              <ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} aria-label="Previous" />
-              <ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} aria-label="Next" />
+              <ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} aria-label="Previous recommended courses" />
+              <ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} aria-label="Next recommended courses" />
             </Inline>
+
+            <Text as="p" aria-live="polite" className="visually-hidden">{carousel.announcement}</Text>
 
           </Stack>
         </Box>

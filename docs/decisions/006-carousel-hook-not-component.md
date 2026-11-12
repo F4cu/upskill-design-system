@@ -5,7 +5,7 @@ title: "ADR-006 — Carousel as hook + pattern, not a DS component"
 
 **Date:** 2026-06-18
 **Status:** `accepted`
-**Amended:** 2026-11-10
+**Amended:** 2026-11-12
 
 ## Context
 
@@ -44,3 +44,13 @@ Option 1 (full component) was rejected because it would grow scope without a cle
 ## Amendment (2026-11-10)
 
 The reference implementation moved. `Layout/Examples/Carousel` was deleted, and the canonical carousel is now the CardVertical pattern `card-carousel`, the `CardCarousel` export in `CardVertical.patterns.stories.tsx` (ADR-001 amendment 2026-11-10, option D). The decision itself is unchanged: hook plus pattern, no `Carousel` component.
+
+## Amendment (2026-11-12)
+
+Issue #160 raised the accessibility requirements the Consequences named as a revisit trigger: clipped cards stayed focusable with focus hidden (WCAG 2.2 SC 2.4.11), the track had no list semantics, and the arrows were named only "Previous" / "Next" with no feedback after a press.
+
+**Focus/visibility decision: reveal on focus, not `inert`.** `useCarousel` returns an `onFocus` handler for the clip container. When focus enters a card outside the window, it moves `offset` so that card is fully visible (`reveal(index)`), and resets the clip's `scrollLeft`, since `overflow: hidden` is still programmatically scrollable and the browser's own focus scroll would drift out of sync with the transform. Marking off-window items `inert` was rejected: `visibleCount` is a fixed assumption, not a measurement, so at narrower widths or under the mobile native-scroll override (`.carousel-outer`) `inert` would make visible cards unreachable, and keyboard users would have to find the arrows to reach content they can already see. Under native scroll (`overflow-x: auto`/`scroll`) the handler does nothing; the browser scrolls focus into view.
+
+**DOM contract**, now part of the pattern and the hook's JSDoc: the track is a `<ul role="list">` named by the section heading (`aria-labelledby`), one `<li>` per card; the arrows take an `aria-label` naming the carousel ("Next saved courses"); the hook's `announcement` ("Showing 2 to 4 of 6", set only after an arrow press) renders in a visually hidden `aria-live="polite"` paragraph. `role="list"` is explicit because Safari drops list semantics under `list-style: none`, which `reset.css` applies only to lists carrying it.
+
+**Still a hook, not a component.** The additions are state and one event handler; layout stays with the consumer. The contract is tested through the reference consumer (`useCarousel.a11y.test.tsx` renders `CardCarousel`), so divergence in a page is visible in review rather than enforced by a component. If a fourth carousel layout appears, or a consumer gets the contract wrong in review, revisit Option 1.

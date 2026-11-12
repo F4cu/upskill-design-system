@@ -226,8 +226,10 @@ export default function Homepage() {
             </Stack>
 
             {/* Carousel — Box clips track; .carousel-outer switches to native scroll on mobile */}
-            <Box overflow="hidden" className="carousel-outer">
-              <div
+            <Box overflow="hidden" className="carousel-outer" onFocus={savedCarousel.onFocus}>
+              <ul
+                role="list"
+                aria-labelledby="saved-heading"
                 style={{
                   display: 'flex',
                   gap: 'var(--ds-grid-gutter)',
@@ -236,7 +238,7 @@ export default function Homepage() {
                 }}
               >
                 {SAVED_COURSES.map((course) => (
-                  <div key={course.title} style={{ flexShrink: 0, width: `${SAVED_CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
+                  <li key={course.title} style={{ flexShrink: 0, width: `${SAVED_CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
                     <CardVertical
                       thumbnailSrc={course.thumbnailSrc}
                       title={course.title}
@@ -244,15 +246,17 @@ export default function Homepage() {
                       progress={course.progress}
                       size="sm"
                     />
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </Box>
 
             <Inline gap="sm" justify="end" className="hide-on-mobile">
-              <ButtonArrow direction="left" disabled={!savedCarousel.canPrev} onClick={savedCarousel.prev} aria-label="Previous" />
-              <ButtonArrow direction="right" disabled={!savedCarousel.canNext} onClick={savedCarousel.next} aria-label="Next" />
+              <ButtonArrow direction="left" disabled={!savedCarousel.canPrev} onClick={savedCarousel.prev} aria-label="Previous saved courses" />
+              <ButtonArrow direction="right" disabled={!savedCarousel.canNext} onClick={savedCarousel.next} aria-label="Next saved courses" />
             </Inline>
+
+            <Text as="p" aria-live="polite" className="visually-hidden">{savedCarousel.announcement}</Text>
 
           </Stack>
         </Box>
@@ -277,8 +281,10 @@ export default function Homepage() {
               ))}
             </Inline>
 
-            <Box overflow="hidden" className="carousel-outer">
-              <div
+            <Box overflow="hidden" className="carousel-outer" onFocus={discoverCarousel.onFocus}>
+              <ul
+                role="list"
+                aria-labelledby="discover-heading"
                 style={{
                   display: 'flex',
                   gap: 'var(--ds-grid-gutter)',
@@ -287,7 +293,7 @@ export default function Homepage() {
                 }}
               >
                 {filteredDiscoverCourses.map((course, i) => (
-                  <div key={course.title} style={{ flexShrink: 0, width: `${DISCOVER_CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
+                  <li key={course.title} style={{ flexShrink: 0, width: `${DISCOVER_CARD_WIDTH}px`, scrollSnapAlign: 'start' }}>
                     <CardVertical
                       thumbnailSrc={CARD_IMGS[i % CARD_IMGS.length]}
                       title={course.title}
@@ -295,15 +301,17 @@ export default function Homepage() {
                       certified={course.certified}
                       size="lg"
                     />
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </Box>
 
             <Inline gap="sm" justify="end" className="hide-on-mobile">
-              <ButtonArrow direction="left" disabled={!discoverCarousel.canPrev} onClick={discoverCarousel.prev} aria-label="Previous" />
-              <ButtonArrow direction="right" disabled={!discoverCarousel.canNext} onClick={discoverCarousel.next} aria-label="Next" />
+              <ButtonArrow direction="left" disabled={!discoverCarousel.canPrev} onClick={discoverCarousel.prev} aria-label="Previous courses to discover" />
+              <ButtonArrow direction="right" disabled={!discoverCarousel.canNext} onClick={discoverCarousel.next} aria-label="Next courses to discover" />
             </Inline>
+
+            <Text as="p" aria-live="polite" className="visually-hidden">{discoverCarousel.announcement}</Text>
 
           </Stack>
         </Box>

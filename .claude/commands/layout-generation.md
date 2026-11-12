@@ -152,6 +152,8 @@ When the design shows a horizontal row of cards that paginate with left/right ar
 
 Always use `useCarousel` from `@upskill/components`, never page-level `useState` for the offset. Arrows only, right-aligned, no "X of Y" counter.
 
+Keep the story's accessibility contract (ADR-006 amendment 2026-11-12): `onFocus={carousel.onFocus}` on the clip Box, the track as `<ul role="list" aria-labelledby="<heading id>">` with one `<li>` per card, arrow `aria-label`s that name the carousel ("Next saved courses"), and `carousel.announcement` in `<Text as="p" aria-live="polite" className="visually-hidden">` outside the `hide-on-mobile` row.
+
 **Figma signal checklist** — treat any of these as a carousel trigger:
 - A Figma component or frame named "Carousel" or "carousel".
 - A horizontally scrollable frame with multiple same-type cards and arrow/chevron buttons.

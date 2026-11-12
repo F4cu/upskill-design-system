@@ -26,6 +26,12 @@ button, input, select, textarea {
   font: inherit;
 }
 
+/* role="list" keeps list semantics in Safari, which drops them with list-style: none */
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+}
+
 /* One focus indicator for every focusable element (ADR-028). The offset puts
    the ring on the surrounding surface, never on the control's own fill. */
 :focus-visible {
