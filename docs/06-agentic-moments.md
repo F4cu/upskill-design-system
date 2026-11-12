@@ -39,6 +39,7 @@ sources:
 # clock reset 2026-11-10: /layout-generation's carousel and show-more recipes became pointers at pattern stories; the Recurring patterns consolidation pass described here is unchanged, still accurate
 # clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups (Accordion's open/defaultOpen union); aggregate output and drift unchanged, still accurate
 # clock reset 2026-11-11: /layout-generation's final step names the limits-driven composition check and the grammar table points at the fixed set instead of a count; nothing here described either, still accurate
+# clock reset 2026-11-12: /layout-generation carousel recipe gained its a11y contract (#160); this page describes the moment, not its recipes, still accurate
 ---
 # Agentic moments
 
