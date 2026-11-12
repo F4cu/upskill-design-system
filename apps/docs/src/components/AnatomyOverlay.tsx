@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 import type { ComponentType } from 'react'
 import '../../../../packages/components/src/styles/tokens.css'
 import { StoryRender, pascal, storyArgs } from './stories'
@@ -289,7 +289,7 @@ export default function AnatomyOverlay({ name, parts, examples, variants }: { na
                     ...(example.pattern ? [<><code>{example.pattern}</code> pattern</>] : []),
                     ...variantOf(name, example, variants).map(([axis, value]) => <>{axis} <code>{String(value)}</code></>),
                   ]
-                  return <span key={i}>{items.map((item, j) => <>{j > 0 && ' · '}{item}</>)}</span>
+                  return <span key={i}>{items.map((item, j) => <Fragment key={j}>{j > 0 && ' · '}{item}</Fragment>)}</span>
                 })
               )}
             </figcaption>
