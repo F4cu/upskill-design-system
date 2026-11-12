@@ -89,7 +89,7 @@ sources:
 # clock reset 2026-11-12: ADR-006 amendment and layout-generation carousel a11y contract (#160); this page names neither the carousel nor its recipe, still accurate
 # clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
 # clock reset 2026-11-12 (#165): ADR-023 amendment adds that CardVertical's article is unnamed (heading read first); this page doesn't describe card accessible names, still accurate
-# clock reset 2026-11-12: ADR-030 renames the Accessibility tab's Labeling section to Reading order and names; this page doesn't name the tab's sections, still accurate
+# clock reset 2026-11-12: ADR-030 renames the Accessibility tab's Labeling section to Reading order; this page doesn't name the tab's sections, still accurate
 ---
 # Start here
 

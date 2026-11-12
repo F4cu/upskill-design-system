@@ -260,7 +260,7 @@ const builtFrom = [...new Set((spec.anatomy ?? []).map((part) => part.builtOn).f
 const placementFiles = import.meta.glob("../../../placement/*.tsx", { eager: true });
 const placement = placementFiles[`../../../placement/${name}.tsx`]?.placement;
 // Accessibility (prototype): a component with a file in accessibility/ shows
-// use cases, reading order and names, and keyboard advice, each with a figure, in place of the
+// use cases, reading order and keyboard advice, each with a figure, in place of the
 // spec's full contract (role, ARIA, key table, testing), which stays in
 // spec.json.
 const accessibilityFiles = import.meta.glob("../../../accessibility/*.tsx", { eager: true });
@@ -312,7 +312,7 @@ const HEADINGS = {
   accessibility: a11yGuide
     ? [
         ["use-cases", "Use cases"],
-        ["reading-order", "Reading order and names"],
+        ["reading-order", "Reading order"],
         ["keyboard", "Keyboard and focus"],
       ]
     : [
