@@ -260,7 +260,7 @@ const builtFrom = [...new Set((spec.anatomy ?? []).map((part) => part.builtOn).f
 const placementFiles = import.meta.glob("../../../placement/*.tsx", { eager: true });
 const placement = placementFiles[`../../../placement/${name}.tsx`]?.placement;
 // Accessibility (prototype): a component with a file in accessibility/ shows
-// use cases, labeling and keyboard advice, each with a figure, in place of the
+// use cases, reading order and names, and keyboard advice, each with a figure, in place of the
 // spec's full contract (role, ARIA, key table, testing), which stays in
 // spec.json.
 const accessibilityFiles = import.meta.glob("../../../accessibility/*.tsx", { eager: true });
@@ -312,7 +312,7 @@ const HEADINGS = {
   accessibility: a11yGuide
     ? [
         ["use-cases", "Use cases"],
-        ["labeling", "Labeling"],
+        ["reading-order", "Reading order and names"],
         ["keyboard", "Keyboard and focus"],
       ]
     : [
@@ -691,7 +691,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
         <p>People using assistive technology should be able to:</p>
         <ul>{a11yGuide.useCases.map((u) => <li>{u}</li>)}</ul>
 
-        <h2 id="labeling">{h.labeling}</h2>
+        <h2 id="reading-order">{h["reading-order"]}</h2>
         <p>{a11yGuide.labeling.advice}</p>
         <div class="not-content"><AccessibilityFigure client:visible name={name} figure="names" /></div>
 
