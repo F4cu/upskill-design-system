@@ -57,12 +57,17 @@ function markup(el: Element) {
   ]
   const tag = el.tagName.toLowerCase()
   const open = attrs.length > 1 ? `<${tag}\n${attrs.map((a) => `  ${a}`).join('\n')}\n>` : `<${tag}${attrs.map((a) => ` ${a}`).join('')}>`
-  // A name taken from the content shows that content; so does content that is
-  // only hidden markup (an icon-only button's glyph), to show it isn't read.
+  // A name taken from the content shows that content; so does plain text, and
+  // content that is only hidden markup (an icon-only button's glyph), to show
+  // it isn't read. A container whose role takes no name from its content (an
+  // unnamed article) shows as an empty wrapper.
   const inner = content(el)
-  const namedByContent = !el.hasAttribute('aria-label') && !el.hasAttribute('aria-labelledby')
+  const role = getRole(el)
+  const plain = !role || role === 'generic'
+  const namedByContent =
+    !el.hasAttribute('aria-label') && !el.hasAttribute('aria-labelledby') && (plain || computeAccessibleName(el) !== '')
   const onlyHidden = inner !== '' && !(el.textContent ?? '').trim()
-  return inner && (namedByContent || onlyHidden) ? `${open}${inner}</${tag}>` : open
+  return inner && (namedByContent || onlyHidden) ? `${open}${inner}</${tag}>` : `${open}</${tag}>`
 }
 
 // Roughly what VoiceOver and NVDA say on reaching the element: name, role,
