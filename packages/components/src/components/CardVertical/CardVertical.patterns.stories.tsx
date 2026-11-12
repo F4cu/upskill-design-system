@@ -5,6 +5,7 @@ import { Avatar } from '../Avatar'
 import { Badge } from '../Badge'
 import { Box } from '../Box'
 import { ButtonArrow } from '../ButtonArrow'
+import { Heading } from '../Heading'
 import { Inline } from '../Inline'
 import { Stack } from '../Stack'
 import { Text } from '../Text'
@@ -157,28 +158,45 @@ const VISIBLE_COUNT = 3
 function Carousel() {
   const carousel = useCarousel(COURSES.length, VISIBLE_COUNT)
   return (
-    <Stack gap="md">
-      <Box overflow="hidden">
-        <Inline
-          gap="md"
-          wrap={false}
-          style={{
-            transform: `translateX(calc(-${carousel.offset} * (${CARD_WIDTH}px + var(--ds-space-inline-md))))`,
-            transition: 'transform 300ms ease',
-          }}
-        >
-          {COURSES.map((course) => (
-            <Box key={course.title} minWidth={CARD_WIDTH} maxWidth={CARD_WIDTH}>
-              <CardVertical size="sm" {...course} />
-            </Box>
-          ))}
+    <Box as="section" aria-labelledby="carousel-heading">
+      <Stack gap="md">
+        <Heading id="carousel-heading" as="h2" size="headline">Saved courses</Heading>
+        <Box overflow="hidden" onFocus={carousel.onFocus}>
+          <Inline
+            as="ul"
+            role="list"
+            aria-labelledby="carousel-heading"
+            gap="md"
+            wrap={false}
+            style={{
+              transform: `translateX(calc(-${carousel.offset} * (${CARD_WIDTH}px + var(--ds-space-inline-md))))`,
+              transition: 'transform 300ms ease',
+            }}
+          >
+            {COURSES.map((course) => (
+              <Box as="li" key={course.title} minWidth={CARD_WIDTH} maxWidth={CARD_WIDTH}>
+                <CardVertical size="sm" {...course} action={<CardVertical.Favorite onPressedChange={noop} />} />
+              </Box>
+            ))}
+          </Inline>
+        </Box>
+        <Inline gap="sm" justify="end">
+          <ButtonArrow
+            direction="left"
+            aria-label="Previous saved courses"
+            disabled={!carousel.canPrev}
+            onClick={carousel.prev}
+          />
+          <ButtonArrow
+            direction="right"
+            aria-label="Next saved courses"
+            disabled={!carousel.canNext}
+            onClick={carousel.next}
+          />
         </Inline>
-      </Box>
-      <Inline gap="sm" justify="end">
-        <ButtonArrow direction="left" disabled={!carousel.canPrev} onClick={carousel.prev} />
-        <ButtonArrow direction="right" disabled={!carousel.canNext} onClick={carousel.next} />
-      </Inline>
-    </Stack>
+        <Text as="p" aria-live="polite" className="visually-hidden">{carousel.announcement}</Text>
+      </Stack>
+    </Box>
   )
 }
 

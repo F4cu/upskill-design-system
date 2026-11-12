@@ -12,6 +12,18 @@
   column-gap: var(--ds-grid-gutter);
 }
 
+/* Hidden visually, still read by assistive technology (live regions, extra context) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Hide on mobile — assumes touch scroll replaces arrow navigation */
 @media (max-width: 767px) {
   .hide-on-mobile {
