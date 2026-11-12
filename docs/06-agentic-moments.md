@@ -40,6 +40,7 @@ sources:
 # clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups (Accordion's open/defaultOpen union); aggregate output and drift unchanged, still accurate
 # clock reset 2026-11-11: /layout-generation's final step names the limits-driven composition check and the grammar table points at the fixed set instead of a count; nothing here described either, still accurate
 # clock reset 2026-11-12: /layout-generation carousel recipe gained its a11y contract (#160); this page describes the moment, not its recipes, still accurate
+# clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
 ---
 # Agentic moments
 
