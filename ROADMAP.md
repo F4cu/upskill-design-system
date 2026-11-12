@@ -22,7 +22,7 @@ See `README.md` for what "lite-agentic" means and `docs/00-start-here.md` / `doc
 
 | Phase | Status | Exit condition |
 |---|---|---|
-| 5 — Component Library | ✅ done | Library frozen at 27 components + 2 hooks |
+| 5 — Component Library | 🚧 in progress | 5e batch (ADR-031) shipped; library frozen again at 31 components + 2 hooks |
 | 6 — Automation | ✅ done | Token merges sync to Airtable + PR diff comment, zero manual steps |
 
 **Agentic Moments & Verified Loop** (Phases 7–10)
@@ -86,9 +86,9 @@ CSS reset, `grid.css`, `typography.css`. Layout primitives: `Box`, `Stack`, `Inl
 
 > The full fixed component set, frozen, plus the GitHub Actions automation that keeps tokens, component metadata, and governance state in sync with Airtable — no agent involvement.
 
-## Phase 5 — Component Library *(done)*
+## Phase 5 — Component Library *(5e in progress)*
 
-Full fixed component set built across four batches. Library frozen at **27 components + 2 hooks** (`useCarousel`, `useSlider`).
+Fixed component set built across four batches and frozen at **27 components + 2 hooks** (`useCarousel`, `useSlider`), then reopened for one evidence-backed batch (5e, ADR-031). It freezes again at **31 components** when 5e ships.
 
 | Batch | Components |
 |---|---|
@@ -96,8 +96,9 @@ Full fixed component set built across four batches. Library frozen at **27 compo
 | User Settings (5b) | `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal` |
 | Homepage (5c) | `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow` |
 | Course Overview (5d) | `Accordion`, `Badge`, `Button` ghost variant + trailing icon, `useSlider` hook |
+| Coverage gaps (5e, ADR-031) | `Dialog`, `Table`, `Alert`, `Pagination` — each through `/add-component`, one at a time |
 
-`DropdownMenu`, `Image`, and `TextLink` landed as explicit scope expansions after the batch plan was written. `Accordion` and `Badge` shipped through the `/add-component` loop (Phase 9 pilot). Library frozen — growth by composition only.
+`DropdownMenu`, `Image`, and `TextLink` landed as explicit scope expansions after the batch plan was written. `Accordion` and `Badge` shipped through the `/add-component` loop (Phase 9 pilot). Growth is by composition only; a new component needs ADR-031's entry rule (new role per ADR-009, a real consumer page, not composable) and an amendment to that ADR.
 
 ## Phase 6 — Automation (scripts and Actions only — no MCP, no agents) *(done)*
 
