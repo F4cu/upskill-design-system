@@ -8,6 +8,8 @@ import ComponentTabs from "../../../components/ComponentTabs.astro";
 import AnatomyOverlay from "../../../components/AnatomyOverlay.tsx";
 import LiveExample from "../../../components/LiveExample.tsx";
 import VariantOverview from "../../../components/VariantOverview.tsx";
+import Placement from "../../../components/Placement.tsx";
+import AccessibilityFigure from "../../../components/AccessibilityFigure.tsx";
 import { hasStory, pascal } from "../../../components/stories.tsx";
 import {
   FIGMA_FILE,
@@ -15,6 +17,8 @@ import {
   STORYBOOK,
   TABS,
   bundle,
+  familyOf,
+  FEATURED_PATTERNS,
   pageHref,
   publishedComponents,
   slugOf,
@@ -232,10 +236,12 @@ const stateExample = (s) => {
   if (s.kind === "interaction") return "interaction";
   return hasStory(name, "stories", stateStory(s)) ? "rendered" : "missing";
 };
-// The States section shows every state with a story (or the gap where one is
-// missing) as a captioned tile; interaction states are listed, not forced.
-const shownStates = (spec.states ?? []).filter((s) => stateExample(s) !== "interaction");
-const interactionStates = (spec.states ?? []).filter((s) => stateExample(s) === "interaction");
+// The States section tiles only the states a reader can't see elsewhere:
+// lifecycle, content and app data, each from its story (or the gap where one
+// is missing). Rest is the Usage example; interaction states (pseudo-classes)
+// are left to the live examples. The caption is two tags: the kind as a
+// readable label, then the state's spec name as code.
+const shownStates = (spec.states ?? []).filter((s) => ["lifecycle", "content", "appData"].includes(s.kind));
 const KIND = { interaction: "Interaction", appData: "App data", lifecycle: "Lifecycle", content: "Content" };
 
 const LIMIT_SCOPE = { region: "region (section)", repeated: "repeated item", parent: "parent" };
@@ -247,6 +253,28 @@ const axisTitle = (axis) => AXIS_TITLES[axis] ?? axis.charAt(0).toUpperCase() + 
 const axisSlug = (axis) => axisTitle(axis).toLowerCase();
 const WIDTH = { fill: "Fills its container", hug: "Hugs its content", fixed: "Keeps its own fixed size" };
 const builtFrom = [...new Set((spec.anatomy ?? []).map((part) => part.builtOn).filter((n) => n && n !== name))].sort();
+
+// Placement (prototype): a component with a placement file shows Do / Don't
+// boxes in place of Patterns, Not for, Composition, Prop rules and Related
+// components; the variant sections and the boxes cover them.
+const placementFiles = import.meta.glob("../../../placement/*.tsx", { eager: true });
+const placement = placementFiles[`../../../placement/${name}.tsx`]?.placement;
+// Accessibility (prototype): a component with a file in accessibility/ shows
+// use cases, labeling and keyboard advice, each with a figure, in place of the
+// spec's full contract (role, ARIA, key table, testing), which stays in
+// spec.json.
+const accessibilityFiles = import.meta.glob("../../../accessibility/*.tsx", { eager: true });
+const a11yGuide = accessibilityFiles[`../../../accessibility/${name}.tsx`]?.accessibility;
+// Patterns: every usage pattern, or only the featured ones when the component
+// lists them (with their arg overrides).
+const shownPatterns = (usage.composition?.patterns ?? [])
+  .filter((p) => !FEATURED_PATTERNS[name] || FEATURED_PATTERNS[name].some((f) => f.pattern === p.name))
+  .map((p) => {
+    const featured = FEATURED_PATTERNS[name]?.find((f) => f.pattern === p.name);
+    return { ...p, args: featured?.args, wide: featured?.wide };
+  });
+// "When to use it" only for a family of lookalikes, opening with the choice.
+const family = familyOf(name);
 
 const storybookId = `components-${name.toLowerCase()}`;
 const links = [
@@ -262,12 +290,16 @@ const links = [
 const HEADINGS = {
   usage: [
     ...(axes.length ? axes.map(([axis]) => [axisSlug(axis), axisTitle(axis)]) : [["example", "Example"]]),
-    ["when-to-use", "When to use it"],
-    ["patterns", "Patterns"],
-    ["not-for", "Not for"],
-    ["composition", "Composition"],
-    ["rules", "Prop rules"],
-    ["related", "Related components"],
+    ...(family ? [["when-to-use", "When to use it"]] : []),
+    ...(placement
+      ? [["composition", "Composition"]]
+      : [
+          ["patterns", "Patterns"],
+          ["not-for", "Not for"],
+          ["composition", "Composition"],
+          ["rules", "Prop rules"],
+          ["related", "Related components"],
+        ]),
   ],
   spec: [
     ["anatomy", "Anatomy"],
@@ -277,12 +309,18 @@ const HEADINGS = {
     ["parity", "Design–code parity"],
   ],
   tokens: [["styles", "Token usage"]],
-  accessibility: [
-    ["role", "Role and ARIA"],
-    ["keyboard", "Keyboard"],
-    ["focus", "Focus"],
-    ["testing", "Testing"],
-  ],
+  accessibility: a11yGuide
+    ? [
+        ["use-cases", "Use cases"],
+        ["labeling", "Labeling"],
+        ["keyboard", "Keyboard and focus"],
+      ]
+    : [
+        ["role", "Role and ARIA"],
+        ["keyboard", "Keyboard"],
+        ["focus", "Focus"],
+        ["testing", "Testing"],
+      ],
 };
 const headings = HEADINGS[tabId].map(([slug, text]) => ({ depth: 2, slug, text }));
 const h = Object.fromEntries(HEADINGS[tabId]);
@@ -354,27 +392,40 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           </>
         )}
 
-        <h2 id="when-to-use">{h["when-to-use"]}</h2>
-        {usage.useWhen?.length ? <ul>{usage.useWhen.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
+        {family && (
+          <>
+            <h2 id="when-to-use">{h["when-to-use"]}</h2>
+            <p>
+              Choose between {family.map((n, i) => (
+                <>{i > 0 && (i === family.length - 1 ? " and " : ", ")}{n === name ? <strong>{n}</strong> : componentHref(n) ? <a href={componentHref(n)}>{n}</a> : n}</>
+              ))}. Use {name} when:
+            </p>
+            {usage.useWhen?.length ? <ul>{usage.useWhen.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
+          </>
+        )}
 
+        {placement && (
+          <>
+            <h2 id="composition">{h.composition}</h2>
+            <div class="not-content"><Placement client:visible name={name} /></div>
+          </>
+        )}
+
+        {!placement && <>
         <h2 id="patterns">{h.patterns}</h2>
-        {usage.composition?.patterns?.length ? (
-          <dl class="patterns">
-            {usage.composition.patterns.map((p) => (
-              <>
-                <dt><code>{p.name}</code></dt>
-                <dd>
-                  <p>{p.useWhen}</p>
-                  {hasStory(name, "patterns.stories", pascal(p.name)) ? (
-                    <div class="not-content"><LiveExample client:visible name={name} file="patterns.stories" exportName={pascal(p.name)} /></div>
-                  ) : (
-                    <p>No <code>{pascal(p.name)}</code> story in <code>{name}.patterns.stories.tsx</code>, so no live example.</p>
-                  )}
-                  <p><a href={`${STORYBOOK}?path=/story/${storybookId}-patterns--${p.name}`}>Code in Storybook</a></p>
-                </dd>
-              </>
+        {shownPatterns.length ? (
+          <div class="pattern-grid not-content">
+            {shownPatterns.map((p) => (
+              <figure class:list={["pattern-card", { "is-wide": p.wide }]}>
+                {hasStory(name, "patterns.stories", pascal(p.name)) ? (
+                  <LiveExample client:visible name={name} file="patterns.stories" exportName={pascal(p.name)} args={p.args} />
+                ) : (
+                  <div class="state-missing">No <code>{pascal(p.name)}</code> story</div>
+                )}
+                <figcaption><code>{p.name}</code> {p.useWhen}</figcaption>
+              </figure>
             ))}
-          </dl>
+          </div>
         ) : (
           <p>{NONE}</p>
         )}
@@ -471,6 +522,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           <dt>Width</dt>
           <dd>{WIDTH[usage.composition?.width] ?? NONE}</dd>
         </dl>
+        </>}
       </>
     )
   }
@@ -537,18 +589,13 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
                 ) : (
                   <div class="state-missing">No <code>{stateStory(s)}</code> story</div>
                 )}
-                <figcaption class="anatomy-caption">
-                  <span>{KIND[s.kind]}: <code>{s.name}</code></span>
+                <figcaption class="anatomy-caption caption-tags">
+                  <span class="caption-tag">{KIND[s.kind]}</span>
+                  <code>{s.name}</code>
                 </figcaption>
               </figure>
             ))}
           </div>
-          {interactionStates.length > 0 && (
-            <p class="state-interactions">
-              Interaction states, not forced; try them on the live example on the Usage page:{" "}
-              {interactionStates.map((s, i) => <>{i > 0 && ", "}<code title={s.trigger}>{s.name}</code></>)}.
-            </p>
-          )}
           </>
         ) : (
           <p>{NONE}</p>
@@ -595,14 +642,14 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
     tabId === "tokens" && (
       <>
         <h2 id="styles">{h.styles}</h2>
-        <p>The tokens each part uses, grouped by the parts labelled on the <a href={`${pageHref(name, TABS.find((t) => t.id === "spec"))}#anatomy`}>anatomy diagram</a>, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Select a part to collapse it.</p>
+        <p>The tokens each part uses, grouped by the parts labelled on the <a href={`${pageHref(name, TABS.find((t) => t.id === "spec"))}#anatomy`}>anatomy diagram</a>, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Only Root starts expanded; select a part to expand or collapse it.</p>
         <table class="styles-table">
           <thead><tr><th scope="col">State</th><th scope="col">Tokens</th></tr></thead>
           {styleGroups.map(({ group, sub, note, conditions }) => (
-            <tbody>
+            <tbody class:list={{ "is-collapsed": group !== "Root" }}>
               <tr class="part-row">
                 <th scope="rowgroup" colspan="2">
-                  <button type="button" class="part-toggle" aria-expanded="true">
+                  <button type="button" class="part-toggle" aria-expanded={String(group === "Root")}>
                     <span class="part-chevron" aria-hidden="true"></span>
                     {sub ? <><span class="sr-only">{group}, </span>{sub}</> : group}
                   </button>
@@ -638,7 +685,25 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   }
 
   {
-    tabId === "accessibility" && (
+    tabId === "accessibility" && a11yGuide && (
+      <>
+        <h2 id="use-cases">{h["use-cases"]}</h2>
+        <p>People using assistive technology should be able to:</p>
+        <ul>{a11yGuide.useCases.map((u) => <li>{u}</li>)}</ul>
+
+        <h2 id="labeling">{h.labeling}</h2>
+        <p>{a11yGuide.labeling.advice}</p>
+        <div class="not-content"><AccessibilityFigure client:visible name={name} figure="names" /></div>
+
+        <h2 id="keyboard">{h.keyboard}</h2>
+        <p>{a11yGuide.keyboard.advice}</p>
+        <div class="not-content"><AccessibilityFigure client:visible name={name} figure="focus" /></div>
+      </>
+    )
+  }
+
+  {
+    tabId === "accessibility" && !a11yGuide && (
       <>
         <h2 id="role">{h.role}</h2>
         <p>Role: <code>{spec.accessibility.role}</code></p>

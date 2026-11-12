@@ -41,11 +41,11 @@ export const argOption = (name: string, prop: string): unknown => {
 
 export const hasStory =(name: string, file: StoryFile, exportName: string) => lookup(name, file, exportName) !== null
 
-export function StoryRender({ name, file, exportName }: { name: string; file: StoryFile; exportName: string }) {
+export function StoryRender({ name, file, exportName, args: overrides }: { name: string; file: StoryFile; exportName: string; args?: Args }) {
   const found = lookup(name, file, exportName)
   if (!found) throw new Error(`${name}.${file}.tsx has no export ${exportName}`)
   const { meta, story } = found
-  const args = { ...meta.args, ...story.args }
+  const args = { ...meta.args, ...story.args, ...overrides }
   const context = { args }
   const Component = meta.component!
   const Inner = () => (story.render ?? meta.render)?.(args, context) ?? <Component {...args} />
