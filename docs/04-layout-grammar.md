@@ -35,6 +35,7 @@ sources:
 # clock reset 2026-11-12: ADR-023 amendment (parts written in reading order, Root owns visual order; CardVertical #159); layout:validate's part checks this page describes are unchanged, still accurate
 # clock reset 2026-11-12: carousel a11y contract in /layout-generation and a .visually-hidden utility in grid.css (#160); the grammar rules and validator checks this page describes are unchanged, still accurate
 # clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
+# clock reset 2026-11-12 (#165): ADR-023 amendment adds that CardVertical's article is unnamed (heading read first); this page doesn't describe card accessible names, still accurate
 ---
 # Layout grammar
 

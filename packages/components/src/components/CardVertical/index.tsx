@@ -41,7 +41,6 @@ function Root({ size = 'lg', className, children, ...rest }: CardVerticalRootPro
       <div
         role="article"
         data-part="Root"
-        aria-labelledby={titleId}
         className={[styles.card, styles[size], className].filter(Boolean).join(' ')}
         {...rest}
       >

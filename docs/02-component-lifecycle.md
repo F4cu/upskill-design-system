@@ -37,6 +37,7 @@ sources:
 # clock reset 2026-11-11: ADR-027 amendment adds optional anatomyExamples mark/focus; this page describes the metadata schema and the gate, not spec sections, still accurate
 # clock reset 2026-11-11: ADR-027 amendment lets builtOnProps follow a parent prop; this page doesn't describe builtOnProps, still accurate
 # clock reset 2026-11-12: ADR-023 amendment (parts written in reading order, Root owns visual order; CardVertical #159); this page explains when a component gains parts, not their order, still accurate
+# clock reset 2026-11-12 (#165): ADR-023 amendment adds that CardVertical's article is unnamed (heading read first); this page doesn't describe card accessible names, still accurate
 ---
 # Component lifecycle
 

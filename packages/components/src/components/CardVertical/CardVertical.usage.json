@@ -199,7 +199,7 @@
       },
       {
         "case": "Using Heading instead of CardVertical.Title inside CardVertical.Body, omitting Title from a parts composition, or rendering two Titles",
-        "because": "Title registers the id that names the article and the Favorite/Menu buttons; a plain Heading leaves them unnamed and loses the card's serif size override. Nothing checks for Title at runtime: without it every aria-labelledby on the card points at a missing id and the buttons read only 'Save' / 'More options'; two Titles duplicate the id. `required` is enforced by layout:validate only.",
+        "because": "Title registers the id that names the Favorite/Menu buttons; a plain Heading leaves them unnamed and loses the card's serif size override. Nothing checks for Title at runtime: without it every aria-labelledby on the card points at a missing id and the buttons read only 'Save' / 'More options'; two Titles duplicate the id. `required` is enforced by layout:validate only.",
         "instead": "Always render exactly one CardVertical.Title as the first child of CardVertical.Body (set its `as` for the page outline)."
       },
       {

@@ -33,9 +33,11 @@ function renderMenuCard(onSelect = vi.fn()) {
 }
 
 describe('CardVertical — a11y behavior', () => {
-  it('names the article by its title', () => {
+  it('leaves the article unnamed so the title is read once, from the heading', () => {
     render(<CardVertical title={TITLE} />)
-    expect(screen.getByRole('article', { name: TITLE })).toBeInTheDocument()
+    const article = screen.getByRole('article')
+    expect(article).not.toHaveAccessibleName()
+    expect(screen.getByRole('heading', { name: TITLE })).toBeInTheDocument()
   })
 
   it('gives the progress bar a short name of its own, not the title', () => {

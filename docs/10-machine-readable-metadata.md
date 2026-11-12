@@ -124,7 +124,7 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 "parts": [
   { "name": "Action", "kind": "slot", "description": "Top-right overlay; one Favorite or one Menu.", "builtOn": null, "accepts": ["Favorite", "Menu"], "containedBy": ["Media"] },
   { "name": "Body", "kind": "open", "description": "Text column under the media.", "builtOn": "Stack", "accepts": ["Title", "Meta", "Stack", "Inline", "Text", "Badge", "Avatar"], "containedBy": ["Root"] },
-  { "name": "Title", "kind": "fixed", "description": "Card heading; names the card.", "builtOn": "Heading", "required": true, "containedBy": ["Body"] }
+  { "name": "Title", "kind": "fixed", "description": "Card heading; names the action buttons.", "builtOn": "Heading", "required": true, "containedBy": ["Body"] }
 ]
 ```
 
