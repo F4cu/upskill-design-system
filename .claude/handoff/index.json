@@ -12,7 +12,7 @@
     "kind": "handoff",
     "status": "active",
     "created": "2026-11-05",
-    "updated": "2026-11-10",
+    "updated": "2026-11-11",
     "path": ".claude/handoff/2026-11-05-spec-renderers.handoff.md"
   },
   {
@@ -451,32 +451,32 @@
     "name": "CardVertical.learnings",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-10-01",
-    "updated": "2026-10-01",
+    "created": "2026-11-12",
+    "updated": "2026-11-12",
     "path": ".claude/handoff/runs/CardVertical.learnings.json"
   },
   {
     "name": "CardVertical.review",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-10-01",
-    "updated": "2026-10-01",
+    "created": "2026-11-12",
+    "updated": "2026-11-12",
     "path": ".claude/handoff/runs/CardVertical.review.json"
   },
   {
     "name": "CardVertical.run",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-10-01",
-    "updated": "2026-10-01",
+    "created": "2026-11-12",
+    "updated": "2026-11-12",
     "path": ".claude/handoff/runs/CardVertical.run.json"
   },
   {
     "name": "CardVertical.snapshot",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-10-01",
-    "updated": "2026-10-01",
+    "created": "2026-11-12",
+    "updated": "2026-11-12",
     "path": ".claude/handoff/runs/CardVertical.snapshot.json"
   },
   {
