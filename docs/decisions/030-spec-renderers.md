@@ -5,7 +5,7 @@ title: "ADR-030 — Spec renderers: generated component pages and a Figma parity
 
 **Date:** 2026-11-10
 **Status:** `accepted`
-**Amended:** 2026-11-11
+**Amended:** 2026-11-12
 
 ## Context
 
@@ -105,3 +105,10 @@ The A2 anatomy (markers on the parts, the depth fallback, a Mermaid tree and the
 - **Iteration on one page.** A3 refines the template on CardVertical in place (no v2 route); Button shares the renderer and is checked once at the end.
 - **Token usage gets its own Tokens tab**, between Spec and Accessibility (`/components/<name>/tokens/`). The table is the longest section and is read for a different task (tracing a token) than the rest of Spec, so on Spec it pushed Why and Parity far down and was hard to find. Its intro links back to the Spec anatomy diagram for the part numbers.
 - **States as captioned tiles, no table.** Each state with a story renders as a tile captioned with its kind and name only (`Lifecycle: completed`); a state whose story is missing is a dashed tile naming the missing export, so the gap stays visible. Interaction states are listed in one line under the grid (not forced, as before), with each trigger as a tooltip. State `trigger` (except as the interaction tooltip) and `notes` are no longer shown on the page; they stay in the spec.
+
+## Amendment (2026-11-12) — named callouts and a variant-led Usage page
+
+- **Anatomy callouts carry part names, not numbers.** The numbered legend under each box is removed; a badge names its part directly and hovering it still highlights the part. Side gutters widen to the longest name. A detail's caption reads `Meta · detail`. The Tokens tab groups by part name with no number badges.
+- **Bottom-gutter callouts alternate bottom and top**, left to right, so neighbouring names don't crowd one row (Button: Root and Label below, Icon and TrailingIcon above). A single marked part keeps the bottom gutter only.
+- **Usage opens with one section per variant axis** (`variant` → Variants, `size` → Sizing, `shape` → Shape), in place of Example and the Variants tables: the component once per option, built from the `Default` story's args with that prop changed, each named by a badge under it with no leader (it labels the whole sample, not a part), then the Option / Use when table. No caption under the box: the table marks the default. A sample honours the spec `constraints` it triggers (drops `ignore` props, fills `require` props: `aria-label` with the option name, others with the first option the story's controls offer), so Button's `shape` renders icon-only. A component with no variant axes keeps the single Example.
+

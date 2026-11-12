@@ -7,6 +7,7 @@ import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 import ComponentTabs from "../../../components/ComponentTabs.astro";
 import AnatomyOverlay from "../../../components/AnatomyOverlay.tsx";
 import LiveExample from "../../../components/LiveExample.tsx";
+import VariantOverview from "../../../components/VariantOverview.tsx";
 import { hasStory, pascal } from "../../../components/stories.tsx";
 import {
   FIGMA_FILE,
@@ -68,7 +69,7 @@ const anatomy = (() => {
   return out;
 })();
 
-// Styles grouped under the anatomy diagram's overview numbers: each styled
+// Styles grouped under the parts the anatomy overview labels: each styled
 // part rolls up to its nearest marked ancestor. A part built on a popover
 // component is only positioned here; its tokens belong to that component.
 const POPOVERS = new Set(["DropdownMenu"]);
@@ -82,7 +83,7 @@ const stateLabel = (when) => {
 };
 const styleGroups = (() => {
   const byName = new Map(spec.anatomy.map((p) => [p.name, p]));
-  // Same numbering as AnatomyOverlay: an example without `mark` numbers every
+  // Same parts as AnatomyOverlay labels: an example without `mark` labels every
   // renderable part.
   const renderable = spec.anatomy.filter((p) => !p.notRendered).map((p) => p.name);
   const overview = [...new Set((spec.anatomyExamples ?? []).filter((e) => !e.focus).flatMap((e) => e.mark ?? renderable))]
@@ -166,7 +167,7 @@ const styleGroups = (() => {
     }
     for (const { when, value, via } of inherited(part)) add(group, JSON.stringify(when), tokensIn(value).map((e) => ({ ...e, via })));
   }
-  // Every numbered part keeps its group, so the numbers match the diagram; a
+  // Every labelled part keeps its group, so the groups match the diagram; a
   // part with no tokens of its own says where its look comes from instead.
   for (const part of overview) if (!groups.has(part)) groups.set(part, new Map());
   const noteFor = (part) => {
@@ -183,7 +184,6 @@ const styleGroups = (() => {
     .map(([key, conditions]) => ({
       group: key.split(SUB)[0],
       sub: key.split(SUB)[1],
-      number: overview.includes(key) ? overview.indexOf(key) + 1 : null,
       note: overview.includes(key) && ![...conditions.values()].some((e) => e.length) ? noteFor(key) : null,
       conditions: [...conditions].filter(([, e]) => e.length)
         .map(([w, entries]) => [JSON.parse(w), entries.map((e) => ({
@@ -239,6 +239,12 @@ const interactionStates = (spec.states ?? []).filter((s) => stateExample(s) === 
 const KIND = { interaction: "Interaction", appData: "App data", lifecycle: "Lifecycle", content: "Content" };
 
 const LIMIT_SCOPE = { region: "region (section)", repeated: "repeated item", parent: "parent" };
+// Usage (prototype): each variant axis opens the page as its own section, an
+// overview of its options then their use-when table. No axes → one example.
+const axes = Object.entries(usage.variants ?? {});
+const AXIS_TITLES = { variant: "Variants", size: "Sizing", shape: "Shape", orientation: "Orientation" };
+const axisTitle = (axis) => AXIS_TITLES[axis] ?? axis.charAt(0).toUpperCase() + axis.slice(1);
+const axisSlug = (axis) => axisTitle(axis).toLowerCase();
 const WIDTH = { fill: "Fills its container", hug: "Hugs its content", fixed: "Keeps its own fixed size" };
 const builtFrom = [...new Set((spec.anatomy ?? []).map((part) => part.builtOn).filter((n) => n && n !== name))].sort();
 
@@ -255,9 +261,8 @@ const links = [
 
 const HEADINGS = {
   usage: [
-    ["example", "Example"],
+    ...(axes.length ? axes.map(([axis]) => [axisSlug(axis), axisTitle(axis)]) : [["example", "Example"]]),
     ["when-to-use", "When to use it"],
-    ["variants", "Variants"],
     ["patterns", "Patterns"],
     ["not-for", "Not for"],
     ["composition", "Composition"],
@@ -315,22 +320,16 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   {
     tabId === "usage" && (
       <>
-        <h2 id="example">{h.example}</h2>
-        {hasDefault ? (
-          <div class="not-content"><LiveExample client:visible name={name} file="stories" exportName="Default" /></div>
-        ) : (
-          <p>No <code>Default</code> story, so no live example.</p>
-        )}
-
-        <h2 id="when-to-use">{h["when-to-use"]}</h2>
-        {usage.useWhen?.length ? <ul>{usage.useWhen.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
-
-        <h2 id="variants">{h.variants}</h2>
-        {Object.keys(usage.variants ?? {}).length ? (
-          Object.entries(usage.variants).map(([axis, v]) => (
+        {axes.length ? (
+          axes.map(([axis, v]) => (
             <>
-              <h3><code>{axis}</code></h3>
+              <h2 id={axisSlug(axis)}>{axisTitle(axis)}</h2>
               {codeOnlyVariant(axis) && <p class="note">Only available in code.</p>}
+              {hasDefault && (
+                <div class="not-content">
+                  <VariantOverview client:visible name={name} axis={axis} options={v.options} constraints={spec.constraints ?? []} />
+                </div>
+              )}
               <table>
                 <thead><tr><th scope="col">Option</th><th scope="col">Use when</th></tr></thead>
                 <tbody>
@@ -345,8 +344,18 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
             </>
           ))
         ) : (
-          <p>{NONE}</p>
+          <>
+            <h2 id="example">Example</h2>
+            {hasDefault ? (
+              <div class="not-content"><LiveExample client:visible name={name} file="stories" exportName="Default" /></div>
+            ) : (
+              <p>No <code>Default</code> story, so no live example.</p>
+            )}
+          </>
         )}
+
+        <h2 id="when-to-use">{h["when-to-use"]}</h2>
+        {usage.useWhen?.length ? <ul>{usage.useWhen.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
 
         <h2 id="patterns">{h.patterns}</h2>
         {usage.composition?.patterns?.length ? (
@@ -586,16 +595,15 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
     tabId === "tokens" && (
       <>
         <h2 id="styles">{h.styles}</h2>
-        <p>The tokens each part uses, grouped by the numbers on the <a href={`${pageHref(name, TABS.find((t) => t.id === "spec"))}#anatomy`}>anatomy diagram</a>, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Select a part to collapse it.</p>
+        <p>The tokens each part uses, grouped by the parts labelled on the <a href={`${pageHref(name, TABS.find((t) => t.id === "spec"))}#anatomy`}>anatomy diagram</a>, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Select a part to collapse it.</p>
         <table class="styles-table">
           <thead><tr><th scope="col">State</th><th scope="col">Tokens</th></tr></thead>
-          {styleGroups.map(({ group, sub, number, note, conditions }) => (
+          {styleGroups.map(({ group, sub, note, conditions }) => (
             <tbody>
               <tr class="part-row">
                 <th scope="rowgroup" colspan="2">
                   <button type="button" class="part-toggle" aria-expanded="true">
                     <span class="part-chevron" aria-hidden="true"></span>
-                    {number && <span class="part-number">{number}</span>}
                     {sub ? <><span class="sr-only">{group}, </span>{sub}</> : group}
                   </button>
                 </th>

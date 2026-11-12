@@ -4,13 +4,13 @@ import '../../../../packages/components/src/styles/tokens.css'
 import { StoryRender, pascal, storyArgs } from './stories'
 
 // Anatomy diagram (ADR-030 Phase A2, refined in A3). Renders the real component
-// from source for each anatomyExamples entry and numbers the parts the entry
-// lists in `mark`, found by their data-part markers (the lookup
-// anatomy.test.tsx uses). Unfocused entries are the overview of the main parts
-// (1, 2, 3); a `focus` entry is cropped, at its real size, to one overview part and
-// numbers its descendants (6.1, 6.2). Callouts sit in the gutters with
-// horizontal or vertical hairline leaders only. Positions are measured in the
-// browser; without JavaScript the examples and legends still render.
+// from source for each anatomyExamples entry and labels the parts the entry
+// lists in `mark` by name, found by their data-part markers (the lookup
+// anatomy.test.tsx uses). Unfocused entries are the overview of the main parts;
+// a `focus` entry is cropped, at its real size, to one overview part and labels
+// its descendants. Callouts sit in the gutters with horizontal or vertical
+// hairline leaders only. Positions are measured in the browser; without
+// JavaScript the examples still render, unlabelled.
 type Part = { name: string; parent?: string; builtOn?: string; builtOnPart?: string; notRendered?: string }
 type Example = { props?: Record<string, unknown>; pattern?: string; mark?: string[]; focus?: string }
 
@@ -33,29 +33,23 @@ function exampleElement(name: string, example: Example) {
   return <Component {...example.props} />
 }
 
-// Labels in anatomy order: overview marks 1..n, then each focus part's marks
-// <n>.1, <n>.2 across every entry that focuses it. An example without mark
-// (a single-example spec) numbers every renderable part.
-function numberParts(parts: Part[], examples: Example[]) {
+// Each example's marks in anatomy order. An example without mark (a
+// single-example spec) marks every renderable part.
+function sortMarks(parts: Part[], examples: Example[]) {
   const order = (n: string) => parts.findIndex((p) => p.name === n)
-  const byOrder = (a: string, b: string) => order(a) - order(b)
-  const marks = examples.map((e) => e.mark ?? parts.filter((p) => !p.notRendered).map((p) => p.name))
-  const labels = new Map<string, string>()
-  marks.flatMap((m, i) => (examples[i].focus ? [] : m)).sort(byOrder).forEach((n, i) => labels.set(n, String(i + 1)))
-  for (const focus of new Set(examples.map((e) => e.focus).filter(Boolean) as string[])) {
-    marks.flatMap((m, i) => (examples[i].focus === focus ? m : [])).sort(byOrder)
-      .forEach((n, i) => labels.set(n, `${labels.get(focus)}.${i + 1}`))
-  }
-  return { labels, marks: marks.map((m) => [...m].sort(byOrder)) }
+  return examples.map((e) => [...(e.mark ?? parts.filter((p) => !p.notRendered).map((p) => p.name))].sort((a, b) => order(a) - order(b)))
 }
 
-const GUTTER = 48
+// Badges carry the part's name, so a side gutter is as wide as its longest
+// badge plus room for a leader.
+const LEADER = 16
 const BOTTOM = 40
 const H = 18
 const GAP = 10
 const PAD = 8
 const OUTSET = 6
 const badgeW = (label: string) => Math.max(H, label.length * 7 + 8)
+const gutterFor = (items: { label: string }[]) => Math.max(0, ...items.map((i) => badgeW(i.label))) + LEADER
 
 type Rect = { x: number; y: number; w: number; h: number }
 type Callout = { name: string; label: string; visible?: boolean; rect: Rect; bx: number; by: number; path: string; tx: number; ty: number; outline?: boolean }
@@ -90,7 +84,7 @@ function sideLayout(hits: Hit[], width: number): Callout[] {
     const outline = others.length > 0 && others.every(inside) && !hit.visible
     const out = outline ? OUTSET : 0
     const slot = { pref: outline ? y + PAD : y + h / 2, lo: y - out + 2, hi: y + h + out - 2, size: H }
-    const side: 'left' | 'right' = w > (width - 2 * GUTTER) * 0.6 || x + w / 2 < width / 2 ? 'left' : 'right'
+    const side: 'left' | 'right' = w > (width - 2 * gutterFor(hits)) * 0.6 || x + w / 2 < width / 2 ? 'left' : 'right'
     return { hit, outline, out, slot, side }
   })
   const run = (side: 'left' | 'right') => {
@@ -113,8 +107,10 @@ function sideLayout(hits: Hit[], width: number): Callout[] {
   })
 }
 
-// Focus images and short components: badges in the bottom gutter, each
-// directly under its part, with a vertical leader from the part's bottom edge.
+// Focus images and short components: badges alternate, left to right, between
+// the bottom and top gutters, so neighbouring names don't crowd one row. Each
+// sits directly under (or over) its part, with a vertical leader from the
+// part's edge. A single part keeps the bottom gutter only.
 function bottomLayout(hits: Hit[], width: number, height: number, floor: number): Callout[] {
   // A part that holds every other marked part (Button's Root) leads from near
   // its left edge, so it reads first and clear of its children.
@@ -127,11 +123,16 @@ function bottomLayout(hits: Hit[], width: number, height: number, floor: number)
       return { hit, slot: { pref: holdsAll(hit) ? x + 12 : x + w / 2, lo: Math.max(x + 4, half), hi: Math.min(x + w - 4, width - half), size: badgeW(hit.label) } }
     })
     .sort((a, b) => a.slot.pref - b.slot.pref)
-  const { pos } = place(list.map((i) => i.slot))
-  const by = height - BOTTOM / 2
-  return list.map(({ hit }, i) => {
-    const ty = Math.min(hit.rect.y + hit.rect.h, floor)
-    return { ...hit, bx: pos[i], by, tx: pos[i], ty, path: `M${pos[i]},${ty}V${by - H / 2}` }
+  const ceiling = height - floor
+  return [0, 1].flatMap((row) => {
+    const items = list.filter((_, i) => i % 2 === row)
+    const { pos } = place(items.map((i) => i.slot))
+    const top = row === 1
+    const by = top ? BOTTOM / 2 : height - BOTTOM / 2
+    return items.map(({ hit }, i) => {
+      const ty = top ? Math.max(hit.rect.y, ceiling) : Math.min(hit.rect.y + hit.rect.h, floor)
+      return { ...hit, bx: pos[i], by, tx: pos[i], ty, path: `M${pos[i]},${ty}V${top ? by + H / 2 : by - H / 2}` }
+    })
   })
 }
 
@@ -140,14 +141,13 @@ type StageProps = {
   example: Example
   parts: Part[]
   marks: string[]
-  labels: Map<string, string>
   active: string | null
   setActive: (name: string | null) => void
 }
 
 type Crop = { x: number; y: number; w: number; h: number; s: number; natural: number }
 
-function Stage({ name, example, parts, marks, labels, active, setActive }: StageProps) {
+function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
   const stage = useRef<HTMLDivElement>(null)
   const exampleRef = useRef<HTMLDivElement>(null)
   const [crop, setCrop] = useState<Crop | null>(null)
@@ -186,7 +186,7 @@ function Stage({ name, example, parts, marks, labels, active, setActive }: Stage
         const r = node.getBoundingClientRect()
         const style = getComputedStyle(node)
         const visible = style.borderTopWidth !== '0px' || style.boxShadow !== 'none' || !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(style.backgroundColor)
-        return [{ name: n, label: labels.get(n)!, visible, rect: { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height } }]
+        return [{ name: n, label: n, visible, rect: { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height } }]
       })
       if (!focus && !compact && ex.height < hits.length * (H + GAP)) {
         setCompact(true)
@@ -208,7 +208,7 @@ function Stage({ name, example, parts, marks, labels, active, setActive }: Stage
       live = false
       observer.disconnect()
     }
-  }, [parts, marks, labels, focus, crop, compact, below])
+  }, [parts, marks, focus, crop, compact, below])
 
   const highlighted = callouts.find((c) => c.name === active)
   const inner = (
@@ -222,7 +222,7 @@ function Stage({ name, example, parts, marks, labels, active, setActive }: Stage
     </div>
   )
   return (
-    <div ref={stage} className="anatomy-stage" style={below ? { paddingBottom: BOTTOM } : { paddingInline: GUTTER }}>
+    <div ref={stage} className="anatomy-stage" style={below ? { paddingBottom: BOTTOM, paddingTop: marks.length > 1 ? BOTTOM : undefined } : { paddingInline: gutterFor(marks.map((label) => ({ label }))) }}>
       {focus ? (
         <div className="anatomy-viewport" style={crop ? { width: crop.w * crop.s, height: crop.h * crop.s } : undefined}>
           {inner}
@@ -261,38 +261,27 @@ function variantOf(name: string, example: Example, variants: Record<string, unkn
 // parts is the full anatomy in depth-first order; variants maps each usage
 // variant axis to its default. One figure for the overview examples, then one
 // per focus part holding every example that zooms into it (CardVertical's
-// Action: Favorite and Menu side by side). Each box holds the diagram and its
-// numbered legend; the caption under the box says what it shows, as the
-// rendered states do.
+// Action: Favorite and Menu side by side). Each box holds the diagram; the
+// caption under the box says what it shows, as the rendered states do.
 export default function AnatomyOverlay({ name, parts, examples, variants }: { name: string; parts: Part[]; examples: Example[]; variants: Record<string, unknown> }) {
-  const [{ labels, marks }] = useState(() => numberParts(parts, examples))
+  const [marks] = useState(() => sortMarks(parts, examples))
   const [active, setActive] = useState<string | null>(null)
   const groups = new Map<string, number[]>()
   examples.forEach((e, i) => groups.set(e.focus ?? '', [...(groups.get(e.focus ?? '') ?? []), i]))
   return (
     <div className="anatomy-examples">
-      {[...groups].map(([focus, indexes]) => {
-        const legend = [...new Set(indexes.flatMap((i) => marks[i]))]
-        return (
+      {[...groups].map(([focus, indexes]) => (
           <figure key={focus} className={`anatomy-figure ${focus ? 'is-detail' : 'is-overview'}`}>
             <div className="anatomy-example">
               <div className="anatomy-stages">
                 {indexes.map((i) => (
-                  <Stage key={i} name={name} example={examples[i]} parts={parts} marks={marks[i]} labels={labels} active={active} setActive={setActive} />
+                  <Stage key={i} name={name} example={examples[i]} parts={parts} marks={marks[i]} active={active} setActive={setActive} />
                 ))}
               </div>
-              <ol className="anatomy-legend">
-                {legend.map((n) => (
-                  <li key={n} className={n === active ? 'is-active' : undefined} onMouseEnter={() => setActive(n)} onMouseLeave={() => setActive(null)}>
-                    <span className="anatomy-num">{labels.get(n)}</span>
-                    <code>{n}</code>
-                  </li>
-                ))}
-              </ol>
             </div>
             <figcaption className="anatomy-caption">
               {focus ? (
-                <span><code>{focus}</code> · detail of {labels.get(focus)}</span>
+                <span><code>{focus}</code> · detail</span>
               ) : (
                 indexes.map((i) => {
                   const example = examples[i]
@@ -305,8 +294,7 @@ export default function AnatomyOverlay({ name, parts, examples, variants }: { na
               )}
             </figcaption>
           </figure>
-        )
-      })}
+      ))}
     </div>
   )
 }

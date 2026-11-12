@@ -84,6 +84,7 @@ sources:
 # rewritten 2026-11-11: snapshot table lists figma-pattern-frames.json (ADR-023 amendment 2026-11-11)
 # clock reset 2026-11-11: /layout-generation's final step names the limits-driven composition check and the grammar table points at the fixed set instead of a count; this page describes neither, still accurate
 # clock reset 2026-11-11: ADR-027/030 Phase A3 amendments (anatomy mark/focus, simplified Spec page); ADR count unchanged, this page lists no ADR detail, still accurate
+# clock reset 2026-11-12: ADR-027/030 amendments change component-page rendering (anatomy callouts, Usage variant sections); this page describes no page layout, still accurate
 ---
 # Start here
 

@@ -33,7 +33,13 @@ export const storyArgs = (name: string, file: StoryFile, exportName: string): Ar
   return found ? { ...found.meta.args, ...found.story.args } : {}
 }
 
-export const hasStory = (name: string, file: StoryFile, exportName: string) => lookup(name, file, exportName) !== null
+// The first defined option a story file's meta offers a prop in its controls.
+export const argOption = (name: string, prop: string): unknown => {
+  const meta = stories[`${DIR}/${name}/${name}.stories.tsx`]?.default as { argTypes?: Record<string, { options?: unknown[] }> } | undefined
+  return meta?.argTypes?.[prop]?.options?.find((o) => o !== undefined)
+}
+
+export const hasStory =(name: string, file: StoryFile, exportName: string) => lookup(name, file, exportName) !== null
 
 export function StoryRender({ name, file, exportName }: { name: string; file: StoryFile; exportName: string }) {
   const found = lookup(name, file, exportName)
