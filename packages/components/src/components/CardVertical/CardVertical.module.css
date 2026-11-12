@@ -13,10 +13,18 @@
   min-width: var(--ds-size-card-min-sm);
 }
 
-/* No overflow clipping: the Menu panel must be able to extend past the thumbnail */
+/* Source order is Body, Progress, Media so a screen reader reaches the title
+   first; `order` puts the image back on top, whatever order a parts
+   composition writes its parts in (ADR-023 amendment 2026-11-12).
+   No overflow clipping: the Menu panel must be able to extend past the thumbnail. */
 .media {
+  order: -2;
   position: relative;
   flex-shrink: 0;
+}
+
+.progress {
+  order: -1;
 }
 
 .card:hover .thumbnail {

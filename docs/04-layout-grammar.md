@@ -32,6 +32,7 @@ sources:
 # clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 # clock reset 2026-11-11: ADR-023 amendment (one Figma example frame per pattern, checked by usage:validate); the layout grammar is unchanged, still accurate
 # rewritten 2026-11-11: the validator paragraph now describes the limits/nests check driven by usage.json (checkComposition replaced the hard-coded Button-emphasis check in the 2026-11-10 rename); Button emphasis stays as its example
+# clock reset 2026-11-12: ADR-023 amendment (parts written in reading order, Root owns visual order; CardVertical #159); layout:validate's part checks this page describes are unchanged, still accurate
 ---
 # Layout grammar
 

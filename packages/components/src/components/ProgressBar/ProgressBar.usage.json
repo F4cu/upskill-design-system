@@ -30,9 +30,9 @@
     "nests": false,
     "donts": [
       {
-        "case": "Omitting the label prop when more than one ProgressBar can appear on a page (e.g. a list of course cards)",
+        "case": "Omitting the label prop when more than one ProgressBar can appear on a page (e.g. a standalone list of bars)",
         "because": "role=\"progressbar\" defaults aria-label to the generic \"Progress\", so screen reader users can't tell which item a given bar belongs to without also relying on nearby text.",
-        "instead": "Pass label describing what is progressing, e.g. `${title} progress` (see CardHorizontal), or pass aria-labelledby pointing at the visible title's id when the title is already rendered nearby (CardVertical.Progress)."
+        "instead": "Pass label describing what is progressing, e.g. `${title} progress` (see CardHorizontal), or aria-labelledby pointing at a visible title's id. Exception: a bar inside a container already named by the item's title, read after that heading, takes a short fixed label of its own so it doesn't repeat the title (CardVertical.Progress, label 'Completion')."
       }
     ]
   }

@@ -21,6 +21,33 @@ export const TABS = [
   { id: "accessibility", label: "Accessibility", path: "accessibility/" },
 ];
 
+// Families of lookalikes (ADR-030 amendment 2026-11-12): members share a shape
+// but not a role, so picking the right one is the reader's first question.
+// Only a family member's Usage page shows "When to use it"; a component whose
+// name states its role leaves its "when" to the Composition Do / Don'ts.
+export const FAMILIES = {
+  Surfaces: ["Card", "CardVertical", "CardHorizontal", "Box"],
+  Layout: ["Stack", "Inline"],
+  Type: ["Text", "Heading"],
+  Labels: ["Badge", "Chip"],
+  "Choice inputs": ["Select", "Checkbox", "TextField"],
+  Media: ["Image", "Avatar", "VideoFrame"],
+};
+export const familyOf = (name) => Object.values(FAMILIES).find((members) => members.includes(name)) ?? null;
+
+// The patterns a component's Usage page shows, when it shouldn't show them
+// all: each names a usage pattern and may override its story's args (a small
+// card where the story is large). Patterns share a row two by two, like the
+// Placement boxes; `wide` takes a full row (a carousel). The rest stay in
+// Storybook.
+export const FEATURED_PATTERNS = {
+  CardVertical: [
+    { pattern: "favorite-saved", args: { size: "sm" } },
+    { pattern: "overflow-menu" },
+    { pattern: "card-carousel", wide: true },
+  ],
+};
+
 export const slugOf = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 
 export function publishedComponents() {

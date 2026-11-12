@@ -51,7 +51,7 @@
       {
         "name": "Root",
         "kind": "fixed",
-        "description": "The article container. Provides size and the title id to every part through context; owns the spacing between Media, Progress and Body.",
+        "description": "The article container. Provides size and the title id to every part through context; owns the spacing between Media, Progress and Body and draws them in that order whatever their source order. Write Body first, then Progress, then Media, so the title leads the reading order.",
         "builtOn": null
       },
       {
@@ -98,7 +98,7 @@
       {
         "name": "Progress",
         "kind": "fixed",
-        "description": "ProgressBar named by the title. Props: value (0–100).",
+        "description": "ProgressBar named 'Completion'. Props: value (0–100).",
         "builtOn": "ProgressBar",
         "containedBy": [
           "Root"
@@ -183,6 +183,11 @@
     "nests": false,
     "donts": [
       {
+        "case": "Writing CardVertical.Media (or Progress) before CardVertical.Body in a parts composition",
+        "because": "Root draws the image on top whatever the source order, so the card looks the same, but a screen reader then hears the image, the Save button and the bar before the title, and skimming by heading lands mid-card.",
+        "instead": "Write Body first, then Progress, then Media, as the preset does."
+      },
+      {
         "case": "Adding gap or margin to a part (e.g. <CardVertical.Body gap=\"lg\">, or a margin on content inside Body)",
         "because": "Parts own the card's rhythm (ADR-023): open parts accept children only, so a layout prop is a TypeScript error, and a margin breaks the shared vertical rhythm.",
         "instead": "Nest a Stack or Inline inside the open part for custom spacing."
@@ -194,7 +199,7 @@
       },
       {
         "case": "Using Heading instead of CardVertical.Title inside CardVertical.Body, omitting Title from a parts composition, or rendering two Titles",
-        "because": "Title registers the id that names the article, the Favorite/Menu buttons and the progress bar; a plain Heading leaves them unnamed and loses the card's serif size override. Nothing checks for Title at runtime: without it every aria-labelledby on the card points at a missing id and the buttons read only 'Save' / 'More options'; two Titles duplicate the id. `required` is enforced by layout:validate only.",
+        "because": "Title registers the id that names the article and the Favorite/Menu buttons; a plain Heading leaves them unnamed and loses the card's serif size override. Nothing checks for Title at runtime: without it every aria-labelledby on the card points at a missing id and the buttons read only 'Save' / 'More options'; two Titles duplicate the id. `required` is enforced by layout:validate only.",
         "instead": "Always render exactly one CardVertical.Title as the first child of CardVertical.Body (set its `as` for the page outline)."
       },
       {

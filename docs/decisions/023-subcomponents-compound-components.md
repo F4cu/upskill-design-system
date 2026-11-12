@@ -4,7 +4,7 @@ title: "ADR-023 — Subcomponents: preset + parts under a dot namespace"
 # ADR-023 — Subcomponents: preset + parts under a dot namespace
 
 **Date:** 2026-10-01
-**Amended:** 2026-11-11
+**Amended:** 2026-11-12
 **Status:** `accepted`
 
 ## Context
@@ -159,3 +159,17 @@ The 2026-10-06 amendment asked for one example frame per pattern, but nothing ch
 **Waivers at the start.** Seven patterns need a Figma component that doesn't exist yet: Card (`card-actions`, `notification-preferences`, `form-field-stack`), Divider + Card (`section-break`), ScrollArea (`scrollable-list`, `native-scroll-carousel`) and TextLink (`author-credit`). Stand-in frames were rejected because they break the instances-only rule. The waivers go away as those components are built.
 
 **Consequence.** The snapshot can lag the Figma file. It is only as fresh as its `capturedAt`, the same trade-off as the variables snapshot. Renaming a pattern in `usage.json` fails the gate until the frame is renamed and recaptured, which is the drift the check exists to catch.
+
+## Amendment (2026-11-12) — Source order follows reading order; `Root` owns the visual order
+
+CardVertical wrote its parts in visual order (Media → Progress → Body), so a screen reader heard the image, the Save button and the progress bar, each named by the title, before the heading itself, and skimming by heading landed after the card's action (issue #159). The accessible order is heading first (WCAG 1.3.2 Meaningful Sequence and 1.3.1; Inclusive Components, "Cards").
+
+Two options were weighed for parts compositions: `Root` sorting its children into the right order, or `Root` fixing the visual order in CSS and the consumer writing the reading order. The second is the rule:
+
+- **Write parts in reading order.** A part's position in the source is its reading position. When the visual order differs, the container draws it with CSS (`order` on the part's class), so any source order renders identically and the preset stays pixel-identical.
+- **The preset and every pattern use the reading order.** CardVertical writes Body → Progress → Media; `usage.json` records the reverse as a composition don't, because nothing can catch it at runtime without rewriting the consumer's tree.
+- **A non-focusable part isn't named by the title when it follows the title.** CardVertical's Progress is named "Completion". Focusable parts (Favorite, Menu) keep the title in their name: they are the card's only tab stops and must be unique across cards.
+
+Sorting children in `Root` was ruled out: it overrides what the consumer wrote and needs child-type checks for no visual gain. No state moves, so ADR-025 is unchanged.
+
+**Figma keeps the visual order.** In an auto-layout frame the layer order is the drawing order, and Figma has no `order` property, so Media stays the first layer. That is a recorded divergence in the spec, not drift: Figma has no reading order to get wrong, and the layer names still match the parts.

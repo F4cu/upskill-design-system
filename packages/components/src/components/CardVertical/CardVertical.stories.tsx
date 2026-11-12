@@ -6,6 +6,10 @@ import { Stack } from '../Stack'
 
 const noop = () => {}
 
+// The state stories carry a photo so the Placeholder state reads by contrast.
+const THUMBNAIL = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop'
+const THUMBNAIL_ALT = 'A person working on a laptop'
+
 const MENU_ITEMS = [
   { value: 'share', label: 'Share' },
   { value: 'save', label: 'Save' },
@@ -71,16 +75,20 @@ export const SmallSize: Story = {
 
 export const WithProgress: Story = {
   args: {
+    thumbnailSrc: THUMBNAIL,
+    thumbnailAlt: THUMBNAIL_ALT,
     title: 'Creative Acts for Curious People',
     duration: '12 Hours',
     certified: true,
     progress: 65,
-    size: 'lg',
+    size: 'sm',
   },
 }
 
 export const Completed: Story = {
   args: {
+    thumbnailSrc: THUMBNAIL,
+    thumbnailAlt: THUMBNAIL_ALT,
     title: 'Creative Acts for Curious People',
     duration: '12 Hours',
     certified: true,
@@ -93,7 +101,19 @@ export const Placeholder: Story = {
   args: {
     title: 'Creative Acts for Curious People',
     duration: '12 Hours',
-    size: 'lg',
+    size: 'sm',
+  },
+}
+
+export const FavoritePressed: Story = {
+  args: {
+    thumbnailSrc: THUMBNAIL,
+    thumbnailAlt: THUMBNAIL_ALT,
+    title: 'Creative Acts for Curious People',
+    duration: '12 Hours',
+    certified: true,
+    size: 'sm',
+    action: <CardVertical.Favorite defaultPressed onPressedChange={noop} />,
   },
 }
 

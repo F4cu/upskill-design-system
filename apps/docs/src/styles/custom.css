@@ -23,11 +23,10 @@ pre.mermaid {
 }
 
 /* Anatomy diagram (ADR-030 Phase A2). .ds-example gets the component library's
-   reset scoped to the example, since its global reset would restyle the site. */
-.ds-example,
-.ds-example *,
-.ds-example *::before,
-.ds-example *::after {
+   reset scoped to the example, since its global reset would restyle the site.
+   :where() keeps it at zero specificity, so a component's module classes win
+   whatever order the stylesheets load in. */
+:where(.ds-example, .ds-example *, .ds-example *::before, .ds-example *::after) {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -37,11 +36,11 @@ pre.mermaid {
   color: var(--ds-color-text-default);
   line-height: var(--ds-font-line-height-relaxed, 1.5);
 }
-.ds-example :is(img, svg, video) {
+:where(.ds-example :is(img, svg, video)) {
   display: block;
   max-width: 100%;
 }
-.ds-example :is(button, input, select, textarea) {
+:where(.ds-example :is(button, input, select, textarea)) {
   font: inherit;
 }
 .ds-example :focus-visible {
@@ -52,7 +51,7 @@ pre.mermaid {
 .anatomy-examples {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 1rem;
   margin-top: 1rem;
 }
@@ -65,12 +64,23 @@ pre.mermaid {
   max-width: 100%;
   overflow-x: auto;
 }
+/* Detail figures share a row in equal columns that fill its width, wrapping
+   below 16rem; their boxes stretch to one height with the diagram centred. */
 .anatomy-figure {
   margin: 0;
   max-width: 100%;
+  flex: 1 1 16rem;
+  display: flex;
+  flex-direction: column;
 }
 .anatomy-figure.is-overview {
   flex-basis: 100%;
+}
+.anatomy-figure > .anatomy-example {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .anatomy-caption {
   display: flex;
@@ -107,13 +117,16 @@ pre.mermaid {
 }
 .anatomy-svg path {
   fill: none;
-  stroke: var(--sl-color-gray-3);
+  stroke: var(--sl-color-accent-high);
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
+.anatomy-svg .anatomy-leader {
+  opacity: 0.8;
+}
 .anatomy-svg .anatomy-dot,
 .anatomy-svg .anatomy-badge {
-  fill: var(--sl-color-accent);
+  fill: var(--sl-color-accent-high);
 }
 .anatomy-svg text {
   fill: var(--sl-color-black);
@@ -123,11 +136,7 @@ pre.mermaid {
   pointer-events: none;
 }
 .anatomy-svg g.is-active path {
-  stroke: var(--sl-color-accent);
-}
-.anatomy-svg g.is-active .anatomy-badge,
-.anatomy-svg g.is-active .anatomy-dot {
-  fill: var(--sl-color-accent-high);
+  stroke-width: 2;
 }
 .anatomy-svg .anatomy-outline {
   fill: none;
@@ -137,7 +146,7 @@ pre.mermaid {
 }
 .anatomy-svg .anatomy-focus {
   fill: none;
-  stroke: var(--sl-color-accent);
+  stroke: var(--sl-color-accent-high);
   stroke-width: 1;
   stroke-dasharray: 3 2;
 }
@@ -287,9 +296,23 @@ main:has(.component-header) :not(pre) > code {
 }
 
 /* State tiles on component Spec pages (ADR-030 Phase A3): the caption reuses
-   .anatomy-caption (kind and name, then the trigger), in place of a table. */
-.state figcaption {
-  gap: 0.125rem;
+   .anatomy-caption type, as two tags in a row: kind, then name. */
+.caption-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+/* Figure captions (anatomy and state tiles) are a row of tags: a category for
+   readers (Pattern, Detail, Lifecycle) as a plain outlined tag in the system
+   font, so it doesn't read as code; names and prop values as code chips. */
+.caption-tag {
+  padding: 0.0625rem 0.375rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.25rem;
+  font-family: var(--sl-font-system);
+  color: var(--sl-color-gray-2);
 }
 .state-missing {
   display: grid;
@@ -299,10 +322,6 @@ main:has(.component-header) :not(pre) > code {
   border: 1px dashed var(--sl-color-gray-4);
   border-radius: 0.5rem;
   font-size: var(--sl-text-xs);
-  color: var(--sl-color-gray-3);
-}
-.sl-markdown-content .state-interactions {
-  font-size: var(--sl-text-sm);
   color: var(--sl-color-gray-3);
 }
 
@@ -332,13 +351,177 @@ main:has(.component-header) :not(pre) > code {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1.25rem;
 }
 .variant-badge {
   padding: 0.125rem 0.5rem;
   border-radius: 999px;
-  background: var(--sl-color-accent);
+  background: var(--sl-color-accent-high);
   color: var(--sl-color-black);
   font: 600 11px/1.4 var(--sl-font-system);
 }
 
+/* Placement (prototype): Do / Don't boxes in two columns, each a canvas with a
+   verdict bar along its bottom edge and the caption under it (Material-style).
+   Each card spans two subgrid rows, so canvases side by side share a height. */
+.placement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0 1.5rem;
+  margin-top: 1rem;
+}
+.placement-card {
+  margin: 0;
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+}
+.placement-canvas {
+  --placement-verdict: var(--ds-color-border-feedback-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+  padding: 1.5rem;
+  background: var(--ds-color-background-container-canvas);
+  border: 1px solid var(--sl-color-hairline);
+  border-bottom: 4px solid var(--placement-verdict);
+  border-radius: 0.5rem 0.5rem 0 0;
+  overflow-x: auto;
+}
+.placement-card.is-dont .placement-canvas {
+  --placement-verdict: var(--ds-color-border-feedback-error);
+}
+.placement-card figcaption {
+  margin: 0.75rem 0 2rem;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}
+.placement-card figcaption p {
+  margin: 0.25rem 0 0;
+}
+.placement-verdict {
+  font-weight: 600;
+  color: var(--ds-color-text-feedback-success);
+}
+.placement-card.is-dont .placement-verdict {
+  color: var(--ds-color-text-feedback-error);
+}
+
+/* Usage patterns: boxes two by two like the Placement boxes, side-by-side
+   boxes sharing one height (subgrid rows), a wide pattern (carousel) taking a
+   full row; the caption leads with the pattern name as a code chip. */
+.pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0 1.5rem;
+  margin-top: 1rem;
+}
+.pattern-card {
+  margin: 0;
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+}
+.pattern-card.is-wide {
+  grid-column: 1 / -1;
+}
+.pattern-card > .live-example {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pattern-card.is-wide > .live-example {
+  display: block;
+}
+.pattern-card figcaption {
+  margin: 0.75rem 0 2rem;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}
+.pattern-card figcaption code {
+  margin-inline-end: 0.25rem;
+}
+
+/* Accessibility figures (prototype): the labeling sample uses the anatomy
+   diagram's box, badges and leaders, with a table of each marked element's
+   markup and announcement under it; the focus figure forces the shared ring
+   (ADR-028) on. */
+.a11y-figure {
+  margin: 1rem 0 2rem;
+}
+.a11y-canvas {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: var(--ds-color-background-container-canvas);
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+.ds-example .is-focus-demo {
+  outline: var(--ds-size-focus-width) solid var(--ds-color-border-focus);
+  outline-offset: var(--ds-size-focus-offset);
+}
+.a11y-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.a11y-table {
+  width: 100%;
+  margin-top: 1rem;
+  font-size: var(--sl-text-sm);
+}
+.a11y-table :is(th, td) {
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  border-bottom: 1px solid var(--sl-color-hairline);
+  text-align: start;
+  vertical-align: top;
+}
+.a11y-table thead th {
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+.a11y-table th[scope="row"] {
+  font-weight: 600;
+  white-space: nowrap;
+}
+main:has(.component-header) .a11y-table code {
+  display: block;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+/* The announcement keeps a fixed share of the row; the code wraps instead. */
+.a11y-table :is(th, td):last-child {
+  width: 34%;
+}
+/* Phone width: each row stacks (part, code, announcement), so the code keeps
+   whole words. */
+@media (max-width: 40rem) {
+  .a11y-table thead {
+    display: none;
+  }
+  .a11y-table :is(tbody, tr, th, td),
+  .a11y-table :is(th, td):last-child {
+    display: block;
+    width: auto;
+  }
+  .a11y-table tr {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--sl-color-hairline);
+  }
+  .a11y-table :is(th, td) {
+    padding: 0.25rem 0;
+    border-bottom: none;
+  }
+  main:has(.component-header) .a11y-table code {
+    overflow-wrap: break-word;
+  }
+}
+.a11y-figure figcaption {
+  margin-top: 0.75rem;
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-2);
+}

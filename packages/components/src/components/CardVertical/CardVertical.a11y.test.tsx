@@ -38,10 +38,61 @@ describe('CardVertical — a11y behavior', () => {
     expect(screen.getByRole('article', { name: TITLE })).toBeInTheDocument()
   })
 
-  it('names the progress bar by the title', () => {
+  it('gives the progress bar a short name of its own, not the title', () => {
     render(<CardVertical title={TITLE} progress={40} />)
-    const bar = screen.getByRole('progressbar', { name: TITLE })
+    const bar = screen.getByRole('progressbar', { name: 'Completion' })
     expect(bar).toHaveAttribute('aria-valuenow', '40')
+    expect(bar).not.toHaveAttribute('aria-labelledby')
+  })
+
+  function expectReadingOrder(elements: HTMLElement[]) {
+    elements.slice(1).forEach((el, i) => {
+      expect(elements[i].compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+  }
+
+  function readingOrder() {
+    return [
+      screen.getByRole('heading', { name: TITLE }),
+      screen.getByText('12 Hours'),
+      screen.getByRole('progressbar'),
+      screen.getByRole('img', { name: 'Course cover' }),
+      screen.getByRole('button', { name: `Save ${TITLE}` }),
+    ]
+  }
+
+  it('puts the title first in reading order, then meta, progress, image and action (preset)', () => {
+    render(
+      <CardVertical
+        title={TITLE}
+        thumbnailSrc="cover.jpg"
+        thumbnailAlt="Course cover"
+        duration="12 Hours"
+        progress={40}
+        action={<CardVertical.Favorite />}
+      />,
+    )
+    expectReadingOrder(readingOrder())
+  })
+
+  it('keeps the same reading order in a Body-first parts composition', () => {
+    render(
+      <CardVertical.Root>
+        <CardVertical.Body>
+          <CardVertical.Title>{TITLE}</CardVertical.Title>
+          <CardVertical.Meta>
+            <CardVertical.Duration>12 Hours</CardVertical.Duration>
+          </CardVertical.Meta>
+        </CardVertical.Body>
+        <CardVertical.Progress value={40} />
+        <CardVertical.Media src="cover.jpg" alt="Course cover">
+          <CardVertical.Action>
+            <CardVertical.Favorite />
+          </CardVertical.Action>
+        </CardVertical.Media>
+      </CardVertical.Root>,
+    )
+    expectReadingOrder(readingOrder())
   })
 
   describe('Favorite', () => {

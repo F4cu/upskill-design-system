@@ -6,7 +6,7 @@
       "element": "div",
       "role": "article, named by Title (aria-labelledby)",
       "required": true,
-      "notes": "Provides size and the title id to every part through context. Owns the gap between Media, Progress and Body."
+      "notes": "Provides size and the title id to every part through context. Owns the gap between Media, Progress and Body, and their visual order: Media on top, then Progress, then Body, whatever their source order. Write Body first so the title leads the reading order."
     },
     {
       "name": "Media",
@@ -105,7 +105,7 @@
       "parent": "Root",
       "element": "ProgressBar",
       "builtOn": "ProgressBar",
-      "role": "progressbar, named by Title",
+      "role": "progressbar, named 'Completion' (not the title: the heading already gives that context)",
       "required": false,
       "when": "progress is set"
     },
@@ -124,7 +124,7 @@
       "element": "Heading",
       "builtOn": "Heading",
       "builtOnProps": { "size": "headline-serif" },
-      "role": "heading (level from as, default h3); its id names Root, Progress, Favorite and Menu",
+      "role": "heading (level from as, default h3); its id names Root, Favorite and Menu",
       "required": true,
       "notes": "Must come first in Body. headline-serif sets family, weight and line-height; the CSS Module overrides only the font size."
     },
@@ -451,7 +451,7 @@
       "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
       "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
       "Menu trigger: aria-haspopup=menu, aria-expanded, aria-controls → the panel while open; accessible name 'More options <title>' via aria-labelledby=[self, title]. Panel is DropdownMenu listRole=menu, named by the same aria-labelledby. No trigger renders when items is empty.",
-      "Progress: ProgressBar aria-labelledby → the Title's id"
+      "Progress: ProgressBar label='Completion'; it is not focusable and follows the heading, so its name doesn't repeat the title"
     ],
     "keyboardInteractions": [
       {
@@ -483,7 +483,7 @@
         "action": "Closes the menu and lets focus move on; an outside click also closes it without pulling focus back. Home/End and arrow wrapping are out of scope (DropdownMenu's shared contract)"
       }
     ],
-    "notes": "Menu focus: only Escape and item selection return focus to the trigger; pointer dismissal (outside click) and Tab/focusout close the menu without moving focus, so focus is never pulled away from where the user put it. aria-expanded must read false after every close path (Escape, selection, outside click, Tab), and Enter and Space must both be tested on items — Space selects on keydown and focus returns before keyup, the path most likely to re-trigger the button. Favorite is controlled-or-uncontrolled like a native input: when `pressed` is passed, aria-pressed follows the prop only, never internal state."
+    "notes": "Reading order: Title, Meta, Progress, then the Action button (DOM order Body → Progress → Media); CSS order keeps the image on top. Focus order is unaffected (the action is the card's single tab stop); reading order deliberately differs from visual order so the heading comes first. Menu focus: only Escape and item selection return focus to the trigger; pointer dismissal (outside click) and Tab/focusout close the menu without moving focus, so focus is never pulled away from where the user put it. aria-expanded must read false after every close path (Escape, selection, outside click, Tab), and Enter and Space must both be tested on items — Space selects on keydown and focus returns before keyup, the path most likely to re-trigger the button. Favorite is controlled-or-uncontrolled like a native input: when `pressed` is passed, aria-pressed follows the prop only, never internal state."
   },
   "styles": {
     "Root": [
@@ -496,6 +496,12 @@
       },
       { "when": { "size": "lg" }, "set": { "min-width": "size.card.min.lg" } },
       { "when": { "size": "sm" }, "set": { "min-width": "size.card.min.sm" } }
+    ],
+    "Media": [
+      { "when": {}, "set": { "order": { "literal": "-2", "reason": "Draws Media on top whatever the source order; the source puts Body first for reading order (ADR-023 amendment 2026-11-12)." } } }
+    ],
+    "Progress": [
+      { "when": {}, "set": { "order": { "literal": "-1", "reason": "Draws Progress between Media and Body whatever the source order (ADR-023 amendment 2026-11-12)." } } }
     ],
     "Thumbnail": [
       { "when": { "state": "hover" }, "set": { "opacity": { "literal": "0.8", "reason": "No opacity token scale exists." } } }
@@ -570,6 +576,7 @@
       { "what": "Menu has an Expanded property in Figma; in code the open state is internal.", "decision": "Design-only preview property (ADR-026)." },
       { "what": "In the preset, Title and Duration are text layers, not part instances.", "decision": "Kept: swapping them would wipe text overrides on 47 and 14 placed cards (ADR-023 amendment 2026-10-06)." },
       { "what": "Status is an explicit variant in Figma; code derives it from progress.", "decision": "Recorded mapping (ADR-026)." },
+      { "what": "Figma's layers run Media, Progress, Body (visual order); code's source runs Body, Progress, Media (reading order).", "decision": "Kept: auto-layout layer order is the drawing order and Figma has no CSS order, so matching the code would flip the card (ADR-023 amendment 2026-11-12)." },
       { "what": "On CardVertical.Root, Completed is consumer-placed slot content, not derived.", "decision": "Same as the code parts API: derivation lives only in the preset (ADR-023 amendment 2026-10-06)." }
     ]
   },
@@ -581,6 +588,8 @@
     { "decision": "Completed is derived from progress >= 100; there is no completed prop.", "reason": "A separate flag can disagree with the bar (completed with progress 40).", "adr": "ADR-025" },
     { "decision": "Favorite and Menu are transparent Buttons whose glyph carries an icon halo, owned by CardVertical.", "reason": "The glyph keeps its contrast at rest on any image, with no change to Button's API.", "adr": "ADR-024" },
     { "decision": "In Figma, CardVertical mirrors the preset: Body and Meta are fixed layers, and a separate CardVertical.Root carries the open parts as native slots.", "reason": "Figma allows no component properties inside a native slot, so a slotted preset would lose its Title, Duration and Certified properties.", "adr": "ADR-023" },
+    { "decision": "The DOM order is Body, Progress, Media; Root's CSS (`order`) draws Media on top. Parts compositions write Body first.", "reason": "A screen reader reaches the heading before the image, the Save button and the bar, and skimming by heading lands at the card's start (WCAG 1.3.2 Meaningful Sequence, 1.3.1; Inclusive Components, Cards). Root fixing the visual order keeps every composition pixel-identical to the preset.", "adr": "ADR-023" },
+    { "decision": "Progress is named 'Completion', not by the title.", "reason": "It isn't focusable and comes after the heading, so a name that repeats the title only adds noise (MDN progressbar; axe aria-progressbar-name). Favorite and Menu keep the title: they are the card's only tab stops and must be unique across cards." },
     { "decision": "Media narrows and guards its children: it accepts only a single CardVertical.Action and throws on anything else.", "reason": "A fixed part typed children?: ReactNode silently becomes an unchecked slot.", "adr": "ADR-023" }
   ],
   "ruledOut": [
@@ -588,6 +597,8 @@
     { "option": "An empty styled container that consumers fill and lay out themselves", "reason": "Drops the preset that serves the common case and breaks the existing prop API; preset + parts keeps both.", "source": "Chakra, Radix Themes Card" },
     { "option": "Body and Meta as native slots on the preset in Figma", "reason": "Gives up the preset's text and boolean properties that cover the common case. Revisit when a designer needs a composed layout and would otherwise detach.", "source": "A literal mirror of the code parts" },
     { "option": "A scrim gradient on the thumbnail to make overlay actions readable", "reason": "Viable, but changes the image treatment and needs a Figma pass; the icon halo solves contrast without either." },
+    { "option": "Root reordering its children itself (sorting parts into Body, Progress, Media)", "reason": "Rewrites what the consumer wrote and needs child-type checks; a CSS order on Root gives the same visual result with no runtime cost." },
+    { "option": "aria-valuetext ('40% complete') on Progress", "reason": "With the name 'Completion' the bar already reads 'Completion, progress bar, 40%'; a value text would repeat the word." },
     { "option": "A completed boolean prop", "reason": "Completion is lifecycle state derived from progress; a flag can contradict the bar." }
   ]
 }
