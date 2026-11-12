@@ -42,6 +42,7 @@ sources:
 # 2026-11-10: prop-rule row says how spec constraints are enforced (type, test, layout:validate); 7 of the 9 documented-only ones now are
 # clock reset 2026-11-10: generate-pattern-schema.js resolves local alias and union prop groups; the drift check this page describes is unchanged
 # clock reset 2026-11-11: usage:validate checks one Figma example frame per pattern against the frozen packages/components/figma-pattern-frames.json (ADR-023 amendment 2026-11-11); the usage schema this page describes is unchanged, still accurate
+# clock reset 2026-11-12: ADR-023 amendment (parts written in reading order, Root owns visual order; CardVertical #159); usage and spec schemas unchanged, still accurate
 ---
 # Machine-readable metadata
 

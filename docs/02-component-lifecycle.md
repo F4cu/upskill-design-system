@@ -36,6 +36,7 @@ sources:
 # rewritten 2026-11-11: usage:validate checks one Figma example frame per pattern against the frozen packages/components/figma-pattern-frames.json (ADR-023 amendment 2026-11-11)
 # clock reset 2026-11-11: ADR-027 amendment adds optional anatomyExamples mark/focus; this page describes the metadata schema and the gate, not spec sections, still accurate
 # clock reset 2026-11-11: ADR-027 amendment lets builtOnProps follow a parent prop; this page doesn't describe builtOnProps, still accurate
+# clock reset 2026-11-12: ADR-023 amendment (parts written in reading order, Root owns visual order; CardVertical #159); this page explains when a component gains parts, not their order, still accurate
 ---
 # Component lifecycle
 
