@@ -25,8 +25,8 @@ export const accessibility: AccessibilityEntry = {
   ],
   labeling: {
     advice:
-      'The title names everything on the card: the card itself, its progress bar and its action button. Write titles that tell courses apart. Describe the image with thumbnailAlt only when it adds something the title doesn’t.',
-    caption: 'The image is skipped. The Save button and bar come before the title, so they repeat it; duration and Certified come last.',
+      'The title names the card and its action button. Write titles that tell courses apart. The progress bar has its own short name, Completion, because the title is already read just before it. Describe the image with thumbnailAlt only when it adds something the title doesn’t.',
+    caption: 'The title comes first, though the image sits on top. The image is skipped; duration, Certified, the bar and the Save button follow.',
     marks: [
       { label: 'Card', select: '[data-part="Root"]' },
       { label: 'Save button', select: '[data-part="Favorite"]' },

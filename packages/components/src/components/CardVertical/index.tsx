@@ -178,8 +178,8 @@ export type CardVerticalProgressProps = {
 }
 
 function Progress({ value }: CardVerticalProgressProps) {
-  const { titleId } = useCardVertical('Progress')
-  return <ProgressBar value={value} aria-labelledby={titleId} data-part="Progress" />
+  useCardVertical('Progress')
+  return <ProgressBar value={value} label="Completion" className={styles.progress} data-part="Progress" />
 }
 
 export type CardVerticalBodyProps = {
@@ -269,10 +269,6 @@ function CardVerticalPreset({
   const completed = progress !== undefined && progress >= 100
   return (
     <Root size={size} {...rest}>
-      <Media src={thumbnailSrc} alt={thumbnailAlt}>
-        {action && <Action>{action}</Action>}
-      </Media>
-      {progress !== undefined && <Progress value={progress} />}
       <Body>
         <Title>{title}</Title>
         {(duration || certified || completed) && (
@@ -283,6 +279,10 @@ function CardVerticalPreset({
           </Meta>
         )}
       </Body>
+      {progress !== undefined && <Progress value={progress} />}
+      <Media src={thumbnailSrc} alt={thumbnailAlt}>
+        {action && <Action>{action}</Action>}
+      </Media>
     </Root>
   )
 }

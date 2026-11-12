@@ -19,12 +19,6 @@ export const placement: PlacementEntry[] = [
     render: () => (
       <Box maxWidth={280}>
         <CardVertical.Root size="lg">
-          <CardVertical.Media alt="">
-            <CardVertical.Action>
-              <CardVertical.Favorite onPressedChange={noop} />
-            </CardVertical.Action>
-          </CardVertical.Media>
-          <CardVertical.Progress value={40} />
           <CardVertical.Body>
             <CardVertical.Title>Designing Calm Interfaces</CardVertical.Title>
             <CardVertical.Meta>
@@ -32,6 +26,12 @@ export const placement: PlacementEntry[] = [
               <Badge>Completed</Badge>
             </CardVertical.Meta>
           </CardVertical.Body>
+          <CardVertical.Progress value={40} />
+          <CardVertical.Media alt="">
+            <CardVertical.Action>
+              <CardVertical.Favorite onPressedChange={noop} />
+            </CardVertical.Action>
+          </CardVertical.Media>
         </CardVertical.Root>
       </Box>
     ),

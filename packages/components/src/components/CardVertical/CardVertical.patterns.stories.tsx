@@ -71,17 +71,17 @@ export const CustomMeta: Story = {
   },
   render: ({ title, size, thumbnailSrc, thumbnailAlt }) => (
     <CardVertical.Root size={size}>
-      <CardVertical.Media src={thumbnailSrc} alt={thumbnailAlt}>
-        <CardVertical.Action>
-          <CardVertical.Menu items={MENU_ITEMS} onSelect={noop} />
-        </CardVertical.Action>
-      </CardVertical.Media>
       <CardVertical.Body>
         <CardVertical.Title>{title}</CardVertical.Title>
         <CardVertical.Meta>
           <Text as="span" size="metadata" color="subtle">Updated this week</Text>
         </CardVertical.Meta>
       </CardVertical.Body>
+      <CardVertical.Media src={thumbnailSrc} alt={thumbnailAlt}>
+        <CardVertical.Action>
+          <CardVertical.Menu items={MENU_ITEMS} onSelect={noop} />
+        </CardVertical.Action>
+      </CardVertical.Media>
     </CardVertical.Root>
   ),
 }
@@ -95,11 +95,6 @@ export const InstructorRow: Story = {
   },
   render: ({ title, duration, size, thumbnailSrc, thumbnailAlt }) => (
     <CardVertical.Root size={size}>
-      <CardVertical.Media src={thumbnailSrc} alt={thumbnailAlt}>
-        <CardVertical.Action>
-          <CardVertical.Favorite onPressedChange={noop} />
-        </CardVertical.Action>
-      </CardVertical.Media>
       <CardVertical.Body>
         <CardVertical.Title>{title}</CardVertical.Title>
         <Inline gap="sm" align="center" wrap={false}>
@@ -114,6 +109,11 @@ export const InstructorRow: Story = {
           <CardVertical.Certified />
         </CardVertical.Meta>
       </CardVertical.Body>
+      <CardVertical.Media src={thumbnailSrc} alt={thumbnailAlt}>
+        <CardVertical.Action>
+          <CardVertical.Favorite onPressedChange={noop} />
+        </CardVertical.Action>
+      </CardVertical.Media>
     </CardVertical.Root>
   ),
 }
@@ -127,7 +127,6 @@ export const GroupedMeta: Story = {
   },
   render: ({ title, duration, size, thumbnailSrc, thumbnailAlt }) => (
     <CardVertical.Root size={size}>
-      <CardVertical.Media src={thumbnailSrc} alt={thumbnailAlt} />
       <CardVertical.Body>
         <CardVertical.Title>{title}</CardVertical.Title>
         <CardVertical.Meta>
@@ -138,6 +137,7 @@ export const GroupedMeta: Story = {
           </Inline>
         </CardVertical.Meta>
       </CardVertical.Body>
+      <CardVertical.Media src={thumbnailSrc} alt={thumbnailAlt} />
     </CardVertical.Root>
   ),
 }
