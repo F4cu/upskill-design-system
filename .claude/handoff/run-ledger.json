@@ -196,5 +196,35 @@
     "manualRescuesCount": 1,
     "path": "full",
     "risk": "display"
+  },
+  {
+    "component": "CardVertical",
+    "ranAt": "2026-11-12T16:31:15+00:00",
+    "path": "full",
+    "risk": "interactive",
+    "gate": {
+      "passes": 1,
+      "failures": 0,
+      "failureReasons": []
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 4,
+    "manualRescuesCount": 0
+  },
+  {
+    "component": "CardVertical",
+    "ranAt": "2026-11-12T16:55:00Z",
+    "path": "full",
+    "risk": "interactive",
+    "gate": {
+      "passes": 2,
+      "failures": 1,
+      "failureReasons": [
+        "New reading-order test used thumbnailAlt without thumbnailSrc; Image renders a placeholder with no img role"
+      ]
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 3,
+    "manualRescuesCount": 0
   }
 ]
