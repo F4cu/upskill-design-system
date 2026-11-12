@@ -31,7 +31,13 @@
   }
 }
 
-/* Carousel outer — mobile-only override; pair with <Box overflow="hidden"> for the desktop clip */
+/* Carousel clip container (useCarousel): clips the transformed track on tablet and
+   desktop, scrolls natively with snap on mobile. Owns both states so no inline
+   overflow (e.g. Box's overflow prop) can override the mobile rule. */
+.carousel-outer {
+  overflow: hidden;
+}
+
 @media (max-width: 767px) {
   .carousel-outer {
     overflow-x: auto;

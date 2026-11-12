@@ -146,13 +146,11 @@ When the Figma design context shows an AppHeader, map every visible sub-element 
 Use the Accordion pattern `course-module-list`; its code is `CourseModuleList` in `Accordion.patterns.stories.tsx`. Keep the full data array outside the component and slice it with `useState`.
 
 ### Card carousel with arrows
-When the design shows a horizontal row of cards that paginate with left/right arrows, use the CardVertical pattern `card-carousel`; its code is `CardCarousel` in `CardVertical.patterns.stories.tsx`. On a showcase page add two classes the story doesn't carry, since they live in `apps/showcase/src/styles/global.css`:
-- `className="carousel-outer"` on the clipping `<Box overflow="hidden">`: it switches to native scroll with snap on mobile.
-- `className="hide-on-mobile"` on the arrow row: mobile users scroll with their finger.
+When the design shows a horizontal row of cards that paginate with left/right arrows, use the CardVertical pattern `card-carousel`; its code is `CardCarousel` in `CardVertical.patterns.stories.tsx`. The clip Box takes `className="carousel-outer"` and no `overflow` prop: the class clips on tablet and desktop and switches to native scroll with snap on mobile, and an inline `overflow` would override that. On a showcase page also add `className="hide-on-mobile"` to the arrow row, which the story doesn't carry: mobile users scroll with their finger.
 
 Always use `useCarousel` from `@upskill/components`, never page-level `useState` for the offset. Arrows only, right-aligned, no "X of Y" counter.
 
-Keep the story's accessibility contract (ADR-006 amendment 2026-11-12): `onFocus={carousel.onFocus}` on the clip Box, the track as `<ul role="list" aria-labelledby="<heading id>">` with one `<li>` per card, arrow `aria-label`s that name the carousel ("Next saved courses"), and `carousel.announcement` in `<Text as="p" aria-live="polite" className="visually-hidden">` outside the `hide-on-mobile` row.
+Keep the story's accessibility contract (ADR-006 amendment 2026-11-12): `onFocus={carousel.onFocus}` on the `carousel-outer` clip Box, the track as `<ul role="list" aria-labelledby="<heading id>">` with one `<li>` per card, arrow `aria-label`s that name the carousel ("Next saved courses"), and `carousel.announcement` in `<Text as="p" aria-live="polite" className="visually-hidden">` outside the `hide-on-mobile` row.
 
 **Figma signal checklist** — treat any of these as a carousel trigger:
 - A Figma component or frame named "Carousel" or "carousel".

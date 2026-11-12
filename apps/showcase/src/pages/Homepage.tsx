@@ -225,8 +225,8 @@ export default function Homepage() {
               <Heading id="saved-heading" as="h2" size="headline">Saved Courses</Heading>
             </Stack>
 
-            {/* Carousel — Box clips track; .carousel-outer switches to native scroll on mobile */}
-            <Box overflow="hidden" className="carousel-outer" onFocus={savedCarousel.onFocus}>
+            {/* Carousel — .carousel-outer clips the track, and switches to native scroll on mobile */}
+            <Box className="carousel-outer" onFocus={savedCarousel.onFocus}>
               <ul
                 role="list"
                 aria-labelledby="saved-heading"
@@ -281,7 +281,7 @@ export default function Homepage() {
               ))}
             </Inline>
 
-            <Box overflow="hidden" className="carousel-outer" onFocus={discoverCarousel.onFocus}>
+            <Box className="carousel-outer" onFocus={discoverCarousel.onFocus}>
               <ul
                 role="list"
                 aria-labelledby="discover-heading"
