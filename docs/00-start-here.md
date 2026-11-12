@@ -87,6 +87,7 @@ sources:
 # clock reset 2026-11-12: ADR-027/030 amendments change component-page rendering (anatomy callouts, Usage variant sections); this page describes no page layout, still accurate
 # clock reset 2026-11-12: ADR-023 amendment (parts written in reading order, Root owns visual order; CardVertical #159) and ADR-030 docs-tab prototypes; this page lists no individual ADRs or part rules, still accurate
 # clock reset 2026-11-12: ADR-006 amendment and layout-generation carousel a11y contract (#160); this page names neither the carousel nor its recipe, still accurate
+# clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
 ---
 # Start here
 

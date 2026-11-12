@@ -20,18 +20,19 @@ export type UseCarouselReturn = {
  * Manages offset-based carousel pagination state.
  *
  * The caller is responsible for the required DOM contract:
- * - Clip container: `overflow: hidden`, receives `onFocus`.
+ * - Clip container: `className="carousel-outer"` (global, `grid.css`), receives `onFocus`. The class clips on
+ *   tablet/desktop and scrolls natively on mobile; never add an inline `overflow` (Box's prop), it beats the mobile rule.
  * - Track: a `<ul role="list">` inside the clip, applying `transform: translateX(...)` from `offset`.
  * - Items: one `<li>` per card, direct children of the track.
  * - Arrows: `ButtonArrow` with an `aria-label` naming the carousel ("Previous saved courses").
  * - Live region: `<p aria-live="polite" className="visually-hidden">{announcement}</p>`.
  *
  * @example
- * <div style={{ overflow: 'hidden' }} onFocus={carousel.onFocus}>
+ * <Box className="carousel-outer" onFocus={carousel.onFocus}>
  *   <ul role="list" aria-labelledby="saved-heading" style={{ display: 'flex', transform: `translateX(calc(-${offset} * (${CARD_WIDTH}px + gap)))`, transition: 'transform 300ms ease' }}>
  *     {items.map((item) => <li key={item.id}>…</li>)}
  *   </ul>
- * </div>
+ * </Box>
  */
 export function useCarousel(itemCount: number, visibleCount: number): UseCarouselReturn {
   const maxOffset = Math.max(0, itemCount - visibleCount)

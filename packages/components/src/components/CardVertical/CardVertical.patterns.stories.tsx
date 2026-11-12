@@ -161,7 +161,7 @@ function Carousel() {
     <Box as="section" aria-labelledby="carousel-heading">
       <Stack gap="md">
         <Heading id="carousel-heading" as="h2" size="headline">Saved courses</Heading>
-        <Box overflow="hidden" onFocus={carousel.onFocus}>
+        <Box className="carousel-outer" onFocus={carousel.onFocus}>
           <Inline
             as="ul"
             role="list"

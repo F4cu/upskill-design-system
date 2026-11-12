@@ -16,7 +16,7 @@
       "case": "Using ScrollArea as the clip container for a JS transform-based carousel",
       "because": "ScrollArea sets overflow: auto — the scroll position will shift as the transform moves the track, producing broken behaviour.",
       "instead": null,
-      "note": "Use a Box with overflow hidden as the clip container for transform-based carousels, with useCarousel's onFocus on it so a focused card stays in view."
+      "note": "Use a Box with the carousel-outer class as the clip container for transform-based carousels, with useCarousel's onFocus on it so a focused card stays in view."
     }
   ],
   "variants": {

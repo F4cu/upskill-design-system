@@ -273,8 +273,8 @@ export default function CourseOverview() {
               </Heading>
             </Stack>
 
-            {/* Carousel — Box clips track; .carousel-outer switches to native scroll on mobile */}
-            <Box overflow="hidden" className="carousel-outer" onFocus={carousel.onFocus}>
+            {/* Carousel — .carousel-outer clips the track, and switches to native scroll on mobile */}
+            <Box className="carousel-outer" onFocus={carousel.onFocus}>
               <ul
                 role="list"
                 aria-labelledby="recommended-heading"

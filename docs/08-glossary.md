@@ -54,6 +54,7 @@ sources:
 # clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 # rewritten 2026-11-11: Frozen snapshot entry lists figma-pattern-frames.json (ADR-023 amendment 2026-11-11)
 # clock reset 2026-11-11: /layout-generation's final step names the limits-driven composition check and the grammar table points at the fixed set instead of a count; nothing here described either, still accurate
+# clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
 ---
 # Glossary
 
