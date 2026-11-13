@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-10T17:41:08.201Z",
+  "generatedAt": "2026-11-13T08:58:40.862Z",
   "components": [
     {
       "name": "Accordion",
@@ -389,6 +389,19 @@
           "done": true
         }
       ]
+    },
+    {
+      "name": "Dialog",
+      "type": "interactive",
+      "maturity": "beta",
+      "implementation": "in progress",
+      "substate": "unreviewed",
+      "signedOff": false,
+      "reviewedAt": null,
+      "reviewPath": null,
+      "learningsBackfilled": false,
+      "visualReview": null,
+      "checklist": null
     },
     {
       "name": "Divider",
