@@ -1065,6 +1065,10 @@
     "2750": {
       "$type": "number",
       "$value": 220
+    },
+    "6400": {
+      "$type": "number",
+      "$value": 512
     }
   },
   "font": {

@@ -1,0 +1,78 @@
+{
+  "component": {
+    "name": "Dialog",
+    "type": "interactive",
+    "status": "beta",
+    "description": "A titled panel that takes focus: modal over an inert page, or non-modal in the page flow. Focus returns to its trigger on close."
+  },
+  "useWhen": [
+    "Asking the user to confirm an action before it happens, especially a destructive one.",
+    "A short task the user must finish or cancel before returning to the page, such as editing one record.",
+    "Showing details of a selected item next to the content it came from, without leaving the page (nonModal)."
+  ],
+  "notFor": [
+    {
+      "case": "Showing the result of an action, such as a saved confirmation",
+      "because": "Taking focus to report a result interrupts the user for something they don't need to act on.",
+      "instead": null,
+      "note": "Use Alert (Phase 5e, ADR-031) once it ships."
+    },
+    {
+      "case": "Choosing one of a few actions on an item",
+      "because": "A list of actions is a menu: it opens from its trigger and closes on select.",
+      "instead": "DropdownMenu"
+    },
+    {
+      "case": "Revealing more detail inside a list of sections",
+      "because": "Detail that belongs to its section reads best in place.",
+      "instead": "Accordion"
+    }
+  ],
+  "composition": {
+    "accepts": ["Text", "Stack", "Inline", "TextField", "Select", "Checkbox", "Button", "TextLink", "Image", "Badge"],
+    "containedBy": ["Box", "Stack", "Inline"],
+    "width": "fixed",
+    "nests": false,
+    "patterns": [
+      {
+        "name": "confirm-action",
+        "useWhen": "Confirming an action: title, consequence, Cancel and a confirm button; Cancel gets data-autofocus when the action is destructive."
+      },
+      {
+        "name": "edit-form",
+        "useWhen": "Editing a few fields of one record without leaving the page: fields in Body, Cancel and Save in actions."
+      },
+      {
+        "name": "detail-panel",
+        "useWhen": "A non-modal panel beside the content it describes, opened from a selected item and showing that item's details."
+      }
+    ],
+    "donts": [
+      {
+        "case": "Putting React's autoFocus on a child to choose the first focused element",
+        "because": "React focuses it at mount, before the dialog opens, so the call is lost and Dialog focuses its title instead.",
+        "instead": "Put data-autofocus on the child Dialog should focus when it opens."
+      },
+      {
+        "case": "Opening a modal Dialog from inside another modal Dialog",
+        "because": "Stacked modals leave users unsure which one Escape closes and where focus returns.",
+        "instead": "Replace the open dialog's content, or close it before opening the next one."
+      },
+      {
+        "case": "Placing the dialog's main buttons in children",
+        "because": "Actions keeps them in the footer, right-aligned and visible while Body scrolls.",
+        "instead": "Pass the buttons through actions."
+      },
+      {
+        "case": "Body text in the default text colour, or at a size other than body-default",
+        "because": "Dialog body text reads slightly muted under the title, at the system's standard reading size.",
+        "instead": "Use Text color=\"subtle\" at its default size for paragraphs in children."
+      },
+      {
+        "case": "More than one accent Button in actions",
+        "because": "The accent button marks the one action the dialog exists for (ADR-024).",
+        "instead": "Use one accent (or danger) Button for the confirm action and neutral for the rest."
+      }
+    ]
+  }
+}

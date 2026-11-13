@@ -1,7 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [],
-  "generatedFrom": "b48043d538006b98e3525dedddf7113bf126b77e",
+  "generatedFrom": "89294299775c7bd3364cdaf32a7abd389e540c53",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -589,6 +589,47 @@
             "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
             "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
             "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-describedby": "{description ? descriptionId : undefined}",
+              "aria-labelledby": "{titleId}",
+              "element": "dialog"
+            },
+            {
+              "aria-label": "Close",
+              "element": "Button"
+            }
+          ],
+          "changeCallback": "onOpenChange",
+          "component": "Dialog",
+          "composition": [
+            "Button",
+            "Heading",
+            "Inline",
+            "Text"
+          ],
+          "idsFromUseId": [
+            "descriptionId",
+            "titleId"
+          ],
+          "maturity": "beta",
+          "stage": null,
+          "state": {
+            "controlled": "always",
+            "props": [
+              "open",
+              "onOpenChange"
+            ]
+          },
+          "systemSpecificNotes": [
+            "Built on the native <dialog>. Modal (default): showModal() makes everything outside the dialog inert, which keeps keyboard, pointer and screen-reader focus inside; the browser sets aria-modal. Focus on open: the first [data-autofocus] descendant, otherwise Title (tabIndex -1). Focus on close: back to the element focused before opening, only when it is still connected and focus is still inside the dialog or on the body, so a consumer can move focus elsewhere in onOpenChange. Inertness and the top layer are browser behaviour that jsdom does not emulate: the a11y test covers focus, naming and Escape; inertness is checked in the browser at the visual checkpoint.",
+            "aria-labelledby (Root → Title id)",
+            "aria-describedby (Root → Description id, when description is set)",
+            "aria-modal (set by the browser for showModal())",
+            "aria-label=\"Close\" on the icon-only Close button"
           ]
         },
         {

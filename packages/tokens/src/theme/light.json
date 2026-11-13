@@ -154,6 +154,10 @@
           "$type": "color",
           "$value": "{color.black.alpha.6}"
         }
+      },
+      "scrim": {
+        "$type": "color",
+        "$value": "{color.black.alpha.7}"
       }
     },
     "text": {

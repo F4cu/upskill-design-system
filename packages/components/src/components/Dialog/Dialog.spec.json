@@ -1,0 +1,357 @@
+{
+  "component": "Dialog",
+  "anatomy": [
+    {
+      "name": "Root",
+      "element": "dialog",
+      "role": "dialog",
+      "notes": "Native <dialog>. Opened with showModal() (modal) or show() (nonModal) when open turns true; closed with close(). Named by Title (aria-labelledby), described by Description when set (aria-describedby). The surface itself: no inner wrapper.",
+      "required": true
+    },
+    {
+      "name": "Backdrop",
+      "parent": "Root",
+      "element": "::backdrop",
+      "role": "presentation",
+      "required": false,
+      "when": "nonModal is false",
+      "notRendered": "A pseudo-element of the modal dialog: it has no DOM node to carry data-part."
+    },
+    {
+      "name": "Header",
+      "parent": "Root",
+      "element": "Inline",
+      "builtOn": "Inline",
+      "builtOnProps": {
+        "justify": "space-between",
+        "align": "start",
+        "gap": "md",
+        "wrap": false
+      },
+      "role": "generic",
+      "required": true
+    },
+    {
+      "name": "Title",
+      "parent": "Header",
+      "element": "Heading",
+      "builtOn": "Heading",
+      "builtOnProps": {
+        "as": {
+          "from": "headingLevel",
+          "map": { "3": "h3", "4": "h4", "5": "h5", "6": "h6" },
+          "otherwise": "h2"
+        },
+        "size": "subheader"
+      },
+      "role": "heading",
+      "notes": "tabIndex -1: the default focus target on open, never a Tab stop.",
+      "required": true
+    },
+    {
+      "name": "Close",
+      "parent": "Header",
+      "element": "Button",
+      "builtOn": "Button",
+      "builtOnProps": {
+        "variant": "transparent",
+        "size": "sm",
+        "shape": "round",
+        "icon": "x",
+        "aria-label": "Close"
+      },
+      "role": "button",
+      "action": "Calls onOpenChange(false).",
+      "required": true
+    },
+    {
+      "name": "Description",
+      "parent": "Root",
+      "element": "Text",
+      "builtOn": "Text",
+      "builtOnProps": {
+        "size": "body-small",
+        "color": "subtle"
+      },
+      "role": "paragraph",
+      "when": "description is set",
+      "required": false
+    },
+    {
+      "name": "Body",
+      "parent": "Root",
+      "element": "div",
+      "role": "generic",
+      "notes": "Scrolls on its own when the content is taller than the viewport, so Header and Actions stay in view.",
+      "when": "children is set",
+      "required": false
+    },
+    {
+      "name": "Actions",
+      "parent": "Root",
+      "element": "Inline",
+      "builtOn": "Inline",
+      "builtOnProps": {
+        "justify": "end",
+        "gap": "sm"
+      },
+      "role": "generic",
+      "notes": "Sits space.stack.lg below the part above it, more than the space.stack.md between the other parts, so the actions read as a separate group.",
+      "when": "actions is set",
+      "required": false
+    }
+  ],
+  "anatomyExamples": [
+    { "pattern": "confirm-action", "mark": ["Root", "Header", "Title", "Close", "Description", "Actions"] },
+    { "pattern": "detail-panel", "mark": ["Body"] }
+  ],
+  "props": {
+    "open": {
+      "kind": "controlledState",
+      "type": "boolean",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": { "surface": "code-only", "note": "Figma draws the open dialog only." }
+    },
+    "onOpenChange": {
+      "kind": "controlledState",
+      "type": "(open: boolean) => void",
+      "default": null,
+      "concept": "Controlled state",
+      "figma": { "surface": "code-only" }
+    },
+    "title": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "property": "Title" }
+    },
+    "description": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "property": "Description", "note": "Paired with Has description (default false)." }
+    },
+    "children": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "property": "Children", "note": "Native slot." }
+    },
+    "actions": {
+      "kind": "content",
+      "type": "ReactNode",
+      "default": null,
+      "concept": "Content",
+      "figma": { "surface": "both", "property": "Actions", "note": "Native slot, paired with Has actions (default false); preferred instances Button, TextLink." }
+    },
+    "headingLevel": {
+      "kind": "content",
+      "type": "2 | 3 | 4 | 5 | 6",
+      "default": 2,
+      "concept": "Inner heading",
+      "figma": { "surface": "code-only" }
+    },
+    "nonModal": {
+      "kind": "content",
+      "type": "boolean",
+      "default": false,
+      "concept": "Boolean",
+      "figma": { "surface": "code-only", "note": "Placement, not appearance: Figma draws the modal dialog." }
+    },
+    "className": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": { "surface": "code-only" }
+    },
+    "id": {
+      "kind": "native",
+      "type": "string",
+      "default": null,
+      "concept": "native",
+      "figma": { "surface": "code-only" }
+    }
+  },
+  "constraints": [
+    {
+      "id": "open-needs-handler",
+      "if": { "open": "*" },
+      "require": ["onOpenChange"],
+      "reason": "Dialog is controlled only. Without onOpenChange, Escape and the Close button cannot close it.",
+      "enforcedBy": ["type"]
+    }
+  ],
+  "states": [
+    { "name": "closed", "kind": "appData", "trigger": "open false" },
+    { "name": "open", "kind": "appData", "trigger": "open true", "notes": "showModal() or show(); focus moves in." },
+    { "name": "nonModal", "kind": "appData", "trigger": "nonModal true", "notes": "Opened with show(): sits in the page flow, no Backdrop, the page stays interactive." },
+    { "name": "with-description", "kind": "content", "trigger": "description set" },
+    { "name": "with-actions", "kind": "content", "trigger": "actions set" }
+  ],
+  "accessibility": {
+    "role": "dialog",
+    "notes": "Built on the native <dialog>. Modal (default): showModal() makes everything outside the dialog inert, which keeps keyboard, pointer and screen-reader focus inside; the browser sets aria-modal. Focus on open: the first [data-autofocus] descendant, otherwise Title (tabIndex -1). Focus on close: back to the element focused before opening, only when it is still connected and focus is still inside the dialog or on the body, so a consumer can move focus elsewhere in onOpenChange. Inertness and the top layer are browser behaviour that jsdom does not emulate: the a11y test covers focus, naming and Escape; inertness is checked in the browser at the visual checkpoint.",
+    "ariaAttributes": [
+      "aria-labelledby (Root → Title id)",
+      "aria-describedby (Root → Description id, when description is set)",
+      "aria-modal (set by the browser for showModal())",
+      "aria-label=\"Close\" on the icon-only Close button"
+    ],
+    "keyboardInteractions": [
+      { "key": "Escape", "action": "Calls onOpenChange(false). Modal: through the native cancel event, whose default is prevented so the open prop stays the source of truth. Non-modal: through keydown on the dialog." },
+      { "key": "Tab", "action": "Moves through the dialog's focusable elements. Modal: past the last one focus goes to the browser's own controls, then back to the first; the page behind is inert. Non-modal: continues into the page." },
+      { "key": "Shift+Tab", "action": "The reverse of Tab." }
+    ]
+  },
+  "styles": {
+    "Root": [
+      {
+        "when": {},
+        "set": {
+          "box-sizing": { "literal": "border-box", "reason": "Padding and border count inside the width token." },
+          "width": "size.dialog.max",
+          "max-width": { "template": "calc(100% - 2 * {space.inset.md})" },
+          "max-height": { "template": "calc(100% - 2 * {space.inset.md})" },
+          "padding": "space.inset.lg",
+          "gap": "space.stack.md",
+          "background": "color.background.container.elevated",
+          "color": "color.text.default",
+          "border-width": { "literal": "1px", "reason": "No border-width token scale exists (#154); every module uses a literal width." },
+          "border-style": { "literal": "solid", "reason": "Single border style." },
+          "border-color": "color.border.subtle",
+          "border-radius": "border-radius.md",
+          "box-shadow": { "template": "0 2px 8px {color.background.overlay.subtle}" }
+        }
+      },
+      {
+        "when": { "state": "open" },
+        "set": {
+          "display": { "literal": "flex", "reason": "Stacks Header, Description, Body and Actions with the gap token; the native closed dialog stays display:none." },
+          "flex-direction": { "literal": "column", "reason": "Vertical stack." }
+        }
+      },
+      {
+        "when": { "nonModal": "true" },
+        "set": {
+          "position": { "literal": "static", "reason": "Overrides the native absolute positioning so the non-modal dialog takes its place in the page flow." },
+          "margin": { "literal": "0", "reason": "Overrides the native auto margins that centre a dialog." },
+          "max-width": { "literal": "100%", "reason": "Fits its container in the page flow." }
+        }
+      }
+    ],
+    "Backdrop": [
+      {
+        "when": {},
+        "set": {
+          "background": "color.background.scrim"
+        }
+      }
+    ],
+    "Actions": [
+      {
+        "when": {},
+        "set": {
+          "padding-top": { "template": "calc({space.stack.lg} - {space.stack.md})" }
+        }
+      }
+    ],
+    "Body": [
+      {
+        "when": {},
+        "set": {
+          "min-height": { "literal": "0", "reason": "Lets the flex child shrink so it scrolls instead of overflowing the dialog." },
+          "overflow-y": { "literal": "auto", "reason": "Long content scrolls inside Body; Header and Actions stay visible." },
+          "overscroll-behavior": { "literal": "contain", "reason": "Scrolling past the end of Body doesn't scroll the page behind the dialog." }
+        }
+      }
+    ]
+  },
+  "figma": {
+    "sets": [],
+    "divergences": []
+  },
+  "decisions": [
+    {
+      "decision": "The props type omits role, aria-modal, aria-label, aria-labelledby, aria-describedby, title, open, onCancel and onClose from the native <dialog> attributes; passing one is a type error (@ts-expect-error cases in the a11y test).",
+      "reason": "Dialog sets its own role and name (from title) and owns the cancel and close events that keep the open prop in sync with the element."
+    },
+    {
+      "decision": "Built on the native <dialog> with showModal()/show(), not a div with a JavaScript focus trap.",
+      "reason": "showModal() gives an inert background (keyboard, pointer and screen reader), Escape as a cancel event and the top layer (no z-index token needed). Every major browser has supported showModal() since 2022 and inert since 2023."
+    },
+    {
+      "decision": "Focus containment comes from showModal() inertness, not a wrap-around trap. Tab past the last element may reach the browser's own controls before returning to the first.",
+      "reason": "WCAG requires that focus not land on obscured content (2.4.3, 2.4.11) and forbids keyboard traps (2.1.2); inertness meets both. APG's wrap-around guidance was written for div-based dialogs. Reviewers should not flag the missing wrap."
+    },
+    {
+      "decision": "Initial focus: the first [data-autofocus] descendant, otherwise Title (tabIndex -1).",
+      "reason": "React 18 never writes autoFocus into the DOM: it calls focus() at mount, before Dialog's effect opens the dialog, so the call is lost and the native focusing steps find no autofocus attribute. The marker lets consumers choose (Cancel in a destructive confirm, per APG). Title as the default announces the dialog's name and description and keeps Enter from closing it, which focusing Close first would do."
+    },
+    {
+      "decision": "Focus returns to the element focused before opening, only when that element is still connected and focus is still in the dialog or on the body. When that element is gone, focus left inside the closed dialog is blurred to the body.",
+      "reason": "A menu item that opened the dialog is gone by the time it closes (DropdownMenu closes on select). The condition lets the consumer move focus in onOpenChange(false) (for example to the menu button) without Dialog taking it back."
+    },
+    {
+      "decision": "Modal Escape is handled through the cancel event with preventDefault; non-modal Escape through keydown. A close event calls onOpenChange(false) only when the open prop is true and the element is closed at the time the event arrives.",
+      "reason": "Keeps the open prop the single source of truth. Browsers may close a modal dialog on a repeated Escape even when cancel is prevented (close-request anti-abuse); the close listener resyncs the prop when that happens. close is queued as a task, so one fired by the effect cleanup can arrive after the effect reopened the dialog (StrictMode, Fast Refresh, toggling nonModal while open); checking the element's own open state ignores it."
+    },
+    {
+      "decision": "Title shows the global :focus-visible ring (ADR-028) when it receives initial focus after a keyboard-initiated open; a mouse-initiated open shows no ring. The screenshot baseline shows the ring on purpose (headless capture has no prior interaction).",
+      "reason": "A keyboard user needs to see where focus landed. ADR-028 forbids replacing the ring, and Title is not a menu item, the only exception."
+    },
+    {
+      "decision": "Body is not made focusable when it overflows. Keyboard scrolling of a Body that holds only static text relies on the browser making scroll containers focusable (Chrome 130+, Firefox); Safari does not, which is a known limitation.",
+      "reason": "Adding tabIndex and a region role to every overflowing Body adds a Tab stop and a landmark to every long dialog, for one engine. Revisit if Safari users report it or axe's scrollable-region-focusable flags a real page."
+    },
+    {
+      "decision": "The Backdrop colour reads a CSS custom property inside ::backdrop.",
+      "reason": "::backdrop inherits from its dialog in current browsers (Chrome 122, Firefox 120, Safari 17.4). Older engines fall back to the browser's default backdrop, which is still a scrim."
+    },
+    {
+      "decision": "The shadow reuses Card elevated's 0 2px 8px {color.background.overlay.subtle}.",
+      "reason": "No shadow token scale exists; one elevated shadow keeps Card and Dialog consistent until one does."
+    }
+  ],
+  "ruledOut": [
+    {
+      "option": "A JavaScript focus trap (trapFocus / disableEnforceFocus props)",
+      "reason": "showModal() inertness already contains focus, for screen readers too, with no trap code to maintain.",
+      "source": "Radix FocusScope, MUI Modal, focus-trap"
+    },
+    {
+      "option": "initialFocus / returnFocus ref props",
+      "reason": "No component forwards a ref (#114), so a ref prop would only work on raw elements. data-autofocus and the conditional return cover the known cases.",
+      "source": "Headless UI, Radix onOpenAutoFocus / onCloseAutoFocus"
+    },
+    {
+      "option": "Focusing the <dialog> element itself on open",
+      "reason": "The global :focus-visible ring would outline the whole panel, and removing it needs an ADR-028 exception. Title takes the same role with a small ring.",
+      "source": "API proposal review"
+    },
+    {
+      "option": "A modal prop defaulting to true",
+      "reason": "ADR-026 booleans default to false, so the flag names the less common case (nonModal). modal=true would need a vocabulary waiver like Inline's wrap.",
+      "source": "API proposal review"
+    },
+    {
+      "option": "Closing on a backdrop click",
+      "reason": "A stray click would discard a half-filled form. Escape and Close are enough until a consumer needs light dismiss.",
+      "source": "API proposal review"
+    },
+    {
+      "option": "Locking page scroll while the modal is open",
+      "reason": "It needs a global style or an inline style on <html>, which component modules can't own. Body uses overscroll-behavior: contain instead.",
+      "source": "API proposal review"
+    },
+    {
+      "option": "A size variant axis",
+      "reason": "One width (size.dialog.max) serves both known consumers; add an axis when a page needs a second width.",
+      "source": "API proposal review"
+    }
+  ]
+}

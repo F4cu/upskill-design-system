@@ -17,6 +17,7 @@ const allIcons: IconName[] = [
   'search',
   'plus',
   'minus',
+  'x',
   'heart',
   'menu',
   'more-vertical',

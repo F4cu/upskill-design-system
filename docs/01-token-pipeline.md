@@ -26,6 +26,7 @@ sources:
 # clock reset 2026-10-09: dark icon.feedback.warning moves from amber.7 to amber.dark.9 (scale-mix fix); pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-10: theme gains button.{accent,neutral,transparent,danger}.active and background.overlay.active (ADR-025 amendment); pipeline mechanics unchanged, still accurate
 # clock reset 2026-10-10: theme gains background.on-media.active (ADR-025 Tier 2 amendment); pipeline mechanics unchanged, still accurate
+# clock reset 2026-11-13: Dialog (#171) adds primitive size.6400, device alias size.dialog.max and theme background.scrim (black alpha); follows the existing size-alias and alpha-overlay patterns, pipeline mechanics unchanged, still accurate
 ---
 # Token pipeline
 

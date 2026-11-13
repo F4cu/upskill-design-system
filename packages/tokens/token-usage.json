@@ -22,13 +22,15 @@
       "packages/components/src/components/Button/Button.module.css",
       "packages/components/src/components/Card/Card.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
     "--ds-color-background-container-elevated": [
       "packages/components/src/components/Accordion/Accordion.module.css",
       "packages/components/src/components/Box/Box.module.css",
-      "packages/components/src/components/Card/Card.module.css"
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css"
     ],
     "--ds-color-background-overlay-hover": [
       "packages/components/src/components/Accordion/Accordion.module.css",
@@ -75,6 +77,7 @@
       "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
       "packages/components/src/components/Checkbox/Checkbox.module.css",
       "packages/components/src/components/Chip/Chip.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
       "packages/components/src/components/Select/Select.module.css",
@@ -216,7 +219,8 @@
     "--ds-space-inset-lg": [
       "packages/components/src/components/Box/Box.module.css",
       "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/Card/Card.module.css"
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css"
     ],
     "--ds-space-inset-xl": [
       "packages/components/src/components/Box/Box.module.css"
@@ -352,13 +356,16 @@
     ],
     "--ds-border-radius-md": [
       "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/VideoFrame/VideoFrame.module.css"
     ],
     "--ds-color-border-subtle": [
-      "packages/components/src/components/Card/Card.module.css"
+      "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css"
     ],
     "--ds-color-background-overlay-subtle": [
       "packages/components/src/components/Card/Card.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/Inline/Inline.stories.module.css",
       "packages/components/src/components/ProgressBar/ProgressBar.module.css",
       "packages/components/src/components/Stack/Stack.stories.module.css"
@@ -458,6 +465,20 @@
     "--ds-color-text-selected": [
       "packages/components/src/components/Chip/Chip.module.css"
     ],
+    "--ds-size-dialog-max": [
+      "packages/components/src/components/Dialog/Dialog.module.css"
+    ],
+    "--ds-space-stack-md": [
+      "packages/components/src/components/Dialog/Dialog.module.css",
+      "packages/components/src/components/Stack/Stack.module.css"
+    ],
+    "--ds-color-background-scrim": [
+      "packages/components/src/components/Dialog/Dialog.module.css"
+    ],
+    "--ds-space-stack-lg": [
+      "packages/components/src/components/Dialog/Dialog.module.css",
+      "packages/components/src/components/Stack/Stack.module.css"
+    ],
     "--ds-font-size-headline": [
       "packages/components/src/components/Heading/Heading.module.css"
     ],
@@ -507,12 +528,6 @@
     "--ds-color-text-feedback-error": [
       "packages/components/src/components/Select/Select.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
-    ],
-    "--ds-space-stack-md": [
-      "packages/components/src/components/Stack/Stack.module.css"
-    ],
-    "--ds-space-stack-lg": [
-      "packages/components/src/components/Stack/Stack.module.css"
     ],
     "--ds-space-stack-xl": [
       "packages/components/src/components/Stack/Stack.module.css"
@@ -657,6 +672,10 @@
       "packages/tokens/src/theme/dark.json",
       "packages/tokens/src/theme/light.json"
     ],
+    "color.black.alpha.9": [
+      "packages/tokens/src/theme/dark.json",
+      "packages/tokens/src/theme/light.json"
+    ],
     "color.neutral.dark.12": [
       "packages/tokens/src/theme/dark.json"
     ],
@@ -727,10 +746,6 @@
     "color.amber.dark.9": [
       "packages/tokens/src/theme/dark.json"
     ],
-    "color.black.alpha.9": [
-      "packages/tokens/src/theme/dark.json",
-      "packages/tokens/src/theme/light.json"
-    ],
     "color.black.alpha.3": [
       "packages/tokens/src/theme/light.json"
     ],
@@ -777,6 +792,9 @@
       "packages/tokens/src/theme/light.json"
     ],
     "color.terracotta.6": [
+      "packages/tokens/src/theme/light.json"
+    ],
+    "color.black.alpha.7": [
       "packages/tokens/src/theme/light.json"
     ],
     "color.neutral.12": [
@@ -938,6 +956,9 @@
       "packages/tokens/src/device/desktop.json"
     ],
     "size.2750": [
+      "packages/tokens/src/device/desktop.json"
+    ],
+    "size.6400": [
       "packages/tokens/src/device/desktop.json"
     ],
     "font.size.5": [
