@@ -26,5 +26,17 @@ export type AccessibilityEntry = {
   // One or two sentences in place of the key-by-key table. The image shows
   // the focus ring on the element `focusTarget` selects (the first focusable
   // element when omitted).
-  keyboard: AccessibilityFigure & { advice: string; focusTarget?: string }
+  // With `order`, every Tab stop in the sample gets a badge with its position
+  // in focus (DOM) order, and a table lists what each one announces.
+  // `ringOn` returns the element that draws a stop's focus ring when it isn't
+  // the stop itself (CardVertical's link rings the thumbnail); the badge and
+  // the forced ring go there.
+  keyboard: AccessibilityFigure & {
+    advice: string
+    focusTarget?: string
+    order?: boolean
+    // Table rows to keep when the sample repeats (the first card's stops).
+    tableRows?: number
+    ringOn?: (stop: Element) => Element | null
+  }
 }

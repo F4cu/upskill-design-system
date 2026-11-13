@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { computeAccessibleName, getRole } from 'dom-accessibility-api'
 import '../../../../packages/components/src/styles/tokens.css'
 import type { AccessibilityEntry } from '../accessibility/types'
-import { BOTTOM, GAP, H, OUTSET, PAD, badgeW, bottomLayout, gutterFor, sideLayout } from './AnatomyOverlay'
+import { BOTTOM, GAP, H, OUTSET, PAD, badgeW, bottomLayout, gutterFor, place, sideLayout } from './AnatomyOverlay'
 import type { Callout } from './AnatomyOverlay'
 
 // Accessibility tab figures (prototype). `names` labels the labeling sample's
@@ -14,7 +14,7 @@ import type { Callout } from './AnatomyOverlay'
 const files = import.meta.glob<{ accessibility: AccessibilityEntry }>('../accessibility/*.tsx', { eager: true })
 
 const FOCUSABLE = 'button:not(:disabled), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-const ATTRS = ['role', 'aria-label', 'aria-labelledby', 'aria-describedby', 'aria-pressed', 'aria-expanded', 'aria-haspopup', 'aria-current', 'aria-valuenow', 'alt', 'disabled']
+const ATTRS = ['href', 'role','aria-label', 'aria-labelledby', 'aria-describedby', 'aria-pressed', 'aria-expanded', 'aria-haspopup', 'aria-current', 'aria-valuenow', 'alt', 'disabled']
 const ROLE_TEXT: Record<string, string> = { progressbar: 'progress bar', img: 'image' }
 
 // An id reads as the variable the source would pass, named after the part
@@ -202,19 +202,107 @@ function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
   )
 }
 
+// Focus order: badges sit in one row above the sample, in focus order, joined
+// by a dashed line; each drops a hairline leader, like the Spec anatomy's, to
+// the top of the element that draws the stop's ring.
+type Stop = { badge: string; w: number; bx: number; tx: number; ty: number }
+const ROW = BOTTOM / 2
+
+function orderLayout(rings: Element[], origin: DOMRect): Stop[] {
+  const items = rings.map((ring, i) => {
+    const r = ring.getBoundingClientRect()
+    const x = r.left - origin.left
+    const badge = ordinal(i + 1)
+    const w = badgeW(badge)
+    return { badge, w, ty: r.top - origin.top, slot: { pref: x + r.width / 2, lo: x + 4, hi: x + r.width - 4, size: w } }
+  })
+  const { pos } = place(items.map((i) => i.slot))
+  return items.map(({ badge, w, ty }, i) => ({ badge, w, bx: pos[i], tx: pos[i], ty }))
+}
+
 function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
+  const { keyboard } = entry
   const stage = useRef<HTMLDivElement>(null)
+  const [stops, setStops] = useState<Stop[]>([])
+  const [rows, setRows] = useState<Row[]>([])
+
   useLayoutEffect(() => {
-    stage.current?.querySelector(entry.keyboard.focusTarget ?? FOCUSABLE)?.classList.add('is-focus-demo')
-  }, [entry])
+    const el = stage.current!
+    const target = el.querySelector(keyboard.focusTarget ?? FOCUSABLE)
+    const demo = target ? (keyboard.ringOn?.(target) ?? target) : null
+    demo?.classList.add('is-focus-demo')
+    if (!keyboard.order) return () => demo?.classList.remove('is-focus-demo')
+
+    const measure = () => {
+      // The SVG covers the padded stage, not the sample, so measure from there.
+      const origin = el.parentElement!.getBoundingClientRect()
+      const found = [...el.querySelectorAll(FOCUSABLE)]
+      const next = orderLayout(found.map((stop) => keyboard.ringOn?.(stop) ?? stop), origin)
+      setStops((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
+      const nextRows = found.slice(0, keyboard.tableRows).map((stop, i) => ({ label: ordinal(i + 1), code: markup(stop), says: announce(stop) }))
+      setRows((prev) => (JSON.stringify(prev) === JSON.stringify(nextRows) ? prev : nextRows))
+    }
+    measure()
+    let live = true
+    document.fonts.ready.then(() => live && measure())
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => {
+      live = false
+      observer.disconnect()
+      demo?.classList.remove('is-focus-demo')
+    }
+  }, [keyboard])
+
   return (
     <figure className="a11y-figure">
       <div className="a11y-canvas">
-        <div ref={stage} className="ds-example" data-component={name}>
-          {entry.keyboard.render()}
+        <div className="a11y-stage" style={keyboard.order ? { paddingTop: BOTTOM } : undefined}>
+          {/* The sample's links point nowhere; keep a click from jumping the page. */}
+          <div
+            ref={stage}
+            className="ds-example"
+            data-component={name}
+            onClick={(e) => (e.target as Element).closest('a') && e.preventDefault()}
+          >
+            {keyboard.render()}
+          </div>
+          {stops.length > 0 && (
+            <svg className="anatomy-svg" aria-hidden="true">
+              <path className="a11y-order-path" d={`M${stops[0].bx} ${ROW}H${stops[stops.length - 1].bx}`} />
+              {stops.map((s) => (
+                <g key={s.badge}>
+                  <g className="anatomy-leader">
+                    <path d={`M${s.bx},${ROW + H / 2}V${s.ty}`} />
+                    <circle className="anatomy-dot" cx={s.tx} cy={s.ty} r={2} />
+                  </g>
+                  <rect className="anatomy-badge" x={s.bx - s.w / 2} y={ROW - H / 2} width={s.w} height={H} rx={H / 2} />
+                  <text x={s.bx} y={ROW}>{s.badge}</text>
+                </g>
+              ))}
+            </svg>
+          )}
         </div>
       </div>
-      <figcaption>{entry.keyboard.caption}</figcaption>
+      <figcaption>{keyboard.caption}</figcaption>
+      {rows.length > 0 && (
+        <div className="a11y-table-wrap">
+          <table className="a11y-table">
+            <thead>
+              <tr><th scope="col">Focus order</th><th scope="col">Code</th><th scope="col">Announcement</th></tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.label}>
+                  <th scope="row">{r.label}</th>
+                  <td><code>{r.code}</code></td>
+                  <td>{r.says}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </figure>
   )
 }

@@ -32,20 +32,19 @@ function useCardVertical(part: string) {
 export type CardVerticalRootProps = {
   size?: CardVerticalSize
   children: ReactNode
-} & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'children'>
+} & Omit<HTMLAttributes<HTMLElement>, 'role' | 'children'>
 
 function Root({ size = 'lg', className, children, ...rest }: CardVerticalRootProps) {
   const titleId = useId()
   return (
     <CardVerticalContext.Provider value={{ size, titleId }}>
-      <div
-        role="article"
+      <article
         data-part="Root"
         className={[styles.card, styles[size], className].filter(Boolean).join(' ')}
         {...rest}
       >
         {children}
-      </div>
+      </article>
     </CardVerticalContext.Provider>
   )
 }
@@ -256,7 +255,7 @@ export type CardVerticalProps = {
   size?: CardVerticalSize
   /** One `<CardVertical.Favorite />` or `<CardVertical.Menu />`, overlaid on the thumbnail. */
   action?: ReactElement<CardVerticalFavoriteProps> | ReactElement<CardVerticalMenuProps>
-} & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'children'>
+} & Omit<HTMLAttributes<HTMLElement>, 'role' | 'children'>
 
 function CardVerticalPreset({
   thumbnailSrc,

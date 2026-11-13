@@ -23,7 +23,7 @@ export type CardHorizontalProps = {
   author?: string
   duration?: string
   certified?: boolean
-} & CardHorizontalSurface & Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'children' | 'aria-labelledby'>
+} & CardHorizontalSurface & Omit<HTMLAttributes<HTMLElement>, 'role' | 'children' | 'aria-labelledby'>
 
 export function CardHorizontal({
   thumbnailSrc,
@@ -43,9 +43,8 @@ export function CardHorizontal({
   const metaColor = inverted ? 'inverted-subtle' : 'subtle'
 
   return (
-    <div
+    <article
       {...rest}
-      role="article"
       aria-labelledby={titleId}
       className={[styles.card, styles[variant], className].filter(Boolean).join(' ')}
     >
@@ -77,6 +76,6 @@ export function CardHorizontal({
           </Inline>
         )}
       </Stack>
-    </div>
+    </article>
   )
 }

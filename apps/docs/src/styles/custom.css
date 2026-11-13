@@ -452,7 +452,7 @@ main:has(.component-header) :not(pre) > code {
 }
 .a11y-canvas {
   display: flex;
-  justify-content: center;
+  justify-content: safe center;
   padding: 2rem 1.5rem;
   background: var(--ds-color-background-container-canvas);
   border: 1px solid var(--sl-color-hairline);
@@ -462,6 +462,14 @@ main:has(.component-header) :not(pre) > code {
 .ds-example .is-focus-demo {
   outline: var(--ds-size-focus-width) solid var(--ds-color-border-focus);
   outline-offset: var(--ds-size-focus-offset);
+}
+.a11y-stage {
+  position: relative;
+  width: max-content;
+}
+.anatomy-svg .a11y-order-path {
+  stroke-dasharray: 4 3;
+  shape-rendering: auto;
 }
 .a11y-table-wrap {
   max-width: 100%;

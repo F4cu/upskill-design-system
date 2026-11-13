@@ -61,8 +61,8 @@ const near = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi
 // its part: each item may move only within [lo, hi]. Items keep the order of
 // their preferred positions and are pushed apart by their sizes plus GAP, first
 // forward, then back; returns the positions and whether any still overlap.
-type Slot = { pref: number; lo: number; hi: number; size: number }
-function place(slots: Slot[]) {
+export type Slot = { pref: number; lo: number; hi: number; size: number }
+export function place(slots: Slot[]) {
   const pos = slots.map((s) => near(s.pref, s.lo, s.hi))
   const need = (i: number) => (slots[i - 1].size + slots[i].size) / 2 + GAP
   for (let i = 1; i < pos.length; i++) pos[i] = near(Math.max(pos[i], pos[i - 1] + need(i)), slots[i].lo, slots[i].hi)

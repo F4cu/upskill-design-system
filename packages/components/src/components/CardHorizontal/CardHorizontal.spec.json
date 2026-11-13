@@ -3,7 +3,7 @@
   "anatomy": [
     {
       "name": "Root",
-      "element": "div",
+      "element": "article",
       "notes": "aria-labelledby points at the Title; role, children and aria-labelledby are not overridable.",
       "role": "article",
       "required": true
@@ -321,7 +321,7 @@
   "accessibility": {
     "role": "article",
     "ariaAttributes": [
-      "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
+      "Root is a native <article>, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
       "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
       "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)",
       "TitleLink (href set): a plain <a> inside the heading, named by the title text; its stretched ::after makes the whole card a click target"
@@ -491,6 +491,10 @@
     "divergences": []
   },
   "decisions": [
+    {
+      "decision": "Root is a native <article>, not a div with role=article.",
+      "reason": "First rule of ARIA: use the native element when one carries the role. Same role and behaviour, simpler markup; role stays omitted from the props type."
+    },
     {
       "decision": "The inverted variant colors its text through Heading color=\"inverted\" and Text color=\"inverted-subtle\". Only the badge icon needs a CSS Module override (.inverted .badge svg).",
       "reason": "Heading and Text own their color through the color prop; a color rule on the card root bypasses the typography API."
