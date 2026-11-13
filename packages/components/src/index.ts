@@ -72,6 +72,8 @@ export type { ImageProps } from './components/Image'
 
 export { DropdownMenu } from './components/DropdownMenu'
 export type { DropdownMenuProps, DropdownMenuItem } from './components/DropdownMenu'
+export { Dialog } from './components/Dialog'
+export type { DialogProps } from './components/Dialog'
 
 export { Chip } from './components/Chip'
 export type { ChipProps } from './components/Chip'

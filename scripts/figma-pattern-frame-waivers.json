@@ -1,4 +1,17 @@
 {
   "$comment": "composition.patterns with no Figma example frame yet, checked by usage:validate against packages/components/figma-pattern-frames.json. A waiver fails once its frame exists or the pattern is gone; delete it then. Never waive to hide a frame that drifted: rename the frame or the pattern.",
-  "waivers": []
+  "waivers": [
+    {
+      "pattern": "confirm-action",
+      "reason": "Dialog (Phase 5e, ADR-031) is code-first and has no Figma component yet; build the Dialog set and Dialog examples section, then recapture."
+    },
+    {
+      "pattern": "edit-form",
+      "reason": "Dialog (Phase 5e, ADR-031) is code-first and has no Figma component yet; build the Dialog set and Dialog examples section, then recapture."
+    },
+    {
+      "pattern": "detail-panel",
+      "reason": "Dialog (Phase 5e, ADR-031) is code-first and has no Figma component yet; build the Dialog set and Dialog examples section, then recapture."
+    }
+  ]
 }

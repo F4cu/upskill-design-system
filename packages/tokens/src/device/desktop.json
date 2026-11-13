@@ -245,6 +245,12 @@
           "$value": "{size.2750}"
         }
       }
+    },
+    "dialog": {
+      "max": {
+        "$type": "number",
+        "$value": "{size.6400}"
+      }
     }
   }
 }
