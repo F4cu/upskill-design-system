@@ -3,7 +3,7 @@
   "anatomy": [
     {
       "name": "Root",
-      "element": "div",
+      "element": "article",
       "role": "article, unnamed: the Title heading is the first thing read inside it",
       "required": true,
       "notes": "Provides size and the title id to every part through context. Owns the gap between Media, Progress and Body, and their visual order: Media on top, then Progress, then Body, whatever their source order. Write Body first so the title leads the reading order."
@@ -478,7 +478,7 @@
   "accessibility": {
     "role": "article",
     "ariaAttributes": [
-      "role=article on Root, unnamed: the Title heading is read first inside it, so a name would repeat the title (Title still registers its id via context for the action buttons)",
+      "Root is a native <article>, unnamed: the Title heading is read first inside it, so a name would repeat the title (Title still registers its id via context for the action buttons)",
       "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
       "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
       "Menu trigger: aria-haspopup=menu, aria-expanded, aria-controls → the panel while open; accessible name 'More options <title>' via aria-labelledby=[self, title]. Panel is DropdownMenu listRole=menu, named by the same aria-labelledby. No trigger renders when items is empty.",
@@ -646,7 +646,8 @@
     { "decision": "In Figma, CardVertical mirrors the preset: Body and Meta are fixed layers, and a separate CardVertical.Root carries the open parts as native slots.", "reason": "Figma allows no component properties inside a native slot, so a slotted preset would lose its Title, Duration and Certified properties.", "adr": "ADR-023" },
     { "decision": "The DOM order is Body, Progress, Media; Root's CSS (`order`) draws Media on top. Parts compositions write Body first.", "reason": "A screen reader reaches the heading before the image, the Save button and the bar, and skimming by heading lands at the card's start (WCAG 1.3.2 Meaningful Sequence, 1.3.1; Inclusive Components, Cards). Root fixing the visual order keeps every composition pixel-identical to the preset.", "adr": "ADR-023" },
     { "decision": "Progress is named 'Completion', not by the title.", "reason": "It isn't focusable and comes after the heading, so a name that repeats the title only adds noise (MDN progressbar; axe aria-progressbar-name). Favorite and Menu keep the title: they are tab stops of their own, separate from the title link, and must be unique across cards." },
-    { "decision": "Root (role=article) is unnamed: the Title is not its aria-labelledby, and consumers don't name it through Root's native attributes.", "reason": "The heading is the first thing read inside the article, so a name only repeats the title; generic 'article' entries in screen-reader article lists cost less than that repeat on every card. Tests assert the article has no accessible name, not that given attributes are absent.", "adr": "ADR-023" },
+    { "decision": "Root is a native <article>, not a div with role=article.", "reason": "First rule of ARIA: use the native element when one carries the role. Same role and behaviour, simpler markup; role stays omitted from the props type." },
+    { "decision": "Root (<article>) is unnamed: the Title is not its aria-labelledby, and consumers don't name it through Root's native attributes.", "reason": "The heading is the first thing read inside the article, so a name only repeats the title; generic 'article' entries in screen-reader article lists cost less than that repeat on every card. Tests assert the article has no accessible name, not that given attributes are absent.", "adr": "ADR-023" },
     { "decision": "The card opens its course through an optional href on the preset and on Title: a stretched link, the <a> inside the heading with an ::after covering Root. Action sits above the overlay.", "reason": "The title gives the link its name, the heading stays a heading, and Favorite and Menu stay separate tab stops instead of interactive content nested in a link (Inclusive Components, Cards; WCAG 2.4.4). The cost is that the card's text can't be selected with the pointer, which a course card can afford.", "adr": "ADR-023" },
     { "decision": "Keyboard focus on the link shows as the focus ring on the thumbnail, plus the hover fade, not as a ring around the title text.", "reason": "The card has no border, so a ring around one line of text doesn't tell the user the whole card is the target; the thumbnail is the card's one clear edge. The ring keeps the ADR-028 tokens and contrast gate.", "adr": "ADR-028" },
     { "decision": "No router dependency: href is a plain string on a plain <a>.", "reason": "Same as AppHeader. Client-side routing intercepts the click at the app level." },
