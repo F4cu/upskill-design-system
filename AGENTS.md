@@ -35,6 +35,7 @@ Code lives in `packages/components/src/components/<Name>/` (`index.tsx`, `<Name>
 - Phase 5b: `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal`.
 - Phase 5c: `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow`, `ScrollArea`.
 - Phase 5d: `Accordion`, `Badge`, `Image`, `DropdownMenu`, `TextLink`; `Button` `transparent` variant (ghost, ADR-024); `useSlider` hook (no component).
+- Phase 5e (ADR-031): `Dialog`, `Table`, `Alert`, `Pagination`. Later additions only by amending ADR-031.
 - `Icon` wraps a small fixed set of inline SVGs (no icon library); glyphs use `currentColor` and size via `size.*` tokens.
 
 **Before proposing a new component file (ADR-009):** (1) same semantic role → prop/variant on the existing component; (2) different role despite similar shape → new component; (3) single parent, no other consumer → element internal to the parent's CSS Module. Visual similarity alone never justifies creating or merging components. Parts (`<Parent.Part>`) are not new components (ADR-023).
