@@ -10,6 +10,7 @@ const meta = {
   component: CardHorizontal,
   argTypes: {
     variant: { control: 'radio', options: ['default', 'inverted'] },
+    href: { control: 'text' },
     progress: { control: { type: 'range', min: 0, max: 100, step: 1 } },
   },
 } satisfies Meta<typeof CardHorizontal>
@@ -25,6 +26,41 @@ export const Default: Story = {
     certified: true,
     variant: 'default',
   },
+}
+
+export const Linked: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'With href the title is a link that covers the whole card. Hover fades the thumbnail; Tab focuses the link and draws the focus ring on the thumbnail.',
+      },
+    },
+  },
+  args: {
+    thumbnailSrc: THUMBNAIL,
+    title: 'Introduction to UX Design',
+    href: '#course',
+    duration: '3h 20m',
+    certified: true,
+    progress: 65,
+    variant: 'default',
+  },
+}
+
+export const LinkedInverted: Story = {
+  args: {
+    thumbnailSrc: THUMBNAIL,
+    title: 'Zen Mind, Beginner’s Mind',
+    href: '#course',
+    author: 'Shunryu Suzuki',
+    duration: '4 hours, 30min',
+    variant: 'inverted',
+  },
+  render: (args) => (
+    <Box background="inverted" padding="xl" maxWidth={480}>
+      <CardHorizontal {...args} />
+    </Box>
+  ),
 }
 
 export const WithProgress: Story = {

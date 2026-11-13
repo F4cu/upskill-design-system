@@ -129,6 +129,16 @@
       "notes": "Must come first in Body. headline-serif sets family, weight and line-height; the CSS Module overrides only the font size."
     },
     {
+      "name": "TitleLink",
+      "parent": "Title",
+      "element": "a",
+      "role": "link, named by the title text",
+      "action": "Navigates to href. Its ::after covers the whole card, so a click anywhere outside the Action opens the course.",
+      "required": false,
+      "when": "href is set (preset) or Title.href",
+      "notes": "Inside the heading, never around it. Root is its positioning context; Action sits above the overlay."
+    },
+    {
       "name": "Meta",
       "parent": "Body",
       "element": "Inline",
@@ -207,7 +217,8 @@
     {"pattern": "favorite-saved", "mark": ["Root", "Media", "Action", "Progress", "Title", "Meta"]},
     {"props": {"title": "Creative Acts for Curious People", "duration": "12 Hours", "certified": true, "progress": 100}, "focus": "Meta", "mark": ["Duration", "Certified", "Completed"]},
     {"pattern": "favorite-saved", "focus": "Action", "mark": ["Favorite"]},
-    {"pattern": "overflow-menu", "focus": "Action", "mark": ["Menu"]}
+    {"pattern": "overflow-menu", "focus": "Action", "mark": ["Menu"]},
+    {"props": {"title": "Creative Acts for Curious People", "href": "#course", "duration": "12 Hours"}, "focus": "Title", "mark": ["TitleLink"]}
   ],
   "props": {
     "thumbnailSrc": {
@@ -230,6 +241,13 @@
       "default": null,
       "concept": "Content",
       "figma": { "surface": "both", "property": "Title", "note": "Text layer in the preset, not a CardVertical.Title instance (ADR-023 amendment 2026-10-06)." }
+    },
+    "href": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Link",
+      "figma": { "surface": "code-only", "note": "Navigation has no Figma property; the hover and focus previews stand in for it." }
     },
     "duration": {
       "kind": "content",
@@ -367,6 +385,13 @@
       "concept": "Element",
       "figma": { "surface": "code-only" }
     },
+    "Title.href": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Link",
+      "figma": { "surface": "code-only" }
+    },
     "Title.children": {
       "kind": "content",
       "type": "ReactNode",
@@ -403,9 +428,15 @@
     {
       "name": "hover",
       "kind": "interaction",
-      "trigger": "Root:hover",
+      "trigger": ":hover on TitleLink (its overlay covers the card)",
       "figma": "State=Hover",
-      "notes": "Card-level: hovering anywhere on the card fades the thumbnail."
+      "notes": "Only a linked card fades its thumbnail on hover: a card that doesn't open anything gives no hover cue. Hovering the Action doesn't fade it either, since the Action sits above the link."
+    },
+    {
+      "name": "focus-visible",
+      "kind": "interaction",
+      "trigger": ":focus-visible on TitleLink",
+      "notes": "The focus ring is drawn on the Thumbnail, not around the title text, and the thumbnail fades as on hover (ADR-028 amendment 2026-11-13)."
     },
     {
       "name": "action-hover",
@@ -451,12 +482,17 @@
       "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
       "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
       "Menu trigger: aria-haspopup=menu, aria-expanded, aria-controls → the panel while open; accessible name 'More options <title>' via aria-labelledby=[self, title]. Panel is DropdownMenu listRole=menu, named by the same aria-labelledby. No trigger renders when items is empty.",
-      "Progress: ProgressBar label='Completion'; it is not focusable and follows the heading, so its name doesn't repeat the title"
+      "Progress: ProgressBar label='Completion'; it is not focusable and follows the heading, so its name doesn't repeat the title",
+      "TitleLink (href set): a plain <a> inside the heading, named by the title text; its stretched ::after makes the whole card a click target without wrapping interactive content in the link"
     ],
     "keyboardInteractions": [
       {
         "key": "Tab",
-        "action": "Moves focus to the Favorite or Menu button (the card has no other focus stop)"
+        "action": "Moves focus to the TitleLink when href is set, then to the Favorite or Menu button. Without href the action button is the card's only stop"
+      },
+      {
+        "key": "Enter (TitleLink)",
+        "action": "Follows href (native link)"
       },
       {
         "key": "Enter / Space (Favorite)",
@@ -483,7 +519,7 @@
         "action": "Closes the menu and lets focus move on; an outside click also closes it without pulling focus back. Home/End and arrow wrapping are out of scope (DropdownMenu's shared contract)"
       }
     ],
-    "notes": "Reading order: Title, Meta, Progress, then the Action button (DOM order Body → Progress → Media); CSS order keeps the image on top. Focus order is unaffected (the action is the card's single tab stop); reading order deliberately differs from visual order so the heading comes first. Menu focus: only Escape and item selection return focus to the trigger; pointer dismissal (outside click) and Tab/focusout close the menu without moving focus, so focus is never pulled away from where the user put it. aria-expanded must read false after every close path (Escape, selection, outside click, Tab), and Enter and Space must both be tested on items — Space selects on keydown and focus returns before keyup, the path most likely to re-trigger the button. Favorite is controlled-or-uncontrolled like a native input: when `pressed` is passed, aria-pressed follows the prop only, never internal state."
+    "notes": "Reading order: Title, Meta, Progress, then the Action button (DOM order Body → Progress → Media); CSS order keeps the image on top. Focus order follows the DOM: TitleLink (when href is set), then the action button. The image comes after the title, meta and bar and before the action button, so a meaningful thumbnailAlt is read there. Without href the card does not navigate: the consumer must give the course another way in. Reading order deliberately differs from visual order so the heading comes first. Menu focus: only Escape and item selection return focus to the trigger; pointer dismissal (outside click) and Tab/focusout close the menu without moving focus, so focus is never pulled away from where the user put it. aria-expanded must read false after every close path (Escape, selection, outside click, Tab), and Enter and Space must both be tested on items — Space selects on keydown and focus returns before keyup, the path most likely to re-trigger the button. Favorite is controlled-or-uncontrolled like a native input: when `pressed` is passed, aria-pressed follows the prop only, never internal state."
   },
   "styles": {
     "Root": [
@@ -491,7 +527,8 @@
         "when": {},
         "set": {
           "gap": "space.stack.sm",
-          "width": { "literal": "100%", "reason": "Fills its grid or carousel cell (usage.json width: fill)." }
+          "width": { "literal": "100%", "reason": "Fills its grid or carousel cell (usage.json width: fill)." },
+          "position": { "literal": "relative", "reason": "Positioning context for the TitleLink overlay." }
         }
       },
       { "when": { "size": "lg" }, "set": { "min-width": "size.card.min.lg" } },
@@ -504,7 +541,26 @@
       { "when": {}, "set": { "order": { "literal": "-1", "reason": "Draws Progress between Media and Body whatever the source order (ADR-023 amendment 2026-11-12)." } } }
     ],
     "Thumbnail": [
-      { "when": { "state": "hover" }, "set": { "opacity": { "literal": "0.8", "reason": "No opacity token scale exists." } } }
+      { "when": { "state": "hover" }, "set": { "opacity": { "literal": "0.8", "reason": "No opacity token scale exists." } } },
+      {
+        "when": { "state": "focus-visible" },
+        "set": {
+          "outline": { "template": "{size.focus.width} solid {color.border.focus}" },
+          "outline-offset": "size.focus.offset",
+          "opacity": { "literal": "0.8", "reason": "Matches hover. No opacity token scale exists." }
+        }
+      }
+    ],
+    "TitleLink": [
+      {
+        "when": {},
+        "set": {
+          "color": { "literal": "inherit", "reason": "The heading owns the title colour." },
+          "text-decoration": { "literal": "none", "reason": "The whole card is the target; the thumbnail fade is the hover cue." }
+        }
+      },
+      { "when": { "state": "hover" }, "set": { "color": { "literal": "inherit", "reason": "Overrides the reset's a:hover colour, which would recolour the title (and fail contrast on inverted surfaces)." } } },
+      { "when": { "state": "focus-visible" }, "set": { "outline": { "literal": "none", "reason": "The ring is drawn on the Thumbnail instead (ADR-028 amendment 2026-11-13)." } } }
     ],
     "Action": [
       {
@@ -512,7 +568,7 @@
         "set": {
           "top": "space.inset.xs",
           "right": "space.inset.xs",
-          "z-index": { "literal": "1", "reason": "Above the thumbnail. No z-index token scale exists." }
+          "z-index": { "literal": "2", "reason": "Above the TitleLink overlay (1), so Favorite and Menu keep their own clicks. Root creates no stacking context (isolation would trap the Menu panel under later cards), so both values sit in the page context: a consumer layer at z-index 1–2 over a card loses to them. No z-index token scale exists." }
         }
       }
     ],
@@ -589,8 +645,11 @@
     { "decision": "Favorite and Menu are transparent Buttons whose glyph carries an icon halo, owned by CardVertical.", "reason": "The glyph keeps its contrast at rest on any image, with no change to Button's API.", "adr": "ADR-024" },
     { "decision": "In Figma, CardVertical mirrors the preset: Body and Meta are fixed layers, and a separate CardVertical.Root carries the open parts as native slots.", "reason": "Figma allows no component properties inside a native slot, so a slotted preset would lose its Title, Duration and Certified properties.", "adr": "ADR-023" },
     { "decision": "The DOM order is Body, Progress, Media; Root's CSS (`order`) draws Media on top. Parts compositions write Body first.", "reason": "A screen reader reaches the heading before the image, the Save button and the bar, and skimming by heading lands at the card's start (WCAG 1.3.2 Meaningful Sequence, 1.3.1; Inclusive Components, Cards). Root fixing the visual order keeps every composition pixel-identical to the preset.", "adr": "ADR-023" },
-    { "decision": "Progress is named 'Completion', not by the title.", "reason": "It isn't focusable and comes after the heading, so a name that repeats the title only adds noise (MDN progressbar; axe aria-progressbar-name). Favorite and Menu keep the title: they are the card's only tab stops and must be unique across cards." },
+    { "decision": "Progress is named 'Completion', not by the title.", "reason": "It isn't focusable and comes after the heading, so a name that repeats the title only adds noise (MDN progressbar; axe aria-progressbar-name). Favorite and Menu keep the title: they are tab stops of their own, separate from the title link, and must be unique across cards." },
     { "decision": "Root (role=article) is unnamed: the Title is not its aria-labelledby, and consumers don't name it through Root's native attributes.", "reason": "The heading is the first thing read inside the article, so a name only repeats the title; generic 'article' entries in screen-reader article lists cost less than that repeat on every card. Tests assert the article has no accessible name, not that given attributes are absent.", "adr": "ADR-023" },
+    { "decision": "The card opens its course through an optional href on the preset and on Title: a stretched link, the <a> inside the heading with an ::after covering Root. Action sits above the overlay.", "reason": "The title gives the link its name, the heading stays a heading, and Favorite and Menu stay separate tab stops instead of interactive content nested in a link (Inclusive Components, Cards; WCAG 2.4.4). The cost is that the card's text can't be selected with the pointer, which a course card can afford.", "adr": "ADR-023" },
+    { "decision": "Keyboard focus on the link shows as the focus ring on the thumbnail, plus the hover fade, not as a ring around the title text.", "reason": "The card has no border, so a ring around one line of text doesn't tell the user the whole card is the target; the thumbnail is the card's one clear edge. The ring keeps the ADR-028 tokens and contrast gate.", "adr": "ADR-028" },
+    { "decision": "No router dependency: href is a plain string on a plain <a>.", "reason": "Same as AppHeader. Client-side routing intercepts the click at the app level." },
     { "decision": "Media narrows and guards its children: it accepts only a single CardVertical.Action and throws on anything else.", "reason": "A fixed part typed children?: ReactNode silently becomes an unchecked slot.", "adr": "ADR-023" }
   ],
   "ruledOut": [
@@ -601,6 +660,8 @@
     { "option": "Root reordering its children itself (sorting parts into Body, Progress, Media)", "reason": "Rewrites what the consumer wrote and needs child-type checks; a CSS order on Root gives the same visual result with no runtime cost." },
     { "option": "aria-valuetext ('40% complete') on Progress", "reason": "With the name 'Completion' the bar already reads 'Completion, progress bar, 40%'; a value text would repeat the word." },
     { "option": "Root named by Title (aria-labelledby on the article)", "reason": "The heading is the first thing read inside the article, so the name only repeated the title; the cost is generic 'article' entries in screen-reader article lists." },
+    { "option": "Wrapping the card in an <a>, or an onClick on Root", "reason": "An <a> around the card nests the Favorite and Menu buttons inside a link (invalid, and they're read as one long link). A click handler on Root isn't reachable by keyboard and has no link semantics.", "source": "Common card patterns" },
+    { "option": "Opacity change alone as the link's focus indicator", "reason": "Too weak: a 0.8 fade is hard to see on dark photos and on the placeholder (WCAG 2.4.7). The ring stays and moves to the thumbnail.", "source": "Design review 2026-11-13" },
     { "option": "A completed boolean prop", "reason": "Completion is lifecycle state derived from progress; a flag can contradict the bar." }
   ]
 }

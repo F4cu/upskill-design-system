@@ -25,6 +25,7 @@ function renderMenuCard(onSelect = vi.fn()) {
     <>
       <CardVertical
         title={TITLE}
+        href="/courses/creative-acts"
         action={<CardVertical.Menu items={MENU_ITEMS} onSelect={onSelect} />}
       />
       <button type="button">Outside</button>
@@ -97,6 +98,82 @@ describe('CardVertical — a11y behavior', () => {
     expectReadingOrder(readingOrder())
   })
 
+  describe('Link', () => {
+    it('links through the title, inside the heading, named by the title', () => {
+      render(<CardVertical title={TITLE} href="/courses/creative-acts" />)
+      const link = screen.getByRole('link', { name: TITLE })
+      expect(link).toHaveAttribute('href', '/courses/creative-acts')
+      expect(screen.getByRole('heading', { name: TITLE })).toContainElement(link)
+    })
+
+    it('tabs to the link first, then the action, and keeps the action out of the link', async () => {
+      const user = userEvent.setup()
+      render(<CardVertical title={TITLE} href="/courses/creative-acts" action={<CardVertical.Favorite />} />)
+      const link = screen.getByRole('link', { name: TITLE })
+      const favorite = screen.getByRole('button', { name: `Save ${TITLE}` })
+      expect(link).not.toContainElement(favorite)
+
+      await user.tab()
+      expect(link).toHaveFocus()
+      await user.tab()
+      expect(favorite).toHaveFocus()
+    })
+
+    it('tabs to the link, then the Menu trigger', async () => {
+      const user = userEvent.setup()
+      render(
+        <CardVertical
+          title={TITLE}
+          href="/courses/creative-acts"
+          action={<CardVertical.Menu items={MENU_ITEMS} onSelect={vi.fn()} />}
+        />,
+      )
+      await user.tab()
+      expect(screen.getByRole('link', { name: TITLE })).toHaveFocus()
+      await user.tab()
+      expect(screen.getByRole('button', { name: `More options ${TITLE}` })).toHaveFocus()
+    })
+
+    it('links from Title href in a parts composition, with the same contract', async () => {
+      const user = userEvent.setup()
+      const { container } = render(
+        <CardVertical.Root>
+          <CardVertical.Body>
+            <CardVertical.Title href="/courses/creative-acts">{TITLE}</CardVertical.Title>
+          </CardVertical.Body>
+          <CardVertical.Media>
+            <CardVertical.Action>
+              <CardVertical.Favorite />
+            </CardVertical.Action>
+          </CardVertical.Media>
+        </CardVertical.Root>,
+      )
+      const link = screen.getByRole('link', { name: TITLE })
+      expect(link).toHaveAttribute('href', '/courses/creative-acts')
+      expect(screen.getByRole('heading', { name: TITLE })).toContainElement(link)
+      await user.tab()
+      expect(link).toHaveFocus()
+      await user.tab()
+      expect(screen.getByRole('button', { name: `Save ${TITLE}` })).toHaveFocus()
+      expect(await axe(container, AXE_OPTIONS)).toHaveNoViolations()
+    })
+
+    it('renders no link without href, leaving the action as the only tab stop', async () => {
+      const user = userEvent.setup()
+      render(
+        <>
+          <CardVertical title={TITLE} action={<CardVertical.Favorite />} />
+          <button type="button">After</button>
+        </>,
+      )
+      expect(screen.queryByRole('link')).not.toBeInTheDocument()
+      await user.tab()
+      expect(screen.getByRole('button', { name: `Save ${TITLE}` })).toHaveFocus()
+      await user.tab()
+      expect(screen.getByRole('button', { name: 'After' })).toHaveFocus()
+    })
+  })
+
   describe('Favorite', () => {
     it('is named "Save" plus the title and toggles aria-pressed (uncontrolled)', async () => {
       const user = userEvent.setup()
@@ -145,6 +222,8 @@ describe('CardVertical — a11y behavior', () => {
       renderMenuCard()
       const trigger = screen.getByRole('button', { name: `More options ${TITLE}` })
 
+      await user.tab()
+      expect(screen.getByRole('link', { name: TITLE })).toHaveFocus()
       await user.tab()
       expect(trigger).toHaveFocus()
       await user.keyboard(key)
@@ -284,7 +363,7 @@ describe('CardVertical — a11y behavior', () => {
   it('has no axe violations with a favorite, and with the menu open', async () => {
     const user = userEvent.setup()
     const { container, unmount } = render(
-      <CardVertical title={TITLE} progress={20} certified duration="12 Hours" action={<CardVertical.Favorite defaultPressed />} />,
+      <CardVertical title={TITLE} href="/courses/creative-acts" progress={20} certified duration="12 Hours" action={<CardVertical.Favorite defaultPressed />} />,
     )
     expect(await axe(container, AXE_OPTIONS)).toHaveNoViolations()
     unmount()

@@ -55,6 +55,16 @@
       "required": true
     },
     {
+      "name": "TitleLink",
+      "element": "a",
+      "parent": "Title",
+      "when": "href is set",
+      "role": "link",
+      "notes": "Named by the title text. Inside the heading, never around it; its ::after covers the card (Root is the positioning context).",
+      "action": "Navigates to href; a click anywhere on the card opens the course.",
+      "required": false
+    },
+    {
       "name": "Progress",
       "element": "ProgressBar",
       "parent": "TitleGroup",
@@ -178,6 +188,16 @@
         "property": "Title"
       }
     },
+    "href": {
+      "kind": "content",
+      "type": "string",
+      "default": null,
+      "concept": "Link",
+      "figma": {
+        "surface": "code-only",
+        "note": "Navigation has no Figma property."
+      }
+    },
     "author": {
       "kind": "content",
       "type": "string",
@@ -277,7 +297,19 @@
       "name": "default",
       "kind": "interaction",
       "trigger": "rest",
-      "notes": "Static display card with no interactive states."
+      "notes": "Without href the card is static and has no interactive states."
+    },
+    {
+      "name": "hover",
+      "kind": "interaction",
+      "trigger": ":hover on TitleLink (its overlay covers the card)",
+      "notes": "Linked cards only: the thumbnail fades."
+    },
+    {
+      "name": "focus-visible",
+      "kind": "interaction",
+      "trigger": ":focus-visible on TitleLink",
+      "notes": "The focus ring is drawn on the Thumbnail, and it fades as on hover (ADR-028 amendment 2026-11-13)."
     },
     {
       "name": "with-progress",
@@ -291,16 +323,31 @@
     "ariaAttributes": [
       "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
       "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
-      "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
+      "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)",
+      "TitleLink (href set): a plain <a> inside the heading, named by the title text; its stretched ::after makes the whole card a click target"
     ],
-    "keyboardInteractions": []
+    "keyboardInteractions": [
+      {
+        "key": "Tab",
+        "action": "Moves focus to the TitleLink when href is set; without href the card has no tab stop"
+      },
+      {
+        "key": "Enter (TitleLink)",
+        "action": "Follows href (native link)"
+      }
+    ],
+    "notes": "Without href the card does not navigate: the consumer must give the course another way in. Focus on the link shows as the ring on the thumbnail; the brand ring passes 3:1 on the inverted container too (token-contrast-check)."
   },
   "styles": {
     "Root": [
       {
         "when": {},
         "set": {
-          "gap": "space.inline.md"
+          "gap": "space.inline.md",
+          "position": {
+            "literal": "relative",
+            "reason": "Positioning context for the TitleLink overlay."
+          }
         }
       }
     ],
@@ -310,6 +357,32 @@
         "set": {
           "width": "size.thumbnail.sm",
           "height": "size.thumbnail.sm"
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "opacity": {
+            "literal": "0.8",
+            "reason": "Same fade as CardVertical. No opacity token scale exists."
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "focus-visible"
+        },
+        "set": {
+          "outline": {
+            "template": "{size.focus.width} solid {color.border.focus}"
+          },
+          "outline-offset": "size.focus.offset",
+          "opacity": {
+            "literal": "0.8",
+            "reason": "Matches hover. No opacity token scale exists."
+          }
         }
       }
     ],
@@ -329,6 +402,43 @@
         "when": {},
         "set": {
           "line-height": "font.line-height.tight"
+        }
+      }
+    ],
+    "TitleLink": [
+      {
+        "when": {},
+        "set": {
+          "color": {
+            "literal": "inherit",
+            "reason": "The heading owns the title colour, inverted included."
+          },
+          "text-decoration": {
+            "literal": "none",
+            "reason": "The whole card is the target; the thumbnail fade is the hover cue."
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "color": {
+            "literal": "inherit",
+            "reason": "Overrides the reset's a:hover colour, which would recolour the title and fail contrast on the inverted band."
+          }
+        }
+      },
+      {
+        "when": {
+          "state": "focus-visible"
+        },
+        "set": {
+          "outline": {
+            "literal": "none",
+            "reason": "The ring is drawn on the Thumbnail instead (ADR-028 amendment 2026-11-13)."
+          }
         }
       }
     ],
@@ -384,6 +494,23 @@
     {
       "decision": "The inverted variant colors its text through Heading color=\"inverted\" and Text color=\"inverted-subtle\". Only the badge icon needs a CSS Module override (.inverted .badge svg).",
       "reason": "Heading and Text own their color through the color prop; a color rule on the card root bypasses the typography API."
+    },
+    {
+      "decision": "The card opens its course through an optional href: a stretched link, the <a> inside the heading with an ::after covering Root. Same pattern as CardVertical.",
+      "reason": "The title names the link and the heading stays a heading (Inclusive Components, Cards; WCAG 2.4.4). The cost is that the card's text can't be selected with the pointer.",
+      "adr": "ADR-028"
+    },
+    {
+      "decision": "Keyboard focus on the link shows as the focus ring on the thumbnail, plus the hover fade.",
+      "reason": "The card has no border; the thumbnail is its one clear edge. The ring keeps the ADR-028 tokens and contrast gate.",
+      "adr": "ADR-028"
+    }
+  ],
+  "ruledOut": [
+    {
+      "option": "Wrapping the card in an <a>, or an onClick on Root",
+      "reason": "Kept consistent with CardVertical, where the wrap would nest buttons in a link; a click handler on Root isn't reachable by keyboard and has no link semantics.",
+      "source": "Common card patterns"
     }
   ]
 }
