@@ -226,5 +226,19 @@
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 3,
     "manualRescuesCount": 0
+  },
+  {
+    "component": "Dialog",
+    "ranAt": "2026-11-13T12:45:00Z",
+    "path": "full",
+    "risk": "interactive",
+    "gate": {
+      "passes": 2,
+      "failures": 0,
+      "failureReasons": []
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 3,
+    "manualRescuesCount": 1
   }
 ]

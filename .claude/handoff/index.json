@@ -16,6 +16,14 @@
     "path": ".claude/handoff/2026-11-05-spec-renderers.handoff.md"
   },
   {
+    "name": "2026-11-13-dialog-follow-ups",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
+    "path": ".claude/handoff/2026-11-13-dialog-follow-ups.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
@@ -542,6 +550,30 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/Chip.snapshot.json"
+  },
+  {
+    "name": "Dialog.review",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
+    "path": ".claude/handoff/runs/Dialog.review.json"
+  },
+  {
+    "name": "Dialog.run",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
+    "path": ".claude/handoff/runs/Dialog.run.json"
+  },
+  {
+    "name": "Dialog.snapshot",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
+    "path": ".claude/handoff/runs/Dialog.snapshot.json"
   },
   {
     "name": "Divider.review",
