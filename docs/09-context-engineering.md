@@ -55,6 +55,7 @@ sources:
 # clock reset 2026-11-10: packages/components AGENTS.md usage line points to the schema's writing rules; this page describes rule scoping, not rule contents, still accurate
 # clock reset 2026-11-10: spec:validate checks each prop name against its spec concept (ADR-026 amendment, #150); this page does not describe concepts, still accurate
 # clock reset 2026-11-11: CLAUDE.md snapshot table and packages/components/AGENTS.md gain the figma-pattern-frames.json snapshot; this page's ladder and its row 4 ("…") are unchanged, still accurate
+# clock reset 2026-11-13: AGENTS.md fixed set gains a Phase 5e line (ADR-031); this page names the fixed set as AGENTS.md content but never lists it, still accurate
 ---
 # Context engineering
 

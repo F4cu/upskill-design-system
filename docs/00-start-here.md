@@ -90,6 +90,7 @@ sources:
 # clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
 # clock reset 2026-11-12 (#165): ADR-023 amendment adds that CardVertical's article is unnamed (heading read first); this page doesn't describe card accessible names, still accurate
 # clock reset 2026-11-12: ADR-030 renames the Accessibility tab's Labeling section to Reading order; this page doesn't name the tab's sections, still accurate
+# 2026-11-13: ADR count 30 -> 31 (ADR-031 fixed-set expansion, Phase 5e); ROADMAP reopens Phase 5 for the 5e batch, this page lists no phase status or component count
 ---
 # Start here
 
@@ -155,4 +156,4 @@ The suggested reading order is the page order — tokens first, because everythi
 - [11 — Self-improving loops](11-self-improving-loops.md) — the mechanisms that change their own behavior from evidence: learning loops, measurement ledgers, and the line between a loop that learns and a gate that only checks
 - [12 — Taming non-determinism](12-taming-non-determinism.md) — how deterministic structure wraps the model before, during and after generation, so only genuinely ambiguous judgment reaches a human
 
-The thirty architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
+The thirty-one architectural decision records live in [`docs/decisions/`](decisions/001-component-metadata-schema.md) and are linked from whichever page cites them — they hold the *why* in full; the pages here summarize and point.
