@@ -370,6 +370,21 @@
       "packages/components/src/components/ProgressBar/ProgressBar.module.css",
       "packages/components/src/components/Stack/Stack.stories.module.css"
     ],
+    "--ds-size-focus-width": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-color-border-focus": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/styles/reset.css"
+    ],
+    "--ds-size-focus-offset": [
+      "packages/components/src/components/CardHorizontal/CardHorizontal.module.css",
+      "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/styles/reset.css"
+    ],
     "--ds-size-thumbnail-sm": [
       "packages/components/src/components/CardHorizontal/CardHorizontal.module.css"
     ],
@@ -562,15 +577,6 @@
     ],
     "--ds-grid-gutter": [
       "packages/components/src/styles/grid.css"
-    ],
-    "--ds-size-focus-width": [
-      "packages/components/src/styles/reset.css"
-    ],
-    "--ds-color-border-focus": [
-      "packages/components/src/styles/reset.css"
-    ],
-    "--ds-size-focus-offset": [
-      "packages/components/src/styles/reset.css"
     ]
   },
   "aliases": {

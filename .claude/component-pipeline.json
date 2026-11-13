@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-13T08:58:40.862Z",
+  "generatedAt": "2026-11-13T17:28:23.555Z",
   "components": [
     {
       "name": "Accordion",
@@ -268,7 +268,7 @@
     },
     {
       "name": "CardHorizontal",
-      "type": "display",
+      "type": "interactive",
       "maturity": "beta",
       "implementation": "in review",
       "substate": null,
@@ -288,7 +288,7 @@
           "note": null
         },
         {
-          "label": "Code review — adversarial subagent",
+          "label": "Code and behavioural a11y review — adversarial subagent",
           "done": true
         },
         {

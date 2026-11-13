@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-11-13T08:58:40.862Z**
+Generated: **2026-11-13T17:28:23.555Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -24,7 +24,7 @@ None. No deprecated token has a live reference. ✅
 ## Components
 
 - **28 total** — Maturity: 28 beta
-- By type: container (2) · display (10) · input (3) · interactive (9) · layout (4)
+- By type: container (2) · display (9) · input (3) · interactive (10) · layout (4)
 - Implementation: 0 done · 25 in review · 3 in progress (3 unreviewed) · 0 todo
 - Source: `packages/components/src/components/*/*.usage.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
 
@@ -50,7 +50,7 @@ standard path (in-session /code-review).
 | `Breadcrumb` (interactive) | standard | ☐ | ✅ | n/a |
 | `ButtonArrow` (interactive) | full | ☐ | ✅ | ✅ |
 | `Card` (container) | standard | ☐ | ✅ | n/a |
-| `CardHorizontal` (display) | full | ☐ | ✅ | ✅ |
+| `CardHorizontal` (interactive) | full | ☐ | ✅ | ✅ |
 | `CardVertical` (interactive) | full | ☐ | ✅ | ✅ |
 | `Checkbox` (input) | full | ☐ | ✅ | ✅ |
 | `Chip` (interactive) | full | ☐ | ✅ | ✅ |
