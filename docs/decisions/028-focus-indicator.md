@@ -5,6 +5,7 @@ title: "ADR-028 — One focus indicator: a token-bound outline ring"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
+**Amended:** 2026-11-13
 
 ## Context
 
@@ -49,3 +50,20 @@ Option 1.
 - **Known limitation:** controls placed over media (CardVertical's Favorite and Menu) show the ring on top of the image, so its contrast depends on the pixels underneath. This is the same problem the on-media halo solves for the glyph (ADR-024). Revisit if keyboard testing on real photos shows the ring getting lost.
 - The showcase's `PipelineDag` keeps its own `:focus-visible` rule (`border.selected`), which overrides the global one. Aligning it is optional.
 - Figma: `color/border/focus` and the size variables need `/figma-variable-push`. Focus previews in component sets (a `State=Focus` variant) can then bind to them.
+
+## Amendment 2026-11-13: a relocated ring for stretched-link cards
+
+CardVertical and CardHorizontal gained an optional `href`: the `<a>` sits inside the title heading and its `::after` covers the card (a stretched link). The global ring would draw around one line of title text. These cards have no border, so that ring wouldn't tell a keyboard user that the whole card is the target.
+
+An opacity change on the thumbnail alone was considered and rejected. A 0.8 fade is hard to see on dark photos and on the placeholder (WCAG 2.4.7), and it would drop the contrast gate.
+
+**Decision:** a second exception, narrower than the menu-item one. The ring is **relocated**, not removed:
+
+- The card's title link sets `outline: none` on `:focus-visible`.
+- The card draws the same ring on its thumbnail with `:has(.titleLink:focus-visible)`: `size.focus.width` solid `color.border.focus`, offset `size.focus.offset`. The thumbnail also fades to 0.8 opacity, as on hover.
+- The thumbnail is the card's one clear edge, and the ring sits on the surface around it, so the existing `border.focus` contrast pairs still apply. CardHorizontal's inverted variant adds `border.focus` on `background.container.inverted` to the gate.
+
+The rule for every other component stays the same: never remove the ring. A relocated ring needs its own amendment here.
+
+
+**Known limitation:** the relocated ring sits about `size.focus.width + size.focus.offset` outside the thumbnail, which is the card's outer edge. Containers that clip overflow (`.carousel-outer`, ScrollArea) cut off that side of the ring. The ring stays visible on its other sides. Reserving room in those containers is open.

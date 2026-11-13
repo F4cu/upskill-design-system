@@ -1,7 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [],
-  "generatedFrom": "89294299775c7bd3364cdaf32a7abd389e540c53",
+  "generatedFrom": "92e4a1db90985ae066d9914433e3b0736cb159d0",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -36,6 +36,45 @@
           "systemSpecificNotes": [
             "Uses a native <button> element. The disabled prop sets the HTML disabled attribute and also applies pointer-events: none via CSS. aria-label defaults to 'Previous' or 'Next' from direction. Pass a more specific one through rest props when the context needs it (e.g. 'Previous course'), never an empty string.",
             "aria-label — automatically set to 'Previous' or 'Next' from the direction prop; override via rest props for more specific context"
+          ]
+        },
+        {
+          "ariaContract": [
+            {
+              "aria-labelledby": "{titleId}",
+              "element": "div",
+              "role": "article"
+            },
+            {
+              "aria-labelledby": "{titleId}",
+              "element": "ProgressBar"
+            },
+            {
+              "aria-hidden": "true",
+              "element": "span"
+            }
+          ],
+          "component": "CardHorizontal",
+          "composition": [
+            "Heading",
+            "Icon",
+            "Image",
+            "Inline",
+            "ProgressBar",
+            "Stack",
+            "Text"
+          ],
+          "idsFromUseId": [
+            "titleId"
+          ],
+          "maturity": "beta",
+          "stage": "in review",
+          "systemSpecificNotes": [
+            "Without href the card does not navigate: the consumer must give the course another way in. Focus on the link shows as the ring on the thumbnail; the brand ring passes 3:1 on the inverted container too (token-contrast-check).",
+            "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
+            "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
+            "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)",
+            "TitleLink (href set): a plain <a> inside the heading, named by the title text; its stretched ::after makes the whole card a click target"
           ]
         },
         {
@@ -386,12 +425,13 @@
             ]
           },
           "systemSpecificNotes": [
-            "Reading order: Title, Meta, Progress, then the Action button (DOM order Body → Progress → Media); CSS order keeps the image on top. Focus order is unaffected (the action is the card's single tab stop); reading order deliberately differs from visual order so the heading comes first. Menu focus: only Escape and item selection return focus to the trigger; pointer dismissal (outside click) and Tab/focusout close the menu without moving focus, so focus is never pulled away from where the user put it. aria-expanded must read false after every close path (Escape, selection, outside click, Tab), and Enter and Space must both be tested on items — Space selects on keydown and focus returns before keyup, the path most likely to re-trigger the button. Favorite is controlled-or-uncontrolled like a native input: when `pressed` is passed, aria-pressed follows the prop only, never internal state.",
+            "Reading order: Title, Meta, Progress, then the Action button (DOM order Body → Progress → Media); CSS order keeps the image on top. Focus order follows the DOM: TitleLink (when href is set), then the action button. The image comes after the title, meta and bar and before the action button, so a meaningful thumbnailAlt is read there. Without href the card does not navigate: the consumer must give the course another way in. Reading order deliberately differs from visual order so the heading comes first. Menu focus: only Escape and item selection return focus to the trigger; pointer dismissal (outside click) and Tab/focusout close the menu without moving focus, so focus is never pulled away from where the user put it. aria-expanded must read false after every close path (Escape, selection, outside click, Tab), and Enter and Space must both be tested on items — Space selects on keydown and focus returns before keyup, the path most likely to re-trigger the button. Favorite is controlled-or-uncontrolled like a native input: when `pressed` is passed, aria-pressed follows the prop only, never internal state.",
             "role=article on Root, unnamed: the Title heading is read first inside it, so a name would repeat the title (Title still registers its id via context for the action buttons)",
             "thumbnailAlt / Media alt — pass a meaningful description of the course image, or empty string (default) when the title already provides sufficient context.",
             "Favorite: aria-pressed (toggle button); accessible name 'Save <title>' via aria-label='Save' + aria-labelledby=[self, title]",
             "Menu trigger: aria-haspopup=menu, aria-expanded, aria-controls → the panel while open; accessible name 'More options <title>' via aria-labelledby=[self, title]. Panel is DropdownMenu listRole=menu, named by the same aria-labelledby. No trigger renders when items is empty.",
-            "Progress: ProgressBar label='Completion'; it is not focusable and follows the heading, so its name doesn't repeat the title"
+            "Progress: ProgressBar label='Completion'; it is not focusable and follows the heading, so its name doesn't repeat the title",
+            "TitleLink (href set): a plain <a> inside the heading, named by the title text; its stretched ::after makes the whole card a click target without wrapping interactive content in the link"
           ]
         }
       ]
@@ -557,43 +597,6 @@
         {
           "ariaContract": [
             {
-              "aria-labelledby": "{titleId}",
-              "element": "div",
-              "role": "article"
-            },
-            {
-              "aria-labelledby": "{titleId}",
-              "element": "ProgressBar"
-            },
-            {
-              "aria-hidden": "true",
-              "element": "span"
-            }
-          ],
-          "component": "CardHorizontal",
-          "composition": [
-            "Heading",
-            "Icon",
-            "Image",
-            "Inline",
-            "ProgressBar",
-            "Stack",
-            "Text"
-          ],
-          "idsFromUseId": [
-            "titleId"
-          ],
-          "maturity": "beta",
-          "stage": "in review",
-          "systemSpecificNotes": [
-            "role=article on the root, aria-labelledby → the title Heading's id (useId); role, children and aria-labelledby are omitted from the props type so consumers cannot override them",
-            "thumbnailAlt (pass a meaningful description of the course image, or empty string if the title already provides context)",
-            "Progress: ProgressBar aria-labelledby → the title id (no duplicated '<title> progress' string)"
-          ]
-        },
-        {
-          "ariaContract": [
-            {
               "aria-describedby": "{description ? descriptionId : undefined}",
               "aria-labelledby": "{titleId}",
               "element": "dialog"
@@ -616,7 +619,7 @@
             "titleId"
           ],
           "maturity": "beta",
-          "stage": null,
+          "stage": "in progress",
           "state": {
             "controlled": "always",
             "props": [

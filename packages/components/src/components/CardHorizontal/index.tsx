@@ -18,6 +18,8 @@ export type CardHorizontalProps = {
   thumbnailSrc?: string
   thumbnailAlt?: string
   title: string
+  /** The course page. The link covers the whole card. */
+  href?: string
   author?: string
   duration?: string
   certified?: boolean
@@ -27,6 +29,7 @@ export function CardHorizontal({
   thumbnailSrc,
   thumbnailAlt = '',
   title,
+  href,
   author,
   duration,
   certified,
@@ -56,7 +59,7 @@ export function CardHorizontal({
             color={inverted ? 'inverted' : undefined}
             className={styles.title}
           >
-            {title}
+            {href ? <a href={href} className={styles.titleLink}>{title}</a> : title}
           </Heading>
           {progress !== undefined && <ProgressBar value={progress} aria-labelledby={titleId} />}
         </Stack>

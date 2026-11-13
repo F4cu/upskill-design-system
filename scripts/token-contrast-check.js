@@ -180,6 +180,8 @@ const PAIRS = [
   [T("inverted-subtle"), BG("container-inverted")],
   [I("subtle"), BG("container-canvas")],
   [I("inverted-default"), BG("container-inverted")],
+  // Linked CardHorizontal: focus ring on the thumbnail, over the inverted band
+  [B("focus"), BG("container-inverted"), "border"],
 
   // CardVertical — badge icon, ambient (composed standalone or in a Card)
   ...AMBIENT.map((bg) => [I("subtle"), bg]),

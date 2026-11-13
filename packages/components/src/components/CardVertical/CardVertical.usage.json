@@ -11,6 +11,7 @@
     "The learner has started the course: pass progress, and a ProgressBar shows under the image.",
     "The learner has finished the course: progress of 100 or more adds a Completed marker, and the bar stays.",
     "The learner can save the course (action Favorite) or has several course actions (action Menu).",
+    "The card opens the course page: pass href. Omit it only when something else on the page opens the course.",
     "The preset can't show the content, such as an instructor row or custom meta: compose the parts from a pattern."
   ],
   "notFor": [
@@ -195,7 +196,7 @@
       {
         "case": "Wrapping CardVertical.Root (or the preset) in an <a>",
         "because": "The Favorite/Menu buttons would become interactive content nested inside a link, which is invalid and confuses keyboard and screen-reader users.",
-        "instead": "If the card must link, put the link on the Title and stretch it over the card, keeping Action as a sibling on top."
+        "instead": "Pass href (preset) or Title href (parts): the card links through its title and the link covers the card, with Action on top."
       },
       {
         "case": "Using Heading instead of CardVertical.Title inside CardVertical.Body, omitting Title from a parts composition, or rendering two Titles",

@@ -192,14 +192,16 @@ function Body({ children }: CardVerticalBodyProps) {
 
 export type CardVerticalTitleProps = {
   as?: HeadingTag
+  /** The course page. The link covers the whole card; Favorite and Menu stay on top of it. */
+  href?: string
   children: ReactNode
 }
 
-function Title({ as = 'h3', children }: CardVerticalTitleProps) {
+function Title({ as = 'h3', href, children }: CardVerticalTitleProps) {
   const { titleId } = useCardVertical('Title')
   return (
     <Heading as={as} id={titleId} size="headline-serif" className={styles.title} data-part="Title">
-      {children}
+      {href ? <a href={href} className={styles.titleLink} data-part="TitleLink">{children}</a> : children}
     </Heading>
   )
 }
@@ -246,6 +248,8 @@ export type CardVerticalProps = {
   thumbnailSrc?: string
   thumbnailAlt?: string
   title: string
+  /** The course page. The link covers the whole card; the action stays on top of it. */
+  href?: string
   duration?: string
   certified?: boolean
   progress?: number
@@ -258,6 +262,7 @@ function CardVerticalPreset({
   thumbnailSrc,
   thumbnailAlt = '',
   title,
+  href,
   duration,
   certified,
   progress,
@@ -269,7 +274,7 @@ function CardVerticalPreset({
   return (
     <Root size={size} {...rest}>
       <Body>
-        <Title>{title}</Title>
+        <Title href={href}>{title}</Title>
         {(duration || certified || completed) && (
           <Meta>
             {duration && <Duration>{duration}</Duration>}

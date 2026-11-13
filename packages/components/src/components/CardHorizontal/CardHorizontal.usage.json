@@ -1,14 +1,15 @@
 {
   "component": {
     "name": "CardHorizontal",
-    "type": "display",
+    "type": "interactive",
     "status": "beta",
     "description": "A course card with a square thumbnail on the left and the title, progress and metadata beside it.",
     "figmaNodeId": "130:7289"
   },
   "useWhen": [
     "Listing started or saved courses in the User Settings page",
-    "Displaying course recommendations in a footer or sidebar with an inverted dark background"
+    "Displaying course recommendations in a footer or sidebar with an inverted dark background",
+    "The card opens the course page: pass href. Omit it only when something else on the page opens the course."
   ],
   "notFor": [
     {
@@ -51,6 +52,11 @@
         "case": "Placing CardHorizontal in a section whose heading is not an h2 (e.g. directly under the page h1, or inside an h3 subsection)",
         "because": "The title always renders as an h3 (there is no heading-level prop), so any parent heading other than h2 skips or inverts a level in the document outline.",
         "instead": "Put CardHorizontal lists inside a section headed by an h2. If a layout needs another level, raise it as a component change (a titleAs prop) instead of wrapping or restyling the card."
+      },
+      {
+        "case": "Wrapping CardHorizontal in an <a> or putting an onClick on it",
+        "because": "A wrapping link reads the whole card as one long link name, and a click handler isn't reachable by keyboard.",
+        "instead": "Pass href: the card links through its title and the link covers the card."
       },
       {
         "case": "variant inverted without a dark parent, or inside data-theme=\"dark\"",

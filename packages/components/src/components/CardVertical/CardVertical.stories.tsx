@@ -45,6 +45,7 @@ const meta: Meta<typeof CardVertical> = {
     thumbnailSrc: { control: 'text' },
     thumbnailAlt: { control: 'text' },
     title: { control: 'text' },
+    href: { control: 'text' },
     duration: { control: 'text' },
     certified: { control: 'boolean' },
     progress: { control: { type: 'range', min: 0, max: 100, step: 1 } },
@@ -61,6 +62,27 @@ export const Default: Story = {
     duration: '12 Hours',
     certified: true,
     size: 'lg',
+  },
+}
+
+export const Linked: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'With href the title is a link that covers the whole card. Hover fades the thumbnail; Tab focuses the link and draws the focus ring on the thumbnail. Save stays a separate tab stop above the link.',
+      },
+    },
+  },
+  args: {
+    thumbnailSrc: THUMBNAIL,
+    thumbnailAlt: THUMBNAIL_ALT,
+    title: 'Creative Acts for Curious People',
+    href: '#course',
+    duration: '12 Hours',
+    certified: true,
+    progress: 40,
+    size: 'lg',
+    action: <CardVertical.Favorite onPressedChange={noop} />,
   },
 }
 
