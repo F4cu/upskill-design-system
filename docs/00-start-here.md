@@ -92,6 +92,7 @@ sources:
 # clock reset 2026-11-12: ADR-030 renames the Accessibility tab's Labeling section to Reading order; this page doesn't name the tab's sections, still accurate
 # 2026-11-13: ADR count 30 -> 31 (ADR-031 fixed-set expansion, Phase 5e); ROADMAP reopens Phase 5 for the 5e batch, this page lists no phase status or component count
 # clock reset 2026-11-13: ADR-023 wording fix (tab stops) and ADR-028 amendment (relocated ring on linked cards); ADR count unchanged, this page lists no ADR detail, still accurate
+# clock reset 2026-11-13 (#174): ADR-023 wording fix (CardVertical's Root is a native <article>, not role="article"); this page doesn't describe card markup, still accurate
 ---
 # Start here
 

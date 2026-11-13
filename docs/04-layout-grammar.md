@@ -37,6 +37,7 @@ sources:
 # clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
 # clock reset 2026-11-12 (#165): ADR-023 amendment adds that CardVertical's article is unnamed (heading read first); this page doesn't describe card accessible names, still accurate
 # clock reset 2026-11-13: ADR-023 one-line wording fix (card tab stops); layout grammar and part layout rules unchanged, still accurate
+# clock reset 2026-11-13 (#174): ADR-023 wording fix (CardVertical's Root is a native <article>, not role="article"); this page doesn't describe card markup, still accurate
 ---
 # Layout grammar
 

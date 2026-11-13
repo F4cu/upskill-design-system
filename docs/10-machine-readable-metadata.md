@@ -44,6 +44,7 @@ sources:
 # clock reset 2026-11-11: usage:validate checks one Figma example frame per pattern against the frozen packages/components/figma-pattern-frames.json (ADR-023 amendment 2026-11-11); the usage schema this page describes is unchanged, still accurate
 # clock reset 2026-11-12: ADR-023 amendment (parts written in reading order, Root owns visual order; CardVertical #159); usage and spec schemas unchanged, still accurate
 # clock reset 2026-11-13: ADR-023 one-line wording fix (card tab stops); metadata schema, parts and anatomy rules unchanged, still accurate
+# clock reset 2026-11-13 (#174): ADR-023 wording fix (CardVertical's Root is a native <article>, not role="article"); this page doesn't describe card markup, still accurate
 ---
 # Machine-readable metadata
 

@@ -39,6 +39,7 @@ sources:
 # clock reset 2026-11-12: ADR-023 amendment (parts written in reading order, Root owns visual order; CardVertical #159); this page explains when a component gains parts, not their order, still accurate
 # clock reset 2026-11-12 (#165): ADR-023 amendment adds that CardVertical's article is unnamed (heading read first); this page doesn't describe card accessible names, still accurate
 # clock reset 2026-11-13: ADR-023 one-line wording fix (Favorite/Menu are tab stops besides the title link); parts and ADR-009 test unchanged, still accurate
+# clock reset 2026-11-13 (#174): ADR-023 wording fix (CardVertical's Root is a native <article>, not role="article"); this page doesn't describe card markup, still accurate
 ---
 # Component lifecycle
 
