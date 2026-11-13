@@ -36,6 +36,7 @@ sources:
 # clock reset 2026-11-12: carousel a11y contract in /layout-generation and a .visually-hidden utility in grid.css (#160); the grammar rules and validator checks this page describes are unchanged, still accurate
 # clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
 # clock reset 2026-11-12 (#165): ADR-023 amendment adds that CardVertical's article is unnamed (heading read first); this page doesn't describe card accessible names, still accurate
+# clock reset 2026-11-13: ADR-023 one-line wording fix (card tab stops); layout grammar and part layout rules unchanged, still accurate
 ---
 # Layout grammar
 
