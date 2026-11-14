@@ -315,6 +315,10 @@
     {
       "decision": "The shadow reuses Card elevated's 0 2px 8px {color.background.overlay.subtle}.",
       "reason": "No shadow token scale exists; one elevated shadow keeps Card and Dialog consistent until one does."
+    },
+    {
+      "decision": "Root sets margin: auto.",
+      "reason": "The browser centres a modal <dialog> with its own margin: auto, and reset.css margin: 0 removes it, which pins the modal to the top-left corner. Caught in the first screenshot baseline, not by any test."
     }
   ],
   "ruledOut": [
@@ -352,6 +356,11 @@
       "option": "A size variant axis",
       "reason": "One width (size.dialog.max) serves both known consumers; add an axis when a page needs a second width.",
       "source": "API proposal review"
+    },
+    {
+      "option": "Removing Title's tabindex on blur",
+      "reason": "It only stops a later mouse click on the title text from focusing it and drawing the ring. Cosmetic, and it adds a blur handler to keep in sync with initial focus.",
+      "source": "Adversarial review (2026-11-13), after GOV.UK Frontend"
     }
   ]
 }
