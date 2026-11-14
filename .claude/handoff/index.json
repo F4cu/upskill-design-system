@@ -12,7 +12,7 @@
     "kind": "handoff",
     "status": "active",
     "created": "2026-11-05",
-    "updated": "2026-11-11",
+    "updated": "2026-11-14",
     "path": ".claude/handoff/2026-11-05-spec-renderers.handoff.md"
   },
   {
@@ -435,24 +435,24 @@
     "name": "CardHorizontal.review",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-10-02",
-    "updated": "2026-10-02",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
     "path": ".claude/handoff/runs/CardHorizontal.review.json"
   },
   {
     "name": "CardHorizontal.run",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-10-02",
-    "updated": "2026-10-02",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
     "path": ".claude/handoff/runs/CardHorizontal.run.json"
   },
   {
     "name": "CardHorizontal.snapshot",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-10-02",
-    "updated": "2026-10-02",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
     "path": ".claude/handoff/runs/CardHorizontal.snapshot.json"
   },
   {
@@ -467,24 +467,24 @@
     "name": "CardVertical.review",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-11-12",
-    "updated": "2026-11-12",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
     "path": ".claude/handoff/runs/CardVertical.review.json"
   },
   {
     "name": "CardVertical.run",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-11-12",
-    "updated": "2026-11-12",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
     "path": ".claude/handoff/runs/CardVertical.run.json"
   },
   {
     "name": "CardVertical.snapshot",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-11-12",
-    "updated": "2026-11-12",
+    "created": "2026-11-13",
+    "updated": "2026-11-13",
     "path": ".claude/handoff/runs/CardVertical.snapshot.json"
   },
   {
@@ -550,6 +550,14 @@
     "created": "2026-07-09",
     "updated": "2026-07-09",
     "path": ".claude/handoff/runs/Chip.snapshot.json"
+  },
+  {
+    "name": "Dialog.learnings",
+    "kind": "run",
+    "status": "in-flight",
+    "created": "2026-11-14",
+    "updated": "2026-11-14",
+    "path": ".claude/handoff/runs/Dialog.learnings.json"
   },
   {
     "name": "Dialog.review",

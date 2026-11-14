@@ -240,5 +240,37 @@
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 3,
     "manualRescuesCount": 1
+  },
+  {
+    "component": "CardHorizontal",
+    "ranAt": "2026-11-13T17:20:55+00:00",
+    "path": "full",
+    "risk": "interactive",
+    "gate": {
+      "passes": 2,
+      "failures": 1,
+      "failureReasons": [
+        "anatomy:test: TitleLink had no data-part in any anatomyExample (CardVertical); usage:validate useWhen 21 words"
+      ]
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 4,
+    "manualRescuesCount": 0
+  },
+  {
+    "component": "CardVertical",
+    "ranAt": "2026-11-13T17:20:55+00:00",
+    "path": "full",
+    "risk": "interactive",
+    "gate": {
+      "passes": 2,
+      "failures": 1,
+      "failureReasons": [
+        "anatomy:test: TitleLink had no data-part in any anatomyExample (CardVertical); usage:validate useWhen 21 words"
+      ]
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 4,
+    "manualRescuesCount": 0
   }
 ]

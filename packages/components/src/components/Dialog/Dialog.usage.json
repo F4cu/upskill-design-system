@@ -59,6 +59,11 @@
         "instead": "Replace the open dialog's content, or close it before opening the next one."
       },
       {
+        "case": "Putting a DropdownMenu inside a Dialog",
+        "because": "DropdownMenu closes on Escape without preventing its default, so one Escape closes the menu and the dialog together.",
+        "instead": "Keep DropdownMenu out of Dialog until it calls preventDefault on Escape; only then add it to accepts."
+      },
+      {
         "case": "Placing the dialog's main buttons in children",
         "because": "Actions keeps them in the footer, right-aligned and visible while Body scrolls.",
         "instead": "Pass the buttons through actions."
