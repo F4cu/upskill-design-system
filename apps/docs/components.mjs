@@ -8,7 +8,7 @@ import bundle from "../../dist/specs.bundle.json" with { type: "json" };
 export { bundle };
 
 // Grows by batch in Phases A4 and A5; A5 drops the filter.
-const PUBLISHED = ["Button", "CardVertical"];
+const PUBLISHED = ["Button", "CardVertical", "Dialog", "Accordion", "Select", "DropdownMenu", "TextField"];
 
 export const REPO_BLOB = "https://github.com/F4cu/upskill-design-system/blob/main";
 export const STORYBOOK = "/upskill-design-system/storybook/";

@@ -40,6 +40,9 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
   - [x] Anatomy (2026-11-11): overview of main parts plus cropped, real-size detail images (`mark` / `focus` on `anatomyExamples`, numbered 6.1), gutter callouts with horizontal/vertical hairlines, a legend under each figure; Mermaid tree and anatomy table removed. Iterating on CardVertical only; Button rides along. ADR-030 and ADR-027 amendments "Phase A3" (2026-11-11)
   - [ ] Remaining sections (Usage, Props, States, Styles, Why, Parity, Accessibility), then sign-off
 - [ ] Phase A4: batch 2 (about 12 of the remaining 25), with `data-part` + `anatomyExamples` on each (`packages/components/AGENTS.md` was at 15990/16000 bytes; trimmed to 11993 on 2026-11-10, ADR-029 amendment)
+  - [x] Batch split chosen (2026-11-14): showcase core Dialog, Accordion, Select, DropdownMenu, TextField, added to `PUBLISHED` in `apps/docs/components.mjs`; the remaining ~7 of batch 2 still to pick (see "Batch split")
+  - [ ] Showcase core: `data-part` + `anatomyExamples` (Dialog has `anatomyExamples`), `decisions[]` backfilled on Select and TextField, `ruledOut[]` on Accordion, Select, DropdownMenu, TextField; light/dark check per page
+  - [ ] Rest of batch 2 picked and published
 - [ ] Phase A5: batch 3 (the rest, all 27 published, filter removed), `00-start-here.md` link, reverse links on ADR pages
 
 **Part B: Figma parity plugin**
@@ -171,6 +174,7 @@ Button (shallow anatomy, interaction states) and CardVertical (deep anatomy, par
 ### Phases A4 and A5: the other 25 components, in two batches
 
 - **Batch split** (chosen at the start of A4): put the components least like the two references in batch 2 (for example a primitive with no states such as `Stack`, a form input such as `TextField`, a disclosure such as `Accordion` or `DropdownMenu`), so the template meets its edge cases early; batch 3 is the rest. A template change found in batch 2 is fixed on all published pages before batch 3.
+- **Batch 2 as chosen (2026-11-14).** Showcase core, the five pages the portfolio links to: **Dialog** (native `<dialog>`, focus in/out, most decisions recorded: 9 `decisions[]`, 7 `ruledOut[]`), **Accordion** (disclosure, heading-wrapped trigger, inert always-mounted panel; the only component with the full review trail), **Select** (WAI-ARIA combobox with listbox popup, error/required states), **DropdownMenu** (headless menu/listbox, the composing component owns focus; Select reuses its effects), **TextField** (label, `aria-describedby` errors, decorative icon; `Placeholder` is the `notRendered` edge case). Four distinct a11y patterns, and three of the plan's named edge cases. Their "Why" section must not read "none recorded" before the portfolio links them, and only Accordion has an approved visual review, so claim "reviewed" per component only once its checklist says so. The rest of batch 2 (~7) is fill chosen for template edge cases (e.g. `Stack`, a primitive with no states) and needs no extra polish. Swap candidates for visual range: Chip, ProgressBar.
 - Each batch: `data-part` + `anatomyExamples` on every component in it (`anatomy:test` covers them), add the names to the published list in `apps/docs/components.mjs`, check each page in light and dark.
 - A5 removes the published list (all 27), then the site-wide items below.
 - Generate every page, link each one to its Storybook story and its spec file on GitHub, and add one line to `00-start-here.md` pointing to the Components section.
