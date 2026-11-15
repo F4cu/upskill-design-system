@@ -3,32 +3,13 @@ title: "ADR-026 — Component prop vocabulary and API proposal step"
 ---
 # ADR-026 — Component prop vocabulary and API proposal step
 
-**Date:** 2026-10-07
-**Status:** `accepted`
-**Amended:** 2026-11-10
+**Status:** `accepted` · **Date:** 2026-10-07 · **Last amended:** 2026-11-10
 
-## Context
-
-ADR-023, ADR-024 and ADR-025 each set naming rules for the problem in front of them: part names are Figma layer names, variants name an absolute weight, lifecycle state is one `status` enum, booleans are bare adjectives that default to `false`. ADR-023 deferred the rest: "The system-wide property-naming audit is a separate follow-up." This ADR is that follow-up.
-
-The rules exist, but nothing lists the concepts. Nothing says that "the selected value" is always `value`, or that "show/hide" is always `open`. So the same concept already has different names across the fixed set. `scripts/generate-pattern-schema.js` reports this in `.claude/component-patterns.json` → `drift`, but only `/layout-generation` reads that file (ADR-013), so a scaffold never sees it:
-
-- Change callbacks: `onOpenChange` (Accordion), `onPressedChange` (CardVertical.Favorite), `onValueChange` (Select), `onSelect`/`onClose` (DropdownMenu).
-- Selected value: `value` (Select) vs `selectedValue` (DropdownMenu).
-- Size scales: `sm|md|lg` (Button, Avatar), `sm|lg` (CardVertical), `sm|md` (Icon), `default|large` (TextField).
-- A controlled pair whose names don't match: `searchValue` + `onSearchChange` (AppHeader).
-
-The ds101 references the system is built on ([Component property naming](https://f4cu.github.io/ds101/component-property-naming/), [Component API design](https://f4cu.github.io/ds101/component-api-design/), [Component usability](https://f4cu.github.io/ds101/component-usability/)) ask for three things: name one concept one way across components; use the same names, options and defaults in Figma and code; agree on an API (anatomy plus a props list marked Figma-only, code-only or both) before building. The first two are only partly written down. The third has no step anywhere: `/component-scaffold` goes straight from Figma context to four files.
-
-The options were:
-
-1. **An API template document in `docs/`** that every new component fills in. It would duplicate the metadata and the TypeScript props type, go stale like every doc page, and nobody would read it at the moment of naming a prop.
-2. **A `props` section in `component.schema.json`.** It would make prop names machine-checkable from metadata. But it is a breaking change to the ADR-001 contract, it duplicates the TypeScript types (which are already the source of truth for props), and every one of 27 metadata files would need a migration.
-3. **A vocabulary table in the component rules, plus an API proposal checkpoint in `/component-scaffold`.** The vocabulary lives where it is loaded when touching component code. The checkpoint is the "agree before building" moment, and it lives in the command that produces the API.
+> **In short.** One concept gets one prop name across the fixed set (table below), and Figma uses the same names up to casing unless a mapping is recorded here. `spec:validate` enforces the vocabulary through `scripts/prop-vocabulary.js`. `/component-scaffold` proposes the API (anatomy, props, divergences) and waits for approval before writing any file.
 
 ## Decision
 
-Option 3. The vocabulary is a table in `packages/components/AGENTS.md` → "Prop vocabulary". The proposal step is in `/component-scaffold`.
+The vocabulary is a table in `packages/components/AGENTS.md` → "Prop vocabulary"; the proposal step is in `/component-scaffold`. This ADR holds the full rules and the reasons.
 
 ### Vocabulary
 
@@ -58,39 +39,69 @@ One concept gets one name across the fixed set. A new component reuses these nam
 | Root element / inner heading | `as` / `headingLevel` | `as` changes the component's root element; `headingLevel` sets a heading the component renders inside itself (`Accordion`). |
 | Link | `href` | |
 
+**Recorded new terms** (outside the vocabulary, each with its reason):
+
+| Component | Prop | Why it is not a vocabulary name |
+|---|---|---|
+| DropdownMenu | `listRole: 'menu' \| 'listbox'` | Picks the ARIA pattern (`menu` + `menuitem` for actions, `listbox` + `option` with `aria-selected` for a choice from `value`). It changes what assistive technology announces, not the look, so it is not a `variant`. It is not named `role` because that is the native HTML attribute; the props type omits `role` so the component sets it on the root itself. |
+| AppHeader | `logoSrcDark` | The Image row's part prefix (`logoSrc`) plus a theme suffix. The header renders both images and CSS shows one per `data-theme`, because a logo is an asset, not a token, and can't follow the theme through a variable. Optional: without it the light logo shows in both themes. |
+
+### Enforcement
+
+`spec:validate` runs `scripts/prop-vocabulary.js` on every spec's props. Because `spec:validate` already proves the spec props equal the code props, this checks the code.
+
+- **Banned names:** `type`/`kind`/`mode`/`style`/`tone`/`appearance` (except native attributes), `state`, `hover`/`focus`/`focused`/`hovered`/`active`, `expanded`/`visible`, a bare `onClose`, `selected`/`selected*`, `invalid`. **Banned prefixes:** `is`/`has`/`show`/`handle`.
+- **Booleans** that aren't native or controlled default to `false`.
+- **Callbacks** are `on<Verb>`.
+- **The controlled triple:** `default<X>` needs `<x>` and `on<X>Change`; `on<X>Change` needs `<x>`.
+- **Value checks:** array props are `items`/`<part>Items`/`options`; `error` is a string; `shape` and `orientation` take their two values; `size` is `sm`/`md`/`lg` or type-scale names, never a mix.
+- **Figma:** a `both`-surface property equals the prop name up to casing, after dropping `Has <x>` and with `children` exempt. `State` is never a configured prop's property.
+- **Concept ↔ name.** Each spec prop's `concept` is a closed enum in `component.spec.schema.json`: the short concept names of the vocabulary table in `packages/components/AGENTS.md`, `native`, or `new term: <reason>`. The check fails when a prop's name doesn't fit its concept (`Size` must be `size`; `Image` must be `src`/`alt` or `<part>Src`/`<part>Alt`; `Discrete event` must be `on<Verb>`; `Controlled state` allows `on<X>Change` or `onChange` but no other callback; `Lifecycle` allows `status` or the data it derives from, `progress`, ADR-025), when a vocabulary name carries another concept (`variant` is always `Visual weight/style`, `label` always `Accessible name`) unless the prop is native, when `native` sits on a prop that isn't kind `native` or a `Boolean` prop isn't typed `boolean`, and when the schema enum and the name rules disagree. Native-input names (`checked`, `value` + `onChange` on Checkbox and TextField) are `Controlled state`. The docs component page shows each prop's concept; a `new term` shows its reason.
+
+Exceptions are waived by id in `scripts/prop-vocabulary-waivers.json`, a shrinking ledger: a waiver that stops matching fails the gate, so it must be deleted. Current waivers:
+
+- CardVertical `progress` ↔ `Status`: the recorded mapping below.
+- Inline `wrap` defaults to `true`: it predates the vocabulary, and flipping it is a breaking rename.
+- AppHeader `logoSrc` ↔ Figma `Logo`: **open drift.** Rename the Figma property to `Logo src` or record the mapping, then delete the waiver.
+
+`scripts/generate-pattern-schema.js` separately reports `drift` in `component-patterns.json` for `/layout-generation` (ADR-013): every `on<X>Change` needs an `x` prop, every `default<X>` needs both `x` and `on<X>Change`, and selection components never carry a `selected*` prop.
+
 ### Figma names
 
-Code and Figma share names, values and defaults. Casing is the only routine difference: `trailingIcon` in code is `Trailing icon` in Figma, and `variant` is `Variant`. A slot property takes its code prop's name: the one default slot is `Children`; other slots take their part's name (`Body`, `Meta`). Any other difference is a **recorded mapping**: it goes in the table below and is called out in the component's API proposal. It is never an unrecorded divergence. Known mappings:
+Code and Figma share names, values and defaults. Casing is the only routine difference: `trailingIcon` in code is `Trailing icon` in Figma, and `variant` is `Variant`. A slot property takes its code prop's name: the one default slot is `Children`; other slots take their part's name (`Body`, `Meta`). A label string is a `Text` text property, not a slot. Any other difference is a **recorded mapping**: it goes in the table below and is called out in the component's API proposal. It is never an unrecorded divergence.
 
 | Code | Figma | Why |
 |---|---|---|
-| Optional prop or optional part omitted | `Has <x>` boolean, default `false` | An instance-swap or text layer has no "empty" option (ADR-023). An optional part left out of a composition (`<CardVertical.Progress>` on `Root`) is the same case (amendment 2026-10-12). |
-| Pseudo-classes (`:hover`, `:focus-visible`, `:active`) | `State` variant | Preview only; `State` holds interaction only (ADR-025). `:disabled` is the `Disabled` boolean, a casing-only match with `disabled`. |
-| `children` as a label string | `Text` text property | A text property, not a slot: the label layer's content (Button, Chip). `Children` names only a slot property. |
+| Optional prop or optional part omitted | `Has <x>` boolean, default `false` | An instance-swap or text layer has no "empty" option (ADR-023). An optional part left out of a composition (`<CardVertical.Progress>` on `Root`) is the same case: its code counterpart is rendering the part or not. |
+| Pseudo-classes (`:hover`, `:focus-visible`, `:active`) | `State` variant (`Default`/`Hover`/`Focus`/`Active`) | Preview only; `State` holds interaction only (ADR-025). |
+| `disabled` | `Disabled` boolean, default `false`, ordered first | A casing-only match, not a mapping: disabled is a configured flag (ADR-025), so it never lives in `State`. Disabled is built at `State=Default` only. |
+| `children` as a label string | `Text` text property | A text property, not a slot: the label layer's content (Button, Chip, Badge). `Children` names only a slot property. |
 | Native `value` / `placeholder` (TextField) | `Has value` variant + `Value` text property | Figma can't show the placeholder and a value at once. `Has value=false` previews the placeholder style; `Value` holds whichever text is shown. |
 | `progress` (CardVertical) | `Status` variant (`Not started` / `In progress` / `Completed`) | Preview of the lifecycle the code derives from `progress` (ADR-025). Figma can't derive, so the axis is explicit there and has no code prop. |
 | `value` (ProgressBar, `number` 0–100) | `Value` variant (`0`/`10`/`20`/`50`/`80`/`100`) | A variant can't hold a continuous number, so Figma previews a few steps. Same name; the values are a sample. |
-| `aria-selected` on a menu or listbox item (Derived from the container's `value`) | `Selected` boolean on the item, built at `State=Default` only | Preview only. Figma can't derive the selection from a container, and the item takes no `selected` prop in code (vocabulary: selection in a set). |
+| `aria-selected` on a menu or listbox item (derived from the container's `value`) | `Selected` boolean on the item, built at `State=Default` only | Preview only. Figma can't derive the selection from a container, and the item takes no `selected` prop in code (vocabulary: selection in a set). |
 
 Code-only props (event handlers, `default*`, `className`, `id`) have no Figma property. Figma-only properties (`State`, `Has <x>`, design-only interaction states such as Menu `Expanded`) are listed as such.
 
-**A state that changes both the parent and a nested part is a variant on the parent** (amendment 2026-10-07, TextField `Has error`):
+**A state that changes both the parent and a nested part is a variant on the parent** (TextField and Select `Has error`):
 
 - Figma can't drive a nested instance's variant from a parent boolean. So the parent becomes a set whose variants differ **only** in that state, each with the nested part preset to match. Figma keeps a designer's nested overrides on a parent flip only for properties the two presets agree on.
 - The nested instance must not be bound to an instance-swap property. A swap value is shared by every variant, so per-variant presets collapse into one.
 - All other part properties stay on the part, exposed through nested instance properties. Add a parent axis only when a state really spans parent and part; multiplying axes is how configuration collapse starts (ds101, Nathan Curtis).
 
-Figma-only properties with no code counterpart, recorded 2026-10-07:
+**`figmaNodeId` is a node id or `none`**, enforced as `^([0-9]+:[0-9]+|none)$`. `none` covers layout primitives, text-style components (`Text`, `Heading`, `VideoFrame`), components with no set (`Card`, `Divider`, `TextLink`), and `Icon` (its glyphs are 32 single components, not a set).
+
+Figma-only properties with no code counterpart:
 
 | Component set | Property | Why it stays |
 |---|---|---|
-| Chip | `Has dropdown` | Legacy dropdown-arrow look. Out of scope in code (Chip metadata "do not use"); kept because placed instances use it. |
+| Chip | `Has dropdown` | Legacy dropdown-arrow look. Out of scope in code (Chip usage "do not use"); kept because placed instances use it. |
 | Accordion list | The whole set, `Show more` = `false` / `true` | A stack of `Accordion` instances plus a Show more link, for page mock-ups. Code composes Accordions directly and has no list component. |
 | Input Group + button | The whole component | Search input plus icon button, for page mock-ups. Code composes `TextField` and `Button` (AppHeader search). |
 | Image | `Size` = `Small` / `Medium` / `Large` | Placeholder sizes for mock-ups; code sizes by `aspectRatio` and its container. |
 | AppHeader | `Device` = `Desktop` / `Tablet` / `Mobile` | One preview per device breakpoint. Code reflows with device tokens and media queries in its CSS Module, and has no prop. |
 
-Known gaps (code props with no Figma property): TextField `hideLabel` (Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand).
+Known gap (code prop with no Figma property): TextField `hideLabel`. Figma can't invert a boolean onto a layer's visibility; hide the `Label` layer by hand.
 
 ### API proposal step
 
@@ -100,67 +111,105 @@ Before writing any file, `/component-scaffold` produces an **API proposal** and 
 - **Props table:** one row per prop, with its vocabulary concept (or "new term" with a reason), kind (variant axis, lifecycle, content, controlled state, event, native), type, default, and Figma property, marked both, code-only or Figma-only.
 - **Divergences:** any Figma property that differs from code by more than casing, and any value that departs from the vocabulary.
 
-The developer approves or edits the table; only then are the four files generated. Inside `/add-component` this is part of Stage 1, so the loop gains a checkpoint before code exists, in addition to the visual checkpoint after it.
+The developer approves or edits the table; only then are the files generated. Inside `/add-component` this is part of Stage 1, so the loop gains a checkpoint before code exists, in addition to the visual checkpoint after it.
+
+## Context
+
+ADR-023, ADR-024 and ADR-025 each set naming rules for the problem in front of them: part names are Figma layer names, variants name an absolute weight, lifecycle state is one `status` enum, booleans are bare adjectives that default to `false`. ADR-023 deferred the rest: "The system-wide property-naming audit is a separate follow-up." This ADR is that follow-up.
+
+The rules existed, but nothing listed the concepts. Nothing said that "the selected value" is always `value`, or that "show/hide" is always `open`. So the same concept had different names across the fixed set. `scripts/generate-pattern-schema.js` reported this in `component-patterns.json` → `drift`, but only `/layout-generation` reads that file (ADR-013), so a scaffold never saw it:
+
+- Change callbacks: `onOpenChange` (Accordion), `onPressedChange` (CardVertical.Favorite), `onValueChange` (Select), `onSelect`/`onClose` (DropdownMenu).
+- Selected value: `value` (Select) vs `selectedValue` (DropdownMenu).
+- Size scales: `sm|md|lg` (Button, Avatar), `sm|lg` (CardVertical), `sm|md` (Icon), `default|large` (TextField).
+- A controlled pair whose names didn't match: `searchValue` + `onSearchChange` (AppHeader).
+
+The ds101 references the system is built on ([Component property naming](https://f4cu.github.io/ds101/component-property-naming/), [Component API design](https://f4cu.github.io/ds101/component-api-design/), [Component usability](https://f4cu.github.io/ds101/component-usability/)) ask for three things: name one concept one way across components; use the same names, options and defaults in Figma and code; agree on an API (anatomy plus a props list marked Figma-only, code-only or both) before building. The first two were only partly written down. The third had no step anywhere: `/component-scaffold` went straight from Figma context to the component files.
 
 ## Consequences
 
 - One reference answers "what do I call this prop?". It is loaded with the component rules, so it is in front of the scaffold and the reviewer at the moment a name is chosen. The ADR-025 naming bullet folds into it.
-- Naming arguments happen once, on a table, before code and Figma exist. That is cheaper than renaming afterwards, which ADR-024 showed costs a migration in code, metadata, stories and Figma.
+- Naming arguments happen once, on a table, before code and Figma exist. That is cheaper than renaming afterwards, which ADR-024 showed costs a migration in code, usage, stories and Figma.
 - `/component-scaffold` is no longer one-shot: it waits for a reply. That is the point of the step, and it matches the developer-present nature of the moment.
-- **No new gate yet.** Detection is the `drift` report in `component-patterns.json`. Since 2026-10-07, `scripts/generate-pattern-schema.js` checks this vocabulary instead of requiring one callback name system-wide: every `on<X>Change` needs an `x` prop, every `default<X>` needs both `x` and `on<X>Change`, and selection components never carry a `selected*` prop. A blocking check (adding banned boolean prefixes) is still a follow-up.
-- **Existing drift is migrated in a separate PR.** These are breaking renames, each touching code, metadata, stories and Figma, so they ship apart from this decision:
+- The prose in `packages/components/AGENTS.md` keeps only what needs judgement (which concept a prop is, the state groups, the Figma mappings); the gate enforces the rest.
+- `concept` is gated rather than free text. The 37 `new term` values are reviewable on the docs page; 25 of them are the layout primitives' props, which is evidence for a vocabulary row for layout props, not decided here.
+- The harness-ablation Arm 0 strips `scripts/prop-vocabulary.js` and its waivers along with `validate-spec.js`.
+- **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). That is a behaviour gap, not a naming one, tracked in issue #114.
 
-  | Component | Before | After | State |
-  |---|---|---|---|
-  | AppHeader | `searchValue` + `onSearchChange` | `onSearchValueChange` | Migrated 2026-10-07 |
-  | DropdownMenu | `selectedValue`; `onClose`; rendered conditionally by the consumer | `value`; `open` + `onOpenChange` (controlled only: the consumer owns the trigger, and the menu only ever requests `false`) | Migrated 2026-10-07 |
-  | TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07; Figma `Size` renamed in the alignment pass (amendment below) |
-  | Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07, Figma included: `state=Selected` split into `Pressed` (default `false`) and `State` (interaction) |
-  | Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value (vocabulary row above) | Closed 2026-10-07 |
-  | Badge | `label` (the badge's text) | `children` (single free-form content, vocabulary row above) | Migrated 2026-10-10, Figma included (amendment below). Found 2026-10-08 by the harness-ablation pilot, where every arm named it `children` |
-  | AppHeader | `NavItem.active` (the current page) | `NavItem.current` ("Current item in navigation" row above). `active` now means the momentary press (ADR-025 amendment 2026-10-10) | Migrated 2026-10-10 (amendment below) |
-  | Accordion | metadata `states` `collapsed` / `expanded` | `closed` / `open`, the values of the `open` prop | Migrated 2026-10-10 (amendment below) |
+## Ruled out
 
-- **Out of scope:** forwarding `ref` to the root element (ds101 usability checklist, question 9). No component forwards one today. That is a behaviour gap, not a naming one, tracked in issue #114.
+Alternatives considered and rules that were tried and dropped. Each says why, so it isn't proposed again.
 
-## Amendment (2026-10-07) — Figma alignment pass
+| Ruled out | When | Why |
+|---|---|---|
+| An API template document in `docs/` that every new component fills in | 2026-10-07 | Duplicates the metadata and the TypeScript props type, goes stale like every doc page, and isn't in front of anyone at the moment of naming a prop. |
+| A `props` section in `component.schema.json` | 2026-10-07 | A breaking change to the ADR-001 contract that duplicates the TypeScript types (the source of truth for props) and needs a migration of all 27 metadata files. Spec `props` (ADR-027) later took this role without touching the metadata contract. |
+| One change-callback name required system-wide (old `drift` rule) | 2026-10-07 | Contradicted the vocabulary, which derives the callback from the state prop's name. Replaced by the controlled-triple rule. |
+| `variant` ↔ Figma `Style` as a recorded mapping | 2026-10-10 | It was a preference, not a Figma limitation: Figma's own Simple Design System ([figma/sds](https://github.com/figma/sds)) uses `Variant`, and `Style` collides with Figma's color and text styles. |
+| `appearance` instead of `variant` | 2026-10-10 | `variant` is the majority name (MUI, Radix, Chakra, shadcn, Primer, Polaris, React Spectrum, SDS) and agents default to it. |
+| Slot named after the part when it maps to `children` (e.g. `CardVertical.Meta`'s `Meta` slot) | 2026-10-10 | The default slot takes the code prop's name, `Children` (Nathan Curtis, ["Implementing Slots in a Figma Library"](https://nathanacurtis.substack.com/p/implementing-slots-in-a-figma-library)). |
+| `active` for the current nav item | 2026-10-10 | `active` became the momentary press on every interactive component (ADR-025), so the two meanings would meet on one element. Replaced by `current`, which names the ARIA attribute it drives. |
+| `label` for a component's single free-form text (Badge) | 2026-10-10 | The Main content row prescribes `children`; every harness-ablation run named it that unprompted. |
+| `State=Disabled` as a Figma interaction state | 2026-10-11 | `disabled` is a configured flag, not an interaction (ADR-025); it is a `Disabled` boolean. |
+| Free text in `figmaNodeId` (`N/A — …`, `note: …`, `""`) | 2026-10-11 | `sense-component.js` read it as a node id, and `airtable-sync.js` only strips values starting with `none`. |
+| "No new gate yet" (drift report only) | 2026-11-10 | Prose enforcement had hit the `packages/components/AGENTS.md` context budget (ADR-029). Replaced by the blocking check in `spec:validate`. |
+| Free-text `concept` on spec props | 2026-11-10 | Nothing read it, and four props carried a sentence instead of a concept (#150). |
+| Using this ADR's long row titles as the `concept` enum | 2026-11-10 | Every spec already used the short names in `packages/components/AGENTS.md`; renaming over a hundred values adds churn and no information. |
 
-The file was brought in line with the vocabulary by renaming properties in place, so placed instances keep their state. No components were created or deleted.
+## Change history
 
-- **`variant` ↔ `Style` confirmed.** Button and Select already used `Style`; CardHorizontal's `Variant` axis is renamed to `Style`.
-- **Chip:** `state=Active|Hover|Selected` split into `Pressed` (`false`/`true`) and `State` (`Default`/`Hover`); `dropdown` renamed `Has dropdown` (Figma-only, table above). All 30 instances kept their state.
+One line per change, newest first. The full text of each original amendment is in git history (`git log -p -- docs/decisions/026-component-prop-vocabulary.md`).
+
+- **2026-11-10** — Each prop's `concept` is a closed enum checked against its name (Enforcement). No existing spec needed a waiver.
+- **2026-11-10** — The blocking vocabulary check ships in `spec:validate`, with a waiver ledger seeded with three waivers across 27 specs.
+- **2026-10-12** — The `Has <x>` mapping covers optional parts, not only optional props. Surfaced by the Figma fidelity measurement (`.claude/handoff/2026-10-12-figma-fidelity-measurements.handoff.md`); see ADR-023 amendment 2026-10-12.
+- **2026-10-11** — Contract migration Tier 4: CardVertical.Root progress already read `Value`; Checkbox gained `Checked=true, State=Hover`. `component-patterns.json` reports no drift.
+- **2026-10-11** — Contract migration Tier 3: `Disabled` leaves `State` in every Figma set; `State=Active` previews added; nine sets linked or renamed; `figmaNodeId` constrained.
+- **2026-10-11** — `Disabled` leaves `State` (decision; migrated the same day in Tier 3).
+- **2026-10-10** — Contract migration Tier 1: AppHeader `NavItem.active` → `current`; Accordion states `collapsed`/`expanded` → `closed`/`open`; `listRole` and `logoSrcDark` recorded as new terms.
+- **2026-10-10** — Button `trailingIcon` and `shape` mapped in Figma; `Button icon` gained Disabled variants.
+- **2026-10-10** — Badge `label` → `children` migrated in code and Figma.
+- **2026-10-10** — `Variant` replaces `Style` in Figma; the default slot is `Children`.
+- **2026-10-08** — Badge `label` recorded as drift (found by the harness-ablation pilot).
+- **2026-10-07** — Figma alignment pass: properties renamed in place to match the vocabulary.
+- **2026-10-07** — Accepted. Parent-and-part variant rule added (TextField `Has error`).
+
+<details>
+<summary>Vocabulary migration (all rows closed)</summary>
+
+These were breaking renames, each touching code, usage, stories and Figma, so they shipped apart from the decision.
+
+| Component | Before | After | State |
+|---|---|---|---|
+| AppHeader | `searchValue` + `onSearchChange` | `onSearchValueChange` | Migrated 2026-10-07 |
+| DropdownMenu | `selectedValue`; `onClose`; rendered conditionally by the consumer | `value`; `open` + `onOpenChange` (controlled only: the consumer owns the trigger, and the menu only ever requests `false`) | Migrated 2026-10-07 |
+| TextField | `size: default \| large` | `size: md \| lg` (40px/48px, the same steps as Button) | Migrated 2026-10-07, Figma included |
+| Chip | `selected` (renders `aria-pressed`) | `pressed` + `onPressedChange`, controlled only; filter rows are a labelled `role=group` | Migrated 2026-10-07, Figma included |
+| Card, CardHorizontal, Badge | `variant` values `default`, `outline` | No rename. Badge's `outline\|filled` names the look; `default` is a baseline value | Closed 2026-10-07 |
+| Badge | `label` (the badge's text) | `children` | Migrated 2026-10-10, Figma included |
+| AppHeader | `NavItem.active` (the current page) | `NavItem.current` | Migrated 2026-10-10 |
+| Accordion | metadata `states` `collapsed` / `expanded` | `closed` / `open`, the values of the `open` prop | Migrated 2026-10-10 |
+
+</details>
+
+<details>
+<summary>Figma change log (node ids and instance counts)</summary>
+
+All renames were made in place on existing variants, so placed instances kept their main component and state. Instances were read back before and after each change.
+
+**Alignment pass (2026-10-07).**
+
+- **Chip:** `state=Active|Hover|Selected` split into `Pressed` (`false`/`true`) and `State` (`Default`/`Hover`); `dropdown` renamed `Has dropdown`. All 30 instances kept their state.
 - **Accordion list item:** `isExpanded=on|off|isExpanded3` → `Open` (`true`/`false`, default `false`) × `State` (`Default`/`Hover`). The third variant was the collapsed hover state.
-- **Button:** `Size` values `Small`/`Default`/`Large` → `sm`/`md`/`lg`. The default variant is now `md` + `Neutral`, matching code. `Trailing icon` (default `true`) toggled the *leading* icon; it is renamed `Has icon`, defaults to `false`, and the instance swap is renamed `Icon`. The 7 instances that showed the icon through the old default were pinned to `true`, so nothing changed visually.
+- **Button:** `Size` values `Small`/`Default`/`Large` → `sm`/`md`/`lg`. The default variant is `md` + `Neutral`, matching code. `Trailing icon` (default `true`) toggled the *leading* icon; renamed `Has icon`, default `false`, and the instance swap renamed `Icon`. The 7 instances that showed the icon through the old default were pinned to `true`.
 - **CardHorizontal:** `Progress` → `Has progress`. **Button arrow:** `State=Active` → `Default` (`Active` reads as the `:active` pseudo-class). **CardVertical:** `State` values recased to `Default`/`Hover`.
-- **Component set names match code:** `Accordion list item` → `Accordion`; the former `Accordion` composite → `Accordion list`, with its `State=Expanded|Collapsed` axis renamed `Show more` (default `false`), since `State` is reserved for interaction; `Button arrow` → `ButtonArrow`; `Image placeholder` → `Image`; `Option menu` → `DropdownMenu`; `Option item` → `DropdownMenu/Item` (its layers inside DropdownMenu → `Item`).
-- **Checkbox** (`92:8772`, formerly `Checkbox with label`): `State=on|off|State3` → `Checked` (`false`/`true`, the native-input name) × `State` (`Default`/`Hover`). `State3` became the Hover preview. A `Label` text property now drives the label layer. The box, check and label are rebound to the variables the code reads (`background/input`, `background/brand`, `border/input/{default,hover}` at 1.5px, `text/inverted/default`, `text/default`). All 12 instances kept their checked state and labels. `State` gained `Disabled` for both `Checked` values (border `border/disabled`, label `text/disabled`, checked fill `background/disabled`), so every metadata state has a preview. The box's main component (`92:8764`), which had been removed from the canvas while its instances stayed, is back on the Checkbox page as `_Checkbox/Box` (private, unpublished), defaulting to the unchecked look; variants override fill, stroke and check per state.
-- **TextField:** the Figma `Input Group` (`71:1189`) is the code `TextField` (label + input + error) and takes its name. It gains `Label` and `Error` text properties and is now a set (`2879:8549`) with a `Has error` variant. Its two variants differ only in the nested input's `Has error`, so one switch shows the red border and the message; the `Input` swap property was removed to make that possible (rule above). This was tested on throwaway copies first. The error layer uses `font/size/body-small` and `text/feedback/error`. Its nested input's properties are exposed on the parent, and the input fills the field's width as in code. `Input field` (`92:8005`) becomes the private part `_TextField/Input`:
-  - `Size` is `md`/`lg` (40/48px).
-  - `State=Empty|Filled|Hover` is split into `Has value` × `State` (`Default`/`Hover`/`Focus`/`Disabled`) plus `Has error` (with an empty+error row for "required field left empty"), covering every metadata state. The new Focus, Disabled and error rows are duplicates of existing variants.
-  - The 12 unused `Style=Outlined` variants were deleted, and the axis went with them; code has one look.
-  - `Trailing icon` (default `true`, but it toggled the leading icon) is now `Has icon` (default `false`) + `Icon`.
-  - Variables follow the CSS: fill `background/input`, borders `border/input/{default,hover}`, `border/selected`, `border/disabled`, `border/feedback/error`, text `text/default` or `text/disabled`.
-  - All 44 instances kept their variant, icon and text.
-- **Select** follows the TextField structure:
-  - The former `Select` set (`92:8030`) is the private part `_Select/Trigger`. Its `Style=Outlined|Filled` axis is gone: code has one look, and the single Outlined use was moved to Filled.
-  - Its properties are now `Has value` × `State` (`Default`/`Hover`/`Focus`/`Disabled`) × `Has error` (with empty+error) and a `Value` text property. It is bound per the CSS: placeholder `text/subtle`, chevron `icon/default`, or `icon/disabled` when disabled.
-  - A new `Select` set (`2879:8375`) holds `Label`, a `Trigger` and `Error`, with a `Has error` parent variant (rule above).
-  - The 8 TextFields that wrapped a Select (all "Language" pickers) are now `Select` instances with the same label, value and width. This closes the Select-in-TextField gap.
-- Figma's `clone()` drops `componentPropertyReferences`. A duplicated variant must be re-wired to the set's properties, or its layers stop responding to them.
-- Figma picks a set's default variant by canvas position (top-left), not layer order, so defaults were set by moving variants.
-- ADR-024's Figma follow-ups were already done: the Button `Style` values, the CardVertical halo (two drop shadows bound to `color/icon/on-media/halo`), and the variables.
+- **Set names match code:** `Accordion list item` → `Accordion`; the former `Accordion` composite → `Accordion list`, its `State=Expanded|Collapsed` axis renamed `Show more` (default `false`); `Button arrow` → `ButtonArrow`; `Image placeholder` → `Image`; `Option menu` → `DropdownMenu`; `Option item` → `DropdownMenu/Item`.
+- **Checkbox** (`92:8772`, formerly `Checkbox with label`): `State=on|off|State3` → `Checked` × `State` (`Default`/`Hover`). A `Label` text property drives the label layer. Box, check and label rebound to the variables the code reads (`background/input`, `background/brand`, `border/input/{default,hover}` at 1.5px, `text/inverted/default`, `text/default`). All 12 instances kept their state and labels. The box's main component (`92:8764`), removed from the canvas while its instances stayed, is back as `_Checkbox/Box` (private, unpublished).
+- **TextField:** the Figma `Input Group` (`71:1189`) became `TextField` (label + input + error), now a set (`2879:8549`) with `Label` and `Error` text properties and a `Has error` variant; the `Input` swap property was removed so per-variant presets work (parent-and-part rule). Error layer: `font/size/body-small`, `text/feedback/error`. `Input field` (`92:8005`) became the private part `_TextField/Input`: `Size` `md`/`lg`; `State=Empty|Filled|Hover` split into `Has value` × `State` plus `Has error`; the 12 unused `Style=Outlined` variants deleted; `Trailing icon` → `Has icon` + `Icon`; variables follow the CSS. All 44 instances kept their variant, icon and text.
+- **Select** follows TextField: the former `Select` set (`92:8030`) is the private part `_Select/Trigger` (its `Style` axis removed; the single Outlined use moved to Filled), with `Has value` × `State` × `Has error` and a `Value` text property. A new `Select` set (`2879:8375`) holds `Label`, `Trigger` and `Error`. The 8 TextFields that wrapped a Select (all "Language" pickers) are now `Select` instances.
+- Figma's `clone()` drops `componentPropertyReferences`: a duplicated variant must be re-wired to the set's properties. Figma picks a set's default variant by canvas position (top-left), not layer order.
 
-## Amendment (2026-10-08) — Badge `label` is drift
-
-The harness-ablation pilot rebuilt Badge three times and every run named its text `children`, which is what the Content row prescribes for single free-form content. Badge's shipped `label` predates the vocabulary. It joins the migration table as open drift; the rename is a separate breaking PR like the others.
-
-## Amendment (2026-10-10) — `Variant` in Figma, `Children` for a default slot
-
-**`variant` ↔ `Style` is no longer a recorded mapping.** Its rationale was that a property named `Variant` is ambiguous in the Figma UI. Figma's own Simple Design System ([figma/sds](https://github.com/figma/sds), `Button.figma.ts` reads `getEnum("Variant", …)`) names it `Variant`, and `Style` collides with Figma's color and text styles. Every other mapping in the table exists because Figma can't express something; this one was a preference. `appearance` (Atlassian, Fluent) was considered and rejected: `variant` is the majority name (MUI, Radix, Chakra, shadcn, Primer, Polaris, React Spectrum, SDS), and agents default to it, so the code name stays and Figma follows it with a casing-only difference.
-
-**Slot properties are named after their code prop.** A part or component whose one free-form region maps to `children` in code names that slot `Children` in Figma (Nathan Curtis, ["Implementing Slots in a Figma Library"](https://nathanacurtis.substack.com/p/implementing-slots-in-a-figma-library): name the default slot `children` or `items`). A component with several regions names each slot after its part (`Body`). A label string is a `Text` text property, not a slot.
-
-Renamed in place in the Figma file; all 326 placed instances kept their values (read back before and after):
+**`Variant` and `Children` (2026-10-10).** 326 instances kept their values.
 
 | Node | Set | Before | After | Instances |
 |---|---|---|---|---|
@@ -170,57 +219,18 @@ Renamed in place in the Figma file; all 326 placed instances kept their values (
 | `143:4417` | brand-logo (Figma-only) | `Style` | `Variant` | 37 |
 | `2871:7505` | CardVertical.Meta | slot `Meta` | slot `Children` | 8 |
 
-`CardVertical.Root`'s `Body` slot keeps its name: Root has several regions, and `Body` is the part's name. No Figma property is named `Style` any more.
+`CardVertical.Root`'s `Body` slot keeps its name: Root has several regions.
 
-## Amendment (2026-10-10) — Badge `label` → `children` migrated
+**Badge (2026-10-10).** Set `28:1134`, 13 instances: `type=Default|highlight` → `Variant=Outline|Filled`; a `Text` text property drives the label; the Filled variant's visible stroke is a 1px transparent stroke, matching the CSS.
 
-Badge now takes its text as `children: ReactNode`, like Chip. All call sites moved: Badge and CardVertical stories, and the showcase's CourseOverview, Dashboard, PipelineDag and PipelineDetailPanel. The Figma `Badge` set (`28:1134`, previously recorded as having no Figma node) is aligned to the same API, in place, with all 13 instances keeping their variant and text:
+**Button `trailingIcon` and `shape` (2026-10-10).**
 
-- `type=Default|highlight` → `Variant=Outline|Filled`. The values match code's `outline|filled` (Default had the `border/default` stroke only; highlight had the `background/overlay/subtlest` fill).
-- A new `Text` text property drives the label layer: the recorded `children` ↔ `Text` mapping, as on Button and Chip.
-- The Filled variant's visible `border/default` stroke is now a 1px transparent stroke, matching the CSS `border: 1px solid transparent`. Code is the source of truth (ADR-002).
+- `shape` maps to `Button icon`'s existing `Shape` (`Square`/`Round`); that set's `size=Small|Medium|Large` → `Size=sm|md|lg`, `icon` → `Icon`.
+- Every `Button` variant (36) gained a `TrailingIcon` layer driven by `Has trailing icon` + `Trailing icon` (swap, default `chevron-down`). All 54 instances keep it hidden.
+- Verification gap: figma-cli's 20,000-character output limit cut the before-snapshot, so 75 of 136 `Button icon` instances had no before-state; the 61 that did were unchanged.
+- `Button icon` gained 18 disabled variants and was re-gridded; default is `Size=md, Shape=Square, Variant=Neutral, State=Default`. `Button` Neutral disabled now uses `border/disabled` and `text/disabled`, not the raw `neutral/neutral-8`.
 
-## Amendment (2026-10-10) — Button `trailingIcon` and `shape` in Figma
-
-Two of the three known gaps are closed. `TextField` `hideLabel` remains.
-
-- **`shape` was never a gap.** The icon-only `Button icon` set (`54:1192`) already had `Shape` (`Square` / `Round`), so code `shape` maps to it with recased values. That set's own drift is fixed in place, the same way as the Button alignment pass: `size=Small|Medium|Large` → `Size=sm|md|lg`, and `icon` → `Icon`.
-- **`trailingIcon`:** every one of the `Button` set's (`57:1265`) 36 variants gains a `TrailingIcon` layer after the label, sized like that variant's leading icon (16px at `sm`, 24px otherwise). The layer is driven by `Has trailing icon` (default `false`) and `Trailing icon` (an instance swap, default `chevron-down`): the recorded "optional prop omitted ↔ `Has <x>`" mapping. All 54 placed instances keep the layer hidden, with variant, text, leading icon and width unchanged.
-- **Verification gap:** the before-snapshot was cut off by figma-cli's 20,000-character output limit, so 75 of the 136 `Button icon` instances have no before-state to compare against. The 61 that do were unchanged, and all 136 have valid `Size` values after the rename.
-- **`Button icon` Disabled and default, fixed the same day.** The set gains `State=Disabled` for every size, shape and variant (18 variants), colored per the CSS: Accent fill `background/button/disabled` with an `icon/inverted/disabled` glyph; Neutral border `border/disabled` with a `text/disabled` glyph; Transparent a `text/disabled` glyph. Each Disabled variant is cloned from its Default and re-wired to the `Icon` swap. The set is re-gridded (rows Size × Shape, columns Variant × State), so the default is now `Size=md, Shape=Square, Variant=Neutral, State=Default`; code's `shape` has no default. All 136 instances were compared before and after, with no difference.
-- **`Button` Neutral Disabled matches the CSS.** Its three variants (one per size) used `border/default` and the raw primitive `neutral/neutral-8` on both glyphs. They now use `border/disabled` and `text/disabled`, as `.neutral:disabled` does; the label was already `text/disabled`. All 54 instances were compared before and after, with no difference.
-
-## Amendment (2026-10-10) — Component contract migration, Tier 1
-
-The first tier of the contract migration (vocabulary drift left after the earlier rows) ships the breaking renames and records the remaining props that are outside the vocabulary.
-
-- **AppHeader `NavItem.active` → `current`.** `active` marked the link for the current page and rendered `aria-current="page"`. Since the ADR-025 amendment of 2026-10-10, `active` is the momentary press on every interactive component, and the nav link gets that state in Tier 2, so the two meanings would have met on one element. `current` names the ARIA attribute it drives and is now a vocabulary row. The CSS class follows (`.navLinkCurrent`). Call sites moved: AppHeader and Layout stories, the showcase's Homepage and CourseOverview, and the `/layout-generation` grammar table.
-- **Accordion metadata `states`: `collapsed` / `expanded` → `closed` / `open`.** The vocabulary bans `expanded` for shown/hidden, and the component's prop is already `open`, so the state names now match the prop and the Figma `Open` property. `aria-expanded` keeps its name: it is the ARIA attribute, not a prop.
-- **Recorded new terms** (outside the vocabulary, each with its reason):
-
-  | Component | Prop | Why it is not a vocabulary name |
-  |---|---|---|
-  | DropdownMenu | `listRole: 'menu' \| 'listbox'` | Picks the ARIA pattern (`menu` + `menuitem` for actions, `listbox` + `option` with `aria-selected` for a choice from `value`). It changes what assistive technology announces, not the look, so it is not a `variant`. It is not named `role` because that is the native HTML attribute; the props type omits `role` so the component sets it on the root itself. |
-  | AppHeader | `logoSrcDark` | The Image row's part prefix (`logoSrc`) plus a theme suffix. The header renders both images and CSS shows one per `data-theme`, because a logo is an asset, not a token, and can't follow the theme through a variable. Optional: without it the light logo shows in both themes. |
-
-## Amendment (2026-10-11) — `Disabled` leaves `State`
-
-ADR-025 (amendment 2026-10-11) makes `disabled` a configured flag. In Figma it becomes a `Disabled` boolean (default `false`, ordered first), a casing-only match with code, so it is no longer covered by the pseudo-classes mapping. `State` keeps only `Default`/`Hover`/`Focus`/`Active`. The dated entries above that add `State=Disabled` record what was true then.
-
-Sets to migrate via `/figma-cli`. Each splits `State=Disabled` into `Disabled=true, State=Default`, builds disabled only at `State=Default`, and keeps every instance's look (compared before and after):
-
-- `Button` (`57:1265`) and `Button icon`
-- `Checkbox` (`92:8772`), for both `Checked` values
-- `TextField` and `Select`, alongside `Has value` and `Has error`
-- Any other set whose `State` has a `Disabled` value; `Chip` and `ButtonArrow` accept `disabled` in code, so check their sets first.
-
-Until a set is migrated, its `State=Disabled` stands as a pending exception.
-
-## Amendment (2026-10-11) — Component contract migration, Tier 3 (Figma alignment)
-
-Tier 3 aligns the Figma file with the contract (ADR-025 state groups, this ADR's names), interactively through `/figma-cli`. Every rename is made in place on the existing variants. Nothing is cloned or moved, so every placed instance keeps its main component. Each set's instances (main component id and size) were snapshotted before the change and compared after, and none changed.
-
-**`Disabled` leaves `State` in every set.** `State=Disabled` becomes `Disabled=true, State=Default`, and every other variant becomes `Disabled=false`. `Disabled` is the first property, and each set's default variant is unchanged. That closes the pending list in the amendment above, and no `State` in the file has a `Disabled` value any more.
+**Tier 3 (2026-10-11).** `Disabled` split out of `State`:
 
 | Node | Set | Disabled variants | Instances |
 |---|---|---:|---:|
@@ -231,79 +241,22 @@ Tier 3 aligns the Figma file with the contract (ADR-025 state groups, this ADR's
 | `92:8005` | `_TextField/Input` | 4 of 28 | 45 |
 | `92:8030` | `_Select/Trigger` | 1 of 7 | 8 |
 
-The outer `TextField` (`2879:8549`) and `Select` (`2879:8375`) sets carry only `Has error`. Their `Has value` × `State` axes live on the nested parts above (the parent-and-part rule). `Chip` has no disabled preview.
-
-**`State=Active` previews** (values from the ADR-025 Tier 2 table): ButtonArrow ×2 (`overlay/active` fill), DropdownMenu/Item, Accordion `Open=false` (`overlay/active` alone, because the closed trigger is transparent in code), and Checkbox for both `Checked` values (`overlay/active` layered over the container fill). The Accordion `Open=false, State=Hover` variant filled with `container/elevated`; it now uses `overlay/hover`, as the CSS does. Two of its text layers used a missing font family and now use the open variant's text style.
-
-**Linked and renamed sets.** Each of these sets now matches the code vocabulary. Four components that had no Figma node now point to one (`figmaNodeId`).
+The outer `TextField` (`2879:8549`) and `Select` (`2879:8375`) sets carry only `Has error`. `Chip` has no disabled preview. `State=Active` previews added to ButtonArrow, DropdownMenu/Item, Accordion `Open=false` and Checkbox; Accordion `Open=false, State=Hover` now uses `overlay/hover`.
 
 | Node | Before | After | Instances |
 |---|---|---|---:|
-| `95:16289` | Avatar `Size=Small/Medium/Large` (default Small) | `Size=sm/md/lg`, default `md` like code | 37 |
-| `54:1259` | Progress bar, `completion` | `ProgressBar`, `Value` (recorded mapping) | 219 |
-| `82:2242` | Header main, `headerLayout` | `AppHeader`, `Device` (Figma-only) | 16 |
-| `86:3211` | Breadcrumb (single component) | unchanged, now linked | 16 |
-| `130:8323` | breadcrumb link, `State=Active/hover/Current` (`Active` was the resting look) | `_Breadcrumb/Link`, `Current` × `State=Default/Hover/Active`. The current label now uses `text/default` like `.labelCurrent`, which darkens the 17 current-page instances. | 51 |
-| `130:8676` | Nav item, `Property 1=Default/Variant2` | `_AppHeader/NavItem`, `Current` × `State=Default/Hover/Active`. `Variant2` had no instances and became `Current=true` with `text/brand`, like `.navLinkCurrent`. | 22 |
-| `86:3505` | Show more link, `state=collapsed/expanded/state3/state4` × `Property` | `Open` × `State=Default/Hover` (part of the Figma-only Accordion list) | 8 |
-| `155:6236` | DropdownMenu/Item, `State` | `Selected` × `State`; `Selected=true` uses `text/brand` at weight 600, like `.itemSelected` | 24 |
-| `130:7289` | CardHorizontal `Variant=default/inverted` | `Variant=Default/Inverted`, the same casing as Badge's `Outline/Filled` | 91 |
+| `95:16289` | Avatar `Size=Small/Medium/Large` (default Small) | `Size=sm/md/lg`, default `md` | 37 |
+| `54:1259` | Progress bar, `completion` | `ProgressBar`, `Value` | 219 |
+| `82:2242` | Header main, `headerLayout` | `AppHeader`, `Device` | 16 |
+| `86:3211` | Breadcrumb | unchanged, now linked | 16 |
+| `130:8323` | breadcrumb link, `State=Active/hover/Current` | `_Breadcrumb/Link`, `Current` × `State=Default/Hover/Active`; current label uses `text/default` | 51 |
+| `130:8676` | Nav item, `Property 1=Default/Variant2` | `_AppHeader/NavItem`, `Current` × `State=Default/Hover/Active` | 22 |
+| `86:3505` | Show more link, `state=collapsed/expanded/state3/state4` × `Property` | `Open` × `State=Default/Hover` | 8 |
+| `155:6236` | DropdownMenu/Item, `State` | `Selected` × `State`; `Selected=true` uses `text/brand` at 600 | 24 |
+| `130:7289` | CardHorizontal `Variant=default/inverted` | `Variant=Default/Inverted` | 91 |
 
-**`figmaNodeId` is a node id or `none`.** The field held free text (`N/A — …`, `note: …`, `""`). `scripts/sense-component.js` treated that text as a node id, and `scripts/airtable-sync.js` only strips values starting with `none`. `component.schema.json` now enforces `^([0-9]+:[0-9]+|none)$`. `none` covers layout primitives, text-style components (`Text`, `Heading`, `VideoFrame`) and components with no set (`Card`, `Divider`, `TextLink`). Icon's old id pointed to a section of 32 single-glyph components, not a set, so Icon is `none` too.
+Variable pushed: `color/background/on-media/active` (Theme, both modes → `color/black/alpha-6`).
 
-**Variable push:** `color/background/on-media/active` (Theme, both modes → `color/black/alpha-6`), the Tier 2 token. It was the only variable missing.
+**Tier 4 (2026-10-11).** Checkbox `Checked=true, State=Hover` (`2934:8022`) added to `92:8772`; no `completion` property left in the file.
 
-Left for Tier 4: CardVertical.Root still exposes its progress part as `completion`, and Checkbox has no `Checked=true, State=Hover` cell.
-
-
-## Amendment (2026-10-11) — Component contract migration, Tier 4 (close-out)
-
-The two items Tier 3 left open are closed:
-
-- **CardVertical.Root progress** already reads `Value`. Its `Progress` parts are instances of the ProgressBar set, so the Tier 3 rename (`completion` → `Value`) carried through. A search of every set, component and instance in the file finds no `completion` left.
-- **Checkbox `Checked=true, State=Hover`** (`2934:8022`) added to `92:8772`: brand fill with an `overlay/hover` layer and the brand border, matching the code fix recorded in ADR-025 (amendment "Checkbox checked hover"). The set now has 8 variants; its default variant is unchanged.
-
-The metadata `composedOf` lists of AppHeader, Badge and Breadcrumb now match their JSX, so `component-patterns.json` reports no drift.
-
-## Amendment (2026-10-12) — `Has <x>` covers optional parts
-
-The `Has <x>` recorded mapping was worded for an optional prop. On a `Parent.Root`, what a consumer leaves out is an optional part, not a prop: `CardVertical.Root` previews `<CardVertical.Progress>` with `Has progress`. That is the same mapping, so the row now reads "optional prop or optional part omitted". It isn't a Figma-only property with no code counterpart: the counterpart is rendering the part or not. Surfaced by the answer-key read-back for the Figma fidelity measurement (`.claude/handoff/2026-10-12-figma-fidelity-measurements.handoff.md`); see ADR-023 amendment 2026-10-12 for the fixed-part rule.
-
-## Amendment (2026-11-10) — The blocking vocabulary check ships
-
-**Context.** The "No new gate yet" consequence above left a blocking check as a follow-up. Meanwhile the vocabulary and the ADR-025 state model were enforced only as prose in `packages/components/AGENTS.md`, and that file had reached its context budget (ADR-029 amendment 2026-11-10).
-
-**Decision.** `spec:validate` now runs `scripts/prop-vocabulary.js` on every spec's props. Because `spec:validate` already proves the spec props equal the code props, this checks the code. Rules:
-
-- **Banned names:** `type`/`kind`/`mode`/`style`/`tone`/`appearance` (except native attributes), `state`, `hover`/`focus`/`focused`/`hovered`/`active`, `expanded`/`visible`, a bare `onClose`, `selected`/`selected*`, `invalid`. **Banned prefixes:** `is`/`has`/`show`/`handle`.
-- **Booleans** that aren't native or controlled default to `false`.
-- **Callbacks** are `on<Verb>`.
-- **The controlled triple:** `default<X>` needs `<x>` and `on<X>Change`; `on<X>Change` needs `<x>`.
-- **Value checks:** array props are `items`/`<part>Items`/`options`; `error` is a string; `shape` and `orientation` take their two values; `size` is `sm`/`md`/`lg` or type-scale names, never a mix.
-- **Figma:** a `both`-surface property equals the prop name up to casing, after dropping `Has <x>` and with `children` exempt. `State` is never a configured prop's property.
-
-Exceptions are waived by id in `scripts/prop-vocabulary-waivers.json`, a shrinking ledger: a waiver that stops matching fails the gate, so it must be deleted.
-
-**Seeded waivers (all three hits across 27 specs).**
-
-- CardVertical `progress` ↔ `Status`: the recorded mapping.
-- Inline `wrap` defaults to `true`: it predates the vocabulary, and flipping it is a breaking rename.
-- AppHeader `logoSrc` ↔ Figma `Logo`: **new drift**, unrecorded until now. Rename the Figma property to `Logo src` or record the mapping, then delete the waiver.
-
-**Consequences.** The prose in `packages/components/AGENTS.md` keeps what needs judgement: which concept a prop is, the state groups, and the Figma mappings. It drops what the check enforces. `generate-pattern-schema.js` still reports `drift` for `/layout-generation`; the blocking check is separate. The harness-ablation Arm 0 strips the new script and its waivers along with `validate-spec.js`.
-
-
-## Amendment (2026-11-10) — Each prop's `concept` is checked against its name
-
-Until now nothing read a spec prop's `concept`: `spec:generate` wrote it, a `TODO` failed the check, and the content was free text (#150). Four props carried a sentence instead of a concept name.
-
-**Decision.** The concept names are a closed list, the enum on `props.<p>.concept` in `component.spec.schema.json`. They are the short concept names of the vocabulary table in `packages/components/AGENTS.md`, which every spec already used, rather than this ADR's longer row titles: renaming over a hundred values would add churn and no information. The value is one of them, `native`, or `new term: <reason>`. `scripts/prop-vocabulary.js` gives each concept a name rule and `spec:validate` fails, with a waiver id, when:
-
-- a prop's name doesn't fit its concept (`Size` must be `size`, `Image` must be `src`/`alt` or `<part>Src`/`<part>Alt`, `Discrete event` must be `on<Verb>`, `Controlled state` allows `on<X>Change` or `onChange` but no other callback, `Lifecycle` allows `status` or the data it derives from, `progress`, ADR-025);
-- a vocabulary name carries another concept (`variant` is always `Visual weight/style`, `label` always `Accessible name`), unless the prop is native;
-- `native` sits on a prop that isn't kind `native`, or a `Boolean` prop isn't typed `boolean`;
-- the schema enum and the name rules disagree.
-
-Native-input names (`checked`, `value` + `onChange` on Checkbox and TextField) are `Controlled state`, the row that already says native wrappers keep native names. The docs component page shows the concept in the props table; a `new term` shows its reason.
-
-**Consequences.** `concept` moves from unread to gated. The 37 `new term` values become reviewable on the docs page; 25 of them are the layout primitives' props, which is evidence for a vocabulary row for layout props, not decided here. No existing spec needed a waiver.
+</details>

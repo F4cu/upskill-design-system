@@ -24,6 +24,14 @@
     "path": ".claude/handoff/2026-11-13-dialog-follow-ups.handoff.md"
   },
   {
+    "name": "2026-11-14-adr-readability-restructure",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-11-14",
+    "updated": "2026-11-14",
+    "path": ".claude/handoff/2026-11-14-adr-readability-restructure.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",
