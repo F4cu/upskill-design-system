@@ -139,7 +139,7 @@
       "type": "ReactNode",
       "default": null,
       "concept": "Content",
-      "figma": { "surface": "both", "property": "Children", "note": "Native slot." }
+      "figma": { "surface": "both", "property": "Children", "note": "Native slot (layer Children), paired with Has children (default false)." }
     },
     "actions": {
       "kind": "content",
@@ -325,8 +325,16 @@
     ]
   },
   "figma": {
-    "sets": [],
-    "divergences": []
+    "sets": [
+      { "name": "Dialog", "nodeId": "3043:8277", "covers": "The modal dialog surface: one component with Title, Has description + Description, Has children + Children slot, Has actions + Actions slot (preferred: Button, TextLink). Page Dialog; examples in section 3043:8290." }
+    ],
+    "divergences": [
+      { "what": "Close is an absolutely positioned layer 12px from the top and right edges, and Header has 40px right padding, instead of an in-flow button with a negative inline-end margin.", "decision": "Accepted: Figma auto layout has no per-child negative margin. The glyph lands 20px from the top and right edges and the title wraps at the same width, as in code." },
+      { "what": "Root carries the inline padding (space/inset/lg) and an item spacing of space/stack/md; Actions pads its top by space/stack/sm. Code pads each part and Root only on the block axis.", "decision": "Accepted: the code split exists so Body's scroll box holds its own padding (focus rings); Figma doesn't scroll. Spacing between parts is identical." },
+      { "what": "Root's top padding is bound to space/inset/sm (12px); code computes calc(space.inset.lg - space.inset.xs).", "decision": "Accepted: Figma can't bind a calc. Same value; rebind if either token changes." },
+      { "what": "The Body part's slot layer is named Children, and children is paired with a Has children boolean.", "decision": "Accepted: a Figma slot layer and its property share one name, and ADR-026 names the default slot property Children (as in Card). An empty slot still takes a gap in auto layout, so it needs a visibility boolean like Description and Actions." },
+      { "what": "Title sits in a wrapper frame padded by size/025 (2px) top and bottom.", "decision": "Accepted: Figma's Subheader line is 28px, so 2px brings it to the 32px Close height and centres the x on the first line, which code computes from font.size.subheader and font.line-height.default." }
+    ]
   },
   "decisions": [
     {

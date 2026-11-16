@@ -2,7 +2,7 @@
   "$comment": "Frozen list of the Figma pattern example frames (ADR-023). Captured interactively by scripts/capture-pattern-frames.js via figma-cli; never regenerated in CI. usage:validate checks it against composition.patterns.",
   "fileKey": "t4F3b1p03loOX9IpNXRaYR",
   "fileName": "Upskill - Design System",
-  "capturedAt": "2026-11-11",
+  "capturedAt": "2026-11-16",
   "frames": [
     {
       "pattern": "author-credit",
@@ -29,6 +29,12 @@
       "nodeId": "2963:8085"
     },
     {
+      "pattern": "confirm-action",
+      "section": "Dialog examples",
+      "page": "Dialog",
+      "nodeId": "3043:8295"
+    },
+    {
       "pattern": "course-module-list",
       "section": "Accordion examples",
       "page": "Accordion",
@@ -45,6 +51,12 @@
       "section": "Button examples",
       "page": "Buttons",
       "nodeId": "2963:7770"
+    },
+    {
+      "pattern": "edit-form",
+      "section": "Dialog examples",
+      "page": "Dialog",
+      "nodeId": "3043:8325"
     },
     {
       "pattern": "favorite-saved",

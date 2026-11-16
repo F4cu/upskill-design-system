@@ -18,7 +18,7 @@ Tick an item when its "Done when" is met, and add the date and PR or commit.
 - [x] 2. Browser check that the page behind the modal is inert, and record the visual review — 2026-11-16, approved after fixes on `component/dialog-visual-review`
 - [x] 3. Push the new tokens to Airtable — 2026-11-16, already synced by the post-merge Sync after #171; verified by a read-only REST check
 - [x] 4. Push the new tokens to Figma as variables — 2026-11-16, 3 clean-missing added via figma-cli (293/117/67), `figma-variables.json` updated
-- [ ] 5. Build Dialog in Figma, capture the pattern frames, delete the 2 waivers
+- [x] 5. Build Dialog in Figma, capture the pattern frames, delete the 2 waivers — 2026-11-16: page "Dialog", component `3043:8277`, examples section `3043:8290`; `x` icon `3043:8274` added to the Figma icon set (code had it, Figma didn't); waivers `[]`
 - [ ] 6. Refresh the status files and mark Dialog done in the roadmap
 
 ## 1 · Back-fill the review findings
