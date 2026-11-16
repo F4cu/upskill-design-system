@@ -66,6 +66,7 @@
     ],
     "--ds-font-line-height-default": [
       "packages/components/src/components/Accordion/Accordion.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/Heading/Heading.module.css",
       "packages/components/src/components/Text/Text.module.css"
     ],
@@ -119,6 +120,7 @@
       "packages/components/src/components/Badge/Badge.module.css",
       "packages/components/src/components/Box/Box.module.css",
       "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/DropdownMenu/DropdownMenu.module.css",
       "packages/components/src/components/TextField/TextField.module.css"
     ],
@@ -267,7 +269,8 @@
     ],
     "--ds-size-400": [
       "packages/components/src/components/Button/Button.module.css",
-      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css"
+      "packages/components/src/components/ButtonArrow/ButtonArrow.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css"
     ],
     "--ds-size-500": [
       "packages/components/src/components/Button/Button.module.css",
@@ -439,6 +442,7 @@
     ],
     "--ds-font-size-subheader": [
       "packages/components/src/components/CardVertical/CardVertical.module.css",
+      "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/Heading/Heading.module.css"
     ],
     "--ds-size-icon-sm": [
@@ -483,12 +487,12 @@
     "--ds-size-dialog-max": [
       "packages/components/src/components/Dialog/Dialog.module.css"
     ],
+    "--ds-color-background-scrim": [
+      "packages/components/src/components/Dialog/Dialog.module.css"
+    ],
     "--ds-space-stack-md": [
       "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/Stack/Stack.module.css"
-    ],
-    "--ds-color-background-scrim": [
-      "packages/components/src/components/Dialog/Dialog.module.css"
     ],
     "--ds-space-stack-lg": [
       "packages/components/src/components/Dialog/Dialog.module.css",
