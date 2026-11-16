@@ -19,7 +19,7 @@ Tick an item when its "Done when" is met, and add the date and PR or commit.
 - [x] 3. Push the new tokens to Airtable — 2026-11-16, already synced by the post-merge Sync after #171; verified by a read-only REST check
 - [x] 4. Push the new tokens to Figma as variables — 2026-11-16, 3 clean-missing added via figma-cli (293/117/67), `figma-variables.json` updated
 - [x] 5. Build Dialog in Figma, capture the pattern frames, delete the 2 waivers — 2026-11-16: page "Dialog", component `3043:8277`, examples section `3043:8290`; `x` icon `3043:8274` added to the Figma icon set (code had it, Figma didn't); waivers `[]`
-- [ ] 6. Refresh the status files and mark Dialog done in the roadmap
+- [ ] 6. Refresh the status files and mark Dialog done in the roadmap — 2026-11-16: `sense` refreshed, ROADMAP 5e row updated, ADR-031 amended (showcase migration dropped), start-here clock reset. **Left:** after pushing `main` (the post-merge Sync pushes Dialog's maturity), set Dialog `Implementation = done` in Airtable by hand, then `npm run airtable:pull:governance` and `npm run status:component -- Dialog`.
 
 ## 1 · Back-fill the review findings
 
@@ -83,7 +83,7 @@ Then run `node scripts/capture-pattern-frames.js` (figma-cli) and delete the two
 - `npm run sense` so `component-pipeline.json` and `STATUS_QUO.md` include Dialog with its review and visual-review state.
 - `npm run airtable:push:components` for Dialog's maturity. The human `Implementation` value (`done`) is set by hand in Airtable and pulled back with `npm run airtable:pull:governance`.
 - `ROADMAP.md`: in the Phase 5e row (`Coverage gaps (5e, ADR-031)`), mark Dialog as shipped (#171). Phase 5 stays in progress until Table, Alert and Pagination ship too.
-- ADR-031 says the motivating page is migrated "in the same PR or the one right after": move `apps/showcase/src/pipeline/PipelineDetailPanel.tsx` onto Dialog. It is not in #171, so it's due now. Run `/layout-generation`, or do it as a plain edit with `npm run layout:validate`. **Open question (2026-11-16):** the `detail-panel` pattern that documented this composition was removed, so first decide whether to restore it with this migration or drop the migration.
+- ADR-031 says the motivating page is migrated "in the same PR or the one right after": move `apps/showcase/src/pipeline/PipelineDetailPanel.tsx` onto Dialog. It is not in #171, so it's due now. Run `/layout-generation`, or do it as a plain edit with `npm run layout:validate`. **Decided 2026-11-16:** migration dropped (ADR-031 amendment); restore the `detail-panel` pattern together with it if it ever comes back.
 - Touching `ROADMAP.md` will likely make `docs/00-start-here.md` stale again. Commit a clock-reset comment in its frontmatter in the same PR (see the docs-check coupling convention).
 
 **Done when:** `npm run status:component -- Dialog` shows it done, the roadmap row is updated, and the pipeline panel uses Dialog.

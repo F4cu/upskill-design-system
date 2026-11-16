@@ -96,7 +96,7 @@ Fixed component set built across four batches and frozen at **27 components + 2 
 | User Settings (5b) | `Avatar`, `AppHeader`, `Breadcrumb`, `Divider`, `ProgressBar`, `CardHorizontal` |
 | Homepage (5c) | `CardVertical`, `Chip`, `VideoFrame`, `ButtonArrow` |
 | Course Overview (5d) | `Accordion`, `Badge`, `Button` ghost variant + trailing icon, `useSlider` hook |
-| Coverage gaps (5e, ADR-031) | `Dialog`, `Table`, `Alert`, `Pagination` — each through `/add-component`, one at a time |
+| Coverage gaps (5e, ADR-031) | `Dialog`, `Table`, `Alert`, `Pagination` — each through `/add-component`, one at a time. `Dialog` shipped (#171, #176; Figma mirrored 2026-11-16); its showcase migration was dropped (ADR-031 amendment 2026-11-16) |
 
 `DropdownMenu`, `Image`, and `TextLink` landed as explicit scope expansions after the batch plan was written. `Accordion` and `Badge` shipped through the `/add-component` loop (Phase 9 pilot). Growth is by composition only; a new component needs ADR-031's entry rule (new role per ADR-009, a real consumer page, not composable) and an amendment to that ADR.
 

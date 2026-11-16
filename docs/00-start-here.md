@@ -7,6 +7,7 @@ sources:
 # clock reset 2026-07-09: ADR-018 amendment adds undefined-prerequisite rubric detail; this page doesn't describe the scribe rubric, still accurate
 # clock reset 2026-07-10: four commands gain deterministic-gate steps; this page describes no per-command steps, still accurate
 # clock reset 2026-07-10: /extract-learnings gains a handoff:tidy close-out step; this page doesn't describe per-moment steps, still accurate
+# clock reset 2026-11-16: ADR-031 amendment and ROADMAP 5e row record Dialog shipped without its showcase migration; this page lists no per-component status, still accurate
 # clock reset 2026-07-12: #64 docs sweep landed (ADR-007/015 gain renamed-path/stage parentheticals); this page carried no stage or review-path vocabulary, still accurate
 # clock reset 2026-07-13: #70 mirrors Airtable deprecation state into DTCG $deprecated on committed token source (ADR-002 amendment); this page describes no token-format detail, still accurate
 # verified 2026-07-13 (issue #74): checked against ADR-010/ADR-015 amendments, CLAUDE.md, and the four lifecycle command files incl. the full/standard rename (e948407); this page carries no stage or review-path vocabulary, ADR and moment counts still correct

@@ -4,6 +4,7 @@ title: "ADR-031 — Fixed-set expansion: Phase 5e batch (Dialog, Table, Alert, P
 # ADR-031 — Fixed-set expansion: Phase 5e batch (Dialog, Table, Alert, Pagination)
 
 **Date:** 2026-11-12
+**Amended:** 2026-11-16
 **Status:** `accepted`
 
 ## Context
@@ -60,3 +61,11 @@ The props, anatomy and Figma mapping of each are decided at its own `/component-
 - The feedback tokens gain consumers, so `token-usage.json` and the contrast `PAIRS` grow when `Alert` ships.
 - Cost: four more components to review, document, mirror in Figma and keep in sync, for one maintainer. The entry rule is the counterweight. It makes each later addition argue for itself in writing.
 - The Dialog work will hit #114 (no component forwards a ref). Dialog has to return focus to the element that opened it, so either #114 is fixed first or Dialog takes the trigger element through its own API.
+
+## Amendment (2026-11-16) — Dialog ships without migrating the pipeline detail panel
+
+Dialog shipped in #171, followed by visual-review fixes in #176 and the Figma mirror. The Delivery rule says the motivating page moves onto the component "in the same PR or the one right after". For Dialog, that is not done: `apps/showcase/src/pipeline/PipelineDetailPanel.tsx` keeps its hand-built panel, and the `detail-panel` pattern (a non-modal Dialog beside the content it describes) was removed from Dialog's `composition.patterns` on 2026-11-16 at the developer's request.
+
+**Consequence.** The gaps listed under Context stay in the showcase panel: it doesn't return focus to the button that opened it, and it has no modal option. Dialog keeps its `nonModal` prop, so the migration can come back without an API change.
+
+**Revisit when** the pipeline panel is next touched, or a page needs a non-modal detail panel. Restore the `detail-panel` pattern (story, usage entry, Figma example frame) in the same PR as the migration.
