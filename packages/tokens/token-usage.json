@@ -490,11 +490,11 @@
     "--ds-color-background-scrim": [
       "packages/components/src/components/Dialog/Dialog.module.css"
     ],
-    "--ds-space-stack-md": [
+    "--ds-space-stack-lg": [
       "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/Stack/Stack.module.css"
     ],
-    "--ds-space-stack-lg": [
+    "--ds-space-stack-md": [
       "packages/components/src/components/Dialog/Dialog.module.css",
       "packages/components/src/components/Stack/Stack.module.css"
     ],
