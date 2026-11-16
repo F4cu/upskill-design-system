@@ -16,7 +16,7 @@ Tick an item when its "Done when" is met, and add the date and PR or commit.
 
 - [x] 1. Back-fill the review findings (`/extract-learnings Dialog`) — 2026-11-14, PR #175
 - [x] 2. Browser check that the page behind the modal is inert, and record the visual review — 2026-11-16, approved after fixes on `component/dialog-visual-review`
-- [ ] 3. Push the new tokens to Airtable
+- [x] 3. Push the new tokens to Airtable — 2026-11-16, already synced by the post-merge Sync after #171; verified by a read-only REST check
 - [ ] 4. Push the new tokens to Figma as variables
 - [ ] 5. Build Dialog in Figma, capture the pattern frames, delete the 2 waivers
 - [ ] 6. Refresh the status files and mark Dialog done in the roadmap
