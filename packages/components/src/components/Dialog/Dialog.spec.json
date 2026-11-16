@@ -70,7 +70,7 @@
       "element": "Text",
       "builtOn": "Text",
       "builtOnProps": {
-        "size": "body-small",
+        "size": "body-default",
         "color": "subtle"
       },
       "role": "paragraph",
@@ -93,7 +93,7 @@
       "builtOn": "Inline",
       "builtOnProps": {
         "justify": "end",
-        "gap": "sm"
+        "gap": "md"
       },
       "role": "generic",
       "notes": "Sits space.stack.lg below the part above it, more than the space.stack.md between the other parts, so the actions read as a separate group.",
@@ -103,7 +103,7 @@
   ],
   "anatomyExamples": [
     { "pattern": "confirm-action", "mark": ["Root", "Header", "Title", "Close", "Description", "Actions"] },
-    { "pattern": "detail-panel", "mark": ["Body"] }
+    { "pattern": "edit-form", "mark": ["Body"] }
   ],
   "props": {
     "open": {
@@ -217,8 +217,8 @@
           "width": "size.dialog.max",
           "max-width": { "template": "calc(100% - 2 * {space.inset.md})" },
           "max-height": { "template": "calc(100% - 2 * {space.inset.md})" },
-          "padding": "space.inset.lg",
-          "gap": "space.stack.md",
+          "padding-block": { "template": "calc({space.inset.lg} - {space.inset.xs}) {space.inset.lg}" },
+          "padding-inline": { "literal": "0", "reason": "Each part pads itself, so Body's scroll box holds its own padding and focus rings inside it are not clipped." },
           "background": "color.background.container.elevated",
           "color": "color.text.default",
           "border-width": { "literal": "1px", "reason": "No border-width token scale exists (#154); every module uses a literal width." },
@@ -231,7 +231,7 @@
       {
         "when": { "state": "open" },
         "set": {
-          "display": { "literal": "flex", "reason": "Stacks Header, Description, Body and Actions with the gap token; the native closed dialog stays display:none." },
+          "display": { "literal": "flex", "reason": "Stacks Header, Description, Body and Actions, each padding itself; the native closed dialog stays display:none." },
           "flex-direction": { "literal": "column", "reason": "Vertical stack." }
         }
       },
@@ -241,6 +241,12 @@
           "position": { "literal": "static", "reason": "Overrides the native absolute positioning so the non-modal dialog takes its place in the page flow." },
           "margin": { "literal": "0", "reason": "Overrides the native auto margins that centre a dialog." },
           "max-width": { "literal": "100%", "reason": "Fits its container in the page flow." }
+        }
+      },
+      {
+        "when": { "children": "set", "actions": "unset" },
+        "set": {
+          "padding-block-end": { "literal": "0", "reason": "Body is the last part and pads its own bottom, inside its scroll box." }
         }
       }
     ],
@@ -252,9 +258,49 @@
         }
       }
     ],
+    "Header": [
+      {
+        "when": {},
+        "set": {
+          "padding-inline": "space.inset.lg"
+        }
+      }
+    ],
+    "Title": [
+      {
+        "when": {},
+        "set": {
+          "padding-block": { "template": "calc(({size.400} - {font.size.subheader} * {font.line-height.default}) / 2)" }
+        }
+      }
+    ],
+    "Close": [
+      {
+        "when": {},
+        "set": {
+          "margin-inline-end": { "template": "calc(-1 * {space.inset.xs})" }
+        }
+      }
+    ],
+    "Description": [
+      {
+        "when": {},
+        "set": {
+          "padding-inline": "space.inset.lg",
+          "padding-top": "space.stack.md"
+        }
+      }
+    ],
     "Actions": [
       {
         "when": {},
+        "set": {
+          "padding-inline": "space.inset.lg",
+          "padding-top": "space.stack.lg"
+        }
+      },
+      {
+        "when": { "children": "set" },
         "set": {
           "padding-top": { "template": "calc({space.stack.lg} - {space.stack.md})" }
         }
@@ -265,8 +311,15 @@
         "when": {},
         "set": {
           "min-height": { "literal": "0", "reason": "Lets the flex child shrink so it scrolls instead of overflowing the dialog." },
+          "padding": { "template": "{space.stack.md} {space.inset.lg}" },
           "overflow-y": { "literal": "auto", "reason": "Long content scrolls inside Body; Header and Actions stay visible." },
           "overscroll-behavior": { "literal": "contain", "reason": "Scrolling past the end of Body doesn't scroll the page behind the dialog." }
+        }
+      },
+      {
+        "when": { "actions": "unset" },
+        "set": {
+          "padding-block-end": "space.inset.lg"
         }
       }
     ]
@@ -276,6 +329,18 @@
     "divergences": []
   },
   "decisions": [
+    {
+      "decision": "Root pads only the block axis; Header, Description, Body and Actions each pad themselves, and Body pads all four sides inside its scroll box.",
+      "reason": "Body scrolls (overflow-y: auto), which clips anything painted outside its box. With the padding on Root, a focused TextField at Body's edge lost its focus ring (visual review 2026-11-16). Section-owned padding is how MUI's DialogContent works; padding plus a cancelling negative margin was rejected as a workaround. Spacing between parts is unchanged: when Body is the last part, Root drops its bottom padding and Body pads space.inset.lg instead."
+    },
+    {
+      "decision": "Actions are spaced by space.inline.md (16px), not space.inline.sm.",
+      "reason": "MUI uses 8px, but its default actions are borderless text buttons. Ours are bordered or filled, and the 4px focus ring took half of an 8px gap, so a focused Cancel nearly touched the next button (visual review 2026-11-16)."
+    },
+    {
+      "decision": "Close is pulled right by space.inset.xs so its glyph lines up with the content edge, and Root's top padding is reduced by the same amount. Title pads its block axis so its first line is as tall as Close (size.400), and Header aligns to the start.",
+      "reason": "An sm round Button is size.400 with an sm icon, leaving space.inset.xs of transparent padding around the glyph; without the right offset the x sits that far inside the Header padding (visual review 2026-11-16). This is MUI IconButton's edge technique, and it keeps the hit target. Aligning box tops left the x 6px above the title text because of Title's half-leading. Padding Title to the button's height (Primer's Dialog header) centres the x on the first line however many lines the title wraps to, which align-items: center would not, and needs no vertical negative margin. Root's top padding is space.inset.xs shorter than its other sides, so the x glyph sits space.inset.lg from both the top and right edges. It assumes Close stays size sm and Title stays size subheader; changing either means changing these values."
+    },
     {
       "decision": "The props type omits role, aria-modal, aria-label, aria-labelledby, aria-describedby, title, open, onCancel and onClose from the native <dialog> attributes; passing one is a type error (@ts-expect-error cases in the a11y test).",
       "reason": "Dialog sets its own role and name (from title) and owns the cancel and close events that keep the open prop in sync with the element."

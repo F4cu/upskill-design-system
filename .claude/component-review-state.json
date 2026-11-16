@@ -45,12 +45,12 @@
     "learningsBackfilled": false
   },
   "CardHorizontal": {
-    "reviewedAt": "2026-10-02T08:00:00Z",
+    "reviewedAt": "2026-11-13T00:00:00Z",
     "path": "full",
     "learningsBackfilled": true
   },
   "CardVertical": {
-    "reviewedAt": "2026-10-01T00:00:00Z",
+    "reviewedAt": "2026-11-13T00:00:00Z",
     "path": "full",
     "learningsBackfilled": true
   },
@@ -63,6 +63,16 @@
     "reviewedAt": "2026-07-09T00:00:00Z",
     "path": "full",
     "learningsBackfilled": true
+  },
+  "Dialog": {
+    "reviewedAt": "2026-11-13T12:00:00Z",
+    "path": "full",
+    "learningsBackfilled": true,
+    "visualReview": {
+      "status": "approved",
+      "comments": "Approved after fixes on component/dialog-visual-review: Close aligned to the content edge and centred on Title's first line, padding moved onto the parts (edit-form focus ring no longer clipped), Description at body-default, Actions gap space.inline.md, top inset reduced so the x is equidistant from top and right. Scrollbar kept at the dialog edge, like MUI and Primer. detail-panel pattern removed for now.",
+      "at": "2026-11-16T00:00:00Z"
+    }
   },
   "Divider": {
     "reviewedAt": "2026-07-09T00:00:00Z",

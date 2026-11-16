@@ -14,11 +14,11 @@ Dialog (Phase 5e, ADR-031) shipped through `/add-component` → `/review-compone
 
 Tick an item when its "Done when" is met, and add the date and PR or commit.
 
-- [ ] 1. Back-fill the review findings (`/extract-learnings Dialog`)
-- [ ] 2. Browser check that the page behind the modal is inert, and record the visual review
+- [x] 1. Back-fill the review findings (`/extract-learnings Dialog`) — 2026-11-14, PR #175
+- [x] 2. Browser check that the page behind the modal is inert, and record the visual review — 2026-11-16, approved after fixes on `component/dialog-visual-review`
 - [ ] 3. Push the new tokens to Airtable
 - [ ] 4. Push the new tokens to Figma as variables
-- [ ] 5. Build Dialog in Figma, capture the pattern frames, delete the 3 waivers
+- [ ] 5. Build Dialog in Figma, capture the pattern frames, delete the 2 waivers
 - [ ] 6. Refresh the status files and mark Dialog done in the roadmap
 
 ## 1 · Back-fill the review findings
@@ -39,6 +39,8 @@ jsdom can't emulate `showModal()` inertness or the top layer, so no test covers 
 - The scrim shows in both light and dark (`data-theme`).
 - `NonModal`: the page stays interactive and Escape closes the dialog.
 - Opening with the mouse shows no focus ring on the Title; opening from the keyboard shows the ring (intended, ADR-028).
+
+**2026-11-16 status:** headless Chromium passed every check above. Visual review came back `changes-requested` (Close glyph inset from the content edge; edit-form focus ring clipped by Body). Fixed on branch `component/dialog-visual-review`: Close pulled out by `space.inset.xs`, padding moved from Root onto the parts so Body's scroll box holds its own padding, Title padded to the button's height so the x centres on its first line (Primer's approach), Root's top padding reduced by `space.inset.xs` so the x is equidistant from top and right, Description at `body-default` like Body text, Actions gap widened to `space.inline.md`, and the `detail-panel` pattern removed for now at the developer's request. The Body scrollbar stays at the dialog edge (as in MUI and Primer). The visual review was then recorded as `approved`.
 
 Record the answer as `/add-component` Stage 2c describes: `"visualReview": { "status": "approved" | "changes-requested", "comments": …, "at": "<iso>" }` under Dialog in `.claude/component-review-state.json`. If something fails, file an issue (or fix it on a `component/dialog-*` branch with a PR) instead of approving.
 
@@ -70,18 +72,18 @@ Run `/figma-variable-push`, which uses figma-cli and pins `FIGMA_FILE="Upskill -
 Dialog was built code-first. Build in the Figma file, following ADR-023 and ADR-026's Figma mappings:
 
 - A **Dialog** component set mirroring the code props: `Has description` and `Non-modal` booleans; `Title`, `Description`, `Body` and `Actions` layers named as the spec's `anatomy` parts (`Root`, `Header`, `Title`, `Close`, `Description`, `Body`, `Actions`). Bind fills, padding, radius and width to the variables from step 4.
-- A **Dialog examples** section with one frame per `composition.patterns` id, built from instances only: `confirm-action`, `edit-form`, `detail-panel`. The code for each is the same-named export in `Dialog.patterns.stories.tsx`.
+- A **Dialog examples** section with one frame per `composition.patterns` id, built from instances only: `confirm-action`, `edit-form` (`detail-panel` was removed on 2026-11-16). The code for each is the same-named export in `Dialog.patterns.stories.tsx`.
 
-Then run `node scripts/capture-pattern-frames.js` (figma-cli) and delete the three Dialog entries from `scripts/figma-pattern-frame-waivers.json`. `usage:validate` fails on a waiver whose frame exists, so it confirms the deletion.
+Then run `node scripts/capture-pattern-frames.js` (figma-cli) and delete the two Dialog entries from `scripts/figma-pattern-frame-waivers.json`. `usage:validate` fails on a waiver whose frame exists, so it confirms the deletion.
 
-**Done when:** `usage:validate` passes with `waivers: []` and `packages/components/figma-pattern-frames.json` lists the three frames.
+**Done when:** `usage:validate` passes with `waivers: []` and `packages/components/figma-pattern-frames.json` lists the two frames.
 
 ## 6 · Status files and roadmap
 
 - `npm run sense` so `component-pipeline.json` and `STATUS_QUO.md` include Dialog with its review and visual-review state.
 - `npm run airtable:push:components` for Dialog's maturity. The human `Implementation` value (`done`) is set by hand in Airtable and pulled back with `npm run airtable:pull:governance`.
 - `ROADMAP.md`: in the Phase 5e row (`Coverage gaps (5e, ADR-031)`), mark Dialog as shipped (#171). Phase 5 stays in progress until Table, Alert and Pagination ship too.
-- ADR-031 says the motivating page is migrated "in the same PR or the one right after": move `apps/showcase/src/pipeline/PipelineDetailPanel.tsx` onto Dialog. It is not in #171, so it's due now. Run `/layout-generation`, or do it as a plain edit with `npm run layout:validate`.
+- ADR-031 says the motivating page is migrated "in the same PR or the one right after": move `apps/showcase/src/pipeline/PipelineDetailPanel.tsx` onto Dialog. It is not in #171, so it's due now. Run `/layout-generation`, or do it as a plain edit with `npm run layout:validate`. **Open question (2026-11-16):** the `detail-panel` pattern that documented this composition was removed, so first decide whether to restore it with this migration or drop the migration.
 - Touching `ROADMAP.md` will likely make `docs/00-start-here.md` stale again. Commit a clock-reset comment in its frontmatter in the same PR (see the docs-check coupling convention).
 
 **Done when:** `npm run status:component -- Dialog` shows it done, the roadmap row is updated, and the pipeline panel uses Dialog.

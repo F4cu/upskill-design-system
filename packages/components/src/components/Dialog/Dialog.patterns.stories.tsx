@@ -1,12 +1,8 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
-import { Badge } from '../Badge'
 import { Button } from '../Button'
-import { Inline } from '../Inline'
 import { Stack } from '../Stack'
-import { Text } from '../Text'
 import { TextField } from '../TextField'
-import { TextLink } from '../TextLink'
 import { Dialog } from './index'
 
 const meta: Meta<typeof Dialog> = {
@@ -72,28 +68,4 @@ function EditFormExample() {
 
 export const EditForm: Story = {
   render: () => <EditFormExample />,
-}
-
-function DetailPanelExample() {
-  const [open, setOpen] = useState(true)
-  return (
-    <Inline gap="lg" align="start" wrap={false}>
-      <Dialog nonModal open={open} onOpenChange={setOpen} title="Token build" headingLevel={3}>
-        <Stack gap="sm" align="start">
-          <Text color="subtle">
-            Style Dictionary turns the DTCG source into CSS custom properties and JS constants.
-          </Text>
-          <Badge variant="filled">Passing</Badge>
-          <TextLink href="#">View run on GitHub</TextLink>
-        </Stack>
-      </Dialog>
-      <Button variant="neutral" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-        Token build
-      </Button>
-    </Inline>
-  )
-}
-
-export const DetailPanel: Story = {
-  render: () => <DetailPanelExample />,
 }

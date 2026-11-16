@@ -4,7 +4,7 @@
 > readable baseline aggregating the committed frozen-memory files. Loop agents
 > read this instead of calling Airtable or Figma live.
 
-Generated: **2026-11-13T17:28:23.555Z**
+Generated: **2026-11-16T15:19:10.987Z**
 
 Sources:
 - `packages/tokens/airtable-governance.json` (Airtable mirror)
@@ -25,7 +25,7 @@ None. No deprecated token has a live reference. ✅
 
 - **28 total** — Maturity: 28 beta
 - By type: container (2) · display (9) · input (3) · interactive (10) · layout (4)
-- Implementation: 0 done · 25 in review · 3 in progress (3 unreviewed) · 0 todo
+- Implementation: 0 done · 26 in review · 2 in progress (2 unreviewed) · 0 todo
 - Source: `packages/components/src/components/*/*.usage.json` + `.claude/handoff/runs/` + `.claude/component-signoff.json` (human `done`/`todo` from Airtable)
 
 ### In review — checklist open, awaiting human sign-off
@@ -54,6 +54,7 @@ standard path (in-session /code-review).
 | `CardVertical` (interactive) | full | ☐ | ✅ | ✅ |
 | `Checkbox` (input) | full | ☐ | ✅ | ✅ |
 | `Chip` (interactive) | full | ☐ | ✅ | ✅ |
+| `Dialog` (interactive) | full | ✅ | ✅ | ✅ |
 | `Divider` (display) | standard | ☐ | ✅ | n/a |
 | `DropdownMenu` (interactive) | full | ☐ | ✅ | ✅ |
 | `Heading` (display) | full | ☐ | ✅ | ✅ |
@@ -76,7 +77,6 @@ entered the loop (the old "established" backlog) — candidates to harden with
 `.run.json` is open with no render checkpoint yet.
 
 - `Button` — maturity `beta` · unreviewed
-- `Dialog` — maturity `beta` · unreviewed
 - `Select` — maturity `beta` · unreviewed
 
 ### Beta (not production-ready)
@@ -96,7 +96,7 @@ None. All review findings have been back-filled. ✅
 ## Figma drift
 
 - Snapshot captured: **2026-10-11** (interactive Figma MCP — not script-regenerable, ADR-002)
-- Age: **33 day(s)** ⚠️ stale (> 30d — recapture before relying on drift)
+- Age: **36 day(s)** ⚠️ stale (> 30d — recapture before relying on drift)
 - Variables mirrored: **474** (Primitives 292 · Theme 116 · Device 66)
 - Excluded as **representational divergences** (unitless line-heights Figma stores as px — not drift): **27**
 
