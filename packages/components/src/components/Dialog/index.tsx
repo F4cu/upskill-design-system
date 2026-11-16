@@ -102,15 +102,16 @@ export function Dialog({
       data-part="Root"
       aria-labelledby={titleId}
       aria-describedby={description ? descriptionId : undefined}
-      className={[styles.root, nonModal && styles.nonModal, className].filter(Boolean).join(' ')}
+      className={[styles.root, nonModal && styles.nonModal, children && !actions && styles.endsWithBody, className].filter(Boolean).join(' ')}
       onCancel={handleCancel}
       onClose={handleClose}
       onKeyDown={handleKeyDown}
       {...rest}
     >
-      <Inline data-part="Header" justify="space-between" align="start" gap="md" wrap={false}>
+      <Inline data-part="Header" className={styles.header} justify="space-between" align="start" gap="md" wrap={false}>
         <Heading
           data-part="Title"
+          className={styles.title}
           id={titleId}
           as={`h${headingLevel}`}
           size="subheader"
@@ -120,6 +121,7 @@ export function Dialog({
         </Heading>
         <Button
           data-part="Close"
+          className={styles.close}
           variant="transparent"
           size="sm"
           shape="round"
@@ -129,7 +131,7 @@ export function Dialog({
         />
       </Inline>
       {description && (
-        <Text data-part="Description" id={descriptionId} size="body-small" color="subtle">
+        <Text data-part="Description" className={styles.description} id={descriptionId} color="subtle">
           {description}
         </Text>
       )}
@@ -139,7 +141,7 @@ export function Dialog({
         </div>
       )}
       {actions && (
-        <Inline data-part="Actions" className={styles.actions} justify="end" gap="sm">
+        <Inline data-part="Actions" className={styles.actions} justify="end" gap="md">
           {actions}
         </Inline>
       )}

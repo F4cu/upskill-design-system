@@ -41,10 +41,6 @@
       {
         "name": "edit-form",
         "useWhen": "Editing a few fields of one record without leaving the page: fields in Body, Cancel and Save in actions."
-      },
-      {
-        "name": "detail-panel",
-        "useWhen": "A non-modal panel beside the content it describes, opened from a selected item and showing that item's details."
       }
     ],
     "donts": [

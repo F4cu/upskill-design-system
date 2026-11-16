@@ -1,7 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [],
-  "generatedFrom": "19fbbb98dd20af8271966d6fa716da162979e0bd",
+  "generatedFrom": "c4c5f6516f902358258ec2e23c12facdadefb348",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -614,7 +614,7 @@
             "titleId"
           ],
           "maturity": "beta",
-          "stage": "in progress",
+          "stage": "in review",
           "state": {
             "controlled": "always",
             "props": [

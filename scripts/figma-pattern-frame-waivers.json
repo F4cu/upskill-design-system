@@ -8,10 +8,6 @@
     {
       "pattern": "edit-form",
       "reason": "Dialog (Phase 5e, ADR-031) is code-first and has no Figma component yet; build the Dialog set and Dialog examples section, then recapture."
-    },
-    {
-      "pattern": "detail-panel",
-      "reason": "Dialog (Phase 5e, ADR-031) is code-first and has no Figma component yet; build the Dialog set and Dialog examples section, then recapture."
     }
   ]
 }

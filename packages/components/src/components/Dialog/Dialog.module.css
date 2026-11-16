@@ -4,8 +4,8 @@
   max-width: calc(100% - 2 * var(--ds-space-inset-md));
   max-height: calc(100% - 2 * var(--ds-space-inset-md));
   margin: auto;
-  padding: var(--ds-space-inset-lg);
-  gap: var(--ds-space-stack-md);
+  padding-block: calc(var(--ds-space-inset-lg) - var(--ds-space-inset-xs)) var(--ds-space-inset-lg);
+  padding-inline: 0;
   background: var(--ds-color-background-container-elevated);
   color: var(--ds-color-text-default);
   border: 1px solid var(--ds-color-border-subtle);
@@ -28,12 +28,43 @@
   max-width: 100%;
 }
 
+.header,
+.description,
 .actions {
+  padding-inline: var(--ds-space-inset-lg);
+}
+
+.description {
+  padding-top: var(--ds-space-stack-md);
+}
+
+.actions {
+  padding-top: var(--ds-space-stack-lg);
+}
+
+.body + .actions {
   padding-top: calc(var(--ds-space-stack-lg) - var(--ds-space-stack-md));
 }
 
 .body {
   min-height: 0;
+  padding: var(--ds-space-stack-md) var(--ds-space-inset-lg);
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+.endsWithBody {
+  padding-block-end: 0;
+}
+
+.endsWithBody .body {
+  padding-block-end: var(--ds-space-inset-lg);
+}
+
+.title {
+  padding-block: calc((var(--ds-size-400) - var(--ds-font-size-subheader) * var(--ds-font-line-height-default)) / 2);
+}
+
+.close {
+  margin-inline-end: calc(-1 * var(--ds-space-inset-xs));
 }

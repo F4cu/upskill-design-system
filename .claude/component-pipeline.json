@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-13T17:28:23.555Z",
+  "generatedAt": "2026-11-16T15:19:10.987Z",
   "components": [
     {
       "name": "Accordion",
@@ -273,7 +273,7 @@
       "implementation": "in review",
       "substate": null,
       "signedOff": false,
-      "reviewedAt": "2026-10-02T08:00:00Z",
+      "reviewedAt": "2026-11-13T00:00:00Z",
       "reviewPath": "full",
       "learningsBackfilled": true,
       "visualReview": null,
@@ -304,7 +304,7 @@
       "implementation": "in review",
       "substate": null,
       "signedOff": false,
-      "reviewedAt": "2026-10-01T00:00:00Z",
+      "reviewedAt": "2026-11-13T00:00:00Z",
       "reviewPath": "full",
       "learningsBackfilled": true,
       "visualReview": null,
@@ -394,14 +394,36 @@
       "name": "Dialog",
       "type": "interactive",
       "maturity": "beta",
-      "implementation": "in progress",
-      "substate": "unreviewed",
+      "implementation": "in review",
+      "substate": null,
       "signedOff": false,
-      "reviewedAt": null,
-      "reviewPath": null,
-      "learningsBackfilled": false,
-      "visualReview": null,
-      "checklist": null
+      "reviewedAt": "2026-11-13T12:00:00Z",
+      "reviewPath": "full",
+      "learningsBackfilled": true,
+      "visualReview": {
+        "status": "approved",
+        "comments": "Approved after fixes on component/dialog-visual-review: Close aligned to the content edge and centred on Title's first line, padding moved onto the parts (edit-form focus ring no longer clipped), Description at body-default, Actions gap space.inline.md, top inset reduced so the x is equidistant from top and right. Scrollbar kept at the dialog edge, like MUI and Primer. detail-panel pattern removed for now.",
+        "at": "2026-11-16T00:00:00Z"
+      },
+      "checklist": [
+        {
+          "label": "Automated gate — lint · typecheck · build · usage · a11y scripts",
+          "done": true
+        },
+        {
+          "label": "Visual review — human y/n/other(comments)",
+          "done": true,
+          "note": null
+        },
+        {
+          "label": "Code and behavioural a11y review — adversarial subagent",
+          "done": true
+        },
+        {
+          "label": "Learnings back-fill (/extract-learnings)",
+          "done": true
+        }
+      ]
     },
     {
       "name": "Divider",
