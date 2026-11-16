@@ -102,7 +102,7 @@ export function Dialog({
       data-part="Root"
       aria-labelledby={titleId}
       aria-describedby={description ? descriptionId : undefined}
-      className={[styles.root, nonModal && styles.nonModal, children && !actions && styles.endsWithBody, className].filter(Boolean).join(' ')}
+      className={[styles.root, nonModal && styles.nonModal, (description || children) && !actions && styles.endsWithBody, className].filter(Boolean).join(' ')}
       onCancel={handleCancel}
       onClose={handleClose}
       onKeyDown={handleKeyDown}
@@ -130,13 +130,13 @@ export function Dialog({
           onClick={() => onOpenChange(false)}
         />
       </Inline>
-      {description && (
-        <Text data-part="Description" className={styles.description} id={descriptionId} color="subtle">
-          {description}
-        </Text>
-      )}
-      {children && (
+      {(description || children) && (
         <div data-part="Body" className={styles.body}>
+          {description && (
+            <Text data-part="Description" className={styles.description} id={descriptionId} color="subtle">
+              {description}
+            </Text>
+          )}
           {children}
         </div>
       )}

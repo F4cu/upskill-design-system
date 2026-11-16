@@ -66,7 +66,7 @@
     },
     {
       "name": "Description",
-      "parent": "Root",
+      "parent": "Body",
       "element": "Text",
       "builtOn": "Text",
       "builtOnProps": {
@@ -82,8 +82,8 @@
       "parent": "Root",
       "element": "div",
       "role": "generic",
-      "notes": "Scrolls on its own when the content is taller than the viewport, so Header and Actions stay in view.",
-      "when": "children is set",
+      "notes": "Holds Description, then the children. Scrolls on its own when the content is taller than the viewport, so Header and Actions stay in view.",
+      "when": "description or children is set",
       "required": false
     },
     {
@@ -102,8 +102,7 @@
     }
   ],
   "anatomyExamples": [
-    { "pattern": "confirm-action", "mark": ["Root", "Header", "Title", "Close", "Description", "Actions"] },
-    { "pattern": "edit-form", "mark": ["Body"] }
+    { "pattern": "confirm-action", "mark": ["Root", "Header", "Title", "Close", "Body", "Description", "Actions"] }
   ],
   "props": {
     "open": {
@@ -231,7 +230,7 @@
       {
         "when": { "state": "open" },
         "set": {
-          "display": { "literal": "flex", "reason": "Stacks Header, Description, Body and Actions, each padding itself; the native closed dialog stays display:none." },
+          "display": { "literal": "flex", "reason": "Stacks Header, Body and Actions, each padding itself; the native closed dialog stays display:none." },
           "flex-direction": { "literal": "column", "reason": "Vertical stack." }
         }
       },
@@ -244,9 +243,9 @@
         }
       },
       {
-        "when": { "children": "set", "actions": "unset" },
+        "when": { "actions": "unset" },
         "set": {
-          "padding-block-end": { "literal": "0", "reason": "Body is the last part and pads its own bottom, inside its scroll box." }
+          "padding-block-end": { "literal": "0", "reason": "When Body renders (description or children set) it is the last part and pads its own bottom, inside its scroll box." }
         }
       }
     ],
@@ -284,10 +283,9 @@
     ],
     "Description": [
       {
-        "when": {},
+        "when": { "children": "set" },
         "set": {
-          "padding-inline": "space.inset.lg",
-          "padding-top": "space.stack.md"
+          "padding-bottom": "space.stack.md"
         }
       }
     ],
@@ -297,6 +295,12 @@
         "set": {
           "padding-inline": "space.inset.lg",
           "padding-top": "space.stack.lg"
+        }
+      },
+      {
+        "when": { "description": "set" },
+        "set": {
+          "padding-top": { "template": "calc({space.stack.lg} - {space.stack.md})" }
         }
       },
       {
@@ -326,19 +330,24 @@
   },
   "figma": {
     "sets": [
-      { "name": "Dialog", "nodeId": "3043:8277", "covers": "The modal dialog surface: one component with Title, Has description + Description, Has children + Children slot, Has actions + Actions slot (preferred: Button, TextLink). Page Dialog; examples in section 3043:8290." }
+      { "name": "Dialog", "nodeId": "3043:8277", "covers": "The modal dialog surface: one component with Title, Has description + Description, Has children + Children slot (both inside the Body frame), Has actions + Actions slot (preferred: Button, TextLink). Page Dialog; examples in section 3043:8290." }
     ],
     "divergences": [
       { "what": "Close is an absolutely positioned layer 12px from the top and right edges, and Header has 40px right padding, instead of an in-flow button with a negative inline-end margin.", "decision": "Accepted: Figma auto layout has no per-child negative margin. The glyph lands 20px from the top and right edges and the title wraps at the same width, as in code." },
       { "what": "Root carries the inline padding (space/inset/lg) and an item spacing of space/stack/md; Actions pads its top by space/stack/sm. Code pads each part and Root only on the block axis.", "decision": "Accepted: the code split exists so Body's scroll box holds its own padding (focus rings); Figma doesn't scroll. Spacing between parts is identical." },
       { "what": "Root's top padding is bound to space/inset/sm (12px); code computes calc(space.inset.lg - space.inset.xs).", "decision": "Accepted: Figma can't bind a calc. Same value; rebind if either token changes." },
       { "what": "The Body part's slot layer is named Children, and children is paired with a Has children boolean.", "decision": "Accepted: a Figma slot layer and its property share one name, and ADR-026 names the default slot property Children (as in Card). An empty slot still takes a gap in auto layout, so it needs a visibility boolean like Description and Actions." },
+      { "what": "The Body frame (Description + Children slot) stays in the layout when both Has description and Has children are off, adding one space/stack/md gap (82px tall instead of 66px).", "decision": "Accepted: Figma can't hide a frame on either of two booleans. Only a title-and-actions-only dialog is affected; no pattern draws one." },
       { "what": "Title sits in a wrapper frame padded by size/025 (2px) top and bottom.", "decision": "Accepted: Figma's Subheader line is 28px, so 2px brings it to the 32px Close height and centres the x on the first line, which code computes from font.size.subheader and font.line-height.default." }
     ]
   },
   "decisions": [
     {
-      "decision": "Root pads only the block axis; Header, Description, Body and Actions each pad themselves, and Body pads all four sides inside its scroll box.",
+      "decision": "Description is the first child of Body, followed by the children; Header holds only Title and Close.",
+      "reason": "As a block of its own between Header and Body, the description read as floating (visual review 2026-11-16). MUI places DialogContentText inside DialogContent the same way. Body renders when description or children is set, and the description scrolls with the content. Description pads its bottom by space.stack.md only when content follows it, so consumer children keep their own layout (no gap on Body)."
+    },
+    {
+      "decision": "Root pads only the block axis; Header, Body and Actions each pad themselves, and Body pads all four sides inside its scroll box.",
       "reason": "Body scrolls (overflow-y: auto), which clips anything painted outside its box. With the padding on Root, a focused TextField at Body's edge lost its focus ring (visual review 2026-11-16). Section-owned padding is how MUI's DialogContent works; padding plus a cancelling negative margin was rejected as a workaround. Spacing between parts is unchanged: when Body is the last part, Root drops its bottom padding and Body pads space.inset.lg instead."
     },
     {

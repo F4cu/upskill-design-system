@@ -29,13 +29,8 @@
 }
 
 .header,
-.description,
 .actions {
   padding-inline: var(--ds-space-inset-lg);
-}
-
-.description {
-  padding-top: var(--ds-space-stack-md);
 }
 
 .actions {
@@ -51,6 +46,10 @@
   padding: var(--ds-space-stack-md) var(--ds-space-inset-lg);
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+.description:not(:last-child) {
+  padding-bottom: var(--ds-space-stack-md);
 }
 
 .endsWithBody {
