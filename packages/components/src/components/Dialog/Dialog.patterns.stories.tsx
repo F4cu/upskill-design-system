@@ -15,13 +15,16 @@ type Story = StoryObj<typeof Dialog>
 
 // The Dialog renders before its trigger: the anatomy test (ADR-030) locates
 // the first data-part="Root", and Button marks its own root that way too.
-function ConfirmActionExample() {
+// nonModal passes through so the docs pages can stage the open dialog in
+// place (ADR-030 amendment 2026-11-16); Storybook leaves it unset.
+function ConfirmActionExample({ nonModal }: { nonModal?: boolean }) {
   const [open, setOpen] = useState(true)
   return (
     <Stack gap="md" align="start">
       <Dialog
         open={open}
         onOpenChange={setOpen}
+        nonModal={nonModal}
         title="Remove this course?"
         description="Your progress in Color Theory II will be deleted. This can't be undone."
         actions={
@@ -37,16 +40,17 @@ function ConfirmActionExample() {
 }
 
 export const ConfirmAction: Story = {
-  render: () => <ConfirmActionExample />,
+  render: (args) => <ConfirmActionExample nonModal={args.nonModal} />,
 }
 
-function EditFormExample() {
+function EditFormExample({ nonModal }: { nonModal?: boolean }) {
   const [open, setOpen] = useState(true)
   return (
     <Stack gap="md" align="start">
       <Dialog
         open={open}
         onOpenChange={setOpen}
+        nonModal={nonModal}
         title="Edit profile"
         description="Your name appears on your certificates."
         actions={
@@ -67,5 +71,5 @@ function EditFormExample() {
 }
 
 export const EditForm: Story = {
-  render: () => <EditFormExample />,
+  render: (args) => <EditFormExample nonModal={args.nonModal} />,
 }

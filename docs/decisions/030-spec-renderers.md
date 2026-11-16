@@ -5,7 +5,7 @@ title: "ADR-030 — Spec renderers: generated component pages and a Figma parity
 
 **Date:** 2026-11-10
 **Status:** `accepted`
-**Amended:** 2026-11-12
+**Amended:** 2026-11-16
 
 ## Context
 
@@ -122,3 +122,13 @@ The A2 anatomy (markers on the parts, the depth fallback, a Mermaid tree and the
 - **Detail figures fill their row.** Figures side by side take equal columns across the full width (wrapping below 16rem), their boxes stretch to one height, and each diagram is centred in its box. A detail crops to the focus part's height but only the width its labelled parts span, so a full-width part with its content on one side (Meta) still shows centred.
 - **Figure captions are tags.** Anatomy and state captions are a row of tags, no separators: a category for readers (`Pattern`, `Detail`, the state kind as `Lifecycle`, `Content`, `App data`) as a plain outlined tag, and identifiers as code chips — pattern and part names, state names, and prop values in JSX form (`size="lg"`). This replaces `favorite-saved pattern · size lg`, `Meta · detail` and `Lifecycle: completed` above. State tiles show lifecycle, content and app-data states only (rest is the Usage example); the interaction-state line is removed.
 
+## Amendment (2026-11-16) — overlays render as a static picture, in place
+
+Dialog is the first published overlay. Its stories open on mount with `showModal()`, so on a docs page every live example took the top layer on load: the page dimmed and went inert, focus moved into a demo, and the anatomy figure sat under a dialog with its callouts pointing at nothing.
+
+- **Staged components.** `STAGED` in `apps/docs/src/components/stories.tsx` lists the components whose stories would take over the page, with the args that render them in place (`Dialog: { nonModal: true }`). `StoryRender` applies them on every surface (anatomy, examples, patterns, states, placement), so the open dialog sits in the page flow. Pattern stories pass `nonModal` through from their args; Storybook leaves it unset, so they stay modal there.
+- **Static, not interactive.** A staged story renders inside an `inert` wrapper: it can't be clicked, hovered or focused, the overlay's own `focus()` on open does nothing, and it is out of the accessibility tree. The story's own trigger is hidden while the overlay is open. The real behaviour stays in Storybook.
+- **The stage: the window only.** An open staged overlay is centred in its box on the plain canvas, with no backdrop: the pages are a reference for how the window looks, not a demo of the modal. A closed-state tile shows only the trigger. A pattern or state tile with the overlay open takes a full row, since the overlay keeps its own width.
+- **Anatomy leaders never cross text or a control.** The top/bottom callout layout (short components, detail images) keeps alternating its badges between the two gutters unless a leader would cross a text run or a control (button, input, icon, image) outside its own part. Dialog's did: Description through Cancel, Actions through Description. Then each part takes the gutter nearer its edge (Actions and Root at the bottom, Title, Header and Close at the top), and its leader runs only through clear columns. Obstacles are clipped to the visible figure, and slivers under 4px are ignored. Button and CardVertical have no crossings, so their figures are unchanged.
+- **Without JavaScript**, a staged example shows only its story's trigger: the dialog opens in an effect.
+- **Rejected:** an "Open as modal" trigger that mounted a fresh, real modal next to each example, and a scrim behind modal stories (both built, then dropped by the developer: the reference pages need the window only); forcing the stories closed (the page would show only a trigger); patching `HTMLDialogElement.prototype.showModal` on the docs page (it would hide the override from the stories, which are the source).

@@ -158,6 +158,23 @@ pre.mermaid {
   border-radius: 0.5rem;
   overflow-x: auto;
 }
+/* Staged overlays (ADR-030 amendment 2026-11-16): a static picture of the
+   open window, in place and centred on the plain canvas, with no backdrop;
+   the story's own trigger is hidden while the overlay is open. A staged
+   pattern or state tile with the overlay open takes a full row: the overlay
+   keeps its own width. */
+.live-example.is-staged:has(dialog[open]) {
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+}
+.pattern-card:has(.is-staged dialog[open]),
+.state-grid > .state:has(.is-staged dialog[open]) {
+  grid-column: 1 / -1;
+}
+[data-staged] :has(> dialog[open]) > :not(dialog) {
+  display: none;
+}
 
 /* Props tables on component Spec pages (ADR-030 Phase A3): option values wrap
    as chips, every cell centred vertically. Prefixed with .sl-markdown-content

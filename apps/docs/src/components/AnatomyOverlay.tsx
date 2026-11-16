@@ -113,16 +113,35 @@ export function sideLayout(hits: Hit[], width: number): Callout[] {
 // part's edge. A single part keeps the bottom gutter only. Badges may spill
 // past the stage into the surrounding box, [left, right] in stage coordinates,
 // so a badge wider than a narrow stage (Button) still centres on its part.
-export function bottomLayout(hits: Hit[], left: number, right: number, height: number, floor: number): Callout[] {
+// When an alternating leader would cross text or a control (Dialog: a
+// Description leader through Cancel), clearLayout places them instead.
+const holdsAll = (hits: Hit[], hit: Hit) =>
+  hits.length > 1 && hits.every((o) => o === hit || (o.rect.x >= hit.rect.x && o.rect.x + o.rect.w <= hit.rect.x + hit.rect.w))
+const holds = (r: Rect, o: Rect) => o.x <= r.x + 1 && o.y <= r.y + 1 && o.x + o.w >= r.x + r.w - 1 && o.y + o.h >= r.y + r.h - 1
+// Obstacles a vertical leader at x, between y0 and y1, would cross; an
+// obstacle that holds the part doesn't count (a leader may run inside its own
+// parent: Button's Label inside Root).
+const crossing = (obstacles: Rect[], part: Rect, y0: number, y1: number) =>
+  obstacles.filter((o) => !holds(part, o) && o.y < y1 - 1 && o.y + o.h > y0 + 1)
+const CLEAR = 3
+
+export function bottomLayout(hits: Hit[], left: number, right: number, height: number, floor: number, obstacles: Rect[] = []): Callout[] {
+  const alternating = alternateLayout(hits, left, right, height, floor)
+  const crosses = alternating.some((c) => {
+    const [y0, y1] = c.by < c.ty ? [c.by, c.ty] : [c.ty, c.by]
+    return crossing(obstacles, c.rect, y0, y1).some((o) => c.tx > o.x - 1 && c.tx < o.x + o.w + 1)
+  })
+  return crosses && hits.length > 1 ? clearLayout(hits, obstacles, left, right, height, floor) : alternating
+}
+
+function alternateLayout(hits: Hit[], left: number, right: number, height: number, floor: number): Callout[] {
   // A part that holds every other marked part (Button's Root) leads from near
   // its left edge, so it reads first and clear of its children.
-  const holdsAll = (hit: Hit) =>
-    hits.length > 1 && hits.every((o) => o === hit || (o.rect.x >= hit.rect.x && o.rect.x + o.rect.w <= hit.rect.x + hit.rect.w))
   const list = hits
     .map((hit) => {
       const { x, w } = hit.rect
       const half = badgeW(hit.label) / 2
-      return { hit, slot: { pref: holdsAll(hit) ? x + 12 : x + w / 2, lo: Math.max(x + 4, left + half), hi: Math.min(x + w - 4, right - half), size: badgeW(hit.label) } }
+      return { hit, slot: { pref: holdsAll(hits, hit) ? x + 12 : x + w / 2, lo: Math.max(x + 4, left + half), hi: Math.min(x + w - 4, right - half), size: badgeW(hit.label) } }
     })
     .sort((a, b) => a.slot.pref - b.slot.pref)
   const ceiling = height - floor
@@ -135,6 +154,93 @@ export function bottomLayout(hits: Hit[], left: number, right: number, height: n
       const ty = top ? Math.max(hit.rect.y, ceiling) : Math.min(hit.rect.y + hit.rect.h, floor)
       return { ...hit, bx: pos[i], by, tx: pos[i], ty, path: `M${pos[i]},${ty}V${top ? by + H / 2 : by - H / 2}` }
     })
+  })
+}
+
+// Each part takes the gutter nearer its own edge (a tie, such as a Root that
+// spans the figure, goes to the bottom), and its leader runs only through
+// columns that clear every obstacle between the part and the gutter. A part
+// with no clear column on its nearer side tries the other one; a badge that
+// still collides in its row moves to the other row.
+function clearLayout(hits: Hit[], obstacles: Rect[], left: number, right: number, height: number, floor: number): Callout[] {
+  const ceiling = height - floor
+  // The x ranges where a leader to the top (or bottom) gutter crosses nothing.
+  const clearRanges = (hit: Hit, top: boolean, lo: number, hi: number) => {
+    const { y, h } = hit.rect
+    const [y0, y1] = top ? [ceiling - BOTTOM, y] : [y + h, floor + BOTTOM]
+    const blocked = crossing(obstacles, hit.rect, y0, y1)
+      .map((o) => [o.x - CLEAR, o.x + o.w + CLEAR] as const)
+      .sort((a, b) => a[0] - b[0])
+    const ranges: [number, number][] = []
+    let from = lo
+    for (const [a, b] of blocked) {
+      if (a > from) ranges.push([from, Math.min(a, hi)])
+      from = Math.max(from, b)
+      if (from >= hi) break
+    }
+    if (from <= hi) ranges.push([from, hi])
+    return ranges.filter(([a, b]) => b >= a)
+  }
+  const items = hits.map((hit) => {
+    const { x, y, w, h } = hit.rect
+    const half = badgeW(hit.label) / 2
+    const pref = holdsAll(hits, hit) ? x + 12 : x + w / 2
+    const lo = Math.max(x + 4, left + half)
+    const hi = Math.min(x + w - 4, right - half)
+    // The clear range nearest the preferred point, or null when none is.
+    const option = (top: boolean) => {
+      const ranges = clearRanges(hit, top, lo, hi)
+      if (!ranges.length) return null
+      const gap = ([a, b]: [number, number]) => (pref < a ? a - pref : pref > b ? pref - b : 0)
+      const [a, b] = ranges.reduce((best, r) => (gap(r) < gap(best) ? r : best))
+      return { pref: near(pref, a, b), lo: a, hi: b, size: badgeW(hit.label) }
+    }
+    const fallback = { pref, lo, hi, size: badgeW(hit.label) }
+    const slots = { top: option(true), bottom: option(false) }
+    const nearerTop = y - ceiling < floor - (y + h) - 4
+    const top = nearerTop ? slots.top !== null || slots.bottom === null : slots.bottom === null && slots.top !== null
+    return { hit, top, slots, fallback }
+  })
+  type Item = (typeof items)[number]
+  const slotOf = (item: Item) => (item.top ? item.slots.top : item.slots.bottom) ?? item.fallback
+  const row = (top: boolean) => {
+    const list = items.filter((i) => i.top === top).sort((a, b) => slotOf(a).pref - slotOf(b).pref)
+    return { list, ...place(list.map(slotOf)) }
+  }
+  for (let moves = 0; moves < items.length; moves++) {
+    const clashing = [true, false].map(row).find((r) => r.clash > 0)
+    if (!clashing) break
+    const item = clashing.list[clashing.clash]
+    if ((item.top ? item.slots.bottom : item.slots.top) === null) break
+    item.top = !item.top
+  }
+  return [true, false].flatMap((top) => {
+    const { list, pos } = row(top)
+    const by = top ? BOTTOM / 2 : height - BOTTOM / 2
+    return list.map(({ hit }, i) => {
+      const ty = top ? Math.max(hit.rect.y, ceiling) : Math.min(hit.rect.y + hit.rect.h, floor)
+      return { ...hit, bx: pos[i], by, tx: pos[i], ty, path: `M${pos[i]},${ty}V${top ? by + H / 2 : by - H / 2}` }
+    })
+  })
+}
+
+// What a leader must not cross: each line of text and each control or image,
+// clipped to the visible figure (a detail image crops the example). A clipped
+// sliver under 4px (the line box of a title above a Meta crop) shows nothing.
+const CONTROLS = 'button, input, select, textarea, svg, img, video'
+export function obstaclesIn(example: Element, view: DOMRect, origin: DOMRect): Rect[] {
+  const rects: DOMRect[] = [...example.querySelectorAll(CONTROLS)].map((e) => e.getBoundingClientRect())
+  const walker = document.createTreeWalker(example, NodeFilter.SHOW_TEXT)
+  const range = document.createRange()
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (!node.textContent?.trim()) continue
+    range.selectNodeContents(node)
+    rects.push(...range.getClientRects())
+  }
+  return rects.flatMap((r) => {
+    const x0 = Math.max(r.left, view.left), x1 = Math.min(r.right, view.right)
+    const y0 = Math.max(r.top, view.top), y1 = Math.min(r.bottom, view.bottom)
+    return x1 - x0 >= 4 && y1 - y0 >= 4 ? [{ x: x0 - origin.left, y: y0 - origin.top, w: x1 - x0, h: y1 - y0 }] : []
   })
 }
 
@@ -204,8 +310,9 @@ function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
         setCompact(true)
         return
       }
+      const view = (el.querySelector('.anatomy-viewport') ?? exampleRef.current!).getBoundingClientRect()
       const next = below
-        ? bottomLayout(hits, box.left - origin.left + PAD, box.right - origin.left - PAD, origin.height, origin.height - BOTTOM)
+        ? bottomLayout(hits, box.left - origin.left + PAD, box.right - origin.left - PAD, origin.height, origin.height - BOTTOM, obstaclesIn(exampleRef.current!, view, origin))
         : sideLayout(hits, origin.width)
       setCallouts((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
     }

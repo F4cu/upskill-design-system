@@ -41,15 +41,31 @@ export const argOption = (name: string, prop: string): unknown => {
 
 export const hasStory =(name: string, file: StoryFile, exportName: string) => lookup(name, file, exportName) !== null
 
+// Overlays that would take over the page when a story opens them on load
+// (ADR-030 amendment 2026-11-16): on a docs page they render in place with
+// these args, as a static picture of the open overlay.
+export const STAGED: Record<string, Args> = {
+  Dialog: { nonModal: true },
+}
+
+// inert keeps the picture static: no pointer, no focus (the overlay's own
+// focus() on open does nothing), out of the accessibility tree. The story's
+// own trigger is hidden by CSS on [data-staged]. React 18 doesn't know
+// inert, so it is passed as a plain attribute.
+const Staged = ({ children }: { children: ReactElement }) => (
+  <div data-staged="" {...{ inert: '' }}>{children}</div>
+)
+
 export function StoryRender({ name, file, exportName, args: overrides }: { name: string; file: StoryFile; exportName: string; args?: Args }) {
   const found = lookup(name, file, exportName)
   if (!found) throw new Error(`${name}.${file}.tsx has no export ${exportName}`)
   const { meta, story } = found
-  const args = { ...meta.args, ...story.args, ...overrides }
+  const stage = STAGED[name]
+  const args = { ...meta.args, ...story.args, ...stage, ...overrides }
   const context = { args }
   const Component = meta.component!
   const Inner = () => (story.render ?? meta.render)?.(args, context) ?? <Component {...args} />
   const decorators = [...(story.decorators ?? []), ...(meta.decorators ?? [])]
   const Wrapped = decorators.reduce<ComponentType>((Story, decorate) => () => decorate(Story, context), Inner)
-  return <Wrapped />
+  return stage ? <Staged><Wrapped /></Staged> : <Wrapped />
 }
