@@ -208,21 +208,43 @@ function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
 
 // Focus order: badges sit in one row above the sample, in focus order, joined
 // by a dashed line; each drops a hairline leader, like the Spec anatomy's, to
-// the top of the element that draws the stop's ring.
-type Stop = { badge: string; w: number; bx: number; tx: number; ty: number }
-const ROW = BOTTOM / 2
+// the top of the element that draws the stop's ring. With `orderNearest`, a
+// stop in the sample's lower half gets its badge in a second row below,
+// leader rising to its bottom edge, so no leader crosses the sample.
+type Stop = { badge: string; w: number; bx: number; tx: number; ty: number; row: number; edge: number }
 
-function orderLayout(rings: Element[], origin: DOMRect): Stop[] {
+function orderLayout(rings: Element[], origin: DOMRect, sample: DOMRect, nearest: boolean): Stop[] {
+  const mid = (sample.top + sample.bottom) / 2
   const items = rings.map((ring, i) => {
     const r = ring.getBoundingClientRect()
+    const below = nearest && (r.top + r.bottom) / 2 > mid
+    const row = below ? origin.height - BOTTOM / 2 : BOTTOM / 2
     const x = r.left - origin.left
     const badge = ordinal(i + 1)
     const w = badgeW(badge)
-    return { badge, w, ty: r.top - origin.top, slot: { pref: x + r.width / 2, lo: x + 4, hi: x + r.width - 4, size: w } }
+    return {
+      badge, w, row,
+      edge: below ? row - H / 2 : row + H / 2,
+      ty: (below ? r.bottom : r.top) - origin.top,
+      slot: { pref: x + r.width / 2, lo: x + 4, hi: x + r.width - 4, size: w },
+    }
   })
-  const { pos } = place(items.map((i) => i.slot))
-  return items.map(({ badge, w, ty }, i) => ({ badge, w, bx: pos[i], tx: pos[i], ty }))
+  // Each row spaces its own badges.
+  const bx: number[] = []
+  for (const row of new Set(items.map((i) => i.row))) {
+    const inRow = items.flatMap((item, i) => (item.row === row ? [i] : []))
+    const { pos } = place(inRow.map((i) => items[i].slot))
+    inRow.forEach((i, k) => (bx[i] = pos[k]))
+  }
+  return items.map(({ badge, w, ty, row, edge }, i) => ({ badge, w, bx: bx[i], tx: bx[i], ty, row, edge }))
 }
+
+// The dashed order line, one segment per row of badges.
+const rowPaths = (stops: Stop[]) =>
+  [...new Set(stops.map((s) => s.row))].flatMap((row) => {
+    const xs = stops.filter((s) => s.row === row).map((s) => s.bx)
+    return xs.length > 1 ? [`M${Math.min(...xs)} ${row}H${Math.max(...xs)}`] : []
+  })
 
 function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
   const { keyboard } = entry
@@ -243,7 +265,7 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
       const origin = el.parentElement!.getBoundingClientRect()
       // Only stops on screen: a staged overlay's hidden trigger isn't one.
       const found = [...el.querySelectorAll(FOCUSABLE)].filter((stop) => stop.getClientRects().length > 0)
-      const next = orderLayout(found.map((stop) => keyboard.ringOn?.(stop) ?? stop), origin)
+      const next = orderLayout(found.map((stop) => keyboard.ringOn?.(stop) ?? stop), origin, el.getBoundingClientRect(), !!keyboard.orderNearest)
       setStops((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
       const nextRows = found.slice(0, keyboard.tableRows).map((stop, i) => ({ label: ordinal(i + 1), code: markup(stop), says: announce(stop) }))
       setRows((prev) => (JSON.stringify(prev) === JSON.stringify(nextRows) ? prev : nextRows))
@@ -263,7 +285,7 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
   return (
     <figure className="a11y-figure">
       <div className="a11y-canvas">
-        <div className="a11y-stage" style={keyboard.order ? { paddingTop: BOTTOM } : undefined}>
+        <div className="a11y-stage" style={keyboard.order ? (keyboard.orderNearest ? { paddingBlock: BOTTOM } : { paddingTop: BOTTOM }) : undefined}>
           {/* The sample's links point nowhere; keep a click from jumping the page. */}
           <div
             ref={stage}
@@ -275,15 +297,15 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
           </div>
           {stops.length > 0 && (
             <svg className="anatomy-svg" aria-hidden="true">
-              <path className="a11y-order-path" d={`M${stops[0].bx} ${ROW}H${stops[stops.length - 1].bx}`} />
+              {rowPaths(stops).map((d) => <path key={d} className="a11y-order-path" d={d} />)}
               {stops.map((s) => (
                 <g key={s.badge}>
                   <g className="anatomy-leader">
-                    <path d={`M${s.bx},${ROW + H / 2}V${s.ty}`} />
+                    <path d={`M${s.bx},${s.edge}V${s.ty}`} />
                     <circle className="anatomy-dot" cx={s.tx} cy={s.ty} r={2} />
                   </g>
-                  <rect className="anatomy-badge" x={s.bx - s.w / 2} y={ROW - H / 2} width={s.w} height={H} rx={H / 2} />
-                  <text x={s.bx} y={ROW}>{s.badge}</text>
+                  <rect className="anatomy-badge" x={s.bx - s.w / 2} y={s.row - H / 2} width={s.w} height={H} rx={H / 2} />
+                  <text x={s.bx} y={s.row}>{s.badge}</text>
                 </g>
               ))}
             </svg>

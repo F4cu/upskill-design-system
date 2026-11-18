@@ -19,6 +19,7 @@ import {
   STORYBOOK,
   TABS,
   CONTENT_OPTIONS,
+  OMIT_EVERYWHERE,
   OMIT_SECTIONS,
   bundle,
   familyOf,
@@ -370,7 +371,7 @@ const HEADINGS = {
     ["parity", "Design–code parity", spec.figma.divergences?.length > 0],
   ],
 };
-const omitted = OMIT_SECTIONS[name] ?? [];
+const omitted = [...OMIT_EVERYWHERE, ...(OMIT_SECTIONS[name] ?? [])];
 const shown = HEADINGS[tabId].filter(([slug, , show]) => show && !omitted.includes(slug));
 const headings = shown.map(([slug, text]) => ({ depth: 2, slug, text }));
 const h = Object.fromEntries(shown);

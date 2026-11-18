@@ -22,8 +22,9 @@ export const TABS = [
 ];
 
 // A tab with nothing to show is left out (ADR-030 amendment 2026-11-18, R7):
-// Decisions needs a featured decision or a Figma divergence.
-const hasDecisions = ({ spec }) => spec.decisions?.some((d) => d.featured) || spec.figma.divergences?.length > 0;
+// Decisions needs a featured decision, or a Figma divergence while parity shows.
+const hasDecisions = ({ spec }) =>
+  spec.decisions?.some((d) => d.featured) || (!OMIT_EVERYWHERE.includes("parity") && spec.figma.divergences?.length > 0);
 export const tabsFor = (name) => TABS.filter((tab) => tab.id !== "decisions" || hasDecisions(bundle.components[name]));
 
 // Families of lookalikes (ADR-030 amendment 2026-11-12): members share a shape
@@ -81,6 +82,9 @@ export const CONTENT_OPTIONS = {
 export const OMIT_SECTIONS = {
   Dialog: ["states"],
 };
+// Left out on every component. Design–code parity is hidden for now (developer,
+// 2026-11-18): its entries stay in spec.json for reviewers and the Figma moments.
+export const OMIT_EVERYWHERE = ["parity"];
 
 export const slugOf = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 

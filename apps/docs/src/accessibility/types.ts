@@ -35,6 +35,10 @@ export type AccessibilityEntry = {
     advice: string
     focusTarget?: string
     order?: boolean
+    // Each order badge sits on the sample's edge nearest its stop, above or
+    // below: for samples with stops at both ends (Dialog's Close and
+    // actions), where every leader from one side would cross the content.
+    orderNearest?: boolean
     // Table rows to keep when the sample repeats (the first card's stops).
     tableRows?: number
     ringOn?: (stop: Element) => Element | null
