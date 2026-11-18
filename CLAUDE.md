@@ -6,7 +6,7 @@
 
 ## Project purpose
 
-**Lite agentic** means economic maintenance: recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to nine defined moments (see "Agentic moments"). See `ROADMAP.md` for phase and integration status.
+**Lite agentic** means economic maintenance: recurring automation is scripts + GitHub Actions with direct REST calls; MCP servers are for one-off interactive tasks only; agent involvement is limited to ten defined moments (see "Agentic moments"). See `ROADMAP.md` for phase and integration status.
 
 ## Where knowledge lives (read before adding to this file)
 
@@ -72,6 +72,7 @@ Commit directly to the current branch — do not create new branches unless expl
 
 - `/review-component` (also inside `/add-component`): branch `component/<kebab-name>`, PR against `main`.
 - `/docs-sync`: branch `docs-sync/<YYYY-MM-DD>`, PR.
+- `/document-component`: branch `document/<kebab-name>`, PR, after the developer reviews the built page (ADR-030).
 - `/layout-generation`: branch `layout/<kebab-name>`, PR, reviewed in-session with `/code-review` by default (adversarial subagent opt-in for complete route pages) — ADR-016.
 
 ## Commands and skills
@@ -80,7 +81,7 @@ Commit directly to the current branch — do not create new branches unless expl
 
 ## Agentic moments
 
-The only scenarios where invoking Claude with MCP context is worth the cost, all developer-triggered: (1) `/figma-variable-audit`, (2) `/token-deprecation-pass`, (3) `/component-scaffold`, (4) `/layout-generation`, (5) `/figma-variable-push`, (6) `/add-component`, (7) `/review-component`, (8) `/extract-learnings`, (9) `/docs-sync`. Each command file opens with the invariant that must survive, then its inputs, steps and success signal. Everything else is a script or a GitHub Action.
+The only scenarios where invoking Claude with MCP context is worth the cost, all developer-triggered: (1) `/figma-variable-audit`, (2) `/token-deprecation-pass`, (3) `/component-scaffold`, (4) `/layout-generation`, (5) `/figma-variable-push`, (6) `/add-component`, (7) `/review-component`, (8) `/extract-learnings`, (9) `/docs-sync`, (10) `/document-component`. Each command file opens with the invariant that must survive, then its inputs, steps and success signal. Everything else is a script or a GitHub Action.
 
 **For existing component reviews:** `/review-component <Name>` for the `full` path (fresh adversarial subagent + learnings loop); `/code-review` on the diff for the `standard` path — no subagent, no handoff file, no learnings step.
 

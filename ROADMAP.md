@@ -2,7 +2,7 @@
 
 Progress tracker. `[x]` done · `[-]` in progress · `[ ]` not started. Each phase is sized for 1–2 focused sessions and ends with an exit condition — don't start the next phase until the current one meets it. Commit-level detail lives in `git log`; rationale and history live in ADRs and `.claude/handoff/archive/` — this file tracks *what shipped, per phase*, as concisely as possible.
 
-See `README.md` for what "lite-agentic" means and `docs/00-start-here.md` / `docs/06-agentic-moments.md` for the full concept and the nine agentic moments.
+See `README.md` for what "lite-agentic" means and `docs/00-start-here.md` / `docs/06-agentic-moments.md` for the full concept and the ten agentic moments.
 
 ---
 
@@ -29,7 +29,7 @@ See `README.md` for what "lite-agentic" means and `docs/00-start-here.md` / `doc
 
 | Phase | Status | Exit condition |
 |---|---|---|
-| 7 — Agentic Moments | 🚧 in progress | 7/9 moments run on a real task; remaining: token deprecation pass, Figma variable push |
+| 7 — Agentic Moments | 🚧 in progress | 7/10 moments run on a real task; remaining: token deprecation pass, Figma variable push, document component |
 | 8 — Frozen-Memory Ingestion Layer | ✅ done | `sense.js` answers token/governance/Figma-drift status from committed files, zero live calls |
 | 9 — Verified Component Loop (pilot) | ✅ done | Both pilot components shipped clean; adversarial reviewer caught a real bug |
 | 10 — Component Lifecycle Status | ✅ done | Both lifecycle axes reported from committed files; human `done` survives every sync |
@@ -113,7 +113,7 @@ Deferred, not tracked further here: changelog generation from token diffs on rel
 
 ## Pivot — Agentic Moments & Verified Loop (Phases 7–10)
 
-> The nine developer-triggered agentic moments (Phase 7); a frozen-memory ingestion layer so those moments read committed snapshots instead of live APIs (Phase 8); a self-verifying loop that upgrades component-scaffold into sense → scaffold → gate → visual checkpoint → review (Phase 9); and the two-axis lifecycle status that tracks each component through that loop (Phase 10). Stays inside the lite-agentic charter: developer-triggered, **sequential, at most two agents**, frozen-file context, code-as-source-of-truth.
+> The ten developer-triggered agentic moments (Phase 7); a frozen-memory ingestion layer so those moments read committed snapshots instead of live APIs (Phase 8); a self-verifying loop that upgrades component-scaffold into sense → scaffold → gate → visual checkpoint → review (Phase 9); and the two-axis lifecycle status that tracks each component through that loop (Phase 10). Stays inside the lite-agentic charter: developer-triggered, **sequential, at most two agents**, frozen-file context, code-as-source-of-truth.
 >
 > **Runtime constraint (Claude Pro, not API):** the scarce resource is the rolling **usage window**. Orchestrate in the main session, spawn **exactly one** fresh subagent — the adversarial reviewer, where independent context is the point. Everything deterministic stays a plain `npm` script.
 >
@@ -121,9 +121,9 @@ Deferred, not tracked further here: changelog generation from token diffs on rel
 
 ## Phase 7 — Agentic Moments *(in progress)*
 
-> Nine moments as `.claude/commands/` prompts (written in Phase 2, expanded through Phases 8–9 and the 2026-07-08 agentic-moments audit — full audit notes in `.claude/handoff/archive/2026-07-08-agentic-moments-audit.handoff.md`). Each has a named trigger, declared inputs, a concrete output, and a success signal. No continuous loops, no schedulers.
+> Ten moments as `.claude/commands/` prompts (written in Phase 2, expanded through Phases 8–9 and the 2026-07-08 agentic-moments audit — full audit notes in `.claude/handoff/archive/2026-07-08-agentic-moments-audit.handoff.md`; the tenth, `/document-component`, added 2026-11-18 by the ADR-030 amendment of that date). Each has a named trigger, declared inputs, a concrete output, and a success signal. No continuous loops, no schedulers.
 
-Seven of nine moments have run on a real task and met their success signal:
+Seven of ten moments have run on a real task and met their success signal:
 
 - **Figma token audit** — real drift check, ADR-002 amended.
 - **Component scaffold** — every `/add-component` run.

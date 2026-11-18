@@ -104,7 +104,7 @@ sources:
 ---
 # Start here
 
-UpSkill is a learning-first, **lite agentic** design system for a small SaaS product. "Lite" is a deliberate constraint, not an apology: a fixed, small component set (layout primitives, typography, `Button`, form inputs, `Card`, and the page-specific additions listed per phase), and economic maintenance — recurring automation is plain scripts and GitHub Actions calling REST APIs directly, [MCP](08-glossary.md) tools are reserved for one-off interactive tasks, and agent involvement is limited to [nine defined moments](06-agentic-moments.md). The premise stated in `AGENTS.md` is that **one person must be able to maintain the whole system**, and every architectural choice documented on this site traces back to that.
+UpSkill is a learning-first, **lite agentic** design system for a small SaaS product. "Lite" is a deliberate constraint, not an apology: a fixed, small component set (layout primitives, typography, `Button`, form inputs, `Card`, and the page-specific additions listed per phase), and economic maintenance — recurring automation is plain scripts and GitHub Actions calling REST APIs directly, [MCP](08-glossary.md) tools are reserved for one-off interactive tasks, and agent involvement is limited to [ten defined moments](06-agentic-moments.md). The premise stated in `AGENTS.md` is that **one person must be able to maintain the whole system**, and every architectural choice documented on this site traces back to that.
 
 The pipeline in one sentence: [design tokens](08-glossary.md) are authored as committed DTCG JSON, built by [Style Dictionary](08-glossary.md) into [CSS custom properties](08-glossary.md) and JS/TS constants, consumed by coded React components, governed through Airtable, automated through GitHub Actions — with Figma as a downstream mirror rather than the source of truth. In plain terms: design decisions live as data in this repo, a build step turns them into the values components use, Airtable tracks their status, and Figma reflects them without defining them.
 
@@ -158,7 +158,7 @@ The suggested reading order is the page order — tokens first, because everythi
 - [03 — Accessibility](03-accessibility.md) — the three-tier a11y contract (plus the automatic story axe sweep) and the jsdom trade-off
 - [04 — Layout grammar](04-layout-grammar.md) — the fixed Figma-level → HTML-landmark mapping
 - [05 — Governance](05-governance.md) — the Airtable two-way sync and the "don't downgrade done" guard
-- [06 — Agentic moments](06-agentic-moments.md) — the lite-agentic charter, the nine moments, and the verified `/add-component` loop
+- [06 — Agentic moments](06-agentic-moments.md) — the lite-agentic charter, the ten moments, and the verified `/add-component` loop
 - [07 — CLI reference](07-cli-reference.md) — every command, grouped by purpose
 - [08 — Glossary](08-glossary.md) — terms explained for a non-developer collaborator
 - [09 — Context engineering](09-context-engineering.md) — the instruction ladder (`AGENTS.md` + `CLAUDE.md` → [nested package `AGENTS.md`](08-glossary.md) → commands → snapshots → handoffs) and the CI gates that keep it honest

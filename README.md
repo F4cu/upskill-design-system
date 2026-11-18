@@ -34,7 +34,7 @@ Everything recurring runs as a plain script or GitHub Action. No MCP in CI.
 
 ## Agentic moments
 
-Agent involvement is limited to **nine developer-triggered moments** — Figma variable audit/push, token deprecation, component scaffold, layout generation, the verified add-component loop, component review, extract-learnings, and docs sync. Full index, invariants, and the loop diagram: [Agentic moments](docs/06-agentic-moments.md) (also indexed in `CLAUDE.md`).
+Agent involvement is limited to **ten developer-triggered moments** — Figma variable audit/push, token deprecation, component scaffold, layout generation, the verified add-component loop, component review, extract-learnings, docs sync, and document component (the docs-site component page). Full index, invariants, and the loop diagram: [Agentic moments](docs/06-agentic-moments.md) (also indexed in `CLAUDE.md`).
 
 ## Observability
 
