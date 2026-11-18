@@ -256,6 +256,11 @@ const stateExample = (s) => {
 // readable label, then the state's spec name as code.
 const shownStates = (spec.states ?? []).filter((s) => ["lifecycle", "content", "appData"].includes(s.kind));
 const KIND = { interaction: "Interaction", appData: "App data", lifecycle: "Lifecycle", content: "Content" };
+// A state set by a boolean prop (Button's disabled), on a component with a
+// variant axis, reads like the Usage variant overview: the Default sample once
+// per variant with the prop on, a badge under each, across the full width.
+const variantAxis = usage.variants?.variant;
+const overviewState = (s) => variantAxis && spec.props[s.name]?.type === "boolean";
 
 const LIMIT_SCOPE = { region: "region (section)", repeated: "repeated item", parent: "parent" };
 // Usage (prototype): each variant axis opens the page as its own section, an
@@ -596,8 +601,10 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           <h2 id="states">{h.states}</h2>
           <div class="state-grid not-content">
             {shownStates.map((s) => (
-              <figure class="state">
-                {stateExample(s) === "rendered" ? (
+              <figure class:list={["state", { "is-wide": overviewState(s) }]}>
+                {overviewState(s) ? (
+                  <VariantOverview client:visible name={name} axis="variant" options={variantAxis.options} constraints={spec.constraints ?? []} props={{ [s.name]: true }} />
+                ) : stateExample(s) === "rendered" ? (
                   <LiveExample client:visible name={name} file="stories" exportName={stateStory(s)} />
                 ) : (
                   <div class="state-missing">No <code>{stateStory(s)}</code> story</div>
@@ -857,6 +864,9 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   }
   .state {
     margin: 0;
+  }
+  .state.is-wide {
+    grid-column: 1 / -1;
   }
 
   details summary {

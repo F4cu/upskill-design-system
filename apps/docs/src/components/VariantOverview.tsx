@@ -15,8 +15,8 @@ const components = import.meta.glob<Record<string, ComponentType<Record<string, 
   { eager: true },
 )
 
-function sampleProps(name: string, axis: string, option: string, constraints: Constraint[]) {
-  const props: Record<string, unknown> = { ...storyArgs(name, 'stories', 'Default'), [axis]: option }
+function sampleProps(name: string, axis: string, option: string, constraints: Constraint[], extra: Record<string, unknown>) {
+  const props: Record<string, unknown> = { ...storyArgs(name, 'stories', 'Default'), ...extra, [axis]: option }
   for (const c of constraints) {
     const applies = Object.entries(c.if).every(([k, v]) => (v === '*' ? props[k] !== undefined : props[k] === v))
     if (!applies) continue
@@ -26,7 +26,8 @@ function sampleProps(name: string, axis: string, option: string, constraints: Co
   return props
 }
 
-export default function VariantOverview({ name, axis, options, constraints = [] }: { name: string; axis: string; options: string[]; constraints?: Constraint[] }) {
+// `props` sets the same props on every sample (Spec States: disabled on each variant).
+export default function VariantOverview({ name, axis, options, constraints = [], props = {} }: { name: string; axis: string; options: string[]; constraints?: Constraint[]; props?: Record<string, unknown> }) {
   const Component = components[`../../../../packages/components/src/components/${name}/index.tsx`][name]
   return (
     <div className="variant-overview">
@@ -34,7 +35,7 @@ export default function VariantOverview({ name, axis, options, constraints = [] 
         {options.map((option) => (
           <div key={option} className="variant-callout">
             <div className="ds-example" data-component={name}>
-              <Component {...sampleProps(name, axis, option, constraints)} />
+              <Component {...sampleProps(name, axis, option, constraints, props)} />
             </div>
             <span className="variant-badge">{option}</span>
           </div>
