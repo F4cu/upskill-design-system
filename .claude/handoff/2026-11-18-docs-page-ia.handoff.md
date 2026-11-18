@@ -69,7 +69,7 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 - [x] 1.5 (2026-11-18) ADR-027 amendment (schema: `topic`, `notes`) and ADR-030 amendment (four-tab IA, Decisions tab, R1–R8)
 
 **2. Decision text edit pass** (needs 1)
-- [ ] 2.1 Edit Button's decisions (6) to the rule; internal notes move per D3. Developer reviews the tone on this one before the rest
+- [x] 2.1 (2026-11-18) Edit Button's decisions (6) to the rule; internal notes move per D3. Tone approved by the developer: plain words over internal jargon (no "bleed", "consumer", "glyph", "Root"), code names in backticks, one idea per sentence, "you" for the person using the component, mechanics and enforcement go to `notes`
 - [ ] 2.2 CardVertical (15), then Dialog (15), Accordion (2), DropdownMenu (1)
 - [ ] 2.2b CardHorizontal (4), AppHeader (1), VideoFrame (1)
 - [ ] 2.3 Same pass on `ruledOut[]` reasons and `figma.divergences` (Button 6/1, CardVertical 10/5, Dialog 8/6)
@@ -77,7 +77,7 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 
 **3. Template** (needs 1; can run alongside 2)
 - [ ] 3.1 `TABS` in `apps/docs/components.mjs`: drop Tokens, add Decisions; the Tokens table moves into Spec as a section; old `/tokens/` URLs redirect or 404 (check what links them)
-- [ ] 3.2 Decisions tab: topic filter (All / Visual / Behaviour / Platform), Ruled out, Design–code parity; ADR links kept; filter works without JS (all shown) and in light and dark
+- [ ] 3.2 Decisions tab: topic filter (All / Visual / Behaviour / Platform), Ruled out, Design–code parity; ADR links kept; filter works without JS (all shown) and in light and dark; render `backtick` spans in decision and reason text as `<code>` (Button and CardVertical use them; the current Spec page prints them literally)
 - [ ] 3.3 R4: skip constraints whose `enforcedBy` is only `type`
 - [ ] 3.4 R7: omit empty sections instead of "None recorded"
 - [ ] 3.5 Placement check: each Don't's `source` index resolves in `usage.json` (today nothing reads it, so a reorder silently mislabels a box); throws at build like the caption cap
