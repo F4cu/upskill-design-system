@@ -55,6 +55,7 @@ sources:
 # rewritten 2026-11-11: Frozen snapshot entry lists figma-pattern-frames.json (ADR-023 amendment 2026-11-11)
 # clock reset 2026-11-11: /layout-generation's final step names the limits-driven composition check and the grammar table points at the fixed set instead of a count; nothing here described either, still accurate
 # clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
+# clock reset 2026-11-18: /extract-learnings drafts spec decisions with a topic in the reader-facing form; no glossary term describes decision drafting, still accurate
 ---
 # Glossary
 

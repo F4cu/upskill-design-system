@@ -101,6 +101,7 @@ sources:
 # clock reset 2026-11-18: ADR-030 amendment hides Design–code parity on every page (OMIT_EVERYWHERE); this page doesn't name the component page sections, still accurate
 # clock reset 2026-11-18: ADR-030 amendment reorders the Spec tab (States before Props); this page doesn't name the component page sections, still accurate
 # clock reset 2026-11-18: ADR-027 amendment extends the reader-text check to ruledOut and divergences; this page lists no spec checks, still accurate
+# clock reset 2026-11-18: /extract-learnings drafts spec decisions with a topic in the reader-facing form; this page lists the moments, not their steps, still accurate
 ---
 # Start here
 
