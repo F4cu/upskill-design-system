@@ -95,6 +95,7 @@ sources:
 # clock reset 2026-11-13: ADR-023 wording fix (tab stops) and ADR-028 amendment (relocated ring on linked cards); ADR count unchanged, this page lists no ADR detail, still accurate
 # clock reset 2026-11-13 (#174): ADR-023 wording fix (CardVertical's Root is a native <article>, not role="article"); this page doesn't describe card markup, still accurate
 # clock reset 2026-11-18: ADR-030 amendments (overlays staged 2026-11-16; four tabs and page rules 2026-11-18); this page doesn't name the component page tabs or sections, still accurate
+# clock reset 2026-11-18: ADR-027/030 amendments add featured decisions (max 8 shown per page); this page doesn't describe spec fields or page tabs, still accurate
 ---
 # Start here
 
