@@ -77,12 +77,12 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 - [x] 2.4 (2026-11-18) Once the backlog list is empty, make the 1.3 check an error in `validate-spec.js` (and update the ADR-027 amendment and doc 10)
 
 **3. Template** (needs 1; can run alongside 2)
-- [ ] 3.1 `TABS` in `apps/docs/components.mjs`: drop Tokens, add Decisions; the Tokens table moves into Spec as a section; old `/tokens/` URLs redirect or 404 (check what links them)
-- [ ] 3.2 Decisions tab: featured entries only (D6) plus a `REPO_BLOB` link to `<Name>.spec.json`; topic filter (All / Visual / Behaviour / Platform), Ruled out, Design–code parity; ADR links kept; filter works without JS (all shown) and in light and dark; render `backtick` spans in decision and reason text as `<code>` (Button and CardVertical use them; the current Spec page prints them literally)
-- [ ] 3.3 R4: skip constraints whose `enforcedBy` is only `type`
-- [ ] 3.4 R7: omit empty sections instead of "None recorded"
-- [ ] 3.5 Placement check: each Don't's `source` index resolves in `usage.json` (today nothing reads it, so a reorder silently mislabels a box); throws at build like the caption cap
-- [ ] 3.6 Rebuild Button and CardVertical; confirm nothing on their Usage and Accessibility tabs changed apart from the intended moves
+- [x] 3.1 (2026-11-18) `TABS` in `apps/docs/components.mjs`: Tokens dropped, Decisions added; the Tokens table is the last section of Spec (`#tokens`), byte-identical to the old tab for Button, CardVertical and Dialog. Nothing in the repo linked `/tokens/`; the old URLs still build as meta-refresh redirects to `spec/#tokens` (noindex), since the site is public
+- [x] 3.2 (2026-11-18) Decisions tab: featured entries only, an intro line linking `<Name>.spec.json` when some are unfeatured, topic filter, Ruled out, Design–code parity, ADR links. The filter is radios plus CSS `:has()`, no script: all shown by default and wherever `:has()` is missing; the filter only appears with two or more topics. Backtick spans render as `<code>` in decisions, ruled-out rows and divergences. Checked in Playwright: Dialog 8 shown, Behaviour 3, Platform 2, with JS off and on; light and dark; no horizontal scroll at 375px. With JS off Starlight always shows dark (its theme script sets light), so light was checked with JS on
+- [x] 3.3 (2026-11-18) R4: a constraint whose `enforcedBy` is only `type` is skipped (Dialog's Prop rules section is gone)
+- [x] 3.4 (2026-11-18) R7: every "None recorded" removed, from the page and the table of contents; an empty use-when cell shows "—". Extended to tabs: a component with no featured decision, ruled-out option or divergence gets no Decisions tab (`tabsFor`), so Select and TextField show three tabs
+- [x] 3.5 (2026-11-18) Placement check in the page frontmatter: each box's `source` (pattern name or index) must exist in `usage.json`, else the build throws. Verified by pointing a Button Don't at `limits[9]`. It catches a removed entry or an index past the end, not a reorder within range
+- [x] 3.6 (2026-11-18) Rebuilt and diffed `<main>` against a pre-change build: Button and CardVertical Usage and Accessibility differ only in the tab bar
 
 **4. Dialog page** (needs 2.2 for Dialog, 3)
 - [ ] 4.1 Build the "Content" opening section (D4)

@@ -1,7 +1,8 @@
 ---
-// Component pages (ADR-030, Phase A1): Usage, Spec, Tokens and Accessibility per
-// component, rendered from specs.bundle.json. Every row traces to a field in
-// the spec or <Name>.usage.json; a section with no data shows "None recorded".
+// Component pages (ADR-030, amendment 2026-11-18): Usage, Spec, Accessibility
+// and Decisions per component, rendered from specs.bundle.json. Every row
+// traces to a field in the spec or <Name>.usage.json; a section with no data
+// is left out (R7).
 import { getCollection } from "astro:content";
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 import ComponentTabs from "../../../components/ComponentTabs.astro";
@@ -22,16 +23,24 @@ import {
   pageHref,
   publishedComponents,
   slugOf,
+  tabsFor,
 } from "../../../../components.mjs";
 
 export function getStaticPaths() {
-  return publishedComponents().flatMap((name) =>
-    TABS.map((tab) => ({
+  return publishedComponents().flatMap((name) => [
+    ...tabsFor(name).map((tab) => ({
       params: { name: slugOf(name), tab: tab.path ? tab.path.replace(/\/$/, "") : undefined },
       props: { name, tabId: tab.id },
     })),
-  );
+    // Tokens was a tab until the four-tab layout; its old URL lands on the Spec section.
+    {
+      params: { name: slugOf(name), tab: "tokens" },
+      props: { name, redirect: `${pageHref(name, TABS.find((t) => t.id === "spec"))}#tokens` },
+    },
+  ]);
 }
+
+if (Astro.props.redirect) return Astro.redirect(Astro.props.redirect);
 
 const { name, tabId } = Astro.props;
 const { spec, usage, a11y } = bundle.components[name];
@@ -46,9 +55,9 @@ const adrHref = (ref) => {
 };
 const componentHref = (n) => (published.has(n) ? pageHref(n) : null);
 
-const NONE = "None recorded.";
-
 // --- formatting ---------------------------------------------------------
+// Spec text marks code names with backticks; odd segments render as <code>.
+const spans = (text) => (text ?? "").split(/`([^`]+)`/).map((s, i) => ({ s, code: i % 2 === 1 }));
 const formatWhen = (when) => {
   const entries = Object.entries(when);
   if (!entries.length) return "Default";
@@ -259,6 +268,19 @@ const builtFrom = [...new Set((spec.anatomy ?? []).map((part) => part.builtOn).f
 // components; the variant sections and the boxes cover them.
 const placementFiles = import.meta.glob("../../../placement/*.tsx", { eager: true });
 const placement = placementFiles[`../../../placement/${name}.tsx`]?.placement;
+// Each box names the usage entry it illustrates; fail the build when that
+// pattern name or index no longer exists in usage.json, like the caption cap.
+const usageLists = {
+  patterns: usage.composition?.patterns ?? [],
+  notFor: usage.notFor ?? [],
+  limits: usage.composition?.limits ?? [],
+  donts: usage.composition?.donts ?? [],
+};
+for (const { source } of placement ?? []) {
+  const [list, ref] = Object.entries(source)[0];
+  const found = list === "patterns" ? usageLists.patterns.some((p) => p.name === ref) : Number.isInteger(ref) && ref >= 0 && ref < usageLists[list].length;
+  if (!found) throw new Error(`placement/${name}.tsx: source ${list}[${JSON.stringify(ref)}] does not exist in ${name}.usage.json`);
+}
 // Accessibility (prototype): a component with a file in accessibility/ shows
 // use cases, reading order and keyboard advice, each with a figure, in place of the
 // spec's full contract (role, ARIA, key table, testing), which stays in
@@ -287,43 +309,61 @@ const links = [
   { label: "Usage source", href: `${REPO_BLOB}/packages/components/src/components/${name}/${name}.usage.json` },
 ];
 
+// R4: a rule the TypeScript types enforce needs no prose; the compiler tells the reader.
+const shownConstraints = (spec.constraints ?? []).filter((c) => !c.enforcedBy?.length || c.enforcedBy.some((e) => e !== "type"));
+const related = [["Built from", builtFrom], ["Placed inside", usage.composition?.containedBy ?? []]].filter(([, list]) => list.length);
+const width = WIDTH[usage.composition?.width];
+
+// Decisions tab (R6): featured entries only, filtered by topic; the rest stay
+// in spec.json for agents and are one link away.
+const TOPICS = { visual: "Visual", behaviour: "Behaviour", platform: "Platform" };
+const featured = (spec.decisions ?? []).filter((d) => d.featured);
+const topics = Object.keys(TOPICS).filter((t) => featured.some((d) => d.topic === t));
+const specSource = links.find((l) => l.label === "Spec source").href;
+
+// Each entry is [slug, title, shown]; a section with no data is left out (R7),
+// in the table of contents as on the page.
 const HEADINGS = {
   usage: [
-    ...(axes.length ? axes.map(([axis]) => [axisSlug(axis), axisTitle(axis)]) : [["example", "Example"]]),
-    ...(family ? [["when-to-use", "When to use it"]] : []),
+    ...(axes.length ? axes.map(([axis]) => [axisSlug(axis), axisTitle(axis), true]) : [["example", "Example", hasDefault]]),
+    ["when-to-use", "When to use it", family && usage.useWhen?.length > 0],
     ...(placement
-      ? [["composition", "Composition"]]
+      ? [["composition", "Composition", true]]
       : [
-          ["patterns", "Patterns"],
-          ["not-for", "Not for"],
-          ["composition", "Composition"],
-          ["rules", "Prop rules"],
-          ["related", "Related components"],
+          ["patterns", "Patterns", shownPatterns.length > 0],
+          ["not-for", "Not for", usage.notFor?.length > 0],
+          ["composition", "Composition", usage.composition?.limits?.length > 0 || usage.composition?.donts?.length > 0],
+          ["rules", "Prop rules", shownConstraints.length > 0],
+          ["related", "Related components", related.length > 0 || !!width],
         ]),
   ],
   spec: [
-    ["anatomy", "Anatomy"],
-    ["props", "Props"],
-    ["states", "States"],
-    ["why", "Why it's built this way"],
-    ["parity", "Design–code parity"],
+    ["anatomy", "Anatomy", spec.anatomyExamples?.length > 0],
+    ["props", "Props", true],
+    ["states", "States", shownStates.length > 0],
+    ["tokens", "Tokens", styleGroups.length > 0],
   ],
-  tokens: [["styles", "Token usage"]],
   accessibility: a11yGuide
     ? [
-        ["use-cases", "Use cases"],
-        ["reading-order", "Reading order"],
-        ["keyboard", "Keyboard and focus"],
+        ["use-cases", "Use cases", true],
+        ["reading-order", "Reading order", true],
+        ["keyboard", "Keyboard and focus", true],
       ]
     : [
-        ["role", "Role and ARIA"],
-        ["keyboard", "Keyboard"],
-        ["focus", "Focus"],
-        ["testing", "Testing"],
+        ["role", "Role and ARIA", true],
+        ["keyboard", "Keyboard", spec.accessibility.keyboardInteractions?.length > 0],
+        ["focus", "Focus", !!focusState?.notes],
+        ["testing", "Testing", true],
       ],
+  decisions: [
+    ["decisions", "Decisions", featured.length > 0],
+    ["ruled-out", "Ruled out", spec.ruledOut?.length > 0],
+    ["parity", "Design–code parity", spec.figma.divergences?.length > 0],
+  ],
 };
-const headings = HEADINGS[tabId].map(([slug, text]) => ({ depth: 2, slug, text }));
-const h = Object.fromEntries(HEADINGS[tabId]);
+const shown = HEADINGS[tabId].filter(([, , show]) => show);
+const headings = shown.map(([slug, text]) => ({ depth: 2, slug, text }));
+const h = Object.fromEntries(shown);
 
 const FONTS =
   "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400&display=swap";
@@ -374,7 +414,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
                   {v.options.map((opt) => (
                     <tr>
                       <td><code>{opt}</code>{opt === v.default && " (default)"}</td>
-                      <td>{v.useWhen?.[opt] ?? NONE}</td>
+                      <td>{v.useWhen?.[opt] ?? "—"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -382,17 +422,15 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
             </>
           ))
         ) : (
-          <>
-            <h2 id="example">Example</h2>
-            {hasDefault ? (
+          h.example && (
+            <>
+              <h2 id="example">{h.example}</h2>
               <div class="not-content"><LiveExample client:visible name={name} file="stories" exportName="Default" /></div>
-            ) : (
-              <p>No <code>Default</code> story, so no live example.</p>
-            )}
-          </>
+            </>
+          )
         )}
 
-        {family && (
+        {h["when-to-use"] && (
           <>
             <h2 id="when-to-use">{h["when-to-use"]}</h2>
             <p>
@@ -400,7 +438,7 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
                 <>{i > 0 && (i === family.length - 1 ? " and " : ", ")}{n === name ? <strong>{n}</strong> : componentHref(n) ? <a href={componentHref(n)}>{n}</a> : n}</>
               ))}. Use {name} when:
             </p>
-            {usage.useWhen?.length ? <ul>{usage.useWhen.map((w) => <li>{w}</li>)}</ul> : <p>{NONE}</p>}
+            <ul>{usage.useWhen.map((w) => <li>{w}</li>)}</ul>
           </>
         )}
 
@@ -411,9 +449,8 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           </>
         )}
 
-        {!placement && <>
+        {h.patterns && <>
         <h2 id="patterns">{h.patterns}</h2>
-        {shownPatterns.length ? (
           <div class="pattern-grid not-content">
             {shownPatterns.map((p) => (
               <figure class:list={["pattern-card", { "is-wide": p.wide }]}>
@@ -426,12 +463,10 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
               </figure>
             ))}
           </div>
-        ) : (
-          <p>{NONE}</p>
-        )}
+        </>}
 
+        {h["not-for"] && <>
         <h2 id="not-for">{h["not-for"]}</h2>
-        {usage.notFor?.length ? (
           <table>
             <thead><tr><th scope="col">Not for</th><th scope="col">Why</th><th scope="col">Use instead</th></tr></thead>
             <tbody>
@@ -448,13 +483,11 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
               ))}
             </tbody>
           </table>
-        ) : (
-          <p>{NONE}</p>
-        )}
+        </>}
 
-        <h2 id="composition">{h.composition}</h2>
-        {usage.composition?.limits?.length || usage.composition?.donts?.length ? (
+        {!placement && h.composition && (
           <>
+            <h2 id="composition">{h.composition}</h2>
             {usage.composition.limits?.length > 0 && (
               <table>
                 <thead><tr><th scope="col">Limit</th><th scope="col">Why</th></tr></thead>
@@ -479,16 +512,14 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
               </table>
             )}
           </>
-        ) : (
-          <p>{NONE}</p>
         )}
 
+        {h.rules && <>
         <h2 id="rules">{h.rules}</h2>
-        {spec.constraints?.length ? (
           <table>
             <thead><tr><th scope="col">Rule</th><th scope="col">When</th><th scope="col">Why</th><th scope="col">Enforced by</th></tr></thead>
             <tbody>
-              {spec.constraints.map((c) => (
+              {shownConstraints.map((c) => (
                 <tr>
                   <td><code>{c.id}</code></td>
                   <td>
@@ -503,24 +534,18 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
               ))}
             </tbody>
           </table>
-        ) : (
-          <p>{NONE}</p>
-        )}
+        </>}
 
+        {h.related && <>
         <h2 id="related">{h.related}</h2>
         <dl class="related">
-          {[["Built from", builtFrom], ["Placed inside", usage.composition?.containedBy]].map(([label, list]) => (
+          {related.map(([label, list]) => (
             <>
               <dt>{label}</dt>
-              <dd>
-                {list?.length
-                  ? list.map((n, i) => <>{i > 0 && ", "}{componentHref(n) ? <a href={componentHref(n)}>{n}</a> : n}</>)
-                  : NONE}
-              </dd>
+              <dd>{list.map((n, i) => <>{i > 0 && ", "}{componentHref(n) ? <a href={componentHref(n)}>{n}</a> : n}</>)}</dd>
             </>
           ))}
-          <dt>Width</dt>
-          <dd>{WIDTH[usage.composition?.width] ?? NONE}</dd>
+          {width && <><dt>Width</dt><dd>{width}</dd></>}
         </dl>
         </>}
       </>
@@ -530,13 +555,13 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
   {
     tabId === "spec" && (
       <>
-        <h2 id="anatomy">{h.anatomy}</h2>
-        {spec.anatomyExamples?.length ? (
-          <div class="not-content">
-            <AnatomyOverlay client:visible name={name} parts={anatomy} examples={spec.anatomyExamples} variants={Object.fromEntries(Object.entries(usage.variants ?? {}).map(([axis, v]) => [axis, v.default]))} />
-          </div>
-        ) : (
-          <p>No anatomy examples recorded, so no diagram.</p>
+        {h.anatomy && (
+          <>
+            <h2 id="anatomy">{h.anatomy}</h2>
+            <div class="not-content">
+              <AnatomyOverlay client:visible name={name} parts={anatomy} examples={spec.anatomyExamples} variants={Object.fromEntries(Object.entries(usage.variants ?? {}).map(([axis, v]) => [axis, v.default]))} />
+            </div>
+          </>
         )}
 
         <h2 id="props">{h.props}</h2>
@@ -578,9 +603,9 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           </>
         )}
 
-        <h2 id="states">{h.states}</h2>
-        {spec.states?.length ? (
+        {h.states && (
           <>
+          <h2 id="states">{h.states}</h2>
           <div class="state-grid not-content">
             {shownStates.map((s) => (
               <figure class="state">
@@ -597,52 +622,12 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
             ))}
           </div>
           </>
-        ) : (
-          <p>{NONE}</p>
         )}
 
-        <h2 id="why">{h.why}</h2>
-        <h3>Decisions</h3>
-        {spec.decisions?.length ? (
-          <ul>
-            {spec.decisions.map((d) => (
-              <li>
-                {d.decision}
-                {d.reason && <> <em>{d.reason}</em></>}
-                {d.adr && <> ({adrHref(d.adr) ? <a href={adrHref(d.adr)}>{d.adr}</a> : d.adr})</>}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>{NONE}</p>
-        )}
-        <h3>Ruled out</h3>
-        {spec.ruledOut?.length ? (
-          <table>
-            <thead><tr><th scope="col">Option</th><th scope="col">Why not</th><th scope="col">Seen in</th></tr></thead>
-            <tbody>
-              {spec.ruledOut.map((r) => <tr><td>{r.option}</td><td>{r.reason}</td><td>{r.source ?? ""}</td></tr>)}
-            </tbody>
-          </table>
-        ) : (
-          <p>{NONE}</p>
-        )}
-
-        <h2 id="parity">{h.parity}</h2>
-        {spec.figma.divergences?.length ? (
-          <ul>{spec.figma.divergences.map((d) => <li>{d.what} <em>{d.decision}</em></li>)}</ul>
-        ) : (
-          <p>{NONE}</p>
-        )}
-      </>
-    )
-  }
-
-  {
-    tabId === "tokens" && (
-      <>
-        <h2 id="styles">{h.styles}</h2>
-        <p>The tokens each part uses, grouped by the parts labelled on the <a href={`${pageHref(name, TABS.find((t) => t.id === "spec"))}#anatomy`}>anatomy diagram</a>, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Only Root starts expanded; select a part to expand or collapse it.</p>
+        {h.tokens && (
+        <>
+        <h2 id="tokens">{h.tokens}</h2>
+        <p>The tokens each part uses, grouped by the parts labelled on the {h.anatomy ? <a href="#anatomy">anatomy diagram</a> : "anatomy diagram"}, one row per state (<a href={adrHref("ADR-025")}>ADR-025</a>): <strong>Default</strong> always applies, a prop value such as <code>size="lg"</code> is set by the consumer, and the rest are interaction or ARIA-driven states. Only Root starts expanded; select a part to expand or collapse it.</p>
         <table class="styles-table">
           <thead><tr><th scope="col">State</th><th scope="col">Tokens</th></tr></thead>
           {styleGroups.map(({ group, sub, note, conditions }) => (
@@ -680,6 +665,80 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
           <div><dt><code class="inherited">token.name</code></dt><dd>Token from the component the part is built on; hover it for which</dd></div>
           <div><dt><code class="literal">value</code></dt><dd>Raw value with no token; hover it for the reason</dd></div>
         </dl>
+        </>
+        )}
+      </>
+    )
+  }
+
+  {
+    tabId === "decisions" && (
+      <>
+        <p>
+          Choices about how {name} is built, and the options that were turned down. A choice that applies to every component is an architecture decision record (ADR), linked where it applies.
+          {featured.length < (spec.decisions?.length ?? 0) && <> This page shows the main {featured.length} of {spec.decisions.length} decisions; the full list is in <a href={specSource}><code>{name}.spec.json</code></a>.</>}
+        </p>
+
+        {h.decisions && (
+          <>
+            <h2 id="decisions">{h.decisions}</h2>
+            <div class="decision-log">
+              {topics.length > 1 && (
+                <fieldset class="topic-filter not-content">
+                  <legend>Show</legend>
+                  <label><input type="radio" name="topic" value="all" checked /> All ({featured.length})</label>
+                  {topics.map((t) => (
+                    <label><input type="radio" name="topic" value={t} /> {TOPICS[t]} ({featured.filter((d) => d.topic === t).length})</label>
+                  ))}
+                </fieldset>
+              )}
+              <ul class="decision-list">
+                {featured.map((d) => (
+                  <li data-topic={d.topic}>
+                    <p class="decision">{spans(d.decision).map((p) => (p.code ? <code>{p.s}</code> : p.s))}</p>
+                    {(d.reason || d.adr) && (
+                      <p class="reason">
+                        {spans(d.reason).map((p) => (p.code ? <code>{p.s}</code> : p.s))}
+                        {d.adr && <>{d.reason && " "}(See {adrHref(d.adr) ? <a href={adrHref(d.adr)}>{d.adr}</a> : d.adr}.)</>}
+                      </p>
+                    )}
+                    <span class="caption-tag">{TOPICS[d.topic]}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
+
+        {h["ruled-out"] && (
+          <>
+            <h2 id="ruled-out">{h["ruled-out"]}</h2>
+            <table>
+              <thead><tr><th scope="col">Option</th><th scope="col">Why not</th>{spec.ruledOut.some((r) => r.source) && <th scope="col">Seen in</th>}</tr></thead>
+              <tbody>
+                {spec.ruledOut.map((r) => (
+                  <tr>
+                    <td>{spans(r.option).map((p) => (p.code ? <code>{p.s}</code> : p.s))}</td>
+                    <td>{spans(r.reason).map((p) => (p.code ? <code>{p.s}</code> : p.s))}</td>
+                    {spec.ruledOut.some((x) => x.source) && <td>{r.source ?? ""}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {h.parity && (
+          <>
+            <h2 id="parity">{h.parity}</h2>
+            <p>Where the Figma component differs from the code on purpose.</p>
+            <ul>
+              {spec.figma.divergences.map((d) => (
+                <li>{spans(d.what).map((p) => (p.code ? <code>{p.s}</code> : p.s))} <em>{spans(d.decision).map((p) => (p.code ? <code>{p.s}</code> : p.s))}</em></li>
+              ))}
+            </ul>
+          </>
+        )}
       </>
     )
   }
@@ -707,27 +766,27 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
       <>
         <h2 id="role">{h.role}</h2>
         <p>Role: <code>{spec.accessibility.role}</code></p>
-        {spec.accessibility.ariaAttributes?.length ? (
-          <ul>{spec.accessibility.ariaAttributes.map((a) => <li>{a}</li>)}</ul>
-        ) : (
-          <p>{NONE}</p>
-        )}
+        {spec.accessibility.ariaAttributes?.length > 0 && <ul>{spec.accessibility.ariaAttributes.map((a) => <li>{a}</li>)}</ul>}
         {spec.accessibility.notes && <p>{spec.accessibility.notes}</p>}
 
-        <h2 id="keyboard">{h.keyboard}</h2>
-        {spec.accessibility.keyboardInteractions?.length ? (
-          <table>
-            <thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead>
-            <tbody>
-              {spec.accessibility.keyboardInteractions.map((k) => <tr><th scope="row"><kbd>{k.key}</kbd></th><td>{k.action}</td></tr>)}
-            </tbody>
-          </table>
-        ) : (
-          <p>{NONE}</p>
+        {h.keyboard && (
+          <>
+            <h2 id="keyboard">{h.keyboard}</h2>
+            <table>
+              <thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead>
+              <tbody>
+                {spec.accessibility.keyboardInteractions.map((k) => <tr><th scope="row"><kbd>{k.key}</kbd></th><td>{k.action}</td></tr>)}
+              </tbody>
+            </table>
+          </>
         )}
 
-        <h2 id="focus">{h.focus}</h2>
-        <p>{focusState?.notes ?? NONE}</p>
+        {h.focus && (
+          <>
+            <h2 id="focus">{h.focus}</h2>
+            <p>{focusState.notes}</p>
+          </>
+        )}
 
         <h2 id="testing">{h.testing}</h2>
         <p>
@@ -792,6 +851,63 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
 
   details summary {
     cursor: pointer;
+  }
+
+  /* Decisions: radios filter by topic through :has(), so the list works with
+     no script, and without :has() support every decision stays visible. */
+  .topic-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    border: 0;
+    font-size: var(--sl-text-sm);
+  }
+  .topic-filter legend {
+    float: left;
+    margin-inline-end: 0.25rem;
+    padding: 0;
+    color: var(--sl-color-gray-3);
+  }
+  .topic-filter label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    cursor: pointer;
+  }
+  .topic-filter input {
+    accent-color: var(--sl-color-accent);
+  }
+  .decision-log:has(input[value="visual"]:checked) li:not([data-topic="visual"]),
+  .decision-log:has(input[value="behaviour"]:checked) li:not([data-topic="behaviour"]),
+  .decision-log:has(input[value="platform"]:checked) li:not([data-topic="platform"]) {
+    display: none;
+  }
+  .decision-list {
+    padding: 0;
+    list-style: none;
+  }
+  .decision-list li {
+    margin: 0;
+    padding-block: 0.875rem;
+    border-bottom: 1px solid var(--sl-color-hairline);
+  }
+  .decision-list p {
+    margin: 0;
+  }
+  .decision-list .decision {
+    font-weight: 600;
+    color: var(--sl-color-white);
+  }
+  .decision-list .reason {
+    margin-top: 0.25rem;
+  }
+  .decision-list .caption-tag {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: var(--sl-text-xs);
   }
   .site-wide {
     margin-top: 3rem;

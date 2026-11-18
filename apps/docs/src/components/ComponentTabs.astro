@@ -1,5 +1,5 @@
 ---
-import { TABS, pageHref } from "../../components.mjs";
+import { pageHref, tabsFor } from "../../components.mjs";
 
 interface Props {
   name: string;
@@ -11,7 +11,7 @@ const { name, current } = Astro.props;
 <nav class="component-tabs not-content" aria-label={`${name} documentation`}>
   <ul>
     {
-      TABS.map((tab) => (
+      tabsFor(name).map((tab) => (
         <li>
           <a href={pageHref(name, tab)} aria-current={tab.id === current ? "page" : undefined}>
             {tab.label}

@@ -17,9 +17,15 @@ export const FIGMA_FILE = "https://www.figma.com/design/t4F3b1p03loOX9IpNXRaYR/"
 export const TABS = [
   { id: "usage", label: "Usage", path: "" },
   { id: "spec", label: "Spec", path: "spec/" },
-  { id: "tokens", label: "Tokens", path: "tokens/" },
   { id: "accessibility", label: "Accessibility", path: "accessibility/" },
+  { id: "decisions", label: "Decisions", path: "decisions/" },
 ];
+
+// A tab with nothing to show is left out (ADR-030 amendment 2026-11-18, R7):
+// Decisions needs a featured decision, a ruled-out option or a Figma divergence.
+const hasDecisions = ({ spec }) =>
+  spec.decisions?.some((d) => d.featured) || spec.ruledOut?.length > 0 || spec.figma.divergences?.length > 0;
+export const tabsFor = (name) => TABS.filter((tab) => tab.id !== "decisions" || hasDecisions(bundle.components[name]));
 
 // Families of lookalikes (ADR-030 amendment 2026-11-12): members share a shape
 // but not a role, so picking the right one is the reader's first question.
