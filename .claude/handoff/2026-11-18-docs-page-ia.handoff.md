@@ -71,7 +71,7 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 
 **2. Decision text edit pass** (needs 1)
 - [x] 2.1 (2026-11-18) Edit Button's decisions (6) to the rule; internal notes move per D3. Tone approved by the developer: plain words over internal jargon (no "bleed", "consumer", "glyph", "Root"), code names in backticks, one idea per sentence, "you" for the person using the component, mechanics and enforcement go to `notes`
-- [ ] 2.2 CardVertical (15; 8 featured) done 2026-11-18, then Dialog (15), Accordion (2), DropdownMenu (1). Each pass also picks the featured set (D6): a spec with no featured entry shows an empty tab once 3.2 lands
+- [ ] 2.2 CardVertical (15; 8 featured) done 2026-11-18, then Dialog (15; 8 featured) done 2026-11-18, Accordion (2), DropdownMenu (1). Each pass also picks the featured set (D6): a spec with no featured entry shows an empty tab once 3.2 lands
 - [ ] 2.2b CardHorizontal (4), AppHeader (1), VideoFrame (1)
 - [ ] 2.3 Same pass on `ruledOut[]` reasons and `figma.divergences` (Button 6/1, CardVertical 10/5, Dialog 8/6)
 - [ ] 2.4 Once the backlog list is empty, make the 1.3 check an error in `validate-spec.js` (and update the ADR-027 amendment and doc 10)
