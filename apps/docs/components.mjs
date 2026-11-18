@@ -22,9 +22,8 @@ export const TABS = [
 ];
 
 // A tab with nothing to show is left out (ADR-030 amendment 2026-11-18, R7):
-// Decisions needs a featured decision, a ruled-out option or a Figma divergence.
-const hasDecisions = ({ spec }) =>
-  spec.decisions?.some((d) => d.featured) || spec.ruledOut?.length > 0 || spec.figma.divergences?.length > 0;
+// Decisions needs a featured decision or a Figma divergence.
+const hasDecisions = ({ spec }) => spec.decisions?.some((d) => d.featured) || spec.figma.divergences?.length > 0;
 export const tabsFor = (name) => TABS.filter((tab) => tab.id !== "decisions" || hasDecisions(bundle.components[name]));
 
 // Families of lookalikes (ADR-030 amendment 2026-11-12): members share a shape
@@ -56,20 +55,17 @@ export const FEATURED_PATTERNS = {
 
 // The "Content" opening section (ADR-030 amendment 2026-11-18, R1) of a
 // component with no variant axis but optional content props: each option is
-// the Default story with `args` changed. Use-when lines restate usage.json
-// (useWhen, patterns) for the option; whether they move into usage.json is
-// settled with /document-component.
+// the Default story with `args` changed, and `text` (when set) as its body,
+// in a subtle Text paragraph. Use-when lines restate usage.json (useWhen,
+// patterns) for the option; whether they move into usage.json is settled
+// with /document-component.
 export const CONTENT_OPTIONS = {
   Dialog: [
     {
       label: "Title only",
-      args: { actions: null },
+      args: { title: "About this course", actions: null },
+      text: "Color Theory II covers colour harmony, contrast and palettes for interfaces. 12 lessons, about 4 hours.",
       useWhen: "Showing details the user reads and then closes, such as an item next to the content it came from.",
-    },
-    {
-      label: "With description",
-      args: { description: "Saving updates your profile and your certificates.", actions: null },
-      useWhen: "The title alone doesn't say what happens next, such as the consequence of an action. It's read out with the title.",
     },
     {
       label: "With actions",
@@ -79,7 +75,14 @@ export const CONTENT_OPTIONS = {
   ],
 };
 
-export const slugOf =(name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+// Sections a component's pages leave out though it has data for them, by
+// heading id, when they add little to that page. Dialog: its states are
+// content (shown under Content) or modality (staged pictures look the same, R8).
+export const OMIT_SECTIONS = {
+  Dialog: ["states"],
+};
+
+export const slugOf = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 
 export function publishedComponents() {
   return PUBLISHED.filter((name) => bundle.components[name]);

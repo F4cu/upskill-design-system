@@ -179,6 +179,17 @@ pre.mermaid {
 /* Props tables on component Spec pages (ADR-030 Phase A3): option values wrap
    as chips, every cell centred vertically. Prefixed with .sl-markdown-content
    to outrank Starlight's table and inline-code rules in any stylesheet order. */
+/* Full width like the styles table: Starlight's tables shrink to their
+   content, so a component with short props got a narrow table. Full width
+   drops Starlight's own sideways scroll, so the wrapper scrolls instead. */
+.sl-markdown-content .table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.sl-markdown-content .props-table {
+  display: table;
+  width: 100%;
+}
 .sl-markdown-content .props-table :is(td, th) {
   vertical-align: middle;
 }
@@ -201,6 +212,9 @@ pre.mermaid {
 .sl-markdown-content .styles-table {
   display: table;
   width: 100%;
+  /* Long token names need about the desktop column's width; narrower, the
+     table scrolls in its .table-scroll wrapper instead of spilling. */
+  min-width: 36rem;
   table-layout: fixed;
 }
 .sl-markdown-content .styles-table thead th:first-child {
