@@ -9,6 +9,7 @@ import ComponentTabs from "../../../components/ComponentTabs.astro";
 import AnatomyOverlay from "../../../components/AnatomyOverlay.tsx";
 import LiveExample from "../../../components/LiveExample.tsx";
 import VariantOverview from "../../../components/VariantOverview.tsx";
+import ContentOverview from "../../../components/ContentOverview.tsx";
 import Placement from "../../../components/Placement.tsx";
 import AccessibilityFigure from "../../../components/AccessibilityFigure.tsx";
 import { hasStory, pascal } from "../../../components/stories.tsx";
@@ -17,6 +18,7 @@ import {
   REPO_BLOB,
   STORYBOOK,
   TABS,
+  CONTENT_OPTIONS,
   bundle,
   familyOf,
   FEATURED_PATTERNS,
@@ -257,6 +259,10 @@ const LIMIT_SCOPE = { region: "region (section)", repeated: "repeated item", par
 // Usage (prototype): each variant axis opens the page as its own section, an
 // overview of its options then their use-when table. No axes → one example.
 const axes = Object.entries(usage.variants ?? {});
+// No axis but optional content props: the page opens with "Content" (R1).
+const contentOptions = axes.length || !hasDefault ? null : CONTENT_OPTIONS[name];
+// Parts the anatomy diagram can't point at, with the spec's reason.
+const unmarked = (spec.anatomy ?? []).filter((p) => p.notRendered);
 const AXIS_TITLES = { variant: "Variants", size: "Sizing", shape: "Shape", orientation: "Orientation" };
 const axisTitle = (axis) => AXIS_TITLES[axis] ?? axis.charAt(0).toUpperCase() + axis.slice(1);
 const axisSlug = (axis) => axisTitle(axis).toLowerCase();
@@ -325,7 +331,11 @@ const specSource = links.find((l) => l.label === "Spec source").href;
 // in the table of contents as on the page.
 const HEADINGS = {
   usage: [
-    ...(axes.length ? axes.map(([axis]) => [axisSlug(axis), axisTitle(axis), true]) : [["example", "Example", hasDefault]]),
+    ...(axes.length
+      ? axes.map(([axis]) => [axisSlug(axis), axisTitle(axis), true])
+      : contentOptions
+        ? [["content", "Content", true]]
+        : [["example", "Example", hasDefault]]),
     ["when-to-use", "When to use it", family && usage.useWhen?.length > 0],
     ...(placement
       ? [["composition", "Composition", true]]
@@ -421,6 +431,19 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
               </table>
             </>
           ))
+        ) : contentOptions ? (
+          <>
+            <h2 id="content">{h.content}</h2>
+            <div class="not-content">
+              <ContentOverview client:visible name={name} options={contentOptions.map(({ label, args }) => ({ label, args }))} />
+            </div>
+            <table>
+              <thead><tr><th scope="col">Content</th><th scope="col">Use when</th></tr></thead>
+              <tbody>
+                {contentOptions.map((o) => <tr><td>{o.label}</td><td>{o.useWhen}</td></tr>)}
+              </tbody>
+            </table>
+          </>
         ) : (
           h.example && (
             <>
@@ -561,6 +584,9 @@ const SITE_WIDE_ADRS = ["ADR-025", "ADR-026", "ADR-028"];
             <div class="not-content">
               <AnatomyOverlay client:visible name={name} parts={anatomy} examples={spec.anatomyExamples} variants={Object.fromEntries(Object.entries(usage.variants ?? {}).map(([axis, v]) => [axis, v.default]))} />
             </div>
+            {unmarked.map((p) => (
+              <p class="note">Not marked: <code>{p.name}</code>{p.when && <> (when {spans(p.when).map((s) => (s.code ? <code>{s.s}</code> : s.s))})</>}. {spans(p.notRendered).map((s) => (s.code ? <code>{s.s}</code> : s.s))}</p>
+            ))}
           </>
         )}
 

@@ -54,7 +54,32 @@ export const FEATURED_PATTERNS = {
   ],
 };
 
-export const slugOf = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+// The "Content" opening section (ADR-030 amendment 2026-11-18, R1) of a
+// component with no variant axis but optional content props: each option is
+// the Default story with `args` changed. Use-when lines restate usage.json
+// (useWhen, patterns) for the option; whether they move into usage.json is
+// settled with /document-component.
+export const CONTENT_OPTIONS = {
+  Dialog: [
+    {
+      label: "Title only",
+      args: { actions: null },
+      useWhen: "Showing details the user reads and then closes, such as an item next to the content it came from.",
+    },
+    {
+      label: "With description",
+      args: { description: "Saving updates your profile and your certificates.", actions: null },
+      useWhen: "The title alone doesn't say what happens next, such as the consequence of an action. It's read out with the title.",
+    },
+    {
+      label: "With actions",
+      args: {},
+      useWhen: "The dialog asks for a decision or a short task: one accent or danger Button for it, and a neutral Cancel.",
+    },
+  ],
+};
+
+export const slugOf =(name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 
 export function publishedComponents() {
   return PUBLISHED.filter((name) => bundle.components[name]);

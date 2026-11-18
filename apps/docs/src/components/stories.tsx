@@ -51,8 +51,9 @@ export const STAGED: Record<string, Args> = {
 // inert keeps the picture static: no pointer, no focus (the overlay's own
 // focus() on open does nothing), out of the accessibility tree. The story's
 // own trigger is hidden by CSS on [data-staged]. React 18 doesn't know
-// inert, so it is passed as a plain attribute.
-const Staged = ({ children }: { children: ReactElement }) => (
+// inert, so it is passed as a plain attribute. Exported for hand-built
+// samples (a placement Don't), which pass the STAGED args themselves.
+export const Staged = ({ children }: { children: ReactElement }) => (
   <div data-staged="" {...{ inert: '' }}>{children}</div>
 )
 

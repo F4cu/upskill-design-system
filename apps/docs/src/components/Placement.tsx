@@ -1,6 +1,6 @@
 import '../../../../packages/components/src/styles/tokens.css'
 import type { PlacementEntry } from '../placement/types'
-import { StoryRender, pascal } from './stories'
+import { STAGED, Staged, StoryRender, pascal } from './stories'
 
 // Placement (prototype): Do / Don't example boxes in pairs, as in Material's
 // usage guidance. Each box renders the real components with a short caption
@@ -21,7 +21,7 @@ export default function Placement({ name }: { name: string }) {
           <figure key={i} className={`placement-card is-${entry.kind}`}>
             <div className="placement-canvas">
               <div className="ds-example" data-component={name}>
-                {entry.render ? entry.render() : pattern && <StoryRender name={name} file="patterns.stories" exportName={pascal(pattern)} />}
+                {entry.render ? (STAGED[name] ? <Staged>{entry.render()}</Staged> : entry.render()) : pattern &&<StoryRender name={name} file="patterns.stories" exportName={pascal(pattern)} />}
               </div>
             </div>
             <figcaption>

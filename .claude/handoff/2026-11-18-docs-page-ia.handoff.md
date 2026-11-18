@@ -85,10 +85,10 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 - [x] 3.6 (2026-11-18) Rebuilt and diffed `<main>` against a pre-change build: Button and CardVertical Usage and Accessibility differ only in the tab bar
 
 **4. Dialog page** (needs 2.2 for Dialog, 3)
-- [ ] 4.1 Build the "Content" opening section (D4)
-- [ ] 4.2 `apps/docs/src/placement/Dialog.tsx`: Do `confirm-action` / Don't two accent Buttons in actions (`donts[5]`); Do `edit-form` / Don't a dialog that only reports "Saved" (`notFor[0]`)
-- [ ] 4.3 `apps/docs/src/accessibility/Dialog.tsx`: use cases; reading order (Title → Description → Body → Actions, Close's label); keyboard advice covering Escape, return focus and `data-autofocus`. **Unverified:** whether the reading-order and focus-ring figures work on the staged `inert` picture (inert removes it from the accessibility tree); check first, and if not, render the figure unstaged
-- [ ] 4.4 Mark `Backdrop` in the anatomy (open in the spec-renderers handoff), or record why not
+- [x] 4.1 (2026-11-18) "Content" section: Title only / With description / With actions, each the Default story with changed args, stacked one per row (a staged dialog keeps its own width), then a Content / Use when table. Options and use-when lines live in `CONTENT_OPTIONS` (`apps/docs/components.mjs`), restating `usage.json` `useWhen` and patterns; whether they move into `usage.json` is for 5.1
+- [x] 4.2 (2026-11-18) `apps/docs/src/placement/Dialog.tsx` as planned. A hand-built Don't sample is now wrapped in `Staged` by `Placement` when the component is in `STAGED` (the sample passes `nonModal` itself), and a staged dialog in a Placement box fills the box's width
+- [x] 4.3 (2026-11-18) `apps/docs/src/accessibility/Dialog.tsx`, both figures from the staged `ConfirmAction` story. Resolved: the figures work on the inert picture, because names and Tab stops are read from the DOM with `dom-accessibility-api`, which ignores `inert`. Table: Dialog, Title, Close, Description; Tab stops Close, Cancel, Remove with the ring on Cancel. Two renderer fixes it needed: the Tab-stop list skips elements not on screen (the hidden trigger), and the sample element is memoised, since `StoryRender` makes new component types on every render and a measure remounted the sample (dropping the forced ring). Nothing takes focus or scrolls on page load
+- [x] 4.4 (2026-11-18) Not marked, recorded on the page: the Spec anatomy lists every `notRendered` part under the diagram with the spec's reason ("Not marked: `Backdrop` (when nonModal is false). A pseudo-element …"). Staged pages have no backdrop to point at (R8)
 - [ ] 4.5 Developer review of the Dialog page against Button and CardVertical; light/dark check
 
 **5. `/document-component` command** (needs 4: written from what worked, not before)

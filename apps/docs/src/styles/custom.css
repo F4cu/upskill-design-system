@@ -370,6 +370,20 @@ main:has(.component-header) :not(pre) > code {
   align-items: center;
   gap: 1.25rem;
 }
+/* Content overview (R1): a staged overlay keeps its own width, so its options
+   stack one per row instead of sharing one. */
+.variant-overview.is-stacked .variant-callout {
+  flex-basis: 100%;
+  max-width: 100%;
+}
+/* A staged overlay in a box narrower than its own width (Content overview,
+   Placement) fills the box instead of overflowing it. */
+:is(.variant-overview.is-stacked, .placement-canvas) .ds-example:has(dialog[open]) {
+  width: 100%;
+}
+.variant-overview.is-stacked .ds-example:has(dialog[open]) :has(> dialog[open]) {
+  align-items: center;
+}
 .variant-badge {
   padding: 0.125rem 0.5rem;
   border-radius: 999px;

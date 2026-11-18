@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { computeAccessibleName, getRole } from 'dom-accessibility-api'
 import '../../../../packages/components/src/styles/tokens.css'
 import type { AccessibilityEntry } from '../accessibility/types'
@@ -102,6 +102,10 @@ type Row = { label: string; code: string; says: string }
 
 function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
   const { marks } = entry.labeling
+  // One element for the figure's life: a sample built with StoryRender makes
+  // new component types each render, so re-rendering it on a measure would
+  // remount it and drop the classes set on its DOM.
+  const sample = useMemo(() => entry.labeling.render(), [entry])
   const stage = useRef<HTMLDivElement>(null)
   const exampleRef = useRef<HTMLDivElement>(null)
   const [callouts, setCallouts] = useState<Callout[]>([])
@@ -159,7 +163,7 @@ function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
             style={compact ? { paddingBottom: BOTTOM, paddingTop: marks.length > 1 ? BOTTOM : undefined } : { paddingInline: gutterFor(marks.map((_, i) => ({ label: ordinal(i + 1) }))) }}
           >
             <div ref={exampleRef} className="ds-example" data-component={name}>
-              {entry.labeling.render()}
+              {sample}
             </div>
             <svg className="anatomy-svg" aria-hidden="true">
               {callouts.filter((c) => c.outline).map((c) => (
@@ -222,6 +226,7 @@ function orderLayout(rings: Element[], origin: DOMRect): Stop[] {
 
 function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
   const { keyboard } = entry
+  const sample = useMemo(() => keyboard.render(), [keyboard])
   const stage = useRef<HTMLDivElement>(null)
   const [stops, setStops] = useState<Stop[]>([])
   const [rows, setRows] = useState<Row[]>([])
@@ -236,7 +241,8 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
     const measure = () => {
       // The SVG covers the padded stage, not the sample, so measure from there.
       const origin = el.parentElement!.getBoundingClientRect()
-      const found = [...el.querySelectorAll(FOCUSABLE)]
+      // Only stops on screen: a staged overlay's hidden trigger isn't one.
+      const found = [...el.querySelectorAll(FOCUSABLE)].filter((stop) => stop.getClientRects().length > 0)
       const next = orderLayout(found.map((stop) => keyboard.ringOn?.(stop) ?? stop), origin)
       setStops((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
       const nextRows = found.slice(0, keyboard.tableRows).map((stop, i) => ({ label: ordinal(i + 1), code: markup(stop), says: announce(stop) }))
@@ -265,7 +271,7 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
             data-component={name}
             onClick={(e) => (e.target as Element).closest('a') && e.preventDefault()}
           >
-            {keyboard.render()}
+            {sample}
           </div>
           {stops.length > 0 && (
             <svg className="anatomy-svg" aria-hidden="true">
