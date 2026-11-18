@@ -145,7 +145,7 @@ A `composition.parts` block declares a component's subcomponents (ADR-023). Each
 
 Three optional spec sections serve the generated docs pages and the Figma parity check ([ADR-030](decisions/030-spec-renderers.md)):
 - `anatomyExamples` lists the examples that together render every part. Each entry is root props, or the name of a `composition.patterns` entry in the usage file for compositions written in JSX. Two optional fields shape the docs diagram: `mark` (the parts an example labels by name) and `focus` (a part to crop to, at real size, to label its descendants).
-- `decisions` records per-component choices too small for an ADR. Each carries a `topic` (`visual`, `behaviour` or `platform`), the filter on the docs Decisions tab. `decision` and `reason` are written for the page; provenance and reviewer guidance go in `notes`, which is not rendered.
+- `decisions` records per-component choices too small for an ADR. Each carries a `topic` (`visual`, `behaviour` or `platform`), the filter on the docs Decisions tab; at most 8 are marked `featured`, and only those are shown there. `decision` and `reason` are written for the page; provenance and reviewer guidance go in `notes`, which is not rendered.
 - `ruledOut` records options considered and rejected, so nobody proposes them again without new evidence.
 
 `spec:validate` checks that example props and patterns exist, that `mark` and `focus` name parts (a part numbered once in the overview, a focus part numbered there and its marks inside it), and that every `adr` a decision cites has a file in `docs/decisions/` ([ADR-027](decisions/027-component-spec-file.md) amendment 2026-11-10). It lists a decision `reason` over 200 characters, or one carrying a date or a review note, as backlog until the existing entries are rewritten (ADR-027 amendment 2026-11-18).
@@ -236,10 +236,11 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `figma.sets`, `figma.divergences` | Rendered | Docs page |
 | `decisions[].adr` | Gated | `spec:validate` (the ADR file exists) |
 | `decisions[].topic` | Gated | `spec:validate` (required, one of the schema enum); the docs Decisions tab filters by it |
+| `decisions[].featured` | Gated | `spec:validate` (at most 8 per spec); the docs Decisions tab shows only featured entries and links to the spec for the rest |
 | `decisions[].decision`, `reason`, `ruledOut` | Rendered | Docs page; `spec:validate` lists a long or internal `reason` as backlog |
 | `decisions[].notes` | None | Only agents: `/review-component` reads `decisions[]` whole. Never rendered |
 
-**Totals.** Of the 42 fields above, 22 are gated and 6 are used by a script, so 28 depend on code parsing a fixed shape. 13 are rendered by the docs page, which needs the same stable structure. One, `decisions[].notes`, is at level None on purpose: it holds the context an agent reviewer needs and a page reader doesn't. In Markdown, every one of the 27 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
+**Totals.** Of the 43 fields above, 23 are gated and 6 are used by a script, so 29 depend on code parsing a fixed shape. 13 are rendered by the docs page, which needs the same stable structure. One, `decisions[].notes`, is at level None on purpose: it holds the context an agent reviewer needs and a page reader doesn't. In Markdown, every one of the 27 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
 
 **Gaps the audit found.** Each needed its own decision:
 

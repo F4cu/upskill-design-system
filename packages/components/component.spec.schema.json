@@ -344,6 +344,7 @@
             "description": "Filter on the docs Decisions tab; one label per decision. visual: spacing, layout, structure, look. behaviour: focus, keyboard, events, state sync, reading order. platform: native elements, browser support, implementation workarounds.",
             "enum": ["visual", "behaviour", "platform"]
           },
+          "featured": { "description": "Shown on the docs Decisions tab; at most 8 per spec (spec:validate). Unfeatured entries stay for agents and are reached through the tab's link to this file. Never feature an entry that restates a system-wide rule (an ADR or AGENTS.md) or repeats usage.json without adding why.", "const": true },
           "reason": { "type": "string" },
           "notes": { "description": "Agent- and maintainer-facing context, not rendered: provenance, mechanics, reviewer guidance (e.g. 'Reviewers should not flag the missing wrap').", "type": "string" },
           "adr": { "description": "ADR id, e.g. ADR-023. Must resolve to a file in docs/decisions/.", "type": "string", "pattern": "^ADR-[0-9]{3}$" }

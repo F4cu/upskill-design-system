@@ -41,6 +41,7 @@ Closed (developer, 2026-11-18):
 - **D2. Group decisions by topic, not by reader.** A new field `topic` on each `decisions[]` entry: `visual` (spacing, layout, structure, look), `behaviour` (focus, keyboard, events, state sync), `platform` (native elements, browser support, implementation workarounds). One right label per decision; "who reads it" was ambiguous, because spacing decisions matter to both designers and engineers. Dialog splits about 7 / 5 / 3.
 
 - **D3. Internal notes move to a `notes` field** (2026-11-18). `/review-component` reads `decisions[]`, and some reason text is written for it ("Reviewers should not flag the missing wrap"), so trimming in place would lose agent context. `decision` and `reason` become short and reader-facing; an optional `notes` field (not rendered) holds provenance and reviewer guidance, as `ruledOut[]` already has `source`. Rejected: trimming in place (loses context), a page-only `summary` (two texts that drift).
+- **D6. The page shows featured decisions only** (2026-11-18): at most 8 per component, marked `featured: true`; every entry stays in `spec.json` for agents, and the tab links to the spec on GitHub (and to `usage.json` where needed) for the rest. Rejected: merging or deleting entries (loses agent context), a collapsed "All decisions" list. Supersedes "every decision shows" in R6. Not featured: entries that restate a system-wide rule (ADR, `AGENTS.md`) or repeat `usage.json` without adding why.
 - **D4. Dialog opens with a "Content" section** (2026-11-18): title only, with description, with actions, each with a Use when line. "Modal vs non-modal" is out: docs pages stage Dialog non-modal (`STAGED`), so both pictures would look the same. Whether "Content" becomes the general rule for components with no variant axis but optional slots is settled in step 5.1.
 
 Open, close before the step that needs it:
@@ -53,7 +54,7 @@ Open, close before the step that needs it:
 - **R3. Captions** are 120 characters at most (the page already throws). A Do starts with a verb; a Don't names the mistake, then the consequence.
 - **R4. Prop rules enforced by `type` are not rendered** (the compiler tells the consumer).
 - **R5. Accessibility file on every published page:** at most 4 use cases; labeling and keyboard advice of one or two sentences each. ARIA attributes, the key table and the test tier stay in `spec.json`.
-- **R6. Decisions tab:** every decision shows, filtered by `topic`; text is short and reader-facing (D3). Other tabs may link a one-line "Why?" to a filtered view rather than repeat the reason.
+- **R6. Decisions tab:** featured decisions only (D6), filtered by `topic`, then a link to the full list in `spec.json`; text is short and reader-facing (D3). Other tabs may link a one-line "Why?" to a filtered view rather than repeat the reason.
 - **R7. No "None recorded" on reader pages:** a section with no data is left out.
 - **R8. Overlays render staged** (non-modal, inert, no backdrop): no figure may depend on modality.
 
@@ -70,14 +71,14 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 
 **2. Decision text edit pass** (needs 1)
 - [x] 2.1 (2026-11-18) Edit Button's decisions (6) to the rule; internal notes move per D3. Tone approved by the developer: plain words over internal jargon (no "bleed", "consumer", "glyph", "Root"), code names in backticks, one idea per sentence, "you" for the person using the component, mechanics and enforcement go to `notes`
-- [ ] 2.2 CardVertical (15), then Dialog (15), Accordion (2), DropdownMenu (1)
+- [ ] 2.2 CardVertical (15; 8 featured) done 2026-11-18, then Dialog (15), Accordion (2), DropdownMenu (1). Each pass also picks the featured set (D6): a spec with no featured entry shows an empty tab once 3.2 lands
 - [ ] 2.2b CardHorizontal (4), AppHeader (1), VideoFrame (1)
 - [ ] 2.3 Same pass on `ruledOut[]` reasons and `figma.divergences` (Button 6/1, CardVertical 10/5, Dialog 8/6)
 - [ ] 2.4 Once the backlog list is empty, make the 1.3 check an error in `validate-spec.js` (and update the ADR-027 amendment and doc 10)
 
 **3. Template** (needs 1; can run alongside 2)
 - [ ] 3.1 `TABS` in `apps/docs/components.mjs`: drop Tokens, add Decisions; the Tokens table moves into Spec as a section; old `/tokens/` URLs redirect or 404 (check what links them)
-- [ ] 3.2 Decisions tab: topic filter (All / Visual / Behaviour / Platform), Ruled out, Design–code parity; ADR links kept; filter works without JS (all shown) and in light and dark; render `backtick` spans in decision and reason text as `<code>` (Button and CardVertical use them; the current Spec page prints them literally)
+- [ ] 3.2 Decisions tab: featured entries only (D6) plus a `REPO_BLOB` link to `<Name>.spec.json`; topic filter (All / Visual / Behaviour / Platform), Ruled out, Design–code parity; ADR links kept; filter works without JS (all shown) and in light and dark; render `backtick` spans in decision and reason text as `<code>` (Button and CardVertical use them; the current Spec page prints them literally)
 - [ ] 3.3 R4: skip constraints whose `enforcedBy` is only `type`
 - [ ] 3.4 R7: omit empty sections instead of "None recorded"
 - [ ] 3.5 Placement check: each Don't's `source` index resolves in `usage.json` (today nothing reads it, so a reorder silently mislabels a box); throws at build like the caption cap
