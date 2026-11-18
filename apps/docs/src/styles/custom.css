@@ -94,11 +94,18 @@ pre.mermaid {
   flex-wrap: wrap;
   justify-content: center;
   gap: 1.5rem;
+  min-width: 0;
+  max-width: 100%;
 }
 .anatomy-stage {
   position: relative;
   width: max-content;
   padding-block: 0.25rem;
+}
+/* A stage that outgrew its box (a phone) has its badges below and shrinks to
+   the box, so a fluid sample (a staged Dialog) reflows instead of cropping. */
+.anatomy-stage.is-fit {
+  max-width: 100%;
 }
 .anatomy-viewport {
   position: relative;
@@ -511,6 +518,8 @@ main:has(.component-header) :not(pre) > code {
 .a11y-stage {
   position: relative;
   width: max-content;
+  min-width: 0;
+  max-width: 100%;
 }
 .anatomy-svg .a11y-order-path {
   stroke-dasharray: 4 3;

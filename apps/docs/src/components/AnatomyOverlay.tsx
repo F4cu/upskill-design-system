@@ -49,7 +49,12 @@ export const GAP = 10
 export const PAD = 8
 export const OUTSET = 6
 export const badgeW = (label: string) => Math.max(H, label.length * 7 + 8)
-export const gutterFor = (items: { label: string }[]) => Math.max(0, ...items.map((i) => badgeW(i.label))) + LEADER
+// The width a figure box gives its stages: its content box, without padding.
+export const innerWidth = (box: Element) => {
+  const s = getComputedStyle(box)
+  return box.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight)
+}
+export const gutterFor =(items: { label: string }[]) => Math.max(0, ...items.map((i) => badgeW(i.label))) + LEADER
 
 export type Rect = { x: number; y: number; w: number; h: number }
 export type Callout = { name: string; label: string; visible?: boolean; rect: Rect; bx: number; by: number; path: string; tx: number; ty: number; outline?: boolean }
@@ -263,16 +268,31 @@ function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
   // A component too short to stack its badges in the side gutters (Button)
   // takes them below, like a focus image.
   const [compact, setCompact] = useState(false)
-  const below = Boolean(example.focus) || compact
+  // The side-gutter width the stage needed when it outgrew its box (a phone):
+  // badges go below and the sample shrinks to fit, until the box is that wide.
+  const [narrow, setNarrow] = useState<number | null>(null)
+  const below = Boolean(example.focus) || compact || narrow !== null
   const focus = example.focus ? parts.find((p) => p.name === example.focus) : undefined
 
   useLayoutEffect(() => {
     const el = stage.current!
     const measure = () => {
       const origin = el.getBoundingClientRect()
-      const box = (el.closest('.anatomy-example') ?? el).getBoundingClientRect()
+      const boxEl = el.closest('.anatomy-example') ?? el
+      const box = boxEl.getBoundingClientRect()
+      const avail = innerWidth(boxEl)
       const ex = exampleRef.current!.getBoundingClientRect()
       const scale = crop?.s ?? 1
+      if (!example.focus) {
+        if (narrow === null && origin.width > avail + 1) {
+          setNarrow(origin.width)
+          return
+        }
+        if (narrow !== null && avail >= narrow) {
+          setNarrow(null)
+          return
+        }
+      }
       if (focus) {
         const node = locate(el, focus, parts)
         if (node) {
@@ -290,8 +310,10 @@ function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
           const y = (r.top - ex.top) / scale - PAD
           const w = (right - left) / scale + 2 * PAD
           const h = r.height / scale + 2 * PAD
-          const next = { x, y, w, h, s: 1, natural: ex.width / scale }
-          if (!crop || Math.abs(crop.x - x) + Math.abs(crop.y - y) + Math.abs(crop.w - w) + Math.abs(crop.h - h) > 1) {
+          // A detail wider than its box scales down to fit.
+          const s = Math.min(1, avail / w)
+          const next = { x, y, w, h, s, natural: ex.width / scale }
+          if (!crop || Math.abs(crop.x - x) + Math.abs(crop.y - y) + Math.abs(crop.w - w) + Math.abs(crop.h - h) > 1 || Math.abs(crop.s - s) > 0.01) {
             setCrop(next)
             return
           }
@@ -323,11 +345,12 @@ function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
     const observer = new ResizeObserver(measure)
     observer.observe(el)
     observer.observe(exampleRef.current!)
+    observer.observe(el.closest('.anatomy-example') ?? el)
     return () => {
       live = false
       observer.disconnect()
     }
-  }, [parts, marks, focus, crop, compact, below])
+  }, [parts, marks, focus, crop, compact, narrow, below])
 
   const highlighted = callouts.find((c) => c.name === active)
   const inner = (
@@ -341,7 +364,7 @@ function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
     </div>
   )
   return (
-    <div ref={stage} className="anatomy-stage" style={below ? { paddingBottom: BOTTOM, paddingTop: marks.length > 1 ? BOTTOM : undefined } : { paddingInline: gutterFor(marks.map((label) => ({ label }))) }}>
+    <div ref={stage} className={narrow === null ? 'anatomy-stage' : 'anatomy-stage is-fit'} style={below ? { paddingBottom: BOTTOM, paddingTop: marks.length > 1 ? BOTTOM : undefined } : { paddingInline: gutterFor(marks.map((label) => ({ label }))) }}>
       {focus ? (
         <div className="anatomy-viewport" style={crop ? { width: crop.w * crop.s, height: crop.h * crop.s } : undefined}>
           {inner}

@@ -28,10 +28,11 @@ export const accessibility: AccessibilityEntry = {
   keyboard: {
     advice:
       'Escape and the Close button close the dialog, and focus goes back to the control that opened it. Focus starts on the title; to start on Cancel instead, mark it data-autofocus, never with React\'s autoFocus.',
-    caption: "In a destructive confirm, focus opens on Cancel (data-autofocus), so pressing Enter can't remove the course by accident.",
+    caption: "Focus opens on Cancel, so Enter can't remove the course by accident. Tab moves on to Remove, then wraps to Close.",
     focusTarget: '[data-autofocus]',
     order: true,
     orderNearest: true,
+    orderFrom: '[data-autofocus]',
     render: ConfirmAction,
   },
 }

@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { computeAccessibleName, getRole } from 'dom-accessibility-api'
 import '../../../../packages/components/src/styles/tokens.css'
 import type { AccessibilityEntry } from '../accessibility/types'
-import { BOTTOM, GAP, H, OUTSET, PAD, badgeW, bottomLayout, gutterFor, place, sideLayout } from './AnatomyOverlay'
+import { BOTTOM, GAP, H, OUTSET, PAD, badgeW, bottomLayout, gutterFor, innerWidth, place, sideLayout } from './AnatomyOverlay'
 import type { Callout } from './AnatomyOverlay'
 
 // Accessibility tab figures (prototype). `names` labels the labeling sample's
@@ -114,12 +114,26 @@ function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
   const [callouts, setCallouts] = useState<Callout[]>([])
   const [rows, setRows] = useState<Row[]>([])
   const [compact, setCompact] = useState(false)
+  // As in the Spec anatomy: a stage wider than its box takes its badges below
+  // and lets the sample shrink, until the box is as wide as it needed.
+  const [narrow, setNarrow] = useState<number | null>(null)
+  const below = compact || narrow !== null
 
   useLayoutEffect(() => {
     const el = stage.current!
+    const boxEl = el.closest('.anatomy-example') ?? el
     const measure = () => {
       const origin = el.getBoundingClientRect()
-      const box = (el.closest('.anatomy-example') ?? el).getBoundingClientRect()
+      const box = boxEl.getBoundingClientRect()
+      const avail = innerWidth(boxEl)
+      if (narrow === null && origin.width > avail + 1) {
+        setNarrow(origin.width)
+        return
+      }
+      if (narrow !== null && avail >= narrow) {
+        setNarrow(null)
+        return
+      }
       const found = marks.flatMap((m) => {
         const node = exampleRef.current!.querySelector(m.select)
         return node ? [{ mark: m, node }] : []
@@ -137,7 +151,7 @@ function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
         setCompact(true)
         return
       }
-      const next = compact
+      const next = below
         ? bottomLayout(hits, box.left - origin.left + PAD, box.right - origin.left - PAD, origin.height, origin.height - BOTTOM)
         : sideLayout(hits, origin.width)
       setCallouts((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
@@ -150,11 +164,12 @@ function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
     const observer = new ResizeObserver(measure)
     observer.observe(el)
     observer.observe(exampleRef.current!)
+    observer.observe(boxEl)
     return () => {
       live = false
       observer.disconnect()
     }
-  }, [marks, compact])
+  }, [marks, compact, narrow, below])
 
   return (
     <figure className="a11y-figure">
@@ -162,8 +177,8 @@ function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
         <div className="anatomy-stages">
           <div
             ref={stage}
-            className="anatomy-stage"
-            style={compact ? { paddingBottom: BOTTOM, paddingTop: marks.length > 1 ? BOTTOM : undefined } : { paddingInline: gutterFor(marks.map((_, i) => ({ label: ordinal(i + 1) }))) }}
+            className={narrow === null ? 'anatomy-stage' : 'anatomy-stage is-fit'}
+            style={below ?{ paddingBottom: BOTTOM, paddingTop: marks.length > 1 ? BOTTOM : undefined } : { paddingInline: gutterFor(marks.map((_, i) => ({ label: ordinal(i + 1) }))) }}
           >
             <div ref={exampleRef} className="ds-example" data-component={name}>
               {sample}
@@ -252,6 +267,12 @@ const rowPaths = (stops: Stop[]) =>
     return xs.length > 1 ? [`M${Math.min(...xs)} ${row}H${Math.max(...xs)}`] : []
   })
 
+// Tab order from the stop focus opens on, wrapping to the ones before it.
+function fromStart(nodes: Element[], start?: string) {
+  const i = start ? nodes.findIndex((n) => n.matches(start)) : -1
+  return i > 0 ? [...nodes.slice(i), ...nodes.slice(0, i)] : nodes
+}
+
 function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
   const { keyboard } = entry
   const sample = useMemo(() => keyboard.render(), [keyboard])
@@ -270,7 +291,7 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
       // The SVG covers the padded stage, not the sample, so measure from there.
       const origin = el.parentElement!.getBoundingClientRect()
       // Only stops on screen: a staged overlay's hidden trigger isn't one.
-      const found = [...el.querySelectorAll(FOCUSABLE)].filter((stop) => stop.getClientRects().length > 0)
+      const found = fromStart([...el.querySelectorAll(FOCUSABLE)].filter((stop) => stop.getClientRects().length > 0), keyboard.orderFrom)
       const next = orderLayout(found.map((stop) => keyboard.ringOn?.(stop) ?? stop), origin, el.getBoundingClientRect(), !!keyboard.orderNearest)
       setStops((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
       // Stops numbered in order, disabled controls in place as "Skipped";
@@ -278,7 +299,7 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
       const onScreen = (n: Element) => n.getClientRects().length > 0
       const nextRows: Row[] = []
       let n = 0
-      for (const node of el.querySelectorAll(`${FOCUSABLE}, ${SKIPPED}`)) {
+      for (const node of fromStart([...el.querySelectorAll(`${FOCUSABLE}, ${SKIPPED}`)], keyboard.orderFrom)) {
         if (!onScreen(node)) continue
         if (node.matches(SKIPPED)) {
           nextRows.push({ label: 'Skipped', code: markup(node), says: `${announce(node)} (reading mode only)` })

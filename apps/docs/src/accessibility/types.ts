@@ -39,6 +39,9 @@ export type AccessibilityEntry = {
     // below: for samples with stops at both ends (Dialog's Close and
     // actions), where every leader from one side would cross the content.
     orderNearest?: boolean
+    // The stop focus opens on, in a component that keeps Tab inside it (a
+    // modal Dialog): numbering starts there and wraps to the stops before it.
+    orderFrom?: string
     // Table rows to keep when the sample repeats (the first card's stops).
     tableRows?: number
     ringOn?: (stop: Element) => Element | null
