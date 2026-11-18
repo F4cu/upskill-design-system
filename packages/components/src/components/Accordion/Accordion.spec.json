@@ -487,6 +487,7 @@
     {
       "decision": "When an item closes while focus is inside its panel, focus moves to the item's trigger.",
       "topic": "behaviour",
+      "featured": true,
       "reason": "The closed panel becomes inert, which would drop focus to the top of the page and lose the reader's place.",
       "notes": "Done in the same layout effect that sets inert, before it is set. Covered by Accordion.a11y.test.tsx."
     }

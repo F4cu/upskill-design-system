@@ -17,6 +17,10 @@ const FOCUSABLE = ':is(button, input, select, textarea):not(:disabled), a[href],
 // Disabled controls leave the Tab order but stay in the accessibility tree:
 // the focus table lists them, unnumbered, where they sit.
 const SKIPPED = ':is(button, input, select, textarea):disabled'
+// A stop Tab can reach: laid out, and not inside an inert subtree of the sample
+// (a collapsed Accordion panel). The staging wrapper is inert on purpose, so
+// it doesn't count.
+const reachable = (n: Element) => n.getClientRects().length > 0 && !n.closest('[inert]:not([data-staged])')
 const ATTRS = ['href', 'role','aria-label', 'aria-labelledby', 'aria-describedby', 'aria-pressed', 'aria-expanded', 'aria-haspopup', 'aria-current', 'aria-valuenow', 'alt', 'disabled']
 const ROLE_TEXT: Record<string, string> = { progressbar: 'progress bar', img: 'image' }
 
@@ -291,16 +295,15 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
       // The SVG covers the padded stage, not the sample, so measure from there.
       const origin = el.parentElement!.getBoundingClientRect()
       // Only stops on screen: a staged overlay's hidden trigger isn't one.
-      const found = fromStart([...el.querySelectorAll(FOCUSABLE)].filter((stop) => stop.getClientRects().length > 0), keyboard.orderFrom)
+      const found = fromStart([...el.querySelectorAll(FOCUSABLE)].filter(reachable), keyboard.orderFrom)
       const next = orderLayout(found.map((stop) => keyboard.ringOn?.(stop) ?? stop), origin, el.getBoundingClientRect(), !!keyboard.orderNearest)
       setStops((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
       // Stops numbered in order, disabled controls in place as "Skipped";
       // `tableRows` counts stops, so a cut never splits off a skipped row.
-      const onScreen = (n: Element) => n.getClientRects().length > 0
       const nextRows: Row[] = []
       let n = 0
       for (const node of fromStart([...el.querySelectorAll(`${FOCUSABLE}, ${SKIPPED}`)], keyboard.orderFrom)) {
-        if (!onScreen(node)) continue
+        if (!reachable(node)) continue
         if (node.matches(SKIPPED)) {
           nextRows.push({ label: 'Skipped', code: markup(node), says: `${announce(node)} (reading mode only)` })
           continue
