@@ -5,7 +5,7 @@ title: "ADR-030 — Spec renderers: generated component pages and a Figma parity
 
 **Date:** 2026-11-10
 **Status:** `accepted`
-**Amended:** 2026-11-16
+**Amended:** 2026-11-18
 
 ## Context
 
@@ -132,3 +132,19 @@ Dialog is the first published overlay. Its stories open on mount with `showModal
 - **Anatomy leaders never cross text or a control.** The top/bottom callout layout (short components, detail images) keeps alternating its badges between the two gutters unless a leader would cross a text run or a control (button, input, icon, image) outside its own part. Dialog's did: Description through Cancel, Actions through Description. Then each part takes the gutter nearer its edge (Actions and Root at the bottom, Title, Header and Close at the top), and its leader runs only through clear columns. Obstacles are clipped to the visible figure, and slivers under 4px are ignored. Button and CardVertical have no crossings, so their figures are unchanged.
 - **Without JavaScript**, a staged example shows only its story's trigger: the dialog opens in an effect.
 - **Rejected:** an "Open as modal" trigger that mounted a fresh, real modal next to each example, and a scrim behind modal stories (both built, then dropped by the developer: the reference pages need the window only); forcing the stories closed (the page would show only a trigger); patching `HTMLDialogElement.prototype.showModal` on the docs page (it would hide the override from the stories, which are the source).
+
+## Amendment (2026-11-18) — Four tabs, a Decisions tab grouped by topic, and page rules
+
+Dialog, the first page without variant axes, a placement file or an accessibility file, came out two to three times longer than Button and CardVertical (Spec tab about 1,770 words against 550), with "None recorded" sections and every decision listed word for word. The template is settled before the rest of the batch is published. Decided here, built in the docs-page-ia handoff steps 3–4.
+
+- **Four tabs: Usage · Spec · Accessibility · Decisions.** Usage (designers and PMs): the opening section, When to use it, Do / Don't. Spec (engineers and designers drawing it): Anatomy, Props, States, Tokens. Accessibility: Use cases, Reading order, Keyboard and focus. Decisions (reviewers and maintainers): decisions filtered by `topic` (ADR-027 amendment 2026-11-18), Ruled out, Design–code parity. The Tokens tab becomes a section of Spec, as in Material 3; moving tokens to Airtable was rejected, since Airtable is private governance and the table is generated at no cost.
+- **A decision log is a deliberate feature.** Polaris, MUI, Carbon and Material 3 don't publish per-component decisions; GOV.UK's "Research on this component" is the nearest precedent (recalled, not re-checked).
+- **Page rules**, which `/document-component` will apply:
+  - R1. The opening section is named by the variant axis (`AXIS_TITLES`). With no axis but optional slots, it is "Content" (Dialog: title only, with description, with actions). "Modal vs non-modal" is out, because staged overlays look the same either way (R8).
+  - R2. Every published page has a placement file. Each Do is a pattern story, at most 4, paired with a Don't that can be drawn, chosen from `notFor`, then `limits`, then a drawable `donts` entry. Behavioural don'ts never become boxes.
+  - R3. Captions are 120 characters at most. A Do starts with a verb; a Don't names the mistake, then the consequence.
+  - R4. Prop rules enforced only by `type` are not rendered.
+  - R5. Every published page has an accessibility file: at most 4 use cases, and labeling and keyboard advice of one or two sentences each. ARIA attributes, the key table and the test tier stay in `spec.json`.
+  - R6. The Decisions tab shows every decision in its short, reader-facing form. Other tabs may link a one-line "Why?" to a filtered view instead of repeating the reason.
+  - R7. No "None recorded" on reader pages: a section with no data is left out.
+  - R8. Overlays render staged (amendment 2026-11-16), so no figure may depend on modality.

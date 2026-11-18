@@ -5,7 +5,7 @@ title: "ADR-027 — Component spec file, split from metadata by reader"
 
 **Date:** 2026-10-07
 **Status:** `accepted`
-**Amended:** 2026-11-11
+**Amended:** 2026-11-18
 
 ## Context
 
@@ -288,3 +288,12 @@ A `builtOnProps` value may now be a mapping instead of a scalar: `{ "from": "<pr
 - **Still not consumer pass-through.** A mapping records a value the component derives. A prop the consumer passes straight through (Button's `icon` → Icon `name`) stays out of `builtOnProps`, as the field description already says.
 - **Checked.** `spec:validate` checks that `from` is a root spec prop, that each `map` key is one of its `options`, and that `otherwise` is set unless `map` covers every option.
 - **Read by the docs only.** The Token usage table resolves `otherwise` against the child component's styles for the Default row, and each `map` entry for a row under that prop value (`size="sm"` → `size.icon.sm`). Nothing else reads `builtOnProps`.
+
+## Amendment (2026-11-18) — Decisions carry a `topic` and an unrendered `notes` field
+
+The docs page gains a Decisions tab (ADR-030 amendment 2026-11-18) that renders every `decisions[]` entry, filtered by topic. Two problems showed up on the Dialog and CardVertical pages: the entries had no grouping, and many `reason` texts were working notes ("visual review 2026-11-16", "Caught in the first screenshot baseline", "Reviewers should not flag the missing wrap") that only make sense to the people and agents who wrote them.
+
+- **`topic` (required):** `visual` (spacing, layout, structure, look), `behaviour` (focus, keyboard, events, state sync, reading order) or `platform` (native elements, browser support, implementation workarounds). One label per decision. Grouping by reader was rejected: spacing decisions matter to designers and engineers alike, so "who reads it" had no single right answer. All 45 existing entries were tagged in the same change.
+- **`notes` (optional, not rendered):** provenance, detailed mechanics and guidance to reviewers. `/review-component` reads `decisions[]` as a whole, so moving that text out of `reason` keeps it for agents while the page shows `decision` and `reason` only. Rejected: trimming `reason` in place (loses the context agents use) and a page-only `summary` field (two texts that drift). `ruledOut[]` already separates its `source` the same way.
+- **Writing rule** lives where decisions are written: the schema's `decisions` description, which agents read when they add an entry. `decision` says what was chosen and `reason` says why, short and in plain language.
+- **Checked:** `spec:validate` reports a `reason` over 200 characters, or one carrying a date, "visual review", "screenshot baseline", reviewer guidance or "caught in/by". The report is a backlog list, not a failure, until the existing entries are rewritten (docs-page-ia handoff, step 2); then it becomes an error. The 200-character cap matches Button's longest reason (183), the tone reference for the rewrite.

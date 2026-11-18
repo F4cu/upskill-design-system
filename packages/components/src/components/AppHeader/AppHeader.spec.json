@@ -611,6 +611,7 @@
   "decisions": [
     {
       "decision": "No router dependency: links are plain href. Consumers wrap them with their router's Link component or handle navigation in onUserClick.",
+      "topic": "platform",
       "reason": "Keeping the component free of a router makes it portable."
     }
   ]

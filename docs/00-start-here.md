@@ -94,6 +94,7 @@ sources:
 # 2026-11-13: ADR count 30 -> 31 (ADR-031 fixed-set expansion, Phase 5e); ROADMAP reopens Phase 5 for the 5e batch, this page lists no phase status or component count
 # clock reset 2026-11-13: ADR-023 wording fix (tab stops) and ADR-028 amendment (relocated ring on linked cards); ADR count unchanged, this page lists no ADR detail, still accurate
 # clock reset 2026-11-13 (#174): ADR-023 wording fix (CardVertical's Root is a native <article>, not role="article"); this page doesn't describe card markup, still accurate
+# clock reset 2026-11-18: ADR-030 amendments (overlays staged 2026-11-16; four tabs and page rules 2026-11-18); this page doesn't name the component page tabs or sections, still accurate
 ---
 # Start here
 

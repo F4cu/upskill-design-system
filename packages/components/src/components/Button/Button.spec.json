@@ -240,12 +240,12 @@
     ]
   },
   "decisions": [
-    { "decision": "Variants name an absolute visual weight (accent, neutral, transparent, danger), not a rank. The container decides which weight an action gets.", "reason": "Rank belongs to the group of buttons, not one button: a card's lead action is secondary on a page that already has a primary, and twelve cards would otherwise render twelve primaries.", "adr": "ADR-024" },
-    { "decision": "The default variant is neutral, not accent.", "reason": "A forgotten variant prop should not add a competing call to action.", "adr": "ADR-024" },
-    { "decision": "transparent is a ghost button: interactive text color, the size's standard padding and a hover fill. Its label sits inset from the content edge, with no bleed.", "reason": "A hover fill needs padding; the inset is accepted, as in Material 3 text buttons.", "adr": "ADR-024" },
-    { "decision": "Icon-only is a shape (square or round), not a variant. With shape set, icon and aria-label are required and children and trailingIcon are not allowed, enforced by the props type.", "reason": "The glyph is the only visible content, so the button needs an icon to show and an aria-label for its accessible name." },
-    { "decision": "type defaults to button, not submit.", "reason": "A button inside a form only submits it when the consumer asks for that." },
-    { "decision": "The label is not wrapped in Text.", "reason": "Root sets the type styles for every size." }
+    { "decision": "Variants name an absolute visual weight (accent, neutral, transparent, danger), not a rank. The container decides which weight an action gets.", "topic": "visual", "reason": "Rank belongs to the group of buttons, not one button: a card's lead action is secondary on a page that already has a primary, and twelve cards would otherwise render twelve primaries.", "adr": "ADR-024" },
+    { "decision": "The default variant is neutral, not accent.", "topic": "visual", "reason": "A forgotten variant prop should not add a competing call to action.", "adr": "ADR-024" },
+    { "decision": "transparent is a ghost button: interactive text color, the size's standard padding and a hover fill. Its label sits inset from the content edge, with no bleed.", "topic": "visual", "reason": "A hover fill needs padding; the inset is accepted, as in Material 3 text buttons.", "adr": "ADR-024" },
+    { "decision": "Icon-only is a shape (square or round), not a variant. With shape set, icon and aria-label are required and children and trailingIcon are not allowed, enforced by the props type.", "topic": "visual", "reason": "The glyph is the only visible content, so the button needs an icon to show and an aria-label for its accessible name." },
+    { "decision": "type defaults to button, not submit.", "topic": "behaviour", "reason": "A button inside a form only submits it when the consumer asks for that." },
+    { "decision": "The label is not wrapped in Text.", "topic": "visual", "reason": "Root sets the type styles for every size." }
   ],
   "ruledOut": [
     { "option": "Rank names: primary / secondary / tertiary", "reason": "Rank changes with the container, so the name hides that dependency and needs a prose rule (one primary per view) to compensate.", "source": "Carbon, Polaris, Primer" },

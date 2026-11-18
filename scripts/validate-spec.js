@@ -18,7 +18,8 @@
 //     mark/focus name anatomy parts (all entries or none set mark; a part is
 //     numbered once in the overview; focus is numbered in the overview and
 //     its marks descend from it),
-//     and every decision's adr has a file in docs/decisions/.
+//     and every decision's adr has a file in docs/decisions/; a decision reason
+//     over REASON_MAX or carrying internal markers is reported (backlog for now).
 //   - vocabulary (ADR-025, ADR-026): prop names, boolean defaults, the
 //     controlled triple and Figma names, via scripts/prop-vocabulary.js; a
 //     waiver that no longer matches a violation fails too.
@@ -88,6 +89,25 @@ for (const name of missing) {
   failures++;
 }
 const backlog = [];
+const decisionBacklog = [];
+
+// Decision text is rendered on the docs Decisions tab (ADR-027 amendment 2026-11-18):
+// provenance and reviewer guidance belong in notes. Reported as backlog until the
+// edit pass (docs-page-ia handoff step 2) lands, then promoted to an error.
+const REASON_MAX = 200;
+const INTERNAL_MARKERS = [
+  [/\b\d{4}-\d{2}-\d{2}\b/, "a date"],
+  [/visual review/i, '"visual review"'],
+  [/screenshot baseline/i, '"screenshot baseline"'],
+  [/\breviewers? (should|must)\b/i, "reviewer guidance"],
+  [/\bcaught (in|by)\b/i, "provenance (\"caught in/by\")"],
+];
+function readerTextProblems(text) {
+  if (!text) return [];
+  const problems = INTERNAL_MARKERS.filter(([re]) => re.test(text)).map(([, label]) => `contains ${label}; move it to notes`);
+  if (text.length > REASON_MAX) problems.push(`is ${text.length} characters (max ${REASON_MAX})`);
+  return problems;
+}
 
 for (const { name, file } of specs) {
   const spec = JSON.parse(fs.readFileSync(file, "utf8"));
@@ -227,9 +247,10 @@ for (const { name, file } of specs) {
     });
     examples.forEach((e, i) => { if (e.focus && !overview.has(e.focus)) errors.push(`anatomyExamples[${i}].focus: "${e.focus}" is not marked in an unfocused example`); });
   }
-  for (const d of spec.decisions ?? []) {
+  spec.decisions?.forEach((d, i) => {
     if (d.adr && !ADR_IDS.has(d.adr)) errors.push(`decisions: ${d.adr} has no file in docs/decisions/`);
-  }
+    for (const problem of readerTextProblems(d.reason)) decisionBacklog.push(`${name}: decisions[${i}].reason ${problem}`);
+  });
 
   // States
   const stateNames = new Set(spec.states.map((s) => s.name));
@@ -282,6 +303,10 @@ function report(file, errors) {
 if (backlog.length) {
   console.log("\nUnenforced constraints (backlog, not failures):");
   for (const line of backlog) console.log(`  · ${line}`);
+}
+if (decisionBacklog.length) {
+  console.log("\nDecision text not yet reader-facing (backlog, not failures):");
+  for (const line of decisionBacklog) console.log(`  · ${line}`);
 }
 
 if (!EXTERNAL_DIR) {

@@ -333,14 +333,19 @@
     },
 
     "decisions": {
-      "description": "Per-component choices about how it is built, too small for an ADR. System-wide decisions stay in ADRs; cite one with adr when it applies. Read by the docs Spec page and /review-component, never by /component-scaffold (ADR-013).",
+      "description": "Per-component choices about how it is built, too small for an ADR. System-wide decisions stay in ADRs; cite one with adr when it applies. Read by the docs Decisions tab and /review-component, never by /component-scaffold (ADR-013). decision and reason are written for a reader of the docs page: decision says what was chosen, reason says why, short and in plain language. Provenance (dates, which review caught it), detailed mechanics and guidance to reviewers go in notes, which is not rendered (ADR-027 amendment 2026-11-18).",
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["decision"],
+        "required": ["decision", "topic"],
         "properties": {
           "decision": { "type": "string" },
+          "topic": {
+            "description": "Filter on the docs Decisions tab; one label per decision. visual: spacing, layout, structure, look. behaviour: focus, keyboard, events, state sync, reading order. platform: native elements, browser support, implementation workarounds.",
+            "enum": ["visual", "behaviour", "platform"]
+          },
           "reason": { "type": "string" },
+          "notes": { "description": "Agent- and maintainer-facing context, not rendered: provenance, mechanics, reviewer guidance (e.g. 'Reviewers should not flag the missing wrap').", "type": "string" },
           "adr": { "description": "ADR id, e.g. ADR-023. Must resolve to a file in docs/decisions/.", "type": "string", "pattern": "^ADR-[0-9]{3}$" }
         },
         "additionalProperties": false

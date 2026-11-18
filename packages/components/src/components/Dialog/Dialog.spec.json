@@ -343,63 +343,63 @@
   },
   "decisions": [
     {
-      "decision": "Description is the first child of Body, followed by the children; Header holds only Title and Close.",
+      "decision": "Description is the first child of Body, followed by the children; Header holds only Title and Close.", "topic": "visual",
       "reason": "As a block of its own between Header and Body, the description read as floating (visual review 2026-11-16). MUI places DialogContentText inside DialogContent the same way. Body renders when description or children is set, and the description scrolls with the content. Description pads its bottom by space.stack.md only when content follows it, so consumer children keep their own layout (no gap on Body)."
     },
     {
-      "decision": "Root pads only the block axis; Header, Body and Actions each pad themselves, and Body pads all four sides inside its scroll box.",
+      "decision": "Root pads only the block axis; Header, Body and Actions each pad themselves, and Body pads all four sides inside its scroll box.", "topic": "visual",
       "reason": "Body scrolls (overflow-y: auto), which clips anything painted outside its box. With the padding on Root, a focused TextField at Body's edge lost its focus ring (visual review 2026-11-16). Section-owned padding is how MUI's DialogContent works; padding plus a cancelling negative margin was rejected as a workaround. Spacing between parts is unchanged: when Body is the last part, Root drops its bottom padding and Body pads space.inset.lg instead."
     },
     {
-      "decision": "Actions are spaced by space.inline.md (16px), not space.inline.sm.",
+      "decision": "Actions are spaced by space.inline.md (16px), not space.inline.sm.", "topic": "visual",
       "reason": "MUI uses 8px, but its default actions are borderless text buttons. Ours are bordered or filled, and the 4px focus ring took half of an 8px gap, so a focused Cancel nearly touched the next button (visual review 2026-11-16)."
     },
     {
-      "decision": "Close is pulled right by space.inset.xs so its glyph lines up with the content edge, and Root's top padding is reduced by the same amount. Title pads its block axis so its first line is as tall as Close (size.400), and Header aligns to the start.",
+      "decision": "Close is pulled right by space.inset.xs so its glyph lines up with the content edge, and Root's top padding is reduced by the same amount. Title pads its block axis so its first line is as tall as Close (size.400), and Header aligns to the start.", "topic": "visual",
       "reason": "An sm round Button is size.400 with an sm icon, leaving space.inset.xs of transparent padding around the glyph; without the right offset the x sits that far inside the Header padding (visual review 2026-11-16). This is MUI IconButton's edge technique, and it keeps the hit target. Aligning box tops left the x 6px above the title text because of Title's half-leading. Padding Title to the button's height (Primer's Dialog header) centres the x on the first line however many lines the title wraps to, which align-items: center would not, and needs no vertical negative margin. Root's top padding is space.inset.xs shorter than its other sides, so the x glyph sits space.inset.lg from both the top and right edges. It assumes Close stays size sm and Title stays size subheader; changing either means changing these values."
     },
     {
-      "decision": "The props type omits role, aria-modal, aria-label, aria-labelledby, aria-describedby, title, open, onCancel and onClose from the native <dialog> attributes; passing one is a type error (@ts-expect-error cases in the a11y test).",
+      "decision": "The props type omits role, aria-modal, aria-label, aria-labelledby, aria-describedby, title, open, onCancel and onClose from the native <dialog> attributes; passing one is a type error (@ts-expect-error cases in the a11y test).", "topic": "platform",
       "reason": "Dialog sets its own role and name (from title) and owns the cancel and close events that keep the open prop in sync with the element."
     },
     {
-      "decision": "Built on the native <dialog> with showModal()/show(), not a div with a JavaScript focus trap.",
+      "decision": "Built on the native <dialog> with showModal()/show(), not a div with a JavaScript focus trap.", "topic": "platform",
       "reason": "showModal() gives an inert background (keyboard, pointer and screen reader), Escape as a cancel event and the top layer (no z-index token needed). Every major browser has supported showModal() since 2022 and inert since 2023."
     },
     {
-      "decision": "Focus containment comes from showModal() inertness, not a wrap-around trap. Tab past the last element may reach the browser's own controls before returning to the first.",
+      "decision": "Focus containment comes from showModal() inertness, not a wrap-around trap. Tab past the last element may reach the browser's own controls before returning to the first.", "topic": "behaviour",
       "reason": "WCAG requires that focus not land on obscured content (2.4.3, 2.4.11) and forbids keyboard traps (2.1.2); inertness meets both. APG's wrap-around guidance was written for div-based dialogs. Reviewers should not flag the missing wrap."
     },
     {
-      "decision": "Initial focus: the first [data-autofocus] descendant, otherwise Title (tabIndex -1).",
+      "decision": "Initial focus: the first [data-autofocus] descendant, otherwise Title (tabIndex -1).", "topic": "behaviour",
       "reason": "React 18 never writes autoFocus into the DOM: it calls focus() at mount, before Dialog's effect opens the dialog, so the call is lost and the native focusing steps find no autofocus attribute. The marker lets consumers choose (Cancel in a destructive confirm, per APG). Title as the default announces the dialog's name and description and keeps Enter from closing it, which focusing Close first would do."
     },
     {
-      "decision": "Focus returns to the element focused before opening, only when that element is still connected and focus is still in the dialog or on the body. When that element is gone, focus left inside the closed dialog is blurred to the body.",
+      "decision": "Focus returns to the element focused before opening, only when that element is still connected and focus is still in the dialog or on the body. When that element is gone, focus left inside the closed dialog is blurred to the body.", "topic": "behaviour",
       "reason": "A menu item that opened the dialog is gone by the time it closes (DropdownMenu closes on select). The condition lets the consumer move focus in onOpenChange(false) (for example to the menu button) without Dialog taking it back."
     },
     {
-      "decision": "Modal Escape is handled through the cancel event with preventDefault; non-modal Escape through keydown. A close event calls onOpenChange(false) only when the open prop is true and the element is closed at the time the event arrives.",
+      "decision": "Modal Escape is handled through the cancel event with preventDefault; non-modal Escape through keydown. A close event calls onOpenChange(false) only when the open prop is true and the element is closed at the time the event arrives.", "topic": "behaviour",
       "reason": "Keeps the open prop the single source of truth. Browsers may close a modal dialog on a repeated Escape even when cancel is prevented (close-request anti-abuse); the close listener resyncs the prop when that happens. close is queued as a task, so one fired by the effect cleanup can arrive after the effect reopened the dialog (StrictMode, Fast Refresh, toggling nonModal while open); checking the element's own open state ignores it."
     },
     {
-      "decision": "Title shows the global :focus-visible ring (ADR-028) when it receives initial focus after a keyboard-initiated open; a mouse-initiated open shows no ring. The screenshot baseline shows the ring on purpose (headless capture has no prior interaction).",
+      "decision": "Title shows the global :focus-visible ring (ADR-028) when it receives initial focus after a keyboard-initiated open; a mouse-initiated open shows no ring. The screenshot baseline shows the ring on purpose (headless capture has no prior interaction).", "topic": "behaviour",
       "reason": "A keyboard user needs to see where focus landed. ADR-028 forbids replacing the ring, and Title is not a menu item, the only exception."
     },
     {
-      "decision": "Body is not made focusable when it overflows. Keyboard scrolling of a Body that holds only static text relies on the browser making scroll containers focusable (Chrome 130+, Firefox); Safari does not, which is a known limitation.",
+      "decision": "Body is not made focusable when it overflows. Keyboard scrolling of a Body that holds only static text relies on the browser making scroll containers focusable (Chrome 130+, Firefox); Safari does not, which is a known limitation.", "topic": "platform",
       "reason": "Adding tabIndex and a region role to every overflowing Body adds a Tab stop and a landmark to every long dialog, for one engine. Revisit if Safari users report it or axe's scrollable-region-focusable flags a real page."
     },
     {
-      "decision": "The Backdrop colour reads a CSS custom property inside ::backdrop.",
+      "decision": "The Backdrop colour reads a CSS custom property inside ::backdrop.", "topic": "platform",
       "reason": "::backdrop inherits from its dialog in current browsers (Chrome 122, Firefox 120, Safari 17.4). Older engines fall back to the browser's default backdrop, which is still a scrim."
     },
     {
-      "decision": "The shadow reuses Card elevated's 0 2px 8px {color.background.overlay.subtle}.",
+      "decision": "The shadow reuses Card elevated's 0 2px 8px {color.background.overlay.subtle}.", "topic": "visual",
       "reason": "No shadow token scale exists; one elevated shadow keeps Card and Dialog consistent until one does."
     },
     {
-      "decision": "Root sets margin: auto.",
+      "decision": "Root sets margin: auto.", "topic": "platform",
       "reason": "The browser centres a modal <dialog> with its own margin: auto, and reset.css margin: 0 removes it, which pins the modal to the top-left corner. Caught in the first screenshot baseline, not by any test."
     }
   ],

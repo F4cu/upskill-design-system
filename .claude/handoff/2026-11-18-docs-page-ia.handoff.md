@@ -63,15 +63,17 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 
 **1. Contract** (blocks everything after it)
 - [x] 1.1 Close D3: `notes` field (2026-11-18)
-- [ ] 1.2 Spec schema: `topic` (enum `visual | behaviour | platform`, required on every `decisions[]` entry) and optional `notes` (D3); update the `decisions[]` description with the writing rule (D5)
-- [ ] 1.3 `scripts/validate-spec.js`: reject a `reason` over a length cap, and dated or internal markers in `reason` ("visual review", ISO dates, "screenshot baseline"); cap and patterns chosen when written
-- [ ] 1.4 Tag `topic` on the existing decisions so `spec:validate` passes: Button 6, CardVertical 15, Dialog 15, Accordion 2, DropdownMenu 1 (Select and TextField have none yet)
-- [ ] 1.5 ADR-027 amendment (schema: `topic`, `notes`) and ADR-030 amendment (four-tab IA, Decisions tab, R1–R8)
+- [x] 1.2 (2026-11-18) Spec schema: `topic` (enum `visual | behaviour | platform`, required on every `decisions[]` entry) and optional `notes` (D3); update the `decisions[]` description with the writing rule (D5)
+- [x] 1.3 (2026-11-18) `scripts/validate-spec.js`: flag a `reason` over a length cap, and dated or internal markers in `reason` ("visual review", ISO dates, "screenshot baseline"). Cap 200 (Button's longest is 183); markers: ISO date, "visual review", "screenshot baseline", "reviewer(s) should/must", "caught in/by". **Reported as backlog, not an error,** so `main` stays green before step 2; 32 entries flagged today
+- [x] 1.4 (2026-11-18) Tag `topic` on the existing decisions: 45 entries in 8 specs, three more than listed here (CardHorizontal 4, AppHeader 1, VideoFrame 1). Dialog split 5/5/5, not the estimated 7/5/3. Labels are a first pass; step 2 may move some
+- [x] 1.5 (2026-11-18) ADR-027 amendment (schema: `topic`, `notes`) and ADR-030 amendment (four-tab IA, Decisions tab, R1–R8)
 
 **2. Decision text edit pass** (needs 1)
 - [ ] 2.1 Edit Button's decisions (6) to the rule; internal notes move per D3. Developer reviews the tone on this one before the rest
 - [ ] 2.2 CardVertical (15), then Dialog (15), Accordion (2), DropdownMenu (1)
+- [ ] 2.2b CardHorizontal (4), AppHeader (1), VideoFrame (1)
 - [ ] 2.3 Same pass on `ruledOut[]` reasons and `figma.divergences` (Button 6/1, CardVertical 10/5, Dialog 8/6)
+- [ ] 2.4 Once the backlog list is empty, make the 1.3 check an error in `validate-spec.js` (and update the ADR-027 amendment and doc 10)
 
 **3. Template** (needs 1; can run alongside 2)
 - [ ] 3.1 `TABS` in `apps/docs/components.mjs`: drop Tokens, add Decisions; the Tokens table moves into Spec as a section; old `/tokens/` URLs redirect or 404 (check what links them)
