@@ -42,6 +42,7 @@ sources:
 # clock reset 2026-11-13 (#174): ADR-023 wording fix (CardVertical's Root is a native <article>, not role="article"); this page doesn't describe card markup, still accurate
 # clock reset 2026-11-18: ADR-027 amendment (decisions gain topic and unrendered notes); this page describes the usage schema and the gate, not spec sections, still accurate
 # clock reset 2026-11-18: ADR-027 amendment adds featured decisions; this page describes the usage schema and the gate, not spec sections, still accurate
+# clock reset 2026-11-18: ADR-027 amendment (decision reason check becomes an error); this page describes the usage schema and the gate, not spec sections, still accurate
 ---
 # Component lifecycle
 
