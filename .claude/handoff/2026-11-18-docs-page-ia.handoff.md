@@ -96,7 +96,7 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 
 **5. `/document-component` command** (needs 4: written from what worked, not before)
 - [x] 5.1 (2026-11-18) Closed D5; R1's "Content" stays page config (`CONTENT_OPTIONS`), not a `usage.json` field, until a second component needs it. Agentic moment 10 in `CLAUDE.md` (README, ROADMAP, docs 00 and 06 counts updated), output on a `document/<kebab-name>` PR; ADR-030 amendment 2026-11-18 (`/document-component`). Was: `.claude/commands/document-component.md` (prompt-only, so a command, not a skill). Its description must say it builds the component's docs-site page from the committed `usage.json` and `spec.json`, and does not author them (that's `npm run spec:generate` and the review loop), apart from the decision edit pass. Then: invariant, inputs, R1–R8, the decision edit pass, success signal (`spec:validate`, `docs:build`, page review)
-- [ ] 5.2 `/extract-learnings`: route a decision with its `topic` and in the short form (D5)
+- [x] 5.2 (2026-11-18) `/extract-learnings`: a decision is routed as `{ decision, topic, reason, notes }` in the reader-facing form, with the finding's provenance in `notes`; it never sets `featured` (that's `/document-component`'s call) and flags candidates in the PR description (D5)
 - [ ] 5.3 Prove it on one page not touched by hand: Accordion
 
 **6. Close-out**

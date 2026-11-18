@@ -45,7 +45,7 @@ Not every finding is the same kind of lesson. The `accessibility.*`, `constraint
 | ARIA attribute wrong, missing, or missing a constraint | `accessibility.ariaAttributes` — amend the attribute's description |
 | Keyboard interaction undeclared or incomplete | `accessibility.keyboardInteractions` — add the missing entry |
 | Focus behavior undeclared | `accessibility.notes` — append the constraint |
-| How the component is built (e.g. always render the panel, never unmount; who owns focus) | spec `decisions` — `{ decision, reason }` |
+| How the component is built (e.g. always render the panel, never unmount; who owns focus) | spec `decisions` — `{ decision, topic, reason, notes }`, in the reader-facing form (step 3) |
 | Wrong prop combination, a required prop, or a prop's value format | spec `constraints` — `{ id, if, require/forbid/ignore, reason, enforcedBy }`; empty `enforcedBy` when nothing enforces it yet |
 | Child type or nesting constraint the usage file missed | `composition.accepts` — correct or extend; self-nesting → `composition.nests` |
 | Parent container constraint missing | `composition.containedBy` — correct or extend |
@@ -104,7 +104,20 @@ Write the smallest amendment that captures the lesson. Match the existing format
 
 **`notFor` entry (usage.json):** `{ "case", "because", "instead": "<Component>" }`; `instead` is validated against the fixed set, so use `null` plus a `note` when the alternative is outside the library.
 
-**`constraints` / `decisions` entry (spec.json):** match sibling entries; a constraint's `if` and `require`/`forbid`/`ignore` keys must be spec props.
+**`constraints` entry (spec.json):** match sibling entries; its `if` and `require`/`forbid`/`ignore` keys must be spec props.
+
+**`decisions` entry (spec.json):** the docs Decisions tab renders `decision` and `reason`, so write them for a reader of that page, not for the reviewer (the rule is in the schema's `decisions[]` description; ADR-027 amendment 2026-11-18):
+```json
+{
+  "decision": "<What was chosen, one plain sentence; code names in backticks>",
+  "topic": "visual | behaviour | platform",
+  "reason": "<Why, short, one idea per sentence, 'you' for the person using the component; at most 200 characters>",
+  "notes": "<Optional, not rendered: the finding's provenance (which review caught it), mechanics, guidance to reviewers>"
+}
+```
+- `topic`: `visual` (spacing, layout, structure, look), `behaviour` (focus, keyboard, events, state sync, reading order) or `platform` (native elements, browser support, workarounds). One label per entry.
+- The finding's own wording ("Reviewer caught …", a date, "Reviewers should not flag …") goes in `notes`, never in `reason`; `spec:validate` fails a `reason` with an ISO date, "visual review", "screenshot baseline", "reviewer(s) should/must" or "caught in/by".
+- Don't set `featured`: which decisions the page shows is chosen by `/document-component`. Mention in the PR description when a new entry looks worth featuring.
 
 **`accessibility.ariaAttributes` entry:** extend the relevant string to capture the constraint (e.g. "— the target element must always be present in the DOM").
 
