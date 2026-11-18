@@ -70,6 +70,7 @@ export function AccordionItem({
         <button
           ref={triggerRef}
           data-part="Trigger"
+          type="button"
           id={triggerId}
           className={styles.trigger}
           aria-expanded={isOpen}

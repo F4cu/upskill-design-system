@@ -10,6 +10,21 @@ import { Accordion, AccordionItem } from './index'
 // keyboard activation, and an axe scan.
 
 describe('AccordionItem — a11y behavior', () => {
+  it('does not submit an enclosing form when the trigger is clicked', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn((e: Event) => e.preventDefault())
+    render(
+      <form onSubmit={(e) => onSubmit(e.nativeEvent)}>
+        <AccordionItem title="Module 1">
+          <p>Content</p>
+        </AccordionItem>
+      </form>,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Module 1/i }))
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
   it('moves focus to the trigger when a controlled close happens with focus inside the panel', async () => {
     const user = userEvent.setup()
     function Controlled() {
