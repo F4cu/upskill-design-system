@@ -70,7 +70,7 @@ The organizing idea is a ladder of surfaces, each loaded at the narrowest possib
 | 1a | `AGENTS.md` | Every session, always, in any coding agent (Claude Code loads it natively) | Tool-agnostic invariants and pointers: token layers, Figma vocabulary, the fixed component set, the ADR-009 test, layout grammar, code conventions. CI-capped at 8KB. |
 | 1b | `CLAUDE.md` | Every Claude Code session, always (imports `@AGENTS.md`) | Claude-specific policy: knowledge routing, frozen snapshots, MCP policy, git workflow, agentic moments. CI-capped at 200 lines / 20KB on its own and 24KB together with `AGENTS.md`. |
 | 2 | Nested `packages/*/AGENTS.md` | Only when the session reads a file under that package (Claude Code through a sibling `CLAUDE.md` that holds just `@AGENTS.md`; Codex and Cursor natively) | Package-scoped conventions — `packages/components/AGENTS.md`, `packages/tokens/AGENTS.md`. |
-| 3 | `.claude/commands/` and `.claude/skills/` | Only when invoked by name | Full procedures for the [nine agentic moments](06-agentic-moments.md) plus `/tokens-author` and `/airtable-sync`. |
+| 3 | `.claude/commands/` and `.claude/skills/` | Only when invoked by name | Full procedures for the [ten agentic moments](06-agentic-moments.md) plus `/tokens-author` and `/airtable-sync`. |
 | 4 | Frozen snapshots (`.claude/STATUS_QUO.md`, `component-pipeline.json`, `airtable-governance.json`, …) | Read by a moment that needs external state | The status quo of Airtable, Figma, and the repo — captured by scripts, never fetched live mid-task. |
 | 5 | `.claude/handoff/` | Read by the specific loop stage or session resuming the work | Cross-session markdown handoffs (committed, lifecycle-tracked), per-run JSON under `runs/` (gitignored, regenerable), and the append-only `run-ledger.json`. |
 
@@ -110,7 +110,7 @@ Since [ADR-029](decisions/029-tiered-context-architecture.md), the top rung is s
 
 ### Commands vs skills
 
-One naming trap, stated once: Claude Code's terms are the inverse of intuition. `.claude/commands/` holds prompt-only slash commands (all nine agentic moments); `.claude/skills/` holds commands that ship companion *code* — here only `run-storybook`, whose `driver.mjs` drives Storybook headlessly. Since the 2026-07-08 audit, every command file also carries `model:` and `allowed-tools:` [frontmatter](08-glossary.md), turning "this moment must not use [MCP](08-glossary.md)" from a remembered convention into a tool boundary (see [Agentic moments](06-agentic-moments.md)).
+One naming trap, stated once: Claude Code's terms are the inverse of intuition. `.claude/commands/` holds prompt-only slash commands (all ten agentic moments); `.claude/skills/` holds commands that ship companion *code* — here only `run-storybook`, whose `driver.mjs` drives Storybook headlessly. Since the 2026-07-08 audit, every command file also carries `model:` and `allowed-tools:` [frontmatter](08-glossary.md), turning "this moment must not use [MCP](08-glossary.md)" from a remembered convention into a tool boundary (see [Agentic moments](06-agentic-moments.md)).
 
 ### The handoff lifecycle
 
