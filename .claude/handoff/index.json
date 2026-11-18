@@ -12,8 +12,16 @@
     "kind": "handoff",
     "status": "active",
     "created": "2026-11-05",
-    "updated": "2026-11-14",
+    "updated": "2026-11-16",
     "path": ".claude/handoff/2026-11-05-spec-renderers.handoff.md"
+  },
+  {
+    "name": "2026-11-18-docs-page-ia",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-11-18",
+    "updated": "2026-11-18",
+    "path": ".claude/handoff/2026-11-18-docs-page-ia.handoff.md"
   },
   {
     "name": "2026-07-03-multi-brand-refactor",
