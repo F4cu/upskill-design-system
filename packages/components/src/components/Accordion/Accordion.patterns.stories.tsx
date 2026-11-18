@@ -29,8 +29,8 @@ function CourseModules() {
   return (
     <Stack gap="md">
       <Accordion>
-        {visible.map((m) => (
-          <AccordionItem key={m.title} title={m.title} subtitle={m.subtitle}>
+        {visible.map((m, i) => (
+          <AccordionItem key={m.title} title={m.title} subtitle={m.subtitle} defaultOpen={i === 0}>
             <Text>{m.body}</Text>
           </AccordionItem>
         ))}

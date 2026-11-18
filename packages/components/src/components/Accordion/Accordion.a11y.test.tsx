@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -9,6 +10,25 @@ import { Accordion, AccordionItem } from './index'
 // keyboard activation, and an axe scan.
 
 describe('AccordionItem — a11y behavior', () => {
+  it('moves focus to the trigger when a controlled close happens with focus inside the panel', async () => {
+    const user = userEvent.setup()
+    function Controlled() {
+      const [open, setOpen] = useState(true)
+      return (
+        <AccordionItem title="Module 1" open={open} onOpenChange={setOpen}>
+          <button onClick={() => setOpen(false)}>Done</button>
+        </AccordionItem>
+      )
+    }
+    render(<Controlled />)
+
+    await user.click(screen.getByRole('button', { name: 'Done' }))
+
+    const trigger = screen.getByRole('button', { name: /Module 1/i })
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(trigger).toHaveFocus()
+  })
+
   it('starts collapsed with aria-expanded=false', () => {
     render(
       <AccordionItem title="Module 1" subtitle="2 hours">

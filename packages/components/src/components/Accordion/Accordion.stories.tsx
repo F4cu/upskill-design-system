@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Text } from '../Text'
+import { TextLink } from '../TextLink'
 import { Accordion, AccordionItem } from './index'
 
 const meta: Meta<typeof AccordionItem> = {
@@ -31,7 +32,22 @@ export const Default: Story = {
   },
 }
 
-export const OpenByDefault: Story = {
+export const Closed: Story = {
+  args: {
+    title: 'The Anthropologist',
+    subtitle: '4 hours, 30min',
+    defaultOpen: false,
+    children: (
+      <Text>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc elementum nulla eu justo
+        iaculis, a condimentum sapien lobortis. Duis tincidunt, libero sit amet eleifend
+        consectetur.
+      </Text>
+    ),
+  },
+}
+
+export const Open: Story = {
   args: {
     title: 'The Anthropologist',
     subtitle: '4 hours, 30min',
@@ -65,6 +81,25 @@ export const CourseModuleList: Story = {
         <Text>
           Hands-on techniques for rapid prototyping and user testing. Covers wireframing, usability
           testing scripts, and iterating based on feedback.
+        </Text>
+      </AccordionItem>
+    </Accordion>
+  ),
+}
+
+// Keyboard: Tab from the first trigger lands on the open panel's link, then the
+// second trigger. The closed panel's link is inert, so Tab skips it.
+export const FocusableContent: Story = {
+  render: () => (
+    <Accordion>
+      <AccordionItem title="Course overview" subtitle="Open" defaultOpen>
+        <Text>
+          Read the <TextLink href="#syllabus">full syllabus</TextLink> before the first module.
+        </Text>
+      </AccordionItem>
+      <AccordionItem title="Assessment" subtitle="Closed">
+        <Text>
+          See the <TextLink href="#rubric">grading rubric</TextLink> for each assignment.
         </Text>
       </AccordionItem>
     </Accordion>

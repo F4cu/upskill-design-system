@@ -98,6 +98,26 @@
       "required": true
     }
   ],
+  "anatomyExamples": [
+    {
+      "pattern": "course-module-list",
+      "mark": [
+        "Root",
+        "Item",
+        "Trigger",
+        "Panel"
+      ]
+    },
+    {
+      "pattern": "course-module-list",
+      "focus": "Trigger",
+      "mark": [
+        "Title",
+        "Subtitle",
+        "Chevron"
+      ]
+    }
+  ],
   "props": {
     "Item.title": {
       "kind": "content",
@@ -228,10 +248,16 @@
       "notes": "Momentary press feedback on the trigger (CSS :active): overlay.active layer, orthogonal to open/closed."
     },
     {
+      "name": "focus-visible",
+      "kind": "interaction",
+      "trigger": ":focus-visible",
+      "notes": "No component rule: the global ring in styles/reset.css applies to the trigger (ADR-028), color.border.focus at size.focus.width, offset size.focus.offset."
+    },
+    {
       "name": "closed",
       "kind": "appData",
       "trigger": "open false (default)",
-      "notes": "Panel hidden; trigger shows chevron-down."
+      "notes": "Panel collapsed but still in the DOM, inert and aria-hidden: Tab skips its focusable content (FocusableContent story). Trigger shows chevron-down."
     },
     {
       "name": "open",
@@ -242,12 +268,13 @@
   ],
   "accessibility": {
     "role": "button",
-    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly.",
+    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly. The subtitle sits inside the trigger, so it is part of the button's accessible name (\"Module 1 2 hours\"). Focus on close: if an item closes while focus is inside its panel (a controlled close from panel content), focus moves to its trigger before the panel turns inert; otherwise focus would fall to <body>. A click or key on the trigger already leaves focus there. Every panel is a region landmark, so more than about six items open at once crowd landmark navigation (WAI-ARIA APG); usage.json limits the item count. Known limitation: a collapsed panel is inert, so the browser's find-in-page cannot reach its text and does not open it.",
     "ariaAttributes": [
       "aria-expanded (true|false on the trigger button)",
-      "aria-controls (trigger → panel id) — the panel element must always be present in the DOM; use hidden={!isOpen} rather than conditional rendering so this id always resolves",
+      "aria-controls (trigger → panel id) — the panel stays in the DOM while collapsed, never conditionally rendered, so this id always resolves",
       "aria-labelledby (panel → trigger id)",
-      "role='region' (on the panel)"
+      "role='region' (on the panel)",
+      "aria-hidden='true' and the inert DOM property on the panel while collapsed, set together; not the hidden attribute, which would break the height transition"
     ],
     "keyboardInteractions": [
       {
@@ -261,6 +288,10 @@
       {
         "key": "Tab",
         "action": "Moves focus sequentially through any focusable content within an open panel, then to the next accordion trigger. Focusable descendants inside a collapsed panel are skipped — the panel's inert DOM property is set while closed, so Tab cannot land on them even though they remain in the DOM for aria-controls."
+      },
+      {
+        "key": "Shift+Tab",
+        "action": "The reverse of Tab; also skips focusable content inside collapsed panels."
       }
     ]
   },
@@ -452,6 +483,12 @@
       "featured": true,
       "reason": "`aria-controls` needs the panel to exist while it's collapsed, and `hidden` would break the opening animation.",
       "notes": "Original reason: aria-controls must point at an element that exists while collapsed, or the association breaks for screen readers (NVDA + Firefox). hidden forces display:none and breaks the height transition. inert keeps focusable descendants unreachable while the panel collapses; @types/react 18 has no inert JSX prop. aria-hidden and inert are set through a ref."
+    },
+    {
+      "decision": "When an item closes while focus is inside its panel, focus moves to the item's trigger.",
+      "topic": "behaviour",
+      "reason": "The closed panel becomes inert, which would drop focus to the top of the page and lose the reader's place.",
+      "notes": "Done in the same layout effect that sets inert, before it is set. Covered by Accordion.a11y.test.tsx."
     }
   ]
 }

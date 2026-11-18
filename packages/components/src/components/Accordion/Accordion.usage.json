@@ -36,6 +36,18 @@
     ],
     "width": "fill",
     "nests": false,
+    "donts": [
+      {
+        "case": "An accordion with more than about six items that readers may open at the same time",
+        "because": "Every open panel is a region landmark, and more than about six crowd the landmark list screen reader users navigate by.",
+        "instead": "Show the first few items and put the rest behind Show more, as the course-module-list pattern does, or split the content across pages."
+      },
+      {
+        "case": "A subtitle longer than a few words",
+        "because": "The subtitle is inside the trigger button, so screen readers read it as part of the button's name on every item.",
+        "instead": "Keep the subtitle to one short fact, such as a duration, and put longer description in the panel."
+      }
+    ],
     "patterns": [
       {
         "name": "course-module-list",
