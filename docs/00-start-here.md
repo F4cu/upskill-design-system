@@ -99,6 +99,7 @@ sources:
 # clock reset 2026-11-18: ADR-027 amendment (decision reason check becomes an error); this page lists no spec checks, still accurate
 # clock reset 2026-11-18: ADR-030 amendment refined (Ruled out leaves the Decisions tab, topic pills, OMIT_SECTIONS); this page doesn't name the component page tabs or sections, still accurate
 # clock reset 2026-11-18: ADR-030 amendment hides Design–code parity on every page (OMIT_EVERYWHERE); this page doesn't name the component page sections, still accurate
+# clock reset 2026-11-18: ADR-030 amendment reorders the Spec tab (States before Props); this page doesn't name the component page sections, still accurate
 # clock reset 2026-11-18: ADR-027 amendment extends the reader-text check to ruledOut and divergences; this page lists no spec checks, still accurate
 ---
 # Start here
