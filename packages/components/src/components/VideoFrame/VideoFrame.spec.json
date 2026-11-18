@@ -110,9 +110,10 @@
   },
   "decisions": [
     {
-      "decision": "Presentational only: no playback state or media controls. A parent handles clicks and playback.",
+      "decision": "VideoFrame only shows the video frame: no playback state or controls. The parent handles clicks and playback.",
       "topic": "behaviour",
-      "reason": "Media state would couple VideoFrame to one player implementation."
+      "featured": true,
+      "reason": "Owning playback would tie VideoFrame to one video player."
     }
   ]
 }

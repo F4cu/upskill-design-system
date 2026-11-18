@@ -441,14 +441,17 @@
   },
   "decisions": [
     {
-      "decision": "The chevron Icon takes its color from the trigger (color.icon.default through currentColor). No color or style is set on the Icon itself.",
+      "decision": "The chevron takes its colour from the trigger through `currentColor`. No colour is set on the icon itself.",
       "topic": "visual",
-      "reason": "Setting color on the Icon bypasses the token system."
+      "reason": "A colour on the icon would bypass the colour tokens.",
+      "notes": "Token: color.icon.default on the trigger. Applies the packages/components AGENTS.md Icon colour rule."
     },
     {
-      "decision": "The panel is always mounted. A collapsed panel is aria-hidden and inert (set through a ref), never conditionally rendered or hidden with the hidden attribute.",
+      "decision": "A collapsed panel stays in the page, hidden from screen readers and the keyboard. It isn't removed, or hidden with the `hidden` attribute.",
       "topic": "behaviour",
-      "reason": "aria-controls must point at an element that exists while collapsed, or the association breaks for screen readers (NVDA + Firefox). hidden forces display:none and breaks the height transition. inert keeps focusable descendants unreachable while the panel collapses; @types/react 18 has no inert JSX prop."
+      "featured": true,
+      "reason": "`aria-controls` needs the panel to exist while it's collapsed, and `hidden` would break the opening animation.",
+      "notes": "Original reason: aria-controls must point at an element that exists while collapsed, or the association breaks for screen readers (NVDA + Firefox). hidden forces display:none and breaks the height transition. inert keeps focusable descendants unreachable while the panel collapses; @types/react 18 has no inert JSX prop. aria-hidden and inert are set through a ref."
     }
   ]
 }
