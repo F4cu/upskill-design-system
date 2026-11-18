@@ -1,5 +1,8 @@
 import { Button } from '../../../../packages/components/src/components/Button'
 import { Inline } from '../../../../packages/components/src/components/Inline'
+import { Stack } from '../../../../packages/components/src/components/Stack'
+import { Text } from '../../../../packages/components/src/components/Text'
+import { TextLink } from '../../../../packages/components/src/components/TextLink'
 import type { AccessibilityEntry } from './types'
 
 export const accessibility: AccessibilityEntry = {
@@ -26,7 +29,21 @@ export const accessibility: AccessibilityEntry = {
   keyboard: {
     advice:
       'It works like a native button: Tab reaches it, Enter or Space presses it. A disabled Button leaves the tab order, so explain nearby why an action is unavailable.',
-    caption: 'Focus shows the shared ring outside the button. Never remove it or replace it with a colour change.',
-    render: () => <Button variant="accent">Publish</Button>,
+    // A disabled Button leaves the Tab order (native disabled, not
+    // aria-disabled), so the figure numbers Save draft, then the link.
+    caption: 'Tab skips a disabled Button, so say in text beside it why the action is unavailable.',
+    order: true,
+    orderNearest: true,
+    render: () => (
+      <Stack gap="md" align="start">
+        <Inline gap="md" align="center">
+          <Button variant="neutral">Save draft</Button>
+          <Button variant="accent" disabled>Publish</Button>
+        </Inline>
+        <Text color="subtle">
+          Add a cover image to publish. <TextLink href="#publishing-rules">Publishing rules</TextLink>
+        </Text>
+      </Stack>
+    ),
   },
 }

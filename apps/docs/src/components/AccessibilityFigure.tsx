@@ -13,7 +13,10 @@ import type { Callout } from './AnatomyOverlay'
 // the keyboard sample with the shared focus ring (ADR-028) forced on.
 const files = import.meta.glob<{ accessibility: AccessibilityEntry }>('../accessibility/*.tsx', { eager: true })
 
-const FOCUSABLE = 'button:not(:disabled), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+const FOCUSABLE = ':is(button, input, select, textarea):not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'
+// Disabled controls leave the Tab order but stay in the accessibility tree:
+// the focus table lists them, unnumbered, where they sit.
+const SKIPPED = ':is(button, input, select, textarea):disabled'
 const ATTRS = ['href', 'role','aria-label', 'aria-labelledby', 'aria-describedby', 'aria-pressed', 'aria-expanded', 'aria-haspopup', 'aria-current', 'aria-valuenow', 'alt', 'disabled']
 const ROLE_TEXT: Record<string, string> = { progressbar: 'progress bar', img: 'image' }
 
@@ -216,8 +219,11 @@ type Stop = { badge: string; w: number; bx: number; tx: number; ty: number; row:
 function orderLayout(rings: Element[], origin: DOMRect, sample: DOMRect, nearest: boolean): Stop[] {
   const mid = (sample.top + sample.bottom) / 2
   const items = rings.map((ring, i) => {
-    const r = ring.getBoundingClientRect()
-    const below = nearest && (r.top + r.bottom) / 2 > mid
+    const box = ring.getBoundingClientRect()
+    const below = nearest && (box.top + box.bottom) / 2 > mid
+    // A link that wraps has one rect per line: point at the line nearest the badge.
+    const lines = ring.getClientRects()
+    const r = lines.length > 1 ? lines[below ? lines.length - 1 : 0] : box
     const row = below ? origin.height - BOTTOM / 2 : BOTTOM / 2
     const x = r.left - origin.left
     const badge = ordinal(i + 1)
@@ -267,7 +273,20 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
       const found = [...el.querySelectorAll(FOCUSABLE)].filter((stop) => stop.getClientRects().length > 0)
       const next = orderLayout(found.map((stop) => keyboard.ringOn?.(stop) ?? stop), origin, el.getBoundingClientRect(), !!keyboard.orderNearest)
       setStops((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
-      const nextRows = found.slice(0, keyboard.tableRows).map((stop, i) => ({ label: ordinal(i + 1), code: markup(stop), says: announce(stop) }))
+      // Stops numbered in order, disabled controls in place as "Skipped";
+      // `tableRows` counts stops, so a cut never splits off a skipped row.
+      const onScreen = (n: Element) => n.getClientRects().length > 0
+      const nextRows: Row[] = []
+      let n = 0
+      for (const node of el.querySelectorAll(`${FOCUSABLE}, ${SKIPPED}`)) {
+        if (!onScreen(node)) continue
+        if (node.matches(SKIPPED)) {
+          nextRows.push({ label: 'Skipped', code: markup(node), says: `${announce(node)} (reading mode only)` })
+          continue
+        }
+        if (keyboard.tableRows !== undefined && n === keyboard.tableRows) break
+        nextRows.push({ label: ordinal(++n), code: markup(node), says: announce(node) })
+      }
       setRows((prev) => (JSON.stringify(prev) === JSON.stringify(nextRows) ? prev : nextRows))
     }
     measure()
