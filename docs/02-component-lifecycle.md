@@ -43,6 +43,7 @@ sources:
 # clock reset 2026-11-18: ADR-027 amendment (decisions gain topic and unrendered notes); this page describes the usage schema and the gate, not spec sections, still accurate
 # clock reset 2026-11-18: ADR-027 amendment adds featured decisions; this page describes the usage schema and the gate, not spec sections, still accurate
 # clock reset 2026-11-18: ADR-027 amendment (decision reason check becomes an error); this page describes the usage schema and the gate, not spec sections, still accurate
+# clock reset 2026-11-18: ADR-027 amendment extends the reader-text check to ruledOut and divergences; this page describes the usage schema and the gate, not spec sections, still accurate
 ---
 # Component lifecycle
 

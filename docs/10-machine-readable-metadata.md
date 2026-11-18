@@ -47,6 +47,7 @@ sources:
 # clock reset 2026-11-13 (#174): ADR-023 wording fix (CardVertical's Root is a native <article>, not role="article"); this page doesn't describe card markup, still accurate
 # rewritten 2026-11-18: decisions gain a required topic and an unrendered notes field; spec:validate reports reader-unfriendly reasons as backlog (ADR-027 amendment 2026-11-18); field table and totals updated
 # rewritten 2026-11-18: the decision reason check is now an error; reason gets its own gated row
+# rewritten 2026-11-18: ruledOut reasons and figma.divergences decisions are checked like decision reasons and gain notes; field table and totals updated
 ---
 # Machine-readable metadata
 
@@ -234,15 +235,17 @@ The case for keeping the contracts as JSON rests on which fields code reads, not
 | `accessibility.role`, `keyboardInteractions` | Used | `isInteractive` → `a11y:coverage`, `component:risk`, the bundle's a11y tier |
 | `accessibility.ariaAttributes`, `notes` | Used | Copied into `component-patterns.json`; rendered |
 | `styles` | Gated | `spec:validate` (token set = the CSS Module's `var(--ds-*)` reads, each defined in the built CSS; part and `when` keys resolve); `airtable-sync.js` via `readComponentUsage`; `spec-bundle.js` resolves each token's values |
-| `figma.sets`, `figma.divergences` | Rendered | Docs page |
+| `figma.sets` | Rendered | Docs page |
+| `figma.divergences` | Gated | `spec:validate` (each `decision` at most 200 characters, no dates or review notes); rendered on the docs page |
 | `decisions[].adr` | Gated | `spec:validate` (the ADR file exists) |
 | `decisions[].topic` | Gated | `spec:validate` (required, one of the schema enum); the docs Decisions tab filters by it |
 | `decisions[].featured` | Gated | `spec:validate` (at most 8 per spec); the docs Decisions tab shows only featured entries and links to the spec for the rest |
 | `decisions[].reason` | Gated | `spec:validate` (at most 200 characters, no dates or review notes); rendered on the docs page |
-| `decisions[].decision`, `ruledOut` | Rendered | Docs page |
-| `decisions[].notes` | None | Only agents: `/review-component` reads `decisions[]` whole. Never rendered |
+| `decisions[].decision` | Rendered | Docs page |
+| `ruledOut` | Gated | `spec:validate` (each `reason` at most 200 characters, no dates or review notes); rendered on the docs page |
+| `decisions[].notes`, `ruledOut[].notes`, `figma.divergences[].notes` | None | Only agents: `/review-component` reads `decisions[]` whole. Never rendered |
 
-**Totals.** Of the 44 fields above, 24 are gated and 6 are used by a script, so 30 depend on code parsing a fixed shape. 13 are rendered by the docs page, which needs the same stable structure. One, `decisions[].notes`, is at level None on purpose: it holds the context an agent reviewer needs and a page reader doesn't. In Markdown, every one of the 27 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
+**Totals.** Of the 46 fields above, 26 are gated and 6 are used by a script, so 32 depend on code parsing a fixed shape. 11 are rendered by the docs page, which needs the same stable structure. Three, the `notes` fields on decisions, ruled-out options and divergences, are at level None on purpose: they hold the context an agent reviewer needs and a page reader doesn't. In Markdown, every one of the 27 would need a parser that turns headings and lists back into values, with nothing to validate that parser. The prose is already confined to labelled string fields (`because`, `useWhen`, `notes`, `reason`), so an agent reads it as prose with the label saying what kind of statement it is. That is the case for keeping both contracts as JSON.
 
 **Gaps the audit found.** Each needed its own decision:
 

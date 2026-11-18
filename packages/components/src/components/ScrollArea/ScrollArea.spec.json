@@ -91,7 +91,8 @@
     "divergences": [
       {
         "what": "maxHeight has no Figma property: the vertical variant is a fixed 240px frame.",
-        "decision": "Accepted 2026-11-11: resize the instance to the maxHeight; spec marks maxHeight code-only."
+        "decision": "Accepted: resize the instance to the `maxHeight` you need; `maxHeight` is code-only.",
+        "notes": "Accepted 2026-11-11."
       }
     ]
   }

@@ -323,7 +323,8 @@
             "required": ["what", "decision"],
             "properties": {
               "what": { "type": "string" },
-              "decision": { "type": "string" }
+              "decision": { "description": "Rendered on the docs Decisions tab: the status (Accepted, Kept, Open) and why, without dates or review notes (they go in notes).", "type": "string" },
+              "notes": { "description": "Not rendered: provenance such as the date a divergence was accepted.", "type": "string" }
             },
             "additionalProperties": false
           }
@@ -361,8 +362,9 @@
         "required": ["option", "reason"],
         "properties": {
           "option": { "type": "string" },
-          "reason": { "type": "string" },
-          "source": { "description": "Where the option came from, e.g. a design system (Carbon, M3) or a review.", "type": "string" }
+          "reason": { "description": "Rendered on the docs Decisions tab: why it was rejected, short and in plain language, without dates or review notes (they go in source or notes).", "type": "string" },
+          "source": { "description": "Where the option came from, e.g. a design system (Carbon, M3) or a review.", "type": "string" },
+          "notes": { "description": "Not rendered: provenance and context for agents and maintainers.", "type": "string" }
         },
         "additionalProperties": false
       }

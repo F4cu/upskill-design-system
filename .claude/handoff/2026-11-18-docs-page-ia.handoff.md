@@ -73,7 +73,7 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 - [x] 2.1 (2026-11-18) Edit Button's decisions (6) to the rule; internal notes move per D3. Tone approved by the developer: plain words over internal jargon (no "bleed", "consumer", "glyph", "Root"), code names in backticks, one idea per sentence, "you" for the person using the component, mechanics and enforcement go to `notes`
 - [x] 2.2 (2026-11-18) CardVertical (15; 8 featured), Dialog (15; 8 featured), Accordion (2; 1 featured), DropdownMenu (1; 1 featured). Each pass also picks the featured set (D6): a spec with no featured entry shows an empty tab once 3.2 lands
 - [x] 2.2b (2026-11-18) CardHorizontal (4; 3 featured, wording matched to CardVertical), AppHeader (1; 1), VideoFrame (1; 1)
-- [ ] 2.3 Same pass on `ruledOut[]` reasons and `figma.divergences` (Button 6/1, CardVertical 10/5, Dialog 8/6)
+- [x] 2.3 (2026-11-18) Same pass on `ruledOut[]` reasons and `figma.divergences` (Button 6/1, CardVertical 10/5, Dialog 8/6), plus Avatar, CardHorizontal, ScrollArea and TextLink, which the check flagged. Not featured (lists are short). Both gain `notes`; `spec:validate` applies the reason check to both, allowing an `ADR-NNN amendment YYYY-MM-DD` citation
 - [x] 2.4 (2026-11-18) Once the backlog list is empty, make the 1.3 check an error in `validate-spec.js` (and update the ADR-027 amendment and doc 10)
 
 **3. Template** (needs 1; can run alongside 2)

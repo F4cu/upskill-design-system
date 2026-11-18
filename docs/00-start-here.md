@@ -97,6 +97,7 @@ sources:
 # clock reset 2026-11-18: ADR-030 amendments (overlays staged 2026-11-16; four tabs and page rules 2026-11-18); this page doesn't name the component page tabs or sections, still accurate
 # clock reset 2026-11-18: ADR-027/030 amendments add featured decisions (max 8 shown per page); this page doesn't describe spec fields or page tabs, still accurate
 # clock reset 2026-11-18: ADR-027 amendment (decision reason check becomes an error); this page lists no spec checks, still accurate
+# clock reset 2026-11-18: ADR-027 amendment extends the reader-text check to ruledOut and divergences; this page lists no spec checks, still accurate
 ---
 # Start here
 

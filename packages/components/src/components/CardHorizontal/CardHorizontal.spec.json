@@ -523,8 +523,8 @@
   ],
   "ruledOut": [
     {
-      "option": "Wrapping the card in an <a>, or an onClick on Root",
-      "reason": "Kept consistent with CardVertical, where the wrap would nest buttons in a link; a click handler on Root isn't reachable by keyboard and has no link semantics.",
+      "option": "Wrapping the card in an <a>, or an onClick on the card",
+      "reason": "Kept the same as CardVertical, where the wrap would nest buttons in a link. A click handler on the card isn't reachable by keyboard and isn't announced as a link.",
       "source": "Common card patterns"
     }
   ]

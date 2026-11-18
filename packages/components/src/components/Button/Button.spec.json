@@ -236,7 +236,7 @@
       { "name": "Button icon", "nodeId": "54:1192", "covers": "Icon-only buttons (shape set)" }
     ],
     "divergences": [
-      { "what": "The Button icon set has no Danger style.", "decision": "Accepted 2026-10-02: no icon-only danger button is used anywhere." }
+      { "what": "The Button icon set has no Danger style.", "decision": "Accepted: no icon-only danger button is used anywhere.", "notes": "Accepted 2026-10-02." }
     ]
   },
   "decisions": [
@@ -248,11 +248,11 @@
     { "decision": "The label is plain text inside the button, not wrapped in `Text`.", "topic": "visual", "featured": true, "reason": "The button sets the label's type styles for each size itself, so a `Text` wrapper isn't needed.", "notes": "Exception to the packages/components AGENTS.md rule that visible text goes through Text or Heading; reviewers should not flag it." }
   ],
   "ruledOut": [
-    { "option": "Rank names: primary / secondary / tertiary", "reason": "Rank changes with the container, so the name hides that dependency and needs a prose rule (one primary per view) to compensate.", "source": "Carbon, Polaris, Primer" },
-    { "option": "An elevated variant (opaque surface) for buttons over images", "reason": "One consumer (CardVertical), it describes the background rather than emphasis, and the name collides with Material 3's Elevated level. CardVertical owns the over-media treatment instead.", "source": "Former UpSkill variant, Material 3" },
-    { "option": "An onMedia / staticColor modifier prop", "reason": "Deferred: the right shape once a second consumer needs buttons over media; premature for one.", "source": "Spectrum" },
+    { "option": "Rank names: primary / secondary / tertiary", "reason": "Rank depends on the other buttons around it, so a rank name hides that and needs an extra rule (one primary per view).", "source": "Carbon, Polaris, Primer" },
+    { "option": "An elevated variant (opaque surface) for buttons over images", "reason": "Only CardVertical needed it, it describes the background rather than emphasis, and the name clashes with Material 3's Elevated. CardVertical styles its own buttons over images instead.", "source": "Former UpSkill variant, Material 3" },
+    { "option": "An onMedia / staticColor modifier prop", "reason": "Deferred: the right shape once a second component needs buttons over images, but premature for one.", "source": "Spectrum" },
     { "option": "A transparent button with only a hover tint over images", "reason": "Hover doesn't fix resting contrast: WCAG 1.4.11 is judged at rest and touch has no hover.", "source": "Braid" },
-    { "option": "A separate link variant styled like a text link", "reason": "Deferred: only justified by flush alignment. Add it when a real layout shows the transparent inset looks wrong.", "source": "Polaris plain, Primer link, Chakra v2 link" },
-    { "option": "A negative-margin bleed prop to align the label with the content edge", "reason": "Deferred for the same reason as a link variant. If ever needed it lives on Button, never in layout files.", "source": "Braid" }
+    { "option": "A separate link variant styled like a text link", "reason": "Deferred: its only benefit is lining the label up with the content edge. Add it when a real layout shows the `transparent` inset looks wrong.", "source": "Polaris plain, Primer link, Chakra v2 link" },
+    { "option": "A negative-margin prop to line the label up with the content edge", "reason": "Deferred for the same reason as a link variant. If ever needed it lives on Button, never in layout files.", "source": "Braid" }
   ]
 }

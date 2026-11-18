@@ -19,7 +19,8 @@
 //     numbered once in the overview; focus is numbered in the overview and
 //     its marks descend from it),
 //     and every decision's adr has a file in docs/decisions/; a decision reason
-//     over REASON_MAX or carrying internal markers fails,
+//     over REASON_MAX or carrying internal markers fails (likewise a ruledOut
+//     reason and a figma.divergences decision),
 //     and at most FEATURED_MAX decisions are featured.
 //   - vocabulary (ADR-025, ADR-026): prop names, boolean defaults, the
 //     controlled triple and Figma names, via scripts/prop-vocabulary.js; a
@@ -96,7 +97,7 @@ const backlog = [];
 const REASON_MAX = 200;
 const FEATURED_MAX = 8;
 const INTERNAL_MARKERS = [
-  [/\b\d{4}-\d{2}-\d{2}\b/, "a date"],
+  [/(?<!amendment )\b\d{4}-\d{2}-\d{2}\b/, "a date (an \"ADR-NNN amendment YYYY-MM-DD\" citation is fine)"],
   [/visual review/i, '"visual review"'],
   [/screenshot baseline/i, '"screenshot baseline"'],
   [/\breviewers? (should|must)\b/i, "reviewer guidance"],
@@ -251,6 +252,8 @@ for (const { name, file } of specs) {
     if (d.adr && !ADR_IDS.has(d.adr)) errors.push(`decisions: ${d.adr} has no file in docs/decisions/`);
     for (const problem of readerTextProblems(d.reason)) errors.push(`decisions[${i}].reason ${problem}`);
   });
+  spec.ruledOut?.forEach((r, i) => { for (const problem of readerTextProblems(r.reason)) errors.push(`ruledOut[${i}].reason ${problem}`); });
+  spec.figma?.divergences?.forEach((d, i) => { for (const problem of readerTextProblems(d.decision)) errors.push(`figma.divergences[${i}].decision ${problem}`); });
   const featured = (spec.decisions ?? []).filter((d) => d.featured).length;
   if (featured > FEATURED_MAX) errors.push(`decisions: ${featured} entries are featured (max ${FEATURED_MAX}); the docs Decisions tab shows only featured ones`);
 

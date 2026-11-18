@@ -123,7 +123,8 @@
   "ruledOut": [
     {
       "option": "A letter or icon fallback when there is no photo",
-      "reason": "Out of scope for this product. Recorded in the usage description until 2026-11-10, without a reason; reopen only with a real case of a user without a photo."
+      "reason": "Out of scope for this product. Reopen only with a real case of a user without a photo.",
+      "notes": "Recorded in the usage description until 2026-11-10, without a reason."
     }
   ]
 }

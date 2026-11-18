@@ -34,6 +34,7 @@ sources:
 # clock reset 2026-11-18: validate-spec.js reports long or internal decision reasons as backlog (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
 # clock reset 2026-11-18: validate-spec.js caps featured decisions at 8 (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
 # clock reset 2026-11-18: validate-spec.js fails long or internal decision reasons (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
+# clock reset 2026-11-18: validate-spec.js checks ruledOut reasons and divergence decisions too (ADR-027 amendment); this page describes the token and prop checks, which are unchanged, still accurate
 ---
 # Taming non-determinism
 
