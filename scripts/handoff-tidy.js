@@ -104,6 +104,10 @@ function updateRunLedger() {
         reviewerFindingsBeyondGateCount: (r.reviewerCaughtBeyondGate ?? []).length,
         manualRescuesCount: (r.manualRescues ?? []).length,
       };
+      // Runs before the reviewer read ruledOut[] (2026-11-19) didn't record
+      // these; leave them off rather than count an unknown as 0.
+      if (Array.isArray(r.rejected)) entry.rejectedCount = r.rejected.length;
+      if (Array.isArray(r.reproposedRuledOut)) entry.reproposedRuledOutCount = r.reproposedRuledOut.length;
       existing.push(entry);
       added.push(entry);
     }

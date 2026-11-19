@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-11-05
-completed:
+completed: 2026-11-19
 ---
 
 # Spec renderers: component pages on the docs site first, then a Figma parity plugin
@@ -51,9 +51,9 @@ Tick an item when its "Done when" (in the linked section) is met, and add the da
 - See `2026-11-19-figma-parity-plugin.handoff.md` (moved there 2026-11-19; optional, not started).
 
 **Close-out**
-- [ ] Agent memory: reviewer reads `ruledOut[]`; `/extract-learnings` routes rejected suggestions there; re-proposal count before/after
-- [ ] Results recorded in `docs/case-study-source/08-measured-impact.md`
-- [ ] Handoff `status: done`, `npm run handoff:tidy`
+- [x] Agent memory (2026-11-19): the adversarial reviewer reads `ruledOut[]` and marks a re-proposal `reproposes`; rejected suggestions go to `.run.json` `rejected[]` and `/extract-learnings` routes them to `ruledOut[]`; `handoff:tidy` copies `rejectedCount` and `reproposedRuledOutCount` to the ledger. Before-count: 0 re-proposals in 19 findings (Dialog; CardVertical with CardHorizontal). ADR-030 amendment 2026-11-19
+- [x] Results recorded in `docs/case-study-source/08-measured-impact.md` (2026-11-19): traceability 97.0%, Button not timed (Gap), the re-proposal baseline
+- [x] Handoff `status: done`, `npm run handoff:tidy` (2026-11-19)
 
 ## Why
 

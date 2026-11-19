@@ -5,7 +5,7 @@ title: "ADR-030 — Spec renderers: generated component pages and a Figma parity
 
 **Date:** 2026-11-10
 **Status:** `accepted`
-**Amended:** 2026-11-18
+**Amended:** 2026-11-19
 
 ## Context
 
@@ -157,3 +157,9 @@ The page rules above are applied by a developer-triggered command, `/document-co
 - **What it doesn't.** It does not author `usage.json` or `spec.json`. Guidance found missing or wrong is reported for `/extract-learnings` or as an issue. The exception is a one-off, reword-only edit pass on decisions written before the reader-facing rule; it never deletes or merges an entry. No subagent: the page review is the review stage, as the figures are code and the gate catches broken sources.
 - **Where the decision-writing rule lives** (handoff D5). Where decisions are born: the `decisions[]` description in `component.spec.schema.json`, which agents read, and `/extract-learnings`, which routes review findings into `spec.json`; `spec:validate` enforces the mechanical part (ADR-027 amendment 2026-11-18). `/document-component` only runs the catch-up pass on older entries.
 - **"Content" stays page config** (R1, handoff D4). A component with no variant axis but optional content props opens with a Content section configured in `CONTENT_OPTIONS`; the options are not moved into `usage.json`. Rejected for now: a `usage.json` field for content options, a schema change that only Dialog would use. Revisit if a second component needs it.
+
+## Amendment (2026-11-19) — `ruledOut[]` as agent memory; scope closes at four pages
+
+- **The reviewer reads `ruledOut[]`** (decision 12's follow-up). `/review-component`'s adversarial reviewer doesn't propose a ruled-out option unless it has evidence the recorded reason no longer holds, and then marks the finding `reproposes`. A suggestion the developer rejects goes into the run's `rejected[]`, and `/extract-learnings` turns it into a `ruledOut[]` entry in the same reader-facing form as `decisions`. So a rejected idea is recorded once and not argued again.
+- **Measured from here on.** `handoff:tidy` copies `rejectedCount` and `reproposedRuledOutCount` into the run ledger. Earlier runs didn't record them and stay without the fields, not 0. The before-count is small: the two adversarial reviews that ran on components that already had `ruledOut[]` (Dialog, CardVertical with CardHorizontal) raised 19 findings and none re-proposed a ruled-out option. A drop can't show against 0, so the result to watch is whether `reproposes` and `rejected[]` get used at all.
+- **Part A closes at four pages** (developer, 2026-11-19): Button, CardVertical, Dialog and Accordion, as a proof of concept. The other 23 components are not documented; Select, DropdownMenu and TextField stay in `PUBLISHED` without a `/document-component` run. A3's remaining-sections pass is deferred. Part B (the Figma parity plugin) is optional and tracked in its own handoff; decisions 5–8 and 11 stand for it if it starts.

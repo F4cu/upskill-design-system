@@ -40,7 +40,7 @@ Spawn **one** `adversarial-reviewer` subagent (defined in `.claude/agents/advers
 - The instruction to run and report findings from:
   1. `/code-review` on the diff (correctness + reuse/simplification)
   2. `npm run lint -- packages/components/src/components/<Name>` (ESLint + jsx-a11y Tier-1 static rules)
-  3. Read `<Name>.spec.json` as the intent the code is held to. Run `npm run spec:validate` and report any mismatch; judge what it cannot check — each `anatomy` role and `action` against the markup, each `constraints` entry against its `enforcedBy`, each `states` trigger against the CSS and handlers. A spec that is wrong is a finding against the spec, not the code
+  3. Read `<Name>.spec.json` as the intent the code is held to. Run `npm run spec:validate` and report any mismatch; judge what it cannot check — each `anatomy` role and `action` against the markup, each `constraints` entry against its `enforcedBy`, each `states` trigger against the CSS and handlers. A spec that is wrong is a finding against the spec, not the code. Its `ruledOut[]` lists options already rejected: don't raise one unless there is evidence its `reason` no longer holds, and then set `reproposes` on the finding
   4. An a11y read of the component against its spec's `accessibility` block (role, aria, keyboard)
   5. **For interactive components only** (`npm run component:risk -- <Name>` prints `interactive`: `component.type ∈ {interactive, input}`, an interactive ARIA `role`, or a keyboard contract beyond plain Tab / native browser behaviour) — judge whether `<Name>.a11y.test.tsx` covers the contract: does it assert every `keyboardInteraction` declared in the metadata, the state attribute(s) that toggle (e.g. `aria-expanded`, `aria-pressed`, `aria-selected`), focus movement, and the WAI-ARIA APG pattern's semantics? The gate proves the test passes; the reviewer judges whether it tests the *right things*. Thin or contract-incomplete tests are a `changes-required` a11y finding. Skip entirely for display/landmark components (e.g. `Badge`, `Divider`).
 
@@ -51,8 +51,8 @@ The subagent returns its findings as JSON in its final message; the main session
   "reviewedAt": "<iso>",
   "path": "full",
   "lint": { "errors": 0, "warnings": 0, "findings": [] },
-  "codeReview": [ { "severity": "high|medium|low", "file": "", "issue": "", "fix": "" } ],
-  "a11y": [ { "severity": "", "issue": "", "fix": "" } ],
+  "codeReview": [ { "severity": "high|medium|low", "file": "", "issue": "", "fix": "", "reproposes": "<ruledOut option, only when re-proposing one>" } ],
+  "a11y": [ { "severity": "", "issue": "", "fix": "", "reproposes": "" } ],
   "verdict": "clean | changes-required"
 }
 ```
@@ -60,7 +60,7 @@ The subagent's final message back to the main session is the findings JSON plus 
 
 ### Stage 2 · Fix + PR (main session)
 
-Read `.claude/handoff/runs/<Name>.review.json`. Apply every `high`/`medium` finding and any lint error; for `low` findings, apply or record why not. Re-run the gate:
+Read `.claude/handoff/runs/<Name>.review.json`. Apply every `high`/`medium` finding and any lint error; for `low` findings, apply or record why not. A finding the developer rejects as a design choice (not a deferral) goes in `.run.json` `rejected[]` with their reason, so `/extract-learnings` can make it a `ruledOut[]` entry. Re-run the gate:
 ```
 npm run usage:validate && npm run typecheck && npm run build && npm run spec:validate && npm run a11y:coverage && npm run a11y:test && npm run patterns:generate
 ```
@@ -89,12 +89,15 @@ Append a record to `.claude/handoff/runs/<Name>.run.json`:
   "contextIsolationHeld": true,
   "reviewerCaughtBeyondGate": ["<finding the script gate could not have caught>"],
   "manualRescues": ["<any stage that needed hand-holding>"],
+  "rejected": [ { "issue": "<the finding>", "reason": "<the developer's reason>" } ],
+  "reproposedRuledOut": ["<option, for each finding with reproposes set>"],
   "notes": ""
 }
 ```
 - `contextIsolationHeld` — did the frozen snapshot suffice, or did a stage need data outside it?
 - `reviewerCaughtBeyondGate` — did the adversarial subagent find anything the deterministic gate missed? (If never, the review stage is not earning its cost.)
 - `manualRescues` — any stage that needed manual correction.
+- `rejected` / `reproposedRuledOut` — always written, empty when none. The ledger counts re-proposals per run, so it shows whether the reviewer respects `ruledOut[]`.
 - `path` / `risk` — let `run-ledger.json` compare reviewer and no-reviewer runs per risk tier (ADR-029). `/add-component`'s standard path writes the same record with `"path": "standard"`.
 
 ---

@@ -46,6 +46,7 @@ Not every finding is the same kind of lesson. The `accessibility.*`, `constraint
 | Keyboard interaction undeclared or incomplete | `accessibility.keyboardInteractions` — add the missing entry |
 | Focus behavior undeclared | `accessibility.notes` — append the constraint |
 | How the component is built (e.g. always render the panel, never unmount; who owns focus) | spec `decisions` — `{ decision, topic, reason, notes }`, in the reader-facing form (step 3) |
+| A review suggestion the developer rejected (`.run.json` `rejected[]`) | spec `ruledOut` — `{ option, reason, source, notes }` (step 3) |
 | Wrong prop combination, a required prop, or a prop's value format | spec `constraints` — `{ id, if, require/forbid/ignore, reason, enforcedBy }`; empty `enforcedBy` when nothing enforces it yet |
 | Child type or nesting constraint the usage file missed | `composition.accepts` — correct or extend; self-nesting → `composition.nests` |
 | Parent container constraint missing | `composition.containedBy` — correct or extend |
@@ -63,7 +64,7 @@ Not every finding is the same kind of lesson. The `accessibility.*`, `constraint
 
 For each component being processed:
 - `.claude/handoff/runs/<Name>.review.json` — structured findings from the adversarial review (severity, issue, fix per entry); written by `/review-component`
-- `.claude/handoff/runs/<Name>.run.json` — `reviewerCaughtBeyondGate[]` and `manualRescues[]` (what scripts couldn't catch); written by `/add-component`
+- `.claude/handoff/runs/<Name>.run.json` — `reviewerCaughtBeyondGate[]` and `manualRescues[]` (what scripts couldn't catch), and `rejected[]` (suggestions the developer turned down); written by `/add-component` and `/review-component`
 - `packages/components/src/components/<Name>/<Name>.usage.json` and `<Name>.spec.json` — the current files to amend
 - `packages/components/component.usage.schema.json` and `component.spec.schema.json` — schemas (to validate amendments and know which fields exist)
 
@@ -78,7 +79,7 @@ Read only when a finding routes there:
 
 For each component:
 - Read `.review.json`: collect all `codeReview[]` and `a11y[]` findings.
-- Read `.run.json` if present: collect `reviewerCaughtBeyondGate[]` and `manualRescues[]`.
+- Read `.run.json` if present: collect `reviewerCaughtBeyondGate[]`, `manualRescues[]` and `rejected[]`.
 - Read current `<Name>.usage.json` and `<Name>.spec.json`.
 
 ### 2. Classify and route
@@ -118,6 +119,16 @@ Write the smallest amendment that captures the lesson. Match the existing format
 - `topic`: `visual` (spacing, layout, structure, look), `behaviour` (focus, keyboard, events, state sync, reading order) or `platform` (native elements, browser support, workarounds). One label per entry.
 - The finding's own wording ("Reviewer caught …", a date, "Reviewers should not flag …") goes in `notes`, never in `reason`; `spec:validate` fails a `reason` with an ISO date, "visual review", "screenshot baseline", "reviewer(s) should/must" or "caught in/by".
 - Don't set `featured`: which decisions the page shows is chosen by `/document-component`. Mention in the PR description when a new entry looks worth featuring.
+
+**`ruledOut` entry (spec.json):** one per `rejected[]` item, unless the spec already rules it out. The docs Decisions tab renders `option` and `reason`, so the same reader-facing rule as `decisions` applies:
+```json
+{
+  "option": "<The rejected suggestion, as an option someone might propose again>",
+  "reason": "<The developer's reason, plain and short, no dates or review notes>",
+  "source": "Adversarial review",
+  "notes": "<Optional, not rendered: the run date and the finding as the reviewer worded it>"
+}
+```
 
 **`accessibility.ariaAttributes` entry:** extend the relevant string to capture the constraint (e.g. "— the target element must always be present in the DOM").
 
@@ -200,7 +211,7 @@ Confirm to apply — layout-generation.md is not edited in this PR.
 
 ## What this does NOT do
 
-- Does not change component source code — targets are usage JSON, spec JSON (`accessibility`, `constraints`, `decisions`), the `/tokens-author` Conventions section, and the `PAIRS` list in `scripts/token-contrast-check.js` only.
+- Does not change component source code — targets are usage JSON, spec JSON (`accessibility`, `constraints`, `decisions`, `ruledOut`), the `/tokens-author` Conventions section, and the `PAIRS` list in `scripts/token-contrast-check.js` only.
 - Does not write to CLAUDE.md or edit `/layout-generation`'s pattern section without explicit developer confirmation — both are proposed in the PR description only.
 - Does not add contrast waivers — a failing new pair is a finding for the developer.
 - Does not add fields absent from the schema.
