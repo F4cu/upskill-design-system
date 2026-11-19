@@ -72,7 +72,7 @@
       "builtOnProps": {
         "size": "md"
       },
-      "notes": "chevron-down when closed, chevron-up when open. aria-hidden, so it does not add to the button name.",
+      "notes": "chevron-down when closed, chevron-up when open. aria-hidden, so a virtual cursor does not read the glyph; the button name comes from aria-labelledby.",
       "role": "presentation",
       "required": true
     },
@@ -273,7 +273,7 @@
   ],
   "accessibility": {
     "role": "button",
-    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The button is named by the title alone (aria-labelledby); the subtitle is its description (aria-describedby), so a reader hears \"Module 1, button, collapsed\" and then \"2 hours\" after a pause, not the title three times with the subtitle. The panel is role=group (React Aria's DisclosurePanel default), also labelled by the title; group is not a landmark, so open panels don't crowd landmark navigation. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string. A collapsed panel gets hidden=until-found once its closing transition ends (inert covers it while it animates, because inert content is skipped by find-in-page). Find-in-page and text-fragment links fire beforematch on it, which opens the item: an uncontrolled item opens itself, a controlled one calls onOpenChange(true). Browsers without beforematch keep inert + aria-hidden, and find-in-page can't reach collapsed text there. Focus on close: if an item closes while focus is inside its panel (a controlled close from panel content), focus moves to its trigger before the panel turns inert; otherwise focus would fall to <body>. A click or key on the trigger already leaves focus there.",
+    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The button is named by the title alone (aria-labelledby); the subtitle is its description (aria-describedby), so a reader hears \"Module 1, button, collapsed\" and then \"2 hours\" after a pause, not the title three times with the subtitle. The panel is role=group (React Aria's DisclosurePanel default), also labelled by the title; group is not a landmark, so open panels don't crowd landmark navigation. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger carries aria-hidden=\"true\" so browse-mode reading skips the glyph; the button name comes from aria-labelledby, so the Icon never feeds it. A collapsed panel gets hidden=until-found once its closing transition ends (inert covers it while it animates, because inert content is skipped by find-in-page). Find-in-page and text-fragment links fire beforematch on it, which opens the item: an uncontrolled item opens itself, a controlled one calls onOpenChange(true), and if it stays closed hidden=until-found is put back a frame later (the browser removes the attribute after beforematch). Browsers without beforematch keep inert + aria-hidden, and find-in-page can't reach collapsed text there. Focus on close: if an item closes while focus is inside its panel (a controlled close from panel content), focus moves to its trigger before the panel turns inert; otherwise focus would fall to <body>. A click or key on the trigger already leaves focus there.",
     "ariaAttributes": [
       "aria-expanded (true|false on the trigger button)",
       "aria-controls (trigger → panel id) — the panel stays in the DOM while collapsed, never conditionally rendered, so this id always resolves",
@@ -510,10 +510,10 @@
   },
   "decisions": [
     {
-      "decision": "The chevron takes its colour from the trigger through `currentColor`. No colour is set on the icon itself.",
+      "decision": "The chevron colour is a token on the Indicator part, and the SVG paints it through `currentColor`. No colour prop or inline style is set on the Icon.",
       "topic": "visual",
       "reason": "A colour on the icon would bypass the colour tokens.",
-      "notes": "Token: color.icon.default on the trigger. Applies the packages/components AGENTS.md Icon colour rule."
+      "notes": "Token: color.icon.default on .indicator in the CSS module. Applies the packages/components AGENTS.md Icon colour rule."
     },
     {
       "decision": "A collapsed panel stays in the page, hidden with `hidden=\"until-found\"` once it has finished closing, so find-in-page can still find its text and open it.",

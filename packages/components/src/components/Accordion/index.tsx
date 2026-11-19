@@ -43,7 +43,7 @@ export function AccordionItem({
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const panelOuterRef = useRef<HTMLDivElement>(null)
-  const hasMountedRef = useRef(false)
+  const isOpenRef = useRef(isOpen)
 
   // React's HTMLAttributes typings (@types/react 18) don't include `inert` yet,
   // even though it's a real DOM property — set it directly so focusable
@@ -56,9 +56,8 @@ export function AccordionItem({
     const panel = panelRef.current
     const outer = panelOuterRef.current
     if (!panel || !outer) return
+    isOpenRef.current = isOpen
     if (!isOpen && panel.contains(document.activeElement)) triggerRef.current?.focus()
-    const isFirstRun = !hasMountedRef.current
-    hasMountedRef.current = true
 
     if (isOpen) {
       panel.removeAttribute('hidden')
@@ -71,12 +70,15 @@ export function AccordionItem({
     // `hidden=until-found` collapses the panel instantly (content-visibility:
     // hidden), so it waits until the height transition has finished; inert
     // covers the panel meanwhile. Inert content is skipped by find-in-page, so
-    // inert comes off once until-found takes over.
+    // inert comes off once until-found takes over. Whether a transition is
+    // running is read from the element, not inferred from mount order: nothing
+    // transitions on mount (StrictMode re-runs this effect) or under a
+    // display:none ancestor, and waiting there would leave the panel inert.
     const hide = () => {
       panel.inert = false
       panel.setAttribute('hidden', 'until-found')
     }
-    if (isFirstRun || !parseFloat(getComputedStyle(outer).transitionDuration)) {
+    if (!outer.getAnimations?.().length) {
       hide()
       return
     }
@@ -84,15 +86,28 @@ export function AccordionItem({
       if (event.target === outer && event.propertyName === 'grid-template-rows') hide()
     }
     outer.addEventListener('transitionend', onEnd)
-    return () => outer.removeEventListener('transitionend', onEnd)
+    outer.addEventListener('transitioncancel', onEnd)
+    return () => {
+      outer.removeEventListener('transitionend', onEnd)
+      outer.removeEventListener('transitioncancel', onEnd)
+    }
   }, [isOpen])
 
   useEffect(() => {
     const panel = panelRef.current
     if (!panel || !supportsUntilFound) return
+    // The browser removes `hidden` itself after beforematch. A controlled
+    // consumer may decline to open, so the collapsed state is restored if the
+    // item is still closed a frame later.
     const onBeforeMatch = () => {
-      if (isControlled) onOpenChange?.(true)
-      else setInternalOpen(true)
+      if (!isControlled) {
+        setInternalOpen(true)
+        return
+      }
+      onOpenChange?.(true)
+      requestAnimationFrame(() => {
+        if (!isOpenRef.current) panel.setAttribute('hidden', 'until-found')
+      })
     }
     panel.addEventListener('beforematch', onBeforeMatch)
     return () => panel.removeEventListener('beforematch', onBeforeMatch)
@@ -142,7 +157,7 @@ export function AccordionItem({
             role="group"
             aria-labelledby={titleId}
             className={styles.panel}
-            aria-hidden={!isOpen ? true : undefined}
+            aria-hidden={!isOpen && !supportsUntilFound ? true : undefined}
           >
             {children}
           </div>

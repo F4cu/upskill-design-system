@@ -1,7 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [],
-  "generatedFrom": "51c98a172e97e4c188d4826babce92b1b5913d8c",
+  "generatedFrom": "a725e735b1b4715f2b07aa3675041c60149c2704",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -258,16 +258,17 @@
           "ariaContract": [
             {
               "aria-controls": "{panelId}",
+              "aria-describedby": "{subtitle ? metaId : undefined}",
               "aria-expanded": "{isOpen}",
-              "element": "button",
-              "id": "{triggerId}"
+              "aria-labelledby": "{titleId}",
+              "element": "button"
             },
             {
-              "aria-hidden": "{!isOpen ? true : undefined}",
-              "aria-labelledby": "{triggerId}",
+              "aria-hidden": "{!isOpen && !supportsUntilFound ? true : undefined}",
+              "aria-labelledby": "{titleId}",
               "element": "div",
               "id": "{panelId}",
-              "role": "region"
+              "role": "group"
             }
           ],
           "changeCallback": "onOpenChange",
@@ -277,8 +278,9 @@
             "Text"
           ],
           "idsFromUseId": [
+            "metaId",
             "panelId",
-            "triggerId"
+            "titleId"
           ],
           "maturity": "beta",
           "stage": "in review",
@@ -291,12 +293,13 @@
             ]
           },
           "systemSpecificNotes": [
-            "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly. The subtitle sits inside the trigger, so it is part of the button's accessible name (\"Module 1 2 hours\"). Focus on close: if an item closes while focus is inside its panel (a controlled close from panel content), focus moves to its trigger before the panel turns inert; otherwise focus would fall to <body>. A click or key on the trigger already leaves focus there. Every panel is a region landmark, so more than about six items open at once crowd landmark navigation (WAI-ARIA APG); usage.json limits the item count. Known limitation: a collapsed panel is inert, so the browser's find-in-page cannot reach its text and does not open it.",
+            "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The button is named by the title alone (aria-labelledby); the subtitle is its description (aria-describedby), so a reader hears \"Module 1, button, collapsed\" and then \"2 hours\" after a pause, not the title three times with the subtitle. The panel is role=group (React Aria's DisclosurePanel default), also labelled by the title; group is not a landmark, so open panels don't crowd landmark navigation. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger carries aria-hidden=\"true\" so browse-mode reading skips the glyph; the button name comes from aria-labelledby, so the Icon never feeds it. A collapsed panel gets hidden=until-found once its closing transition ends (inert covers it while it animates, because inert content is skipped by find-in-page). Find-in-page and text-fragment links fire beforematch on it, which opens the item: an uncontrolled item opens itself, a controlled one calls onOpenChange(true), and if it stays closed hidden=until-found is put back a frame later (the browser removes the attribute after beforematch). Browsers without beforematch keep inert + aria-hidden, and find-in-page can't reach collapsed text there. Focus on close: if an item closes while focus is inside its panel (a controlled close from panel content), focus moves to its trigger before the panel turns inert; otherwise focus would fall to <body>. A click or key on the trigger already leaves focus there.",
             "aria-expanded (true|false on the trigger button)",
             "aria-controls (trigger → panel id) — the panel stays in the DOM while collapsed, never conditionally rendered, so this id always resolves",
-            "aria-labelledby (panel → trigger id)",
-            "role='region' (on the panel)",
-            "aria-hidden='true' and the inert DOM property on the panel while collapsed, set together; not the hidden attribute, which would break the height transition"
+            "aria-labelledby (trigger → title id, panel → title id)",
+            "aria-describedby (trigger → subtitle id, only when subtitle is set)",
+            "role='group' (on the panel)",
+            "hidden='until-found' on the panel while collapsed, set after the height transition ends; where beforematch is unsupported, aria-hidden='true' and the inert DOM property instead"
           ]
         },
         {
