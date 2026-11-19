@@ -523,6 +523,18 @@
       "notes": "Revised for #179 (2026-11-19). Earlier the panel was only inert + aria-hidden and the hidden attribute was rejected because display:none breaks the height transition. hidden=until-found applies content-visibility:hidden instead; it is set on Panel (inside PanelInner's overflow:hidden) after transitionend on PanelOuter, and inert covers the closing animation. Measured in Chromium 153: heights animate both ways; Tab skips collapsed content; real Cmd+F opened the item. Browsers without onbeforematch fall back to inert + aria-hidden. @types/react 18 types neither hidden=until-found nor onBeforeMatch, so both go through the ref. GOV.UK Frontend's accordion uses the same attribute and listener."
     },
     {
+      "decision": "If a controlled item does not open after find-in-page reveals it, the panel is hidden again a frame later.",
+      "topic": "behaviour",
+      "reason": "The browser unhides the panel itself. If your onOpenChange keeps the item closed, its links would otherwise become Tab stops you can't see.",
+      "notes": "Adversarial review 2026-11-19 (medium): a declined beforematch left the panel without hidden or inert but still aria-hidden. index.tsx keeps isOpen in a ref and restores hidden=until-found in a requestAnimationFrame when still closed. The a11y test removes `hidden` after dispatching beforematch, as the browser does; a synthetic event alone can't catch this."
+    },
+    {
+      "decision": "The panel waits for its closing transition only when the browser reports one running (`getAnimations()`); otherwise it hides at once.",
+      "topic": "platform",
+      "reason": "No transition runs on mount, under a hidden ancestor, or when React Strict Mode re-runs effects. Waiting then would leave the panel inert, and find-in-page skips inert content.",
+      "notes": "Adversarial review 2026-11-19 (low): a first-mount ref broke under StrictMode (showcase), leaving collapsed panels inert in dev. transitioncancel also triggers the hide. jsdom has no Web Animations API, so tests define getAnimations to simulate a running transition."
+    },
+    {
       "decision": "When an item closes while focus is inside its panel, focus moves to the item's trigger.",
       "topic": "behaviour",
       "featured": true,
