@@ -315,32 +315,32 @@
     "name": "Accordion.learnings",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-07-09",
-    "updated": "2026-07-09",
+    "created": "2026-11-19",
+    "updated": "2026-11-19",
     "path": ".claude/handoff/runs/Accordion.learnings.json"
   },
   {
     "name": "Accordion.review",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-07-09",
-    "updated": "2026-07-09",
+    "created": "2026-11-19",
+    "updated": "2026-11-19",
     "path": ".claude/handoff/runs/Accordion.review.json"
   },
   {
     "name": "Accordion.run",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-07-09",
-    "updated": "2026-07-09",
+    "created": "2026-11-19",
+    "updated": "2026-11-19",
     "path": ".claude/handoff/runs/Accordion.run.json"
   },
   {
     "name": "Accordion.snapshot",
     "kind": "run",
     "status": "in-flight",
-    "created": "2026-07-09",
-    "updated": "2026-07-09",
+    "created": "2026-11-19",
+    "updated": "2026-11-19",
     "path": ".claude/handoff/runs/Accordion.snapshot.json"
   },
   {

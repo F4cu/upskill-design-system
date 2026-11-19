@@ -272,5 +272,21 @@
     "contextIsolationHeld": true,
     "reviewerFindingsBeyondGateCount": 4,
     "manualRescuesCount": 0
+  },
+  {
+    "component": "Accordion",
+    "ranAt": "2026-11-19T16:59:50.069Z",
+    "path": "full",
+    "risk": "interactive",
+    "gate": {
+      "passes": 1,
+      "failures": 0,
+      "failureReasons": []
+    },
+    "contextIsolationHeld": true,
+    "reviewerFindingsBeyondGateCount": 5,
+    "manualRescuesCount": 1,
+    "rejectedCount": 0,
+    "reproposedRuledOutCount": 0
   }
 ]
