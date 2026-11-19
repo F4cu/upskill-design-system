@@ -4,7 +4,7 @@ title: "ADR-023 — Subcomponents: preset + parts under a dot namespace"
 # ADR-023 — Subcomponents: preset + parts under a dot namespace
 
 **Date:** 2026-10-01
-**Amended:** 2026-11-12
+**Amended:** 2026-11-19
 **Status:** `accepted`
 
 ## Context
@@ -173,3 +173,17 @@ Two options were weighed for parts compositions: `Root` sorting its children int
 Sorting children in `Root` was ruled out: it overrides what the consumer wrote and needs child-type checks for no visual gain. No state moves, so ADR-025 is unchanged.
 
 **Figma keeps the visual order.** In an auto-layout frame the layer order is the drawing order, and Figma has no `order` property, so Media stays the first layer. That is a recorded divergence in the spec, not drift: Figma has no reading order to get wrong, and the layer names still match the parts.
+
+## Amendment (2026-11-19) — A part is named by its role; the same role keeps the same name
+
+Accordion's parts were named after what they looked like and what Figma happened to call them: `Chevron` for the open/closed icon (Figma: `icon expand`), `Subtitle` for the metadata line (Figma: an unnamed text layer). The docs page labelled parts the Figma file didn't have, and the same role had different names across components: the cards call the metadata line `Meta`.
+
+The naming contract above ("part names are the Figma layer names") says the two must match, but not which side names the part. The rule:
+
+- **Name a part by its role, not its glyph, its content or its Figma layer name.** `Indicator`, not `Chevron` or `icon expand`: the glyph can change (a plus/minus, a caret) without the part changing. `Meta`, not `Subtitle` or the text it holds. Figma's layer is renamed to the part, never the other way round (code is the source of truth, ADR-002).
+- **A part that plays the same role as an existing part in another component reuses that part's name.** Accordion's metadata line is `Meta`, as in CardVertical and CardHorizontal, even though there `Meta` is an `Inline` of `Duration` and `Certified` and here it is a single `Text`. The structure inside a part may differ; the role and the name don't.
+- **Props are not renamed with their part.** Accordion's prop stays `subtitle`: renaming it is a breaking API change with no benefit to readers. The part, its `data-part`, its spec `anatomy[]` entry and its Figma layer carry the role name; the spec part's `notes` says which prop renders it.
+
+`Indicator` follows Ark UI / Chakra (`ItemIndicator`) and Spectrum (`itemIndicator`). Two components still call the same role `Chevron`, in their spec only (neither sets `data-part` for it): Select (inside `Arrow`) and AppHeader (inside `UserButton`). Issue #181 renames them; until it lands they are the known exceptions.
+
+Layout wrappers with no Figma counterpart and no reader-facing role (Accordion's `TitleGroup`, `PanelOuter`, `PanelInner`) keep their structural names. The spec schema has no field to mark a part code-only, so they are recorded as Figma divergences in the spec rather than by a schema change.

@@ -124,9 +124,9 @@ export function AccordionItem({
         >
           <div data-part="TitleGroup" className={styles.titleGroup}>
             <Text data-part="Title" id={titleId} as="span" className={styles.title}>{title}</Text>
-            {subtitle && <Text data-part="Subtitle" id={metaId} as="span" size="metadata" color="subtle">{subtitle}</Text>}
+            {subtitle && <Text data-part="Meta" id={metaId} as="span" size="metadata" color="subtle">{subtitle}</Text>}
           </div>
-          <Icon data-part="Chevron" name={isOpen ? 'chevron-up' : 'chevron-down'} size="md" className={styles.chevron} />
+          <Icon data-part="Indicator" name={isOpen ? 'chevron-up' : 'chevron-down'} size="md" className={styles.indicator} />
         </button>
       </Heading>
       <div

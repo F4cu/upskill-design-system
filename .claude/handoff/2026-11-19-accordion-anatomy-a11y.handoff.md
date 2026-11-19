@@ -20,7 +20,7 @@ Tick an item when its "Done when" is met, and add the date and PR number. Order 
 
 - [x] Phase 1: #179 spike decides the hide mechanism (2026-11-19; developer confirmed real Cmd+F in Chrome opens the item)
 - [x] Phase 2: naming + `group` role + #179 implemented, a11y tests updated, VoiceOver checked (2026-11-19; PR pending with Phases 3–4)
-- [ ] Phase 3: part renames across code, spec, docs marks, anatomy test; ADR-023 amendment
+- [x] Phase 3: part renames across code, spec, docs marks, anatomy test; ADR-023 amendment (2026-11-19; PR pending with Phase 4)
 - [ ] Phase 4: spec `figma` section corrected
 - [ ] Phase 5: Figma component rebuilt; pattern frame updated; `capture-pattern-frames` re-run
 - [ ] Phase 6: `/document-component Accordion` republished
@@ -103,7 +103,7 @@ Record the naming rule as an **ADR-023 amendment** (reading ADR-023's existing a
 
 ## Phase 4: spec `figma` section
 
-Decide with the developer before Phase 5: either Figma gains text properties `Title` and `Meta` (plus a `Has meta` boolean, per ADR-023 2026-10-12), which makes the current `surface: both` true, or the spec marks them `code-only`. Recommended: add them in Figma; fill `figma.divergences` with whatever remains (the three layout wrappers; the `icon expand` wrapper if it stays).
+Decide with the developer before Phase 5: either Figma gains text properties `Title` and `Subtitle` (plus a `Has subtitle` boolean, per ADR-023 2026-10-12) on the layers `Title` and `Meta`. Property names follow the prop, layer names follow the part: `spec:validate` (`scripts/prop-vocabulary.js`) fails a Figma property that differs from its prop by more than casing, and CardVertical already does this (part `Meta`, properties `Duration`/`Certified`). The developer kept `subtitle` on 2026-11-19 after weighing a rename, which makes the current `surface: both` true, or the spec marks them `code-only`. Recommended: add them in Figma; fill `figma.divergences` with whatever remains (the three layout wrappers; the `icon expand` wrapper if it stays).
 
 ## Phase 5: Figma rebuild (`/figma-cli`, interactive)
 
