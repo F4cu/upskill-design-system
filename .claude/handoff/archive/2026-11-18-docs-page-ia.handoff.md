@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-11-18
-completed:
+completed: 2026-11-19
 ---
 
 # Docs page IA: four tabs, a Decisions tab grouped by topic, and a /document-component command
@@ -100,9 +100,9 @@ Tick an item when it is done and verified; add the date and commit or PR. Order 
 - [x] 5.3 Prove it on one page not touched by hand: Accordion. Done in #180 (2026-11-19); component follow-up (part names vs Figma, announcements) goes through `/review-component Accordion` separately. Waits on #178 (2026-11-18): the first run stopped at the plan checkpoint because Accordion has no `data-part` or `anatomyExamples`, no `Open`/`Closed` stories, a `hidden` vs `inert` contradiction in `ariaAttributes`, and no recorded focus behaviour. Chip and CardHorizontal were weighed as stand-ins and set aside: Accordion tests the keyboard and focus figures hardest. Only Button, CardVertical and Dialog have `data-part` and `anatomyExamples`, so every other page ships without an Anatomy diagram until that component work is done
 
 **6. Close-out**
-- [ ] 6.1 Spec-renderers handoff: tick A3 "Remaining sections" with a pointer here; its A4 list (Select, DropdownMenu, TextField) now runs through `/document-component`
-- [ ] 6.2 Same-PR doc touch where `docs-check` asks for one (see the docs-check coupling note)
-- [ ] 6.3 Mark this handoff `done`, run `npm run handoff:tidy`
+- [x] 6.1 (2026-11-19) Spec-renderers handoff updated instead of ticked: A3 "Remaining sections" deferred by the developer with a pointer here; the documented batch for now is Button, CardVertical, Dialog, Accordion; Select, DropdownMenu, TextField stay published and wait for later `/document-component` runs
+- [x] 6.2 (2026-11-19) `npm run docs:check` green on #180, no doc touch needed
+- [x] 6.3 (2026-11-19) Marked `done`, archived by `npm run handoff:tidy`
 
 ## Risks
 
