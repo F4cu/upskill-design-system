@@ -21,8 +21,8 @@ Branch `document/accordion` (local, not pushed). Committed in two commits (page 
   - 2026-11-19: keyboard figure badges moved to a left gutter (new opt-in `keyboard.orderSide: 'left'`, `leftLayout` in `AccessibilityFigure.tsx`); a mid-sentence link's leader stops just short of the start of its sentence (developer's call; the ring and table name the link). Dialog/Button/CardVertical unchanged (checked).
   - 2026-11-19: Spec Detail `Trigger` showed the open panel's first text line in the crop padding. `AnatomyOverlay.tsx` now clips a Detail sample to its focus part's box (whole-px insets; fractional ones looped React at 375px on CardVertical), except absolutely positioned parts (CardVertical's Action keeps its thumbnail). CardVertical details checked unchanged at 1280/375.
   - 2026-11-19: Spec anatomy dots on Accordion Title/Subtitle landed on empty space (full-width blocks). `textRect` in `AnatomyOverlay.tsx`: a text-only part with no visible box is measured by its text. Before/after compared on all 7 published Spec pages at 1280/375: Accordion fixed; Dialog's Description dot moves to its text centre (badge order shifts); CardVertical 375 overview now shows the Root badge it was missing; Button and CardVertical details unchanged.
-- [ ] Step 6: commit + `npm run docs:check` done (all current, no doc touch needed); push and PR against `main` wait on the developer's go-ahead
-- [ ] Then tick 5.3 in the docs-page-IA handoff with the PR number
+- [x] Step 6: committed, `npm run docs:check` green (no doc touch needed), pushed, PR #180 against `main`
+- [x] 5.3 ticked in the docs-page-IA handoff
 
 ## Changed files
 
