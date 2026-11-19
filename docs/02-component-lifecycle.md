@@ -44,6 +44,7 @@ sources:
 # clock reset 2026-11-18: ADR-027 amendment adds featured decisions; this page describes the usage schema and the gate, not spec sections, still accurate
 # clock reset 2026-11-18: ADR-027 amendment (decision reason check becomes an error); this page describes the usage schema and the gate, not spec sections, still accurate
 # clock reset 2026-11-18: ADR-027 amendment extends the reader-text check to ruledOut and divergences; this page describes the usage schema and the gate, not spec sections, still accurate
+# clock reset 2026-11-19: ADR-023 amendment (a part is named by its role; Accordion Subtitle → Meta, Chevron → Indicator); this page doesn't describe part naming, still accurate
 ---
 # Component lifecycle
 

@@ -56,6 +56,7 @@ sources:
 # clock reset 2026-11-11: /layout-generation's final step names the limits-driven composition check and the grammar table points at the fixed set instead of a count; nothing here described either, still accurate
 # clock reset 2026-11-12 (#163): .carousel-outer now owns the carousel clip, mobile native scroll fixed; this page never describes the clip container, still accurate
 # clock reset 2026-11-18: /extract-learnings drafts spec decisions with a topic in the reader-facing form; no glossary term describes decision drafting, still accurate
+# clock reset 2026-11-19: /review-component, the adversarial reviewer and /extract-learnings handle ruledOut[] (reproposes, .run.json rejected[] → spec ruledOut); this page defines the ledger by reviewerFindingsBeyondGateCount and has no ruledOut term, still accurate
 ---
 # Glossary
 

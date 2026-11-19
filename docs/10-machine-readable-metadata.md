@@ -48,6 +48,7 @@ sources:
 # rewritten 2026-11-18: decisions gain a required topic and an unrendered notes field; spec:validate reports reader-unfriendly reasons as backlog (ADR-027 amendment 2026-11-18); field table and totals updated
 # rewritten 2026-11-18: the decision reason check is now an error; reason gets its own gated row
 # rewritten 2026-11-18: ruledOut reasons and figma.divergences decisions are checked like decision reasons and gain notes; field table and totals updated
+# clock reset 2026-11-19: ADR-023 amendment (a part is named by its role; Accordion Subtitle → Meta, Chevron → Indicator); this page doesn't describe part naming, still accurate
 ---
 # Machine-readable metadata
 
