@@ -74,6 +74,18 @@ export const CONTENT_OPTIONS = {
       useWhen: "The dialog asks for a decision or a short task: one accent or danger Button for it, and a neutral Cancel.",
     },
   ],
+  Accordion: [
+    {
+      label: "Title and subtitle",
+      args: {},
+      useWhen: "Each section has one short fact worth seeing while closed, such as a module's duration.",
+    },
+    {
+      label: "Title only",
+      args: { subtitle: undefined },
+      useWhen: "The title alone tells readers what the section holds.",
+    },
+  ],
 };
 
 // Sections a component's pages leave out though it has data for them, by

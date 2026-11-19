@@ -39,6 +39,10 @@ export type AccessibilityEntry = {
     // below: for samples with stops at both ends (Dialog's Close and
     // actions), where every leader from one side would cross the content.
     orderNearest?: boolean
+    // Badges in a left gutter, level with each stop, as in the reading-order
+    // figure: for stops stacked down the sample (Accordion), where a leader
+    // from above would cross the stops before it. Wins over `orderNearest`.
+    orderSide?: 'left'
     // The stop focus opens on, in a component that keeps Tab inside it (a
     // modal Dialog): numbering starts there and wraps to the stops before it.
     orderFrom?: string

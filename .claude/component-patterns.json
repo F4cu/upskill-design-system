@@ -1,7 +1,7 @@
 {
   "architecturalStyle": "flat-props by default: all components are plain named exports in packages/components/src/components/<Name>/index.tsx. Exception — compound (ADR-023: a preset with parts attached via Object.assign, reachable only as <Name>.<Part>, entries marked architecturalStyle \"compound\"): CardVertical",
   "drift": [],
-  "generatedFrom": "a20b5c554413a9bb0062d752e2b0b44dd78e2826",
+  "generatedFrom": "51c98a172e97e4c188d4826babce92b1b5913d8c",
   "patterns": {
     "action-trigger": {
       "architecturalStyle": "flat-props",
@@ -291,11 +291,12 @@
             ]
           },
           "systemSpecificNotes": [
-            "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly.",
+            "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly. The subtitle sits inside the trigger, so it is part of the button's accessible name (\"Module 1 2 hours\"). Focus on close: if an item closes while focus is inside its panel (a controlled close from panel content), focus moves to its trigger before the panel turns inert; otherwise focus would fall to <body>. A click or key on the trigger already leaves focus there. Every panel is a region landmark, so more than about six items open at once crowd landmark navigation (WAI-ARIA APG); usage.json limits the item count. Known limitation: a collapsed panel is inert, so the browser's find-in-page cannot reach its text and does not open it.",
             "aria-expanded (true|false on the trigger button)",
-            "aria-controls (trigger → panel id) — the panel element must always be present in the DOM; use hidden={!isOpen} rather than conditional rendering so this id always resolves",
+            "aria-controls (trigger → panel id) — the panel stays in the DOM while collapsed, never conditionally rendered, so this id always resolves",
             "aria-labelledby (panel → trigger id)",
-            "role='region' (on the panel)"
+            "role='region' (on the panel)",
+            "aria-hidden='true' and the inert DOM property on the panel while collapsed, set together; not the hidden attribute, which would break the height transition"
           ]
         },
         {
@@ -614,7 +615,7 @@
             "titleId"
           ],
           "maturity": "beta",
-          "stage": "in review",
+          "stage": "done",
           "state": {
             "controlled": "always",
             "props": [

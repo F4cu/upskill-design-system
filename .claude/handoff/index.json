@@ -24,6 +24,14 @@
     "path": ".claude/handoff/2026-11-18-docs-page-ia.handoff.md"
   },
   {
+    "name": "2026-11-18-document-accordion",
+    "kind": "handoff",
+    "status": "active",
+    "created": "2026-11-18",
+    "updated": "2026-11-18",
+    "path": ".claude/handoff/2026-11-18-document-accordion.handoff.md"
+  },
+  {
     "name": "2026-07-03-multi-brand-refactor",
     "kind": "handoff",
     "status": "done",

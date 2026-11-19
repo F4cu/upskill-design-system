@@ -17,6 +17,10 @@ const FOCUSABLE = ':is(button, input, select, textarea):not(:disabled), a[href],
 // Disabled controls leave the Tab order but stay in the accessibility tree:
 // the focus table lists them, unnumbered, where they sit.
 const SKIPPED = ':is(button, input, select, textarea):disabled'
+// A stop Tab can reach: laid out, and not inside an inert subtree of the sample
+// (a collapsed Accordion panel). The staging wrapper is inert on purpose, so
+// it doesn't count.
+const reachable = (n: Element) => n.getClientRects().length > 0 && !n.closest('[inert]:not([data-staged])')
 const ATTRS = ['href', 'role','aria-label', 'aria-labelledby', 'aria-describedby', 'aria-pressed', 'aria-expanded', 'aria-haspopup', 'aria-current', 'aria-valuenow', 'alt', 'disabled']
 const ROLE_TEXT: Record<string, string> = { progressbar: 'progress bar', img: 'image' }
 
@@ -228,8 +232,9 @@ function Names({ name, entry }: { name: string; entry: AccessibilityEntry }) {
 // by a dashed line; each drops a hairline leader, like the Spec anatomy's, to
 // the top of the element that draws the stop's ring. With `orderNearest`, a
 // stop in the sample's lower half gets its badge in a second row below,
-// leader rising to its bottom edge, so no leader crosses the sample.
-type Stop = { badge: string; w: number; bx: number; tx: number; ty: number; row: number; edge: number }
+// leader rising to its bottom edge, so no leader crosses the sample. With
+// `orderSide: 'left'`, sideLayout places them instead (see leftLayout).
+type Stop = { badge: string; w: number; bx: number; by: number; tx: number; ty: number; path: string }
 
 function orderLayout(rings: Element[], origin: DOMRect, sample: DOMRect, nearest: boolean): Stop[] {
   const mid = (sample.top + sample.bottom) / 2
@@ -257,20 +262,52 @@ function orderLayout(rings: Element[], origin: DOMRect, sample: DOMRect, nearest
     const { pos } = place(inRow.map((i) => items[i].slot))
     inRow.forEach((i, k) => (bx[i] = pos[k]))
   }
-  return items.map(({ badge, w, ty, row, edge }, i) => ({ badge, w, bx: bx[i], tx: bx[i], ty, row, edge }))
+  return items.map(({ badge, w, ty, row, edge }, i) => ({ badge, w, bx: bx[i], by: row, tx: bx[i], ty, path: `M${bx[i]},${edge}V${ty}` }))
 }
 
-// The dashed order line, one segment per row of badges.
-const rowPaths = (stops: Stop[]) =>
-  [...new Set(stops.map((s) => s.row))].flatMap((row) => {
-    const xs = stops.filter((s) => s.row === row).map((s) => s.bx)
+// Stops stacked down the sample (Accordion's triggers and panel links): badges
+// in the left gutter, as in the reading-order figure, each level with its stop
+// and leading right to its left edge, so no leader runs down through the
+// stops above it. A link with text before it on its line (mid-sentence) gets
+// its leader stopped at the start of that line, so it doesn't strike through
+// the words; the ring and the table name the link.
+function leftLayout(rings: Element[], origin: DOMRect): Stop[] {
+  const hits = rings.map((ring, i) => {
+    // A link that wraps has one rect per line: point at its first line.
+    const r = ring.getClientRects()[0] ?? ring.getBoundingClientRect()
+    const block = ring.parentElement?.getBoundingClientRect()
+    const midLine = getComputedStyle(ring).display.startsWith('inline') && !!block && r.left > block.left + 1
+    // A few pixels short of the first letter, so the dot doesn't touch it.
+    const left = midLine ? block!.left - 4 : r.left
+    const badge = ordinal(i + 1)
+    return { name: badge, label: badge, side: 'left' as const, visible: true, rect: { x: left - origin.left, y: r.top - origin.top, w: r.right - left, h: r.height } }
+  })
+  return sideLayout(hits, origin.width).map((c) => ({ badge: c.label, w: badgeW(c.label), bx: c.bx, by: c.by, tx: c.tx, ty: c.ty, path: c.path }))
+}
+
+// The dashed order line: one segment per row of badges, or one down a side
+// gutter.
+const orderPaths = (stops: Stop[], side: boolean) => {
+  if (side) {
+    const ys = stops.map((s) => s.by)
+    return stops.length > 1 ? [`M${stops[0].bx} ${Math.min(...ys)}V${Math.max(...ys)}`] : []
+  }
+  return [...new Set(stops.map((s) => s.by))].flatMap((row) => {
+    const xs = stops.filter((s) => s.by === row).map((s) => s.bx)
     return xs.length > 1 ? [`M${Math.min(...xs)} ${row}H${Math.max(...xs)}`] : []
   })
+}
 
 // Tab order from the stop focus opens on, wrapping to the ones before it.
 function fromStart(nodes: Element[], start?: string) {
   const i = start ? nodes.findIndex((n) => n.matches(start)) : -1
   return i > 0 ? [...nodes.slice(i), ...nodes.slice(0, i)] : nodes
+}
+
+function stageStyle(keyboard: AccessibilityEntry['keyboard']) {
+  if (!keyboard.order) return undefined
+  if (keyboard.orderSide === 'left') return { paddingLeft: gutterFor([{ label: '10th' }]) }
+  return keyboard.orderNearest ? { paddingBlock: BOTTOM } : { paddingTop: BOTTOM }
 }
 
 function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
@@ -291,16 +328,18 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
       // The SVG covers the padded stage, not the sample, so measure from there.
       const origin = el.parentElement!.getBoundingClientRect()
       // Only stops on screen: a staged overlay's hidden trigger isn't one.
-      const found = fromStart([...el.querySelectorAll(FOCUSABLE)].filter((stop) => stop.getClientRects().length > 0), keyboard.orderFrom)
-      const next = orderLayout(found.map((stop) => keyboard.ringOn?.(stop) ?? stop), origin, el.getBoundingClientRect(), !!keyboard.orderNearest)
+      const found = fromStart([...el.querySelectorAll(FOCUSABLE)].filter(reachable), keyboard.orderFrom)
+      const rings = found.map((stop) => keyboard.ringOn?.(stop) ?? stop)
+      const next = keyboard.orderSide === 'left'
+        ? leftLayout(rings, origin)
+        : orderLayout(rings, origin, el.getBoundingClientRect(), !!keyboard.orderNearest)
       setStops((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
       // Stops numbered in order, disabled controls in place as "Skipped";
       // `tableRows` counts stops, so a cut never splits off a skipped row.
-      const onScreen = (n: Element) => n.getClientRects().length > 0
       const nextRows: Row[] = []
       let n = 0
       for (const node of fromStart([...el.querySelectorAll(`${FOCUSABLE}, ${SKIPPED}`)], keyboard.orderFrom)) {
-        if (!onScreen(node)) continue
+        if (!reachable(node)) continue
         if (node.matches(SKIPPED)) {
           nextRows.push({ label: 'Skipped', code: markup(node), says: `${announce(node)} (reading mode only)` })
           continue
@@ -325,7 +364,7 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
   return (
     <figure className="a11y-figure">
       <div className="a11y-canvas">
-        <div className="a11y-stage" style={keyboard.order ? (keyboard.orderNearest ? { paddingBlock: BOTTOM } : { paddingTop: BOTTOM }) : undefined}>
+        <div className="a11y-stage" style={stageStyle(keyboard)}>
           {/* The sample's links point nowhere; keep a click from jumping the page. */}
           <div
             ref={stage}
@@ -337,15 +376,15 @@ function Focus({ name, entry }: { name: string; entry: AccessibilityEntry }) {
           </div>
           {stops.length > 0 && (
             <svg className="anatomy-svg" aria-hidden="true">
-              {rowPaths(stops).map((d) => <path key={d} className="a11y-order-path" d={d} />)}
+              {orderPaths(stops, keyboard.orderSide === 'left').map((d) => <path key={d} className="a11y-order-path" d={d} />)}
               {stops.map((s) => (
                 <g key={s.badge}>
                   <g className="anatomy-leader">
-                    <path d={`M${s.bx},${s.edge}V${s.ty}`} />
+                    <path d={s.path} />
                     <circle className="anatomy-dot" cx={s.tx} cy={s.ty} r={2} />
                   </g>
-                  <rect className="anatomy-badge" x={s.bx - s.w / 2} y={s.row - H / 2} width={s.w} height={H} rx={H / 2} />
-                  <text x={s.bx} y={s.row}>{s.badge}</text>
+                  <rect className="anatomy-badge" x={s.bx - s.w / 2} y={s.by - H / 2} width={s.w} height={H} rx={H / 2} />
+                  <text x={s.bx} y={s.by}>{s.badge}</text>
                 </g>
               ))}
             </svg>
