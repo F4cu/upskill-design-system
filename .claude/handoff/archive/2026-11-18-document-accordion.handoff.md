@@ -1,7 +1,7 @@
 ---
-status: active
+status: done
 created: 2026-11-18
-completed:
+completed: 2026-11-19
 ---
 
 # /document-component Accordion

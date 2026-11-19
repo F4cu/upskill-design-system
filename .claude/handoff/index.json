@@ -20,16 +20,8 @@
     "kind": "handoff",
     "status": "active",
     "created": "2026-11-18",
-    "updated": "2026-11-18",
+    "updated": "2026-11-19",
     "path": ".claude/handoff/2026-11-18-docs-page-ia.handoff.md"
-  },
-  {
-    "name": "2026-11-18-document-accordion",
-    "kind": "handoff",
-    "status": "active",
-    "created": "2026-11-18",
-    "updated": "2026-11-18",
-    "path": ".claude/handoff/2026-11-18-document-accordion.handoff.md"
   },
   {
     "name": "2026-07-03-multi-brand-refactor",
@@ -246,6 +238,14 @@
     "created": "2026-11-13",
     "updated": "2026-11-16",
     "path": ".claude/handoff/archive/2026-11-13-dialog-follow-ups.handoff.md"
+  },
+  {
+    "name": "2026-11-18-document-accordion",
+    "kind": "handoff",
+    "status": "done",
+    "created": "2026-11-18",
+    "updated": "2026-11-19",
+    "path": ".claude/handoff/archive/2026-11-18-document-accordion.handoff.md"
   },
   {
     "name": "docsify-docs-site",
