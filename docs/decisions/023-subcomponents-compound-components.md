@@ -186,4 +186,4 @@ The naming contract above ("part names are the Figma layer names") says the two 
 
 `Indicator` follows Ark UI / Chakra (`ItemIndicator`) and Spectrum (`itemIndicator`). Two components still call the same role `Chevron`, in their spec only (neither sets `data-part` for it): Select (inside `Arrow`) and AppHeader (inside `UserButton`). Issue #181 renames them; until it lands they are the known exceptions.
 
-Layout wrappers with no Figma counterpart and no reader-facing role (Accordion's `TitleGroup`, `PanelOuter`, `PanelInner`) keep their structural names. The spec schema has no field to mark a part code-only, so they are recorded as Figma divergences in the spec rather than by a schema change.
+Layout wrappers with no reader-facing role keep their structural names: Accordion's `TitleGroup` (also a Figma frame), `PanelOuter` and `PanelInner` (code only, for the height animation). The spec schema has no field to mark a part code-only, so the code-only ones are recorded as Figma divergences in the spec rather than by a schema change.

@@ -475,9 +475,9 @@
   "figma": {
     "sets": [
       {
-        "name": "Accordion",
+        "name": "AccordionItem",
         "nodeId": "29:1153",
-        "covers": "One item: Open × State"
+        "covers": "One item: Open × State (6 variants), with Title, Has subtitle and Subtitle properties"
       },
       {
         "name": "course-module-list example",
@@ -487,13 +487,18 @@
     ],
     "divergences": [
       {
-        "what": "Figma has no Root: the set is a single item, and an accordion is items stacked in a frame.",
+        "what": "Figma has no Root: the AccordionItem set is a single item, and an accordion is items stacked in a frame (or the Accordion list set, which is the course-module-list pattern with Show more).",
         "decision": "Accepted: Root only stacks items and draws the top border, so the example frame shows it without a component of its own.",
-        "notes": "Splitting Accordion/AccordionItem into parts is out of scope for the 2026-11-19 anatomy handoff."
+        "notes": "The set was named Accordion until 2026-11-19 and renamed to match the code export. A Root component is tracked in #182."
       },
       {
-        "what": "TitleGroup, PanelOuter and PanelInner exist only in code.",
-        "decision": "Accepted: layout wrappers for the title stack and the height animation, with no role a designer sets. The spec schema has no code-only marker for parts, so they are listed here.",
+        "what": "Heading has no layer in Figma; Trigger sits directly in the item.",
+        "decision": "Accepted: Heading is only the h3 element (headingLevel) around the button and draws nothing, so a wrapper layer would add nesting without anything to see or set.",
+        "notes": "Figma rebuild 2026-11-19 (accordion anatomy handoff Phase 5)."
+      },
+      {
+        "what": "PanelOuter and PanelInner exist only in code.",
+        "decision": "Accepted: wrappers for the height animation, with no role a designer sets. The spec schema has no code-only marker for parts, so they are listed here.",
         "notes": "ADR-023 amendment 2026-11-19."
       },
       {

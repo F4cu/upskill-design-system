@@ -22,7 +22,7 @@ Tick an item when its "Done when" is met, and add the date and PR number. Order 
 - [x] Phase 2: naming + `group` role + #179 implemented, a11y tests updated, VoiceOver checked (2026-11-19; PR pending with Phases 3–4)
 - [x] Phase 3: part renames across code, spec, docs marks, anatomy test; ADR-023 amendment (2026-11-19; PR pending with Phase 4)
 - [x] Phase 4: spec `figma` section corrected (2026-11-19; PR held until Phase 5 so the spec never claims Figma properties that don't exist yet)
-- [ ] Phase 5: Figma component rebuilt; pattern frame updated; `capture-pattern-frames` re-run
+- [x] Phase 5: Figma component rebuilt; pattern frame updated; `capture-pattern-frames` re-run (2026-11-19)
 - [ ] Phase 6: `/document-component Accordion` republished
 - [ ] Close #179; handoff `status: done`, `npm run handoff:tidy`
 
@@ -119,6 +119,17 @@ figma-cli note (2026-11-19): `figma-cli connect` run from inside a Claude sessio
 
 **Done when:** the read-back tree matches the target structure and every pre-existing instance shows the same text as before.
 
+### Phase 5 result (2026-11-19, figma-cli 2.2.5, daemon started directly as noted above)
+
+Before-snapshot: 83 instances (Layout Examples 50, Foundation 10, Accordion page 23; 60 are nested in the `Accordion list` set, `Show more` true/false). Changes to set `29:1153`:
+- Each variant: the existing `Content` frame became `Trigger` (horizontal, padding/gap bound to `space/inset/md`/`space/inline/sm`, moved off the variant); `Title` frame → `TitleGroup`; text `4 hours, 30min` → `Meta`, body → `Text`; `Description` → `Panel` (below Trigger, padding 0/48/16/16 with left and bottom bound to `space/inset/md`, hugs its content, top-aligned). The variant is a vertical stack, 498 wide fixed.
+- `Indicator` = direct instance of `chevron-up` `57:1438` / `chevron-down` `57:1441` (24px). The 4 `icon expand` wrapper instances were deleted (developer-approved); the `icon expand` set `60:1120` is now unused and was kept.
+- Hover/Active overlay moved from the variant to `Trigger`. New variants `Open=true, State=Hover` `3095:8756`, `Open=true, State=Active` `3095:8764`; set laid out in two columns (Open=false left, default top-left).
+- Properties `Title#3095:7`, `Has subtitle#3095:14` (default false), `Subtitle#3095:21`, wired in all 6 variants; `Has subtitle=true` set on the 23 directly placed instances.
+- `course-module-list` frame: first item `Open=true`; panel texts set to the `CourseModuleList` story's.
+
+Read-back: tree matches the target; all 83 instances show the same title/meta/body text and variant as before, except the 3 frame instances edited on purpose; meta visible on all 83. Spacing measured against the code: panel text starts at the trigger's bottom edge in both. `figma-pattern-frames.json` recaptured. Set renamed `Accordion` → `AccordionItem` to match the code export (developer, after review: every item layer read "Accordion"); all 83 instance layers now read `AccordionItem`. Figma still has no Root (`Accordion`): #182. Spec: `TitleGroup` dropped from the code-only divergence (it is a Figma frame now), `Heading` recorded as having no layer; ADR-023 amendment's last paragraph matched to that.
+
 ## Phase 6: docs page
 
 `/document-component Accordion`: regenerate the Usage/Spec/Accessibility pages from the new spec; check the labeling marks (`Heading`, `Trigger`, `Meta`, `Panel`) and that the Accessibility tab's advice no longer says the subtitle names the button or that panels are regions.
@@ -126,5 +137,6 @@ figma-cli note (2026-11-19): `figma-cli connect` run from inside a Claude sessio
 ## Out of scope
 
 - Renaming the `subtitle` prop.
+- A Figma Root (`Accordion`) component: #182.
 - Splitting `Accordion`/`AccordionItem` into `Accordion.Item` compound parts (ADR-023 style). Worth a separate decision; not needed to fix the mismatch.
 - The Figma parity plugin (`2026-11-19-figma-parity-plugin.handoff.md`) would catch this class of layer-name drift automatically; this handoff is a useful known-answer case for its Phase B2.
