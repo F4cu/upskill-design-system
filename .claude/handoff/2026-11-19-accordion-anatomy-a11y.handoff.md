@@ -83,7 +83,7 @@ Try `hidden="until-found"` on the collapsed panel (set through the existing ref;
 
 Touch: `index.tsx` (`data-part`), `Accordion.module.css` (rename `.chevron` if you like, not required), `Accordion.spec.json` (`anatomy[]`, `anatomyExamples`, `styles` keys), `apps/docs/src/accessibility/Accordion.tsx` (`marks`: replace `Subtitle` with `Meta`), anything `npm run anatomy:test` checks. `grep -rn "Chevron\|Subtitle" apps/docs packages/components/src/components/Accordion` before and after.
 
-Record the naming rule as an **ADR-023 amendment** (reading ADR-023's existing amendments first, especially 2026-10-12 `Has <x>` booleans and 2026-11-12 reading order): a part is named by its role, not its glyph or by Figma's layer name (`Indicator`, not `Chevron`/`icon expand`; `Meta`, not `Subtitle`/the text value), and a part that plays the same role as an existing part in another component reuses that part's name (`Meta`, as in the cards).
+Record the naming rule as an **ADR-023 amendment** (reading ADR-023's existing amendments first, especially 2026-10-12 `Has <x>` booleans and 2026-11-12 reading order): a part is named by its role, not its glyph or by Figma's layer name (`Indicator`, not `Chevron`/`icon expand`; `Meta`, not `Subtitle`/the text value), and a part that plays the same role as an existing part in another component reuses that part's name (`Meta`, as in the cards). `Indicator` is the exception for now: Select and AppHeader still call the same role `Chevron` (spec only, no `data-part`); #181 renames them after this amendment lands. Name #181 in the amendment.
 
 **Done when:** all gates in `AGENTS.md` pass (`usage:validate`, `typecheck`, `build`, `spec:validate`, `a11y:coverage`, `a11y:test`, `anatomy:test`, `lint`).
 
