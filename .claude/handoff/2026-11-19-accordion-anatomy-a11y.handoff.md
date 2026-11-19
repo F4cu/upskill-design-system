@@ -21,7 +21,7 @@ Tick an item when its "Done when" is met, and add the date and PR number. Order 
 - [x] Phase 1: #179 spike decides the hide mechanism (2026-11-19; developer confirmed real Cmd+F in Chrome opens the item)
 - [x] Phase 2: naming + `group` role + #179 implemented, a11y tests updated, VoiceOver checked (2026-11-19; PR pending with Phases 3–4)
 - [x] Phase 3: part renames across code, spec, docs marks, anatomy test; ADR-023 amendment (2026-11-19; PR pending with Phase 4)
-- [ ] Phase 4: spec `figma` section corrected
+- [x] Phase 4: spec `figma` section corrected (2026-11-19; PR held until Phase 5 so the spec never claims Figma properties that don't exist yet)
 - [ ] Phase 5: Figma component rebuilt; pattern frame updated; `capture-pattern-frames` re-run
 - [ ] Phase 6: `/document-component Accordion` republished
 - [ ] Close #179; handoff `status: done`, `npm run handoff:tidy`
@@ -104,6 +104,10 @@ Record the naming rule as an **ADR-023 amendment** (reading ADR-023's existing a
 ## Phase 4: spec `figma` section
 
 Decide with the developer before Phase 5: either Figma gains text properties `Title` and `Subtitle` (plus a `Has subtitle` boolean, per ADR-023 2026-10-12) on the layers `Title` and `Meta`. Property names follow the prop, layer names follow the part: `spec:validate` (`scripts/prop-vocabulary.js`) fails a Figma property that differs from its prop by more than casing, and CardVertical already does this (part `Meta`, properties `Duration`/`Certified`). The developer kept `subtitle` on 2026-11-19 after weighing a rename, which makes the current `surface: both` true, or the spec marks them `code-only`. Recommended: add them in Figma; fill `figma.divergences` with whatever remains (the three layout wrappers; the `icon expand` wrapper if it stays).
+
+### Phase 4 result (2026-11-19)
+
+Developer chose: add the text properties in Figma; `Indicator` is a direct Icon instance (drop the `icon expand` wrapper, no divergence); hold the PR until Phase 5. Spec now maps `Item.title` → `Title`, `Item.subtitle` → `Has subtitle + Subtitle` (on the `Meta` layer), `Item.open` → `Open` (was wrongly `code-only`), root `children` → `code-only` (claimed a `Children` property Figma never had). `figma.sets`: `Accordion` `29:1153`, `course-module-list` example `2963:7814`. Divergences: no Root in Figma; `TitleGroup`/`PanelOuter`/`PanelInner` code-only; Panel holds a sample text layer, not a native slot.
 
 ## Phase 5: Figma rebuild (`/figma-cli`, interactive)
 

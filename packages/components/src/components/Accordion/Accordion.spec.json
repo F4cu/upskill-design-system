@@ -128,7 +128,8 @@
       "concept": "Content",
       "figma": {
         "surface": "both",
-        "property": "Title"
+        "property": "Title",
+        "note": "Text property on the Title layer."
       }
     },
     "Item.subtitle": {
@@ -138,7 +139,8 @@
       "concept": "Content",
       "figma": {
         "surface": "both",
-        "property": "Subtitle"
+        "property": "Has subtitle + Subtitle",
+        "note": "Optional prop ↔ Has <x> boolean plus a text property on the Meta layer (ADR-023 amendment 2026-10-12). The property follows the prop and the layer follows the part (ADR-023 amendment 2026-11-19)."
       }
     },
     "Item.defaultOpen": {
@@ -156,7 +158,9 @@
       "default": null,
       "concept": "Controlled state",
       "figma": {
-        "surface": "code-only"
+        "surface": "both",
+        "property": "Open",
+        "note": "Open=true shows the Panel."
       }
     },
     "Item.onOpenChange": {
@@ -201,8 +205,7 @@
       "default": null,
       "concept": "Content",
       "figma": {
-        "surface": "both",
-        "property": "Children"
+        "surface": "code-only"
       }
     },
     "className": {
@@ -470,8 +473,35 @@
     ]
   },
   "figma": {
-    "sets": [],
-    "divergences": []
+    "sets": [
+      {
+        "name": "Accordion",
+        "nodeId": "29:1153",
+        "covers": "One item: Open × State"
+      },
+      {
+        "name": "course-module-list example",
+        "nodeId": "2963:7814",
+        "covers": "The course-module-list example frame (not a component); items stacked from instances of the set"
+      }
+    ],
+    "divergences": [
+      {
+        "what": "Figma has no Root: the set is a single item, and an accordion is items stacked in a frame.",
+        "decision": "Accepted: Root only stacks items and draws the top border, so the example frame shows it without a component of its own.",
+        "notes": "Splitting Accordion/AccordionItem into parts is out of scope for the 2026-11-19 anatomy handoff."
+      },
+      {
+        "what": "TitleGroup, PanelOuter and PanelInner exist only in code.",
+        "decision": "Accepted: layout wrappers for the title stack and the height animation, with no role a designer sets. The spec schema has no code-only marker for parts, so they are listed here.",
+        "notes": "ADR-023 amendment 2026-11-19."
+      },
+      {
+        "what": "The Panel holds a sample text layer in Figma; in code it takes any content (children).",
+        "decision": "Accepted: designers show the panel's look, and real content is composed in code.",
+        "notes": "A native slot (as CardVertical.Root's Body) was not added in the 2026-11-19 rebuild; revisit if designers need other content in the panel."
+      }
+    ]
   },
   "decisions": [
     {
