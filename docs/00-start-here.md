@@ -102,6 +102,8 @@ sources:
 # clock reset 2026-11-18: ADR-030 amendment reorders the Spec tab (States before Props); this page doesn't name the component page sections, still accurate
 # clock reset 2026-11-18: ADR-027 amendment extends the reader-text check to ruledOut and divergences; this page lists no spec checks, still accurate
 # clock reset 2026-11-18: /extract-learnings drafts spec decisions with a topic in the reader-facing form; this page lists the moments, not their steps, still accurate
+# clock reset 2026-11-19: ADR-023 amendment (a part is named by its role; Accordion Subtitle → Meta, Chevron → Indicator); this page doesn't describe part naming, still accurate
+# clock reset 2026-11-19: /review-component, the adversarial reviewer and /extract-learnings handle ruledOut[] (reproposes, .run.json rejected[] → spec ruledOut); this page lists the moments, not their steps, still accurate; ADR-030 amendment closes the spec-renderers handoff, no ADR contents listed here
 ---
 # Start here
 

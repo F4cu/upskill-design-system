@@ -67,7 +67,7 @@
   word-break: break-word;
 }
 
-.chevron {
+.indicator {
   align-self: center;
   flex-shrink: 0;
   display: block;

@@ -3,7 +3,7 @@ import type { AccessibilityEntry } from './types'
 
 // Labeling marks the course-module-list pattern (first item open). Keyboard
 // uses FocusableContent: the open panel's link is a Tab stop, the closed
-// panel's link is inert and skipped.
+// panel's link is hidden (until-found) and skipped.
 export const accessibility: AccessibilityEntry = {
   useCases: [
     "Hear each section's title, and whether it is open or closed, from its button.",
@@ -13,12 +13,12 @@ export const accessibility: AccessibilityEntry = {
   ],
   labeling: {
     advice:
-      'The title and subtitle name each button, and the button names its panel, so keep the subtitle to one short fact, such as a duration. Set headingLevel to fit the page outline (h3 by default).',
-    caption: 'Each trigger is a button inside a heading, named by its title and subtitle. Its panel is a region named by it.',
+      'The title names each button and its panel. The subtitle is read as the button’s description on every item, so keep it to one short fact, such as a duration. Set headingLevel to fit the page outline (h3 by default).',
+    caption: 'Each trigger is a button inside a heading, named by its title and described by its meta line. Its panel is a group named by the title.',
     marks: [
       { label: 'Heading', select: '[data-part="Heading"]' },
       { label: 'Trigger', select: '[data-part="Trigger"]' },
-      { label: 'Subtitle', select: '[data-part="Subtitle"]' },
+      { label: 'Meta', select: '[data-part="Meta"]' },
       { label: 'Panel', select: '[data-part="Panel"]' },
     ],
     render: () => <StoryRender name="Accordion" file="patterns.stories" exportName="CourseModuleList" />,

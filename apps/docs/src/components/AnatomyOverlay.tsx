@@ -26,7 +26,7 @@ function locate(root: Element, part: Part, parts: Part[]): Element | null {
 }
 
 // A text-only part with no visible box measures its text, not its box: a
-// block stretched across its row (Accordion's Title and Subtitle) would put
+// block stretched across its row (Accordion's Title and Meta) would put
 // the leader on empty space.
 function textRect(node: Element): DOMRect {
   if (!node.childNodes.length || ![...node.childNodes].every((c) => c.nodeType === Node.TEXT_NODE)) return node.getBoundingClientRect()

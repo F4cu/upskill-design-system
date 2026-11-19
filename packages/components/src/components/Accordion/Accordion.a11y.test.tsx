@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 import { Accordion, AccordionItem } from './index'
 
 // Tier-2 behavioral a11y (ADR-008). Asserts the dynamic ARIA contract:
-// aria-expanded toggling, aria-controls/aria-labelledby wiring, region role,
-// keyboard activation, and an axe scan.
+// aria-expanded toggling, aria-controls/aria-labelledby wiring, the panel's
+// group role, title-only naming with the meta as description, find-in-page
+// (hidden=until-found + beforematch), keyboard activation, and an axe scan.
+// jsdom exposes onbeforematch, so these run the until-found path; the
+// inert + aria-hidden fallback has its own block at the end.
 
 describe('AccordionItem — a11y behavior', () => {
   it('does not submit an enclosing form when the trigger is clicked', async () => {
@@ -54,10 +57,10 @@ describe('AccordionItem — a11y behavior', () => {
       'aria-expanded',
       'false',
     )
-    expect(screen.queryByRole('region')).toBeNull()
+    expect(screen.queryByRole('group')).toBeNull()
   })
 
-  it('sets aria-expanded=true and shows region when opened', async () => {
+  it('sets aria-expanded=true and shows the group when opened', async () => {
     const user = userEvent.setup()
     render(
       <AccordionItem title="Module 1" subtitle="2 hours">
@@ -69,12 +72,12 @@ describe('AccordionItem — a11y behavior', () => {
     await user.click(trigger)
 
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
-    const panel = screen.getByRole('region')
+    const panel = screen.getByRole('group')
     expect(panel).toBeInTheDocument()
     expect(panel).toHaveTextContent('Panel content')
   })
 
-  it('aria-controls on trigger matches id of the region panel in both collapsed and expanded states', async () => {
+  it('aria-controls on trigger matches id of the group panel in both collapsed and expanded states', async () => {
     const user = userEvent.setup()
     render(
       <AccordionItem title="Module 1">
@@ -83,27 +86,37 @@ describe('AccordionItem — a11y behavior', () => {
     )
 
     const trigger = screen.getByRole('button', { name: /Module 1/i })
-    // Panel is always in the DOM (aria-hidden when collapsed), so aria-controls is always valid.
-    const panel = screen.getByRole('region', { hidden: true })
+    // Panel is always in the DOM (hidden=until-found when collapsed), so aria-controls is always valid.
+    const panel = screen.getByRole('group', { hidden: true })
     expect(trigger.getAttribute('aria-controls')).toBe(panel.id)
 
     await user.click(trigger)
-    expect(trigger.getAttribute('aria-controls')).toBe(screen.getByRole('region').id)
+    expect(trigger.getAttribute('aria-controls')).toBe(screen.getByRole('group').id)
   })
 
-  it('panel aria-labelledby points back to the trigger', async () => {
+  it('names the trigger and the panel by the title only, and describes the trigger with the meta', async () => {
     const user = userEvent.setup()
+    render(
+      <AccordionItem title="Module 1" subtitle="2 hours">
+        <p>Content</p>
+      </AccordionItem>,
+    )
+
+    const trigger = screen.getByRole('button', { name: 'Module 1' })
+    expect(trigger).toHaveAccessibleName('Module 1')
+    expect(trigger).toHaveAccessibleDescription('2 hours')
+
+    await user.click(trigger)
+    expect(screen.getByRole('group')).toHaveAccessibleName('Module 1')
+  })
+
+  it('has no description when there is no subtitle', () => {
     render(
       <AccordionItem title="Module 1">
         <p>Content</p>
       </AccordionItem>,
     )
-
-    await user.click(screen.getByRole('button', { name: /Module 1/i }))
-
-    const trigger = screen.getByRole('button', { name: /Module 1/i })
-    const panel = screen.getByRole('region')
-    expect(panel.getAttribute('aria-labelledby')).toBe(trigger.id)
+    expect(screen.getByRole('button', { name: 'Module 1' })).not.toHaveAttribute('aria-describedby')
   })
 
   it('toggles on Enter (keyboardInteractions: Enter)', async () => {
@@ -201,12 +214,123 @@ describe('AccordionItem — a11y behavior', () => {
     expect(screen.getByRole('button', { name: /Module 2/i })).toHaveFocus()
   })
 
-  it('sets the panel inert while collapsed so focusable content cannot be tabbed into or clicked', async () => {
-    // jsdom + @testing-library/user-event 14's tab() simulation does not
-    // implement the `inert` attribute's focus-prevention semantics (it isn't
-    // in FOCUSABLE_SELECTOR), so a live Tab-based assertion would pass or
-    // fail independent of whether `inert` is actually applied. Assert the
-    // DOM property directly instead — that's the real contract this fixes.
+  it('Shift+Tab moves back through open panel content to the previous trigger (keyboardInteractions: Shift+Tab)', async () => {
+    const user = userEvent.setup()
+    render(
+      <Accordion>
+        <AccordionItem title="Module 1" defaultOpen>
+          <a href="/lessons/1">Lesson link</a>
+        </AccordionItem>
+        <AccordionItem title="Module 2">
+          <p>Content</p>
+        </AccordionItem>
+      </Accordion>,
+    )
+
+    screen.getByRole('button', { name: 'Module 2' }).focus()
+
+    await user.tab({ shift: true })
+    expect(screen.getByRole('link', { name: 'Lesson link' })).toHaveFocus()
+
+    await user.tab({ shift: true })
+    expect(screen.getByRole('button', { name: 'Module 1' })).toHaveFocus()
+  })
+
+  describe('while the closing transition runs', () => {
+    // jsdom has no Web Animations API, so the stub defines getAnimations to
+    // report one running transition.
+    function stubRunningTransition() {
+      Object.defineProperty(HTMLElement.prototype, 'getAnimations', {
+        configurable: true,
+        value: () => [{} as Animation],
+      })
+      return {
+        mockRestore: () => {
+          delete (HTMLElement.prototype as Partial<HTMLElement>).getAnimations
+        },
+      }
+    }
+    function endTransition(outer: Element) {
+      const event = Object.assign(new Event('transitionend'), { propertyName: 'grid-template-rows' })
+      act(() => {
+        outer.dispatchEvent(event)
+      })
+    }
+
+    it('keeps the panel inert until the height transition ends, then applies hidden=until-found', async () => {
+      const user = userEvent.setup()
+      const { container } = render(
+        <AccordionItem title="Module 1" defaultOpen>
+          <a href="/lessons/1">Lesson link</a>
+        </AccordionItem>,
+      )
+      const spy = stubRunningTransition()
+      try {
+        const panel = screen.getByRole('group')
+        await user.click(screen.getByRole('button', { name: 'Module 1' }))
+
+        expect(panel.inert).toBe(true)
+        expect(panel).not.toHaveAttribute('hidden')
+
+        endTransition(container.querySelector('[data-part="PanelOuter"]')!)
+        expect(panel).toHaveAttribute('hidden', 'until-found')
+        expect(panel.inert).toBe(false)
+      } finally {
+        spy.mockRestore()
+      }
+    })
+
+    it('ignores transitionend for other properties', async () => {
+      const user = userEvent.setup()
+      const { container } = render(
+        <AccordionItem title="Module 1" defaultOpen>
+          <p>Content</p>
+        </AccordionItem>,
+      )
+      const spy = stubRunningTransition()
+      try {
+        const panel = screen.getByRole('group')
+        await user.click(screen.getByRole('button', { name: 'Module 1' }))
+
+        const outer = container.querySelector('[data-part="PanelOuter"]')!
+        act(() => {
+          outer.dispatchEvent(Object.assign(new Event('transitionend'), { propertyName: 'opacity' }))
+        })
+        expect(panel).not.toHaveAttribute('hidden')
+        expect(panel.inert).toBe(true)
+      } finally {
+        spy.mockRestore()
+      }
+    })
+
+    it('leaves the panel neither inert nor hidden when reopened before the transition ends', async () => {
+      const user = userEvent.setup()
+      const { container } = render(
+        <AccordionItem title="Module 1" defaultOpen>
+          <p>Content</p>
+        </AccordionItem>,
+      )
+      const spy = stubRunningTransition()
+      try {
+        const panel = screen.getByRole('group')
+        const trigger = screen.getByRole('button', { name: 'Module 1' })
+        await user.click(trigger)
+        await user.click(trigger)
+
+        endTransition(container.querySelector('[data-part="PanelOuter"]')!)
+        expect(panel.inert).toBe(false)
+        expect(panel).not.toHaveAttribute('hidden')
+        expect(trigger).toHaveAttribute('aria-expanded', 'true')
+      } finally {
+        spy.mockRestore()
+      }
+    })
+  })
+
+  it('hides a collapsed panel with hidden=until-found so find-in-page can reach it', async () => {
+    // jsdom + user-event's tab() don't implement until-found's focus and
+    // rendering semantics, so assert the attribute itself; Tab-skip was
+    // checked in Chromium (Phase 1 of the accordion handoff).
     const user = userEvent.setup()
     render(
       <AccordionItem title="Module 1">
@@ -214,11 +338,68 @@ describe('AccordionItem — a11y behavior', () => {
       </AccordionItem>,
     )
 
-    const panel = screen.getByRole('region', { hidden: true })
-    expect(panel.inert).toBe(true)
-
-    await user.click(screen.getByRole('button', { name: /Module 1/i }))
+    const panel = screen.getByRole('group', { hidden: true })
+    expect(panel).toHaveAttribute('hidden', 'until-found')
     expect(panel.inert).toBe(false)
+    expect(panel).not.toHaveAttribute('aria-hidden')
+
+    const trigger = screen.getByRole('button', { name: 'Module 1' })
+    await user.click(trigger)
+    expect(panel).not.toHaveAttribute('hidden')
+
+    await user.click(trigger)
+    expect(panel).toHaveAttribute('hidden', 'until-found')
+  })
+
+  it('opens an uncontrolled item on beforematch (find-in-page)', () => {
+    render(
+      <AccordionItem title="Module 1">
+        <p>Findable text</p>
+      </AccordionItem>,
+    )
+
+    const panel = screen.getByRole('group', { hidden: true })
+    act(() => {
+      panel.dispatchEvent(new Event('beforematch', { bubbles: true }))
+    })
+    expect(screen.getByRole('button', { name: 'Module 1' })).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('asks a controlled item to open on beforematch instead of opening itself', () => {
+    const onOpenChange = vi.fn()
+    render(
+      <AccordionItem title="Module 1" open={false} onOpenChange={onOpenChange}>
+        <p>Findable text</p>
+      </AccordionItem>,
+    )
+
+    const panel = screen.getByRole('group', { hidden: true })
+    act(() => {
+      panel.dispatchEvent(new Event('beforematch', { bubbles: true }))
+    })
+    expect(onOpenChange).toHaveBeenCalledWith(true)
+    expect(screen.getByRole('button', { name: 'Module 1' })).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('re-hides a controlled panel whose consumer declines to open on beforematch', async () => {
+    const { container } = render(
+      <AccordionItem title="Module 1" open={false} onOpenChange={() => {}}>
+        <a href="/lessons/1">Lesson link</a>
+      </AccordionItem>,
+    )
+
+    const panel = screen.getByRole('group', { hidden: true })
+    act(() => {
+      panel.dispatchEvent(new Event('beforematch', { bubbles: true }))
+      // The browser removes the attribute itself once the event has fired.
+      panel.removeAttribute('hidden')
+    })
+
+    await waitFor(() => expect(panel).toHaveAttribute('hidden', 'until-found'))
+    expect(screen.getByRole('button', { name: 'Module 1' })).toHaveAttribute('aria-expanded', 'false')
+    expect(
+      await axe(container, { rules: { 'color-contrast': { enabled: false } } }),
+    ).toHaveNoViolations()
   })
 
   it('has no axe violations with a focusable descendant in a collapsed panel', async () => {
@@ -257,5 +438,35 @@ describe('AccordionItem — a11y behavior', () => {
     expect(
       await axe(container, { rules: { 'color-contrast': { enabled: false } } }),
     ).toHaveNoViolations()
+  })
+})
+
+describe('AccordionItem — a11y behavior without beforematch support', () => {
+  it('falls back to inert + aria-hidden while collapsed', async () => {
+    const descriptor = Object.getOwnPropertyDescriptor(Document.prototype, 'onbeforematch')
+    // @ts-expect-error removing the handler to simulate a browser without until-found
+    delete Document.prototype.onbeforematch
+    vi.resetModules()
+    try {
+      const { AccordionItem: FallbackItem } = await import('./index')
+      const user = userEvent.setup()
+      render(
+        <FallbackItem title="Module 1">
+          <a href="/lessons/1">Lesson link</a>
+        </FallbackItem>,
+      )
+
+      const panel = screen.getByRole('group', { hidden: true })
+      expect(panel).not.toHaveAttribute('hidden')
+      expect(panel.inert).toBe(true)
+      expect(panel).toHaveAttribute('aria-hidden', 'true')
+
+      await user.click(screen.getByRole('button', { name: 'Module 1' }))
+      expect(panel.inert).toBe(false)
+      expect(panel).not.toHaveAttribute('aria-hidden')
+    } finally {
+      if (descriptor) Object.defineProperty(Document.prototype, 'onbeforematch', descriptor)
+      vi.resetModules()
+    }
   })
 })

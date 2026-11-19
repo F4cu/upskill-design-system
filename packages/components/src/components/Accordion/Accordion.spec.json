@@ -46,10 +46,11 @@
         "as": "span"
       },
       "role": "generic",
-      "required": true
+      "required": true,
+      "notes": "Names the trigger (aria-labelledby) and the panel."
     },
     {
-      "name": "Subtitle",
+      "name": "Meta",
       "element": "Text",
       "parent": "TitleGroup",
       "when": "subtitle is set",
@@ -60,17 +61,18 @@
         "color": "subtle"
       },
       "role": "generic",
-      "required": false
+      "required": false,
+      "notes": "The trigger's description (aria-describedby): screen readers read it after the name. Rendered from the subtitle prop. Same role and name as the cards' Meta; there it is an Inline of Duration and Certified, here a single Text."
     },
     {
-      "name": "Chevron",
+      "name": "Indicator",
       "element": "Icon",
       "parent": "Trigger",
       "builtOn": "Icon",
       "builtOnProps": {
         "size": "md"
       },
-      "notes": "chevron-down when closed, chevron-up when open. aria-hidden, so it does not add to the button name.",
+      "notes": "chevron-down when closed, chevron-up when open. aria-hidden, so a virtual cursor does not read the glyph; the button name comes from aria-labelledby.",
       "role": "presentation",
       "required": true
     },
@@ -93,8 +95,8 @@
       "name": "Panel",
       "element": "div",
       "parent": "PanelInner",
-      "notes": "role=region, named by the trigger through aria-labelledby; inert and aria-hidden while closed.",
-      "role": "region",
+      "notes": "role=group, named by the title through aria-labelledby. While closed: hidden=until-found (find-in-page can reach and open it), or inert + aria-hidden where the browser lacks it.",
+      "role": "group",
       "required": true
     }
   ],
@@ -113,8 +115,8 @@
       "focus": "Trigger",
       "mark": [
         "Title",
-        "Subtitle",
-        "Chevron"
+        "Meta",
+        "Indicator"
       ]
     }
   ],
@@ -126,7 +128,8 @@
       "concept": "Content",
       "figma": {
         "surface": "both",
-        "property": "Title"
+        "property": "Title",
+        "note": "Text property on the Title layer."
       }
     },
     "Item.subtitle": {
@@ -136,7 +139,8 @@
       "concept": "Content",
       "figma": {
         "surface": "both",
-        "property": "Subtitle"
+        "property": "Has subtitle + Subtitle",
+        "note": "Optional prop ↔ Has <x> boolean plus a text property on the Meta layer (ADR-023 amendment 2026-10-12). The property follows the prop and the layer follows the part (ADR-023 amendment 2026-11-19)."
       }
     },
     "Item.defaultOpen": {
@@ -154,7 +158,9 @@
       "default": null,
       "concept": "Controlled state",
       "figma": {
-        "surface": "code-only"
+        "surface": "both",
+        "property": "Open",
+        "note": "Open=true shows the Panel."
       }
     },
     "Item.onOpenChange": {
@@ -199,8 +205,7 @@
       "default": null,
       "concept": "Content",
       "figma": {
-        "surface": "both",
-        "property": "Children"
+        "surface": "code-only"
       }
     },
     "className": {
@@ -257,7 +262,7 @@
       "name": "closed",
       "kind": "appData",
       "trigger": "open false (default)",
-      "notes": "Panel collapsed but still in the DOM, inert and aria-hidden: Tab skips its focusable content (FocusableContent story). Trigger shows chevron-down."
+      "notes": "Panel collapsed but still in the DOM, hidden with hidden=until-found (inert + aria-hidden in browsers without it): Tab skips its focusable content (FocusableContent story) and find-in-page opens it. Trigger shows chevron-down."
     },
     {
       "name": "open",
@@ -268,13 +273,14 @@
   ],
   "accessibility": {
     "role": "button",
-    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The panel uses role='region' with aria-labelledby pointing to the trigger. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger must carry aria-hidden=\"true\" — without it, the Icon's implicit accessible name contributes to the button's name string, which screen readers may announce unexpectedly. The subtitle sits inside the trigger, so it is part of the button's accessible name (\"Module 1 2 hours\"). Focus on close: if an item closes while focus is inside its panel (a controlled close from panel content), focus moves to its trigger before the panel turns inert; otherwise focus would fall to <body>. A click or key on the trigger already leaves focus there. Every panel is a region landmark, so more than about six items open at once crowd landmark navigation (WAI-ARIA APG); usage.json limits the item count. Known limitation: a collapsed panel is inert, so the browser's find-in-page cannot reach its text and does not open it.",
+    "notes": "Each AccordionItem trigger is a <button> wrapped in a heading element (default h3, configurable via headingLevel). The button is named by the title alone (aria-labelledby); the subtitle is its description (aria-describedby), so a reader hears \"Module 1, button, collapsed\" and then \"2 hours\" after a pause, not the title three times with the subtitle. The panel is role=group (React Aria's DisclosurePanel default), also labelled by the title; group is not a landmark, so open panels don't crowd landmark navigation. The Accordion container itself has no ARIA role — it is a plain div. The chevron Icon inside each trigger carries aria-hidden=\"true\" so browse-mode reading skips the glyph; the button name comes from aria-labelledby, so the Icon never feeds it. A collapsed panel gets hidden=until-found once its closing transition ends (inert covers it while it animates, because inert content is skipped by find-in-page). Find-in-page and text-fragment links fire beforematch on it, which opens the item: an uncontrolled item opens itself, a controlled one calls onOpenChange(true), and if it stays closed hidden=until-found is put back a frame later (the browser removes the attribute after beforematch). Browsers without beforematch keep inert + aria-hidden, and find-in-page can't reach collapsed text there. Focus on close: if an item closes while focus is inside its panel (a controlled close from panel content), focus moves to its trigger before the panel turns inert; otherwise focus would fall to <body>. A click or key on the trigger already leaves focus there.",
     "ariaAttributes": [
       "aria-expanded (true|false on the trigger button)",
       "aria-controls (trigger → panel id) — the panel stays in the DOM while collapsed, never conditionally rendered, so this id always resolves",
-      "aria-labelledby (panel → trigger id)",
-      "role='region' (on the panel)",
-      "aria-hidden='true' and the inert DOM property on the panel while collapsed, set together; not the hidden attribute, which would break the height transition"
+      "aria-labelledby (trigger → title id, panel → title id)",
+      "aria-describedby (trigger → subtitle id, only when subtitle is set)",
+      "role='group' (on the panel)",
+      "hidden='until-found' on the panel while collapsed, set after the height transition ends; where beforematch is unsupported, aria-hidden='true' and the inert DOM property instead"
     ],
     "keyboardInteractions": [
       {
@@ -287,7 +293,7 @@
       },
       {
         "key": "Tab",
-        "action": "Moves focus sequentially through any focusable content within an open panel, then to the next accordion trigger. Focusable descendants inside a collapsed panel are skipped — the panel's inert DOM property is set while closed, so Tab cannot land on them even though they remain in the DOM for aria-controls."
+        "action": "Moves focus sequentially through any focusable content within an open panel, then to the next accordion trigger. Focusable descendants inside a collapsed panel are skipped — hidden=until-found doesn't render them (inert where the browser lacks it), so Tab cannot land on them even though they remain in the DOM for aria-controls."
       },
       {
         "key": "Shift+Tab",
@@ -420,7 +426,7 @@
         }
       }
     ],
-    "Chevron": [
+    "Indicator": [
       {
         "when": {},
         "set": {
@@ -467,22 +473,54 @@
     ]
   },
   "figma": {
-    "sets": [],
-    "divergences": []
+    "sets": [
+      {
+        "name": "AccordionItem",
+        "nodeId": "29:1153",
+        "covers": "One item: Open × State (6 variants), with Title, Has subtitle and Subtitle properties"
+      },
+      {
+        "name": "course-module-list example",
+        "nodeId": "2963:7814",
+        "covers": "The course-module-list example frame (not a component); items stacked from instances of the set"
+      }
+    ],
+    "divergences": [
+      {
+        "what": "Figma has no Root: the AccordionItem set is a single item, and an accordion is items stacked in a frame (or the Accordion list set, which is the course-module-list pattern with Show more).",
+        "decision": "Accepted: Root only stacks items and draws the top border, so the example frame shows it without a component of its own.",
+        "notes": "The set was named Accordion until 2026-11-19 and renamed to match the code export. A Root component is tracked in #182."
+      },
+      {
+        "what": "Heading has no layer in Figma; Trigger sits directly in the item.",
+        "decision": "Accepted: Heading is only the h3 element (headingLevel) around the button and draws nothing, so a wrapper layer would add nesting without anything to see or set.",
+        "notes": "Figma rebuild 2026-11-19 (accordion anatomy handoff Phase 5)."
+      },
+      {
+        "what": "PanelOuter and PanelInner exist only in code.",
+        "decision": "Accepted: wrappers for the height animation, with no role a designer sets. The spec schema has no code-only marker for parts, so they are listed here.",
+        "notes": "ADR-023 amendment 2026-11-19."
+      },
+      {
+        "what": "The Panel holds a sample text layer in Figma; in code it takes any content (children).",
+        "decision": "Accepted: designers show the panel's look, and real content is composed in code.",
+        "notes": "A native slot (as CardVertical.Root's Body) was not added in the 2026-11-19 rebuild; revisit if designers need other content in the panel."
+      }
+    ]
   },
   "decisions": [
     {
-      "decision": "The chevron takes its colour from the trigger through `currentColor`. No colour is set on the icon itself.",
+      "decision": "The chevron colour is a token on the Indicator part, and the SVG paints it through `currentColor`. No colour prop or inline style is set on the Icon.",
       "topic": "visual",
       "reason": "A colour on the icon would bypass the colour tokens.",
-      "notes": "Token: color.icon.default on the trigger. Applies the packages/components AGENTS.md Icon colour rule."
+      "notes": "Token: color.icon.default on .indicator in the CSS module. Applies the packages/components AGENTS.md Icon colour rule."
     },
     {
-      "decision": "A collapsed panel stays in the page, hidden from screen readers and the keyboard. It isn't removed, or hidden with the `hidden` attribute.",
+      "decision": "A collapsed panel stays in the page, hidden with `hidden=\"until-found\"` once it has finished closing, so find-in-page can still find its text and open it.",
       "topic": "behaviour",
       "featured": true,
-      "reason": "`aria-controls` needs the panel to exist while it's collapsed, and `hidden` would break the opening animation.",
-      "notes": "Original reason: aria-controls must point at an element that exists while collapsed, or the association breaks for screen readers (NVDA + Firefox). hidden forces display:none and breaks the height transition. inert keeps focusable descendants unreachable while the panel collapses; @types/react 18 has no inert JSX prop. aria-hidden and inert are set through a ref."
+      "reason": "`aria-controls` needs the panel to exist while collapsed, and find-in-page should still reach its text. Setting the attribute after the closing animation keeps the animation.",
+      "notes": "Revised for #179 (2026-11-19). Earlier the panel was only inert + aria-hidden and the hidden attribute was rejected because display:none breaks the height transition. hidden=until-found applies content-visibility:hidden instead; it is set on Panel (inside PanelInner's overflow:hidden) after transitionend on PanelOuter, and inert covers the closing animation. Measured in Chromium 153: heights animate both ways; Tab skips collapsed content; real Cmd+F opened the item. Browsers without onbeforematch fall back to inert + aria-hidden. @types/react 18 types neither hidden=until-found nor onBeforeMatch, so both go through the ref. GOV.UK Frontend's accordion uses the same attribute and listener."
     },
     {
       "decision": "When an item closes while focus is inside its panel, focus moves to the item's trigger.",
@@ -490,6 +528,19 @@
       "featured": true,
       "reason": "The closed panel becomes inert, which would drop focus to the top of the page and lose the reader's place.",
       "notes": "Done in the same layout effect that sets inert, before it is set. Covered by Accordion.a11y.test.tsx."
+    }
+  ],
+  "ruledOut": [
+    {
+      "option": "role=region on the panel",
+      "reason": "Every open panel would be a landmark, and more than about six crowd the landmark list screen reader users navigate by.",
+      "source": "WAI-ARIA APG accordion pattern",
+      "notes": "Was the role until 2026-11-19; replaced by group, React Aria DisclosurePanel's default."
+    },
+    {
+      "option": "Naming the trigger by its whole content (title and subtitle)",
+      "reason": "Screen readers then read the title and subtitle as the heading, the button and the panel name, three times per item.",
+      "source": "Accordion anatomy handoff, 2026-11-19"
     }
   ]
 }

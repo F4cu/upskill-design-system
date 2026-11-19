@@ -88,7 +88,7 @@ export const CourseModuleList: Story = {
 }
 
 // Keyboard: Tab from the first trigger lands on the open panel's link, then the
-// second trigger. The closed panel's link is inert, so Tab skips it.
+// second trigger. The closed panel is hidden (until-found), so Tab skips its link.
 export const FocusableContent: Story = {
   render: () => (
     <Accordion>
