@@ -25,6 +25,16 @@ function locate(root: Element, part: Part, parts: Part[]): Element | null {
   return scope?.querySelector(`[data-part="${part.builtOnPart ?? part.name}"]`) ?? null
 }
 
+// A text-only part with no visible box measures its text, not its box: a
+// block stretched across its row (Accordion's Title and Subtitle) would put
+// the leader on empty space.
+function textRect(node: Element): DOMRect {
+  if (!node.childNodes.length || ![...node.childNodes].every((c) => c.nodeType === Node.TEXT_NODE)) return node.getBoundingClientRect()
+  const range = document.createRange()
+  range.selectNodeContents(node)
+  return range.getBoundingClientRect()
+}
+
 // A pattern example renders the story named after it in PascalCase, with its
 // decorators, the same way the Usage page renders it.
 function exampleElement(name: string, example: Example) {
@@ -258,7 +268,10 @@ type StageProps = {
   setActive: (name: string | null) => void
 }
 
-type Crop = { x: number; y: number; w: number; h: number; s: number; natural: number }
+// `clip` is the focus part's box as a clip-path inset on the sample, so its
+// neighbours don't show in the crop's padding (Accordion's open panel text
+// under the Trigger).
+type Crop = { x: number; y: number; w: number; h: number; s: number; natural: number; clip: string }
 
 function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
   const stage = useRef<HTMLDivElement>(null)
@@ -312,8 +325,12 @@ function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
           const h = r.height / scale + 2 * PAD
           // A detail wider than its box scales down to fit.
           const s = Math.min(1, avail / w)
-          const next = { x, y, w, h, s, natural: ex.width / scale }
-          if (!crop || Math.abs(crop.x - x) + Math.abs(crop.y - y) + Math.abs(crop.w - w) + Math.abs(crop.h - h) > 1 || Math.abs(crop.s - s) > 0.01) {
+          // An overlaid part (CardVertical's Action on the thumbnail) keeps
+          // what it sits on.
+          const inset = [r.top - ex.top, ex.right - r.right, ex.bottom - r.bottom, r.left - ex.left].map((v) => `${Math.max(0, Math.round(v / scale))}px`)
+          const clip = getComputedStyle(node).position === 'absolute' ? 'none' : `inset(${inset.join(' ')})`
+          const next = { x, y, w, h, s, natural: ex.width / scale, clip }
+          if (!crop || Math.abs(crop.x - x) + Math.abs(crop.y - y) + Math.abs(crop.w - w) + Math.abs(crop.h - h) > 1 || Math.abs(crop.s - s) > 0.01 || crop.clip !== next.clip) {
             setCrop(next)
             return
           }
@@ -323,9 +340,9 @@ function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
         const part = parts.find((p) => p.name === n)!
         const node = locate(el, part, parts)
         if (!node) return []
-        const r = node.getBoundingClientRect()
         const style = getComputedStyle(node)
         const visible = style.borderTopWidth !== '0px' || style.boxShadow !== 'none' || !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(style.backgroundColor)
+        const r = visible ? node.getBoundingClientRect() : textRect(node)
         return [{ name: n, label: n, visible, rect: { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height } }]
       })
       if (!focus && !compact && ex.height < hits.length * (H + GAP)) {
@@ -358,7 +375,7 @@ function Stage({ name, example, parts, marks, active, setActive }: StageProps) {
       ref={exampleRef}
       className="ds-example"
       data-component={name}
-      style={crop ? { position: 'absolute', width: crop.natural, transform: `translate(${-crop.x * crop.s}px, ${-crop.y * crop.s}px) scale(${crop.s})`, transformOrigin: '0 0' } : undefined}
+      style={crop ? { position: 'absolute', width: crop.natural, transform: `translate(${-crop.x * crop.s}px, ${-crop.y * crop.s}px) scale(${crop.s})`, transformOrigin: '0 0', clipPath: crop.clip } : undefined}
     >
       {exampleElement(name, example)}
     </div>
