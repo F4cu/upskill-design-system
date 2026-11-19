@@ -1,7 +1,10 @@
 import { StoryRender } from '../components/stories'
 import type { AccessibilityEntry } from './types'
 
-// Labeling marks the course-module-list pattern (first item open). Keyboard
+// Labeling marks only the Trigger of the course-module-list pattern (first
+// item open): VoiceOver reads the title, meta and state once, on the button
+// (Safari, 2026-11-19). Heading and Panel rows would repeat the title and
+// weren't heard on Tab; the Spec anatomy marks them. Keyboard
 // uses FocusableContent: the open panel's link is a Tab stop, the closed
 // panel's link is hidden (until-found) and skipped.
 export const accessibility: AccessibilityEntry = {
@@ -13,13 +16,10 @@ export const accessibility: AccessibilityEntry = {
   ],
   labeling: {
     advice:
-      'The title names each button and its panel. The subtitle is read as the button’s description on every item, so keep it to one short fact, such as a duration. Set headingLevel to fit the page outline (h3 by default).',
-    caption: 'Each trigger is a button inside a heading, named by its title and described by its meta line. Its panel is a group named by the title.',
+      'The title names each button and its panel; the subtitle is read as the button’s description on every item, so keep it to one short fact, such as a duration. Set headingLevel to fit the page outline (h3 by default).',
+    caption: 'Each trigger is a button in a heading, named by its title and described by its meta line. Its panel is named by the title.',
     marks: [
-      { label: 'Heading', select: '[data-part="Heading"]' },
       { label: 'Trigger', select: '[data-part="Trigger"]' },
-      { label: 'Meta', select: '[data-part="Meta"]' },
-      { label: 'Panel', select: '[data-part="Panel"]' },
     ],
     render: () => <StoryRender name="Accordion" file="patterns.stories" exportName="CourseModuleList" />,
   },

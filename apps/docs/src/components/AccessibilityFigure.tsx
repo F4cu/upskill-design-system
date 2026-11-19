@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { computeAccessibleName, getRole } from 'dom-accessibility-api'
+import { computeAccessibleDescription, computeAccessibleName, getRole } from 'dom-accessibility-api'
 import '../../../../packages/components/src/styles/tokens.css'
 import type { AccessibilityEntry } from '../accessibility/types'
 import { BOTTOM, GAP, H, OUTSET, PAD, badgeW, bottomLayout, gutterFor, innerWidth, place, sideLayout } from './AnatomyOverlay'
@@ -77,16 +77,17 @@ function markup(el: Element) {
   return inner && (namedByContent || onlyHidden) ? `${open}${inner}</${tag}>` : `${open}</${tag}>`
 }
 
-// Roughly what VoiceOver and NVDA say on reaching the element: name, role,
-// then state; plain text is read as it is. Wording differs between screen
-// readers.
+// Roughly what VoiceOver says on reaching the element: name, description,
+// state, then role, as heard on an Accordion trigger (VoiceOver, Safari,
+// 2026-11-19); plain text is read as it is. Other screen readers order these
+// differently.
 function announce(el: Element) {
   const role = getRole(el) ?? ''
   if (!role || role === 'generic') return el.textContent?.trim() ?? ''
   const pressed = el.getAttribute('aria-pressed')
   const expanded = el.getAttribute('aria-expanded')
   const roleText = pressed !== null ? 'toggle button' : role === 'heading' ? `heading level ${el.tagName.slice(1)}` : (ROLE_TEXT[role] ?? role)
-  const parts = [computeAccessibleName(el), roleText]
+  const parts = [computeAccessibleName(el), computeAccessibleDescription(el)]
   if (pressed !== null) parts.push(pressed === 'true' ? 'pressed' : 'not pressed')
   if (expanded !== null) parts.push(expanded === 'true' ? 'expanded' : 'collapsed')
   if (role === 'progressbar') {
@@ -95,6 +96,7 @@ function announce(el: Element) {
     parts.push(`${Math.round(((Number(el.getAttribute('aria-valuenow')) - min) / (max - min)) * 100)}%`)
   }
   if (el.matches(':disabled')) parts.push('dimmed')
+  parts.push(roleText)
   return parts.filter(Boolean).join(', ')
 }
 

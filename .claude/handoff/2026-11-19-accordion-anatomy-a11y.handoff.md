@@ -23,7 +23,7 @@ Tick an item when its "Done when" is met, and add the date and PR number. Order 
 - [x] Phase 3: part renames across code, spec, docs marks, anatomy test; ADR-023 amendment (2026-11-19; PR pending with Phase 4)
 - [x] Phase 4: spec `figma` section corrected (2026-11-19; PR held until Phase 5 so the spec never claims Figma properties that don't exist yet)
 - [x] Phase 5: Figma component rebuilt; pattern frame updated; `capture-pattern-frames` re-run (2026-11-19)
-- [ ] Phase 6: `/document-component Accordion` republished
+- [x] Phase 6: `/document-component Accordion` republished (2026-11-19; reading-order table reduced to the Trigger row after the VoiceOver check)
 - [ ] Close #179; handoff `status: done`, `npm run handoff:tidy`
 
 Phases 1–4 are code and go through `/review-component Accordion` (interactive component → `full` path, branch `component/accordion`, PR). Phase 6 is its own `document/accordion` PR (ADR-030).
