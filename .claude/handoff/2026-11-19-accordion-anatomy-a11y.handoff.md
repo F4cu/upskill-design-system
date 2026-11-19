@@ -9,9 +9,9 @@ completed:
 The Accordion's docs page (`/components/accordion/accessibility/`) labels parts that don't exist in Figma (`Chevron` vs `icon expand`, `Subtitle` vs an unnamed metadata text layer), the Figma component is structured differently from the code, and a screen reader hears "The Anthropologist 4 hours, 30min" three times per item. Code is the source of truth (ADR-002): fix the code contract first, rebuild Figma to match it, then republish the docs page. Folds in #179.
 
 **Settled decisions (developer, 2026-11-19), do not relitigate:**
-- **Part names** (role-based): `Root`, `Item`, `Heading`, `Trigger`, `Title`, `Summary` (was `Subtitle`), `Indicator` (was `Chevron`), `Panel`. The **prop stays `subtitle`**: renaming it is a breaking API change for no reader benefit. Only the part (`data-part`, spec `anatomy[]`, Figma layer) is renamed.
+- **Part names** (role-based): `Root`, `Item`, `Heading`, `Trigger`, `Title`, `Meta` (was `Subtitle`; matches CardVertical/CardHorizontal `Meta`, styled the same: `size="metadata"`, `color="subtle"`), `Indicator` (was `Chevron`), `Panel`. The **prop stays `subtitle`**: renaming it is a breaking API change for no reader benefit. Only the part (`data-part`, spec `anatomy[]`, Figma layer) is renamed.
 - **Panel role: `group`**, not `region` (React Aria's `DisclosurePanel` default). Removes the landmark-proliferation limit (usage.json's "about six open items" don't).
-- **Accessible names:** the trigger is named by the **title only**; the summary becomes its description (`aria-describedby`). The panel is labelled by the title only.
+- **Accessible names:** the trigger is named by the **title only**; the meta text becomes its description (`aria-describedby`). The panel is labelled by the title only.
 - **Direction:** Figma is rebuilt to match code. Figma's current layout (panel text inside the same `Content` frame as the title, icon beside both) can't exist in code: the panel can't live inside the heading button (APG: "The button element is the only element inside the heading element").
 
 ## Progress
@@ -64,11 +64,11 @@ Try `hidden="until-found"` on the collapsed panel (set through the existing ref;
 
 ## Phase 2: names, role, #179
 
-- Trigger: `aria-labelledby={titleId}`, `aria-describedby={summaryId}` when `subtitle` is set.
+- Trigger: `aria-labelledby={titleId}`, `aria-describedby={metaId}` when `subtitle` is set.
 - Panel: `role="group"`, `aria-labelledby={titleId}`.
 - Apply the Phase 1 mechanism.
-- *Unverified, check in VoiceOver (Safari) and in the accessibility tree:* whether the heading's name now drops the summary. AccName honours a descendant's `aria-labelledby` during name-from-content, but VoiceOver may still read the heading's text content. If it still reads the summary on the heading, that's acceptable (once, not three times); record what you heard.
-- Update `Accordion.a11y.test.tsx`: tests that query `getByRole('region')` move to `group`; add a test that the button's name is exactly the title and its description is the summary; add a `beforematch` test (dispatch the event) for controlled and uncontrolled items.
+- *Unverified, check in VoiceOver (Safari) and in the accessibility tree:* whether the heading's name now drops the meta text. AccName honours a descendant's `aria-labelledby` during name-from-content, but VoiceOver may still read the heading's text content. If it still reads the meta text on the heading, that's acceptable (once, not three times); record what you heard.
+- Update `Accordion.a11y.test.tsx`: tests that query `getByRole('region')` move to `group`; add a test that the button's name is exactly the title and its description is the meta text; add a `beforematch` test (dispatch the event) for controlled and uncontrolled items.
 - Spec: rewrite `accessibility.notes` and `ariaAttributes`, the "collapsed panel stays in the page" decision, and drop the known-limitation sentence. Usage: remove the "more than about six items" `donts` entry (its reason was the region landmark); rewrite the "subtitle longer than a few words" entry (the subtitle is now a description, read after a pause, still on every item).
 
 **Done when:** `npm run a11y:test` passes, the VoiceOver reading of one item is written into this file, and the #179 acceptance list is ticked except the spec item (that's here too, so tick it).
@@ -77,23 +77,23 @@ Try `hidden="until-found"` on the collapsed panel (set through the existing ref;
 
 | Old | New | Notes |
 |---|---|---|
-| `Subtitle` | `Summary` | Prop stays `subtitle`. |
+| `Subtitle` | `Meta` | Prop stays `subtitle`. Aligns with the cards' `Meta`; there it is an `Inline` container of `Duration`/`Certified`, here a single `Text`. Say so in the spec part `notes`. |
 | `Chevron` | `Indicator` | Still the `Icon` component; spec `builtOn: Icon`. |
 | `TitleGroup`, `PanelOuter`, `PanelInner` | keep | Layout wrappers with no Figma counterpart. Check whether the spec schema can mark a part code-only / internal; if not, note it as a divergence in Phase 4 rather than adding schema fields here (that would be a contract change needing its own decision). |
 
-Touch: `index.tsx` (`data-part`), `Accordion.module.css` (rename `.chevron` if you like, not required), `Accordion.spec.json` (`anatomy[]`, `anatomyExamples`, `styles` keys), `apps/docs/src/accessibility/Accordion.tsx` (`marks`: replace `Subtitle` with `Summary`), anything `npm run anatomy:test` checks. `grep -rn "Chevron\|Subtitle" apps/docs packages/components/src/components/Accordion` before and after.
+Touch: `index.tsx` (`data-part`), `Accordion.module.css` (rename `.chevron` if you like, not required), `Accordion.spec.json` (`anatomy[]`, `anatomyExamples`, `styles` keys), `apps/docs/src/accessibility/Accordion.tsx` (`marks`: replace `Subtitle` with `Meta`), anything `npm run anatomy:test` checks. `grep -rn "Chevron\|Subtitle" apps/docs packages/components/src/components/Accordion` before and after.
 
-Record the naming rule as an **ADR-023 amendment** (reading ADR-023's existing amendments first, especially 2026-10-12 `Has <x>` booleans and 2026-11-12 reading order): a part is named by its role, not its glyph or by Figma's layer name (`Indicator`, not `Chevron`/`icon expand`; `Summary`, not `Subtitle`/the text value).
+Record the naming rule as an **ADR-023 amendment** (reading ADR-023's existing amendments first, especially 2026-10-12 `Has <x>` booleans and 2026-11-12 reading order): a part is named by its role, not its glyph or by Figma's layer name (`Indicator`, not `Chevron`/`icon expand`; `Meta`, not `Subtitle`/the text value), and a part that plays the same role as an existing part in another component reuses that part's name (`Meta`, as in the cards).
 
 **Done when:** all gates in `AGENTS.md` pass (`usage:validate`, `typecheck`, `build`, `spec:validate`, `a11y:coverage`, `a11y:test`, `anatomy:test`, `lint`).
 
 ## Phase 4: spec `figma` section
 
-Decide with the developer before Phase 5: either Figma gains text properties `Title` and `Summary` (plus a `Has summary` boolean, per ADR-023 2026-10-12), which makes the current `surface: both` true, or the spec marks them `code-only`. Recommended: add them in Figma; fill `figma.divergences` with whatever remains (the three layout wrappers; the `icon expand` wrapper if it stays).
+Decide with the developer before Phase 5: either Figma gains text properties `Title` and `Meta` (plus a `Has meta` boolean, per ADR-023 2026-10-12), which makes the current `surface: both` true, or the spec marks them `code-only`. Recommended: add them in Figma; fill `figma.divergences` with whatever remains (the three layout wrappers; the `icon expand` wrapper if it stays).
 
 ## Phase 5: Figma rebuild (`/figma-cli`, interactive)
 
-Target structure per variant: `Heading`/`Trigger` row (auto layout horizontal) > `Title` group (`Title`, `Summary`) + `Indicator` (the Icon component instance, or keep `icon expand` and list it as a divergence); below it, `Panel` (shown only when `Open=true`). Add `Open=true` × `Hover|Active`. Layer names = part names. Wire the text properties from Phase 4.
+Target structure per variant: `Heading`/`Trigger` row (auto layout horizontal) > `Title` group (`Title`, `Meta`) + `Indicator` (the Icon component instance, or keep `icon expand` and list it as a divergence); below it, `Panel` (shown only when `Open=true`). Add `Open=true` × `Hover|Active`. Layer names = part names. Wire the text properties from Phase 4.
 
 Before writing: snapshot every instance of the set (pitfalls in `/figma-cli`: variant restructures and property changes can reset instance overrides), then confirm the plan with the developer since it touches a published component. After: update the `course-module-list` frame (`2963:7814`) and run `node scripts/capture-pattern-frames.js`.
 
@@ -103,7 +103,7 @@ figma-cli note (2026-11-19): `figma-cli connect` run from inside a Claude sessio
 
 ## Phase 6: docs page
 
-`/document-component Accordion`: regenerate the Usage/Spec/Accessibility pages from the new spec; check the labeling marks (`Heading`, `Trigger`, `Summary`, `Panel`) and that the Accessibility tab's advice no longer says the subtitle names the button or that panels are regions.
+`/document-component Accordion`: regenerate the Usage/Spec/Accessibility pages from the new spec; check the labeling marks (`Heading`, `Trigger`, `Meta`, `Panel`) and that the Accessibility tab's advice no longer says the subtitle names the button or that panels are regions.
 
 ## Out of scope
 
