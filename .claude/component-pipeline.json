@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-16T16:05:38.968Z",
+  "generatedAt": "2026-11-19T17:25:01.383Z",
   "components": [
     {
       "name": "Accordion",
@@ -8,7 +8,7 @@
       "implementation": "in review",
       "substate": null,
       "signedOff": false,
-      "reviewedAt": "2026-07-09T00:00:00Z",
+      "reviewedAt": "2026-11-19T00:00:00Z",
       "reviewPath": "full",
       "learningsBackfilled": true,
       "visualReview": {
