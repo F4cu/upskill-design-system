@@ -1,8 +1,10 @@
-import { useId, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Icon } from '../Icon'
 import { Text } from '../Text'
 import styles from './Accordion.module.css'
+
+const supportsUntilFound = typeof document !== 'undefined' && 'onbeforematch' in document
 
 type AccordionItemOpenState =
   | { open: boolean; defaultOpen?: never }
@@ -35,10 +37,13 @@ export function AccordionItem({
     console.warn('AccordionItem: do not supply both `open` and `defaultOpen`.')
   }
 
-  const triggerId = useId()
   const panelId = useId()
+  const titleId = useId()
+  const metaId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const panelOuterRef = useRef<HTMLDivElement>(null)
+  const hasMountedRef = useRef(false)
 
   // React's HTMLAttributes typings (@types/react 18) don't include `inert` yet,
   // even though it's a real DOM property — set it directly so focusable
@@ -49,10 +54,49 @@ export function AccordionItem({
   // moves to the trigger first.
   useLayoutEffect(() => {
     const panel = panelRef.current
-    if (!panel) return
+    const outer = panelOuterRef.current
+    if (!panel || !outer) return
     if (!isOpen && panel.contains(document.activeElement)) triggerRef.current?.focus()
-    panel.inert = !isOpen
+    const isFirstRun = !hasMountedRef.current
+    hasMountedRef.current = true
+
+    if (isOpen) {
+      panel.removeAttribute('hidden')
+      panel.inert = false
+      return
+    }
+    panel.inert = true
+    if (!supportsUntilFound) return
+
+    // `hidden=until-found` collapses the panel instantly (content-visibility:
+    // hidden), so it waits until the height transition has finished; inert
+    // covers the panel meanwhile. Inert content is skipped by find-in-page, so
+    // inert comes off once until-found takes over.
+    const hide = () => {
+      panel.inert = false
+      panel.setAttribute('hidden', 'until-found')
+    }
+    if (isFirstRun || !parseFloat(getComputedStyle(outer).transitionDuration)) {
+      hide()
+      return
+    }
+    const onEnd = (event: TransitionEvent) => {
+      if (event.target === outer && event.propertyName === 'grid-template-rows') hide()
+    }
+    outer.addEventListener('transitionend', onEnd)
+    return () => outer.removeEventListener('transitionend', onEnd)
   }, [isOpen])
+
+  useEffect(() => {
+    const panel = panelRef.current
+    if (!panel || !supportsUntilFound) return
+    const onBeforeMatch = () => {
+      if (isControlled) onOpenChange?.(true)
+      else setInternalOpen(true)
+    }
+    panel.addEventListener('beforematch', onBeforeMatch)
+    return () => panel.removeEventListener('beforematch', onBeforeMatch)
+  }, [isControlled, onOpenChange])
 
   const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 
@@ -71,20 +115,22 @@ export function AccordionItem({
           ref={triggerRef}
           data-part="Trigger"
           type="button"
-          id={triggerId}
           className={styles.trigger}
           aria-expanded={isOpen}
           aria-controls={panelId}
+          aria-labelledby={titleId}
+          aria-describedby={subtitle ? metaId : undefined}
           onClick={toggle}
         >
           <div data-part="TitleGroup" className={styles.titleGroup}>
-            <Text data-part="Title" as="span" className={styles.title}>{title}</Text>
-            {subtitle && <Text data-part="Subtitle" as="span" size="metadata" color="subtle">{subtitle}</Text>}
+            <Text data-part="Title" id={titleId} as="span" className={styles.title}>{title}</Text>
+            {subtitle && <Text data-part="Subtitle" id={metaId} as="span" size="metadata" color="subtle">{subtitle}</Text>}
           </div>
           <Icon data-part="Chevron" name={isOpen ? 'chevron-up' : 'chevron-down'} size="md" className={styles.chevron} />
         </button>
       </Heading>
       <div
+        ref={panelOuterRef}
         data-part="PanelOuter"
         className={[styles.panelOuter, isOpen ? styles.panelOuterOpen : ''].filter(Boolean).join(' ')}
       >
@@ -93,8 +139,8 @@ export function AccordionItem({
             ref={panelRef}
             data-part="Panel"
             id={panelId}
-            role="region"
-            aria-labelledby={triggerId}
+            role="group"
+            aria-labelledby={titleId}
             className={styles.panel}
             aria-hidden={!isOpen ? true : undefined}
           >

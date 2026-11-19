@@ -18,8 +18,8 @@ The Accordion's docs page (`/components/accordion/accessibility/`) labels parts 
 
 Tick an item when its "Done when" is met, and add the date and PR number. Order is build order.
 
-- [ ] Phase 1: #179 spike decides the hide mechanism
-- [ ] Phase 2: naming + `group` role + #179 implemented, a11y tests updated, VoiceOver checked
+- [x] Phase 1: #179 spike decides the hide mechanism (2026-11-19; developer confirmed real Cmd+F in Chrome opens the item)
+- [x] Phase 2: naming + `group` role + #179 implemented, a11y tests updated, VoiceOver checked (2026-11-19; PR pending with Phases 3–4)
 - [ ] Phase 3: part renames across code, spec, docs marks, anatomy test; ADR-023 amendment
 - [ ] Phase 4: spec `figma` section corrected
 - [ ] Phase 5: Figma component rebuilt; pattern frame updated; `capture-pattern-frames` re-run
@@ -62,6 +62,16 @@ Try `hidden="until-found"` on the collapsed panel (set through the existing ref;
 
 **Done when:** a recorded result for 1–4. If 2 can't be kept, stop and ask the developer to choose between find-in-page and the animation; don't pick.
 
+### Phase 1 result (2026-11-19, branch `component/accordion`, headless Chromium 153 via Playwright against Storybook)
+
+Implemented as planned: `hidden="until-found"` on `Panel` through the ref. On close it is set only after `transitionend` (`grid-template-rows`) on `PanelOuter`. `inert` covers the closing transition and comes off once until-found takes over, because inert content is skipped by find-in-page. A `beforematch` listener opens the item (controlled: `onOpenChange(true)`). On first mount, or when the transition duration is `0s`, the panel is hidden immediately.
+1. **Find opens the item:** a text-fragment navigation (`#:~:text=five%20stages`, which goes through the same `beforematch` path) opened the collapsed item. `window.find()` returned `true` but fired no `beforematch`, so it doesn't count. **Real Cmd+F is unchecked: the developer still has to check it in Chrome.**
+2. **Height transition kept:** sampled `PanelOuter` height, open `12→27→35→39→40`, close `38→22→9→3→0`, then `hidden=until-found` is set.
+3. **Tab skips the collapsed link and the a11y tree omits collapsed content**, in both supported and fallback modes.
+4. **Fallback** (`Document.prototype.onbeforematch` deleted): `inert` + `aria-hidden` as before; find doesn't reach collapsed text (matches today).
+
+Side effect for Phase 2: jsdom has `onbeforematch`, so tests run the until-found path; the `panel.inert` test fails and has to assert `hidden="until-found"` (plus a fallback test with support stubbed out).
+
 ## Phase 2: names, role, #179
 
 - Trigger: `aria-labelledby={titleId}`, `aria-describedby={metaId}` when `subtitle` is set.
@@ -70,6 +80,10 @@ Try `hidden="until-found"` on the collapsed panel (set through the existing ref;
 - *Unverified, check in VoiceOver (Safari) and in the accessibility tree:* whether the heading's name now drops the meta text. AccName honours a descendant's `aria-labelledby` during name-from-content, but VoiceOver may still read the heading's text content. If it still reads the meta text on the heading, that's acceptable (once, not three times); record what you heard.
 - Update `Accordion.a11y.test.tsx`: tests that query `getByRole('region')` move to `group`; add a test that the button's name is exactly the title and its description is the meta text; add a `beforematch` test (dispatch the event) for controlled and uncontrolled items.
 - Spec: rewrite `accessibility.notes` and `ariaAttributes`, the "collapsed panel stays in the page" decision, and drop the known-limitation sentence. Usage: remove the "more than about six items" `donts` entry (its reason was the region landmark); rewrite the "subtitle longer than a few words" entry (the subtitle is now a description, read after a pause, still on every item).
+
+### Phase 2 progress (2026-11-19)
+
+Code, tests, spec and usage done; all `AGENTS.md` gates and `lint` pass (155 a11y tests). Chrome's accessibility tree (CDP `getFullAXTree`, CourseModuleList story): heading `"The Anthropologist"`, button `"The Anthropologist"` desc `"4 hours, 30min"`, open panel group `"The Anthropologist"`; collapsed panels absent. So in Chrome the heading name drops the meta too. Spec: two `ruledOut` entries added (`region` role; naming the trigger by title + subtitle). **VoiceOver (Safari, macOS, developer, 2026-11-19), Tab through CourseModuleList:** "The Anthropologist, 4 hours, 30min, expanded, button, group", then "Design Thinking Foundations, 2 hours, 15min, collapsed, button, group". Title and meta are each read once (the description is read inline, not after a pause). Not checked: the heading reading via VO+Cmd+H (Tab skips it). Unexplained: the trailing "group" on both open and collapsed items; not the collapsed panel (not exposed), cause unknown. **Open research item** (developer, 2026-11-19), not blocking Phase 2. To find out: compare against the `main` build (region panel) to see if it predates this change; dump WebKit's tree (Playwright `webkit` or Safari Web Inspector → Node → Accessibility) and look for an `AXGroup` around the button (WebKit maps plain `div`s such as `Item` or `TitleGroup` to `AXGroup`, unverified); check whether GOV.UK's or React Aria's accordion says the same in VoiceOver. #179 acceptance items 1–3 ticked on GitHub (2026-11-19); the spec item is done in this phase but left unticked until the PR.
 
 **Done when:** `npm run a11y:test` passes, the VoiceOver reading of one item is written into this file, and the #179 acceptance list is ticked except the spec item (that's here too, so tick it).
 
