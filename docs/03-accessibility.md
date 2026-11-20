@@ -23,6 +23,7 @@ sources:
 # clock reset 2026-10-09: token-contrast-check.js comment repoints "Component scope" from CLAUDE.md to AGENTS.md (ADR-029); no behavior change, still accurate
 # clock reset 2026-10-09: a11y-coverage.js imports isInteractive from scripts/lib.js (shared with component:risk); the Tier 2 derivation and gate are unchanged, still accurate
 # clock reset 2026-10-10: token-contrast-check.js gains Button/Chip :active pairs; active text darkens a step instead of new waivers; curation and waiver conventions unchanged, still accurate
+# clock reset 2026-11-20: Accordion pairs drop container.elevated and gain text.interactive.default/hover as icon pairs; curation convention unchanged, still accurate
 # rewritten 2026-10-12: a11y-coverage.js reads accessibility.* from the spec (ADR-027 rollout); wording of where the fields live updated
 # rewritten 2026-11-10: interactivity derivation names the usage file (metadata.json renamed usage.json, ADR-001 amendment 2026-11-10); a11y-coverage.js logic unchanged
 ---
