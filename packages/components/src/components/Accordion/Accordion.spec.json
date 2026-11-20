@@ -244,13 +244,13 @@
       "name": "hover",
       "kind": "interaction",
       "trigger": ":hover",
-      "notes": "Trigger gets an overlay.hover layer over its fill (transparent closed, elevated open); applies in both open and closed items."
+      "notes": "Title and Indicator turn text.interactive.default; the trigger has no fill. Applies in both open and closed items."
     },
     {
       "name": "active",
       "kind": "interaction",
       "trigger": ":active",
-      "notes": "Momentary press feedback on the trigger (CSS :active): overlay.active layer, orthogonal to open/closed."
+      "notes": "Momentary press feedback on the trigger (CSS :active): Title and Indicator turn text.interactive.hover, one step past hover; orthogonal to open/closed."
     },
     {
       "name": "focus-visible",
@@ -268,7 +268,7 @@
       "name": "open",
       "kind": "appData",
       "trigger": "open true, or the item toggled while uncontrolled (aria-expanded=true)",
-      "notes": "Panel visible with elevated background; trigger shows chevron-up."
+      "notes": "Panel visible on the item's ambient surface (no fill of its own); trigger shows chevron-up."
     }
   ],
   "accessibility": {
@@ -368,34 +368,6 @@
             "reason": "Inherits the parent element's text style."
           }
         }
-      },
-      {
-        "when": {
-          "state": "open"
-        },
-        "set": {
-          "background": "color.background.container.elevated"
-        }
-      },
-      {
-        "when": {
-          "state": "hover"
-        },
-        "set": {
-          "background-image": {
-            "template": "linear-gradient( {color.background.overlay.hover}, {color.background.overlay.hover} )"
-          }
-        }
-      },
-      {
-        "when": {
-          "state": "active"
-        },
-        "set": {
-          "background-image": {
-            "template": "linear-gradient( {color.background.overlay.active}, {color.background.overlay.active} )"
-          }
-        }
       }
     ],
     "TitleGroup": [
@@ -424,6 +396,22 @@
             "reason": "Long titles wrap inside the trigger instead of overflowing it."
           }
         }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "color": "color.text.interactive.default"
+        }
+      },
+      {
+        "when": {
+          "state": "active"
+        },
+        "set": {
+          "color": "color.text.interactive.hover"
+        }
       }
     ],
     "Indicator": [
@@ -431,6 +419,22 @@
         "when": {},
         "set": {
           "color": "color.icon.default"
+        }
+      },
+      {
+        "when": {
+          "state": "hover"
+        },
+        "set": {
+          "color": "color.text.interactive.default"
+        }
+      },
+      {
+        "when": {
+          "state": "active"
+        },
+        "set": {
+          "color": "color.text.interactive.hover"
         }
       }
     ],
@@ -449,9 +453,8 @@
       {
         "when": {},
         "set": {
-          "background": "color.background.container.elevated",
           "padding": {
-            "template": "0 calc({space.inset.md} + {size.icon.md} + {space.inline.sm}) {space.inset.md} {space.inset.md}"
+            "template": "0 {space.inset.md} {space.inset.md}"
           },
           "opacity": {
             "literal": "0",
@@ -553,6 +556,12 @@
       "option": "Naming the trigger by its whole content (title and subtitle)",
       "reason": "Screen readers then read the title and subtitle as the heading, the button and the panel name, three times per item.",
       "source": "Accordion anatomy handoff, 2026-11-19"
+    },
+    {
+      "option": "Panel right padding that clears the indicator column (calc of space.inset.md + size.icon.md + space.inline.sm)",
+      "reason": "No Figma variable can hold a sum, so Figma kept a raw 48 that drifts if a token changes per device. Padding is now space.inset.md on both sides, and text can run under the indicator.",
+      "source": "Figma binding check, 2026-11-20. Carbon caps line length with a percentage end padding instead; Spectrum deprecated its accordion-specific content padding tokens for semantic container padding.",
+      "notes": "Added 2026-06-23 (36f9460) to keep panel text out from under the indicator. If that matters again, cap the line length with a max-width token (bindable in Figma) rather than a padding sum."
     }
   ]
 }

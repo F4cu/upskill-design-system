@@ -4,7 +4,7 @@ title: "ADR-025 — Component state model"
 # ADR-025 — Component state model
 
 **Date:** 2026-10-06
-**Amended:** 2026-10-11
+**Amended:** 2026-11-20
 **Status:** `accepted`
 
 ## Context
@@ -42,7 +42,7 @@ The first amendment applied `active` to Button and Chip. Tier 2 of the contract 
 
 | Component | Part | `active` |
 |---|---|---|
-| Accordion | trigger | `overlay.active` layered as a `background-image` over the open item's elevated fill. Adds the missing `:hover` (`overlay.hover`, same layering) that Figma already showed. |
+| Accordion | trigger | `overlay.active` layered as a `background-image` over the open item's elevated fill. Adds the missing `:hover` (`overlay.hover`, same layering) that Figma already showed. Replaced 2026-11-20 (amendment below). |
 | AppHeader | nav link, user button | label `text.brand` → `text.interactive.hover` |
 | Breadcrumb | link | label `text.brand` → `text.interactive.hover` |
 | ButtonArrow | button | background `overlay.subtlest` → `overlay.active` |
@@ -117,3 +117,7 @@ Tier 3 of the contract migration brought the Figma file in line with the groups 
 ## Amendment (2026-10-11) — Checkbox checked hover
 
 Tier 4 found that a checked Checkbox had no deliberate hover. `.checkbox:hover:not(:disabled)` outranks `.checkbox:checked`, so on hover the brand box took the neutral `border.input.hover` border. The Tier 2 `:active` rule already restored the brand border for checked boxes; hover had no such rule. A checked box on hover now keeps the brand border and layers `overlay.hover` over the brand fill, one step short of `active` (`overlay.active`, same layering). Figma's Checkbox set gains the matching `Checked=true, State=Hover` cell. Rejected: no hover change on a checked box (no interactivity signal, unlike every other interactive part), and keeping the neutral border (an accident of specificity, not a design).
+
+## Amendment (2026-11-20) — Accordion trigger without a fill
+
+The Accordion trigger no longer changes background. The open item's `container.elevated` fill and the `overlay.hover`/`overlay.active` layers are gone, so the item always sits on its container's surface. Hover and press now move along the text interaction ramp instead: Title and Indicator go from `text.default`/`icon.default` to `text.interactive.default` on hover, then to `text.interactive.hover` on press (the TextLink ramp). `active` stays one step past hover, as the 2026-10-10 amendment requires; only the Accordion row of its table changes. Rejected: removing hover and active outright (the only interactive component with no press cue), and darkening the title one step (`text.default` is already the end of the neutral ramp), as well as indicator-only feedback (`icon.strong` gives one step, so hover and active would look the same).

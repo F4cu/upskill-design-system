@@ -83,7 +83,7 @@ Each rule reads only the bundle and the open Figma file. Every finding carries t
   - Checkbox's `_Checkbox/Box` 18×18 with no size binding (spec: `size.icon.sm`)
   - Accordion (`AccordionItem` `29:1153`), from the 2026-11-19 rebuild, whose read-back checked structure and text but not bindings:
     - `TitleGroup` gap was a raw 4 (spec: `space.stack.xs`). Bound on 2026-11-20 in all 6 variants, so this is now a **should-pass** case: flagging it is a false positive. Unbinding it on a scratch copy turns it back into a should-flag case.
-    - `Panel` padding-right is a raw 48. In the spec it's a `template` (`calc({space.inset.md} + {size.icon.md} + {space.inline.sm})`), and no single Figma variable can hold that. Decide before B1 what `token-binding` does with `template` values (flag, skip, or compare the resolved sum) and write the expected result here.
+    - `Panel` padding-right was a raw 48 for a `calc` sum no Figma variable could hold. On 2026-11-20 the code dropped the sum (spec `ruledOut`) and Figma bound it to `space/inset/md`, so this is now a should-pass case as well. `token-binding` still needs a defined behaviour for `template` values whose parts are single tokens (`0 {space.inset.md} {space.inset.md}`): compare each side's binding to its token.
   - Write down which of these it flags *before* running it, in line with the repo's honest-outcome rule. A miss is a result, not something to tune away quietly. New findings go to the fidelity handoff's decision path, not into a silent fix.
 - Commit the first `figma-parity.json` and teach `sense.js` to read it (counts per rule and component in `STATUS_QUO.md`).
 

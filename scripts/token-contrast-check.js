@@ -150,11 +150,13 @@ const PAIRS = [
   [T("subtle"), BG("input")],
   [I("default"), BG("input")],
 
-  // Accordion — title/chevron render on the ambient trigger surface when
-  // collapsed, and on container.elevated once the panel is open
-  ...[BG("container-elevated"), ...AMBIENT].flatMap((bg) => [
+  // Accordion — title/chevron render on the ambient surface, open or closed;
+  // on hover/active both take the interactive text ramp
+  ...AMBIENT.flatMap((bg) => [
     [T("default"), bg],
     [I("default"), bg],
+    [T("interactive-default"), bg, "icon"],
+    [T("interactive-hover"), bg, "icon"],
   ]),
 
   // ButtonArrow — icon-only round button. Border is the shared decorative

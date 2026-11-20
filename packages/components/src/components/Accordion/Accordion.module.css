@@ -23,28 +23,16 @@
   cursor: pointer;
   text-align: left;
   color: inherit;
-  transition: background-color 0.15s ease;
 }
 
-.trigger[aria-expanded='true'] {
-  background: var(--ds-color-background-container-elevated);
-  /* delay matches panel so trigger and panel surface appear together */
-  transition: background-color 0.2s ease 0.05s;
+.trigger:hover .title,
+.trigger:hover .indicator {
+  color: var(--ds-color-text-interactive-default);
 }
 
-/* Overlay as an image layer so the open item's elevated surface stays underneath. */
-.trigger:hover {
-  background-image: linear-gradient(
-    var(--ds-color-background-overlay-hover),
-    var(--ds-color-background-overlay-hover)
-  );
-}
-
-.trigger:active {
-  background-image: linear-gradient(
-    var(--ds-color-background-overlay-active),
-    var(--ds-color-background-overlay-active)
-  );
+.trigger:active .title,
+.trigger:active .indicator {
+  color: var(--ds-color-text-interactive-hover);
 }
 
 .titleGroup {
@@ -91,8 +79,7 @@
 }
 
 .panel {
-  background: var(--ds-color-background-container-elevated);
-  padding: 0 calc(var(--ds-space-inset-md) + var(--ds-size-icon-md) + var(--ds-space-inline-sm)) var(--ds-space-inset-md) var(--ds-space-inset-md);
+  padding: 0 var(--ds-space-inset-md) var(--ds-space-inset-md);
   opacity: 0;
   transition: opacity 0.15s ease;
 }
